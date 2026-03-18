@@ -1,0 +1,45 @@
+{
+  "name": "ph-sport-web",
+  "version": "1.0.0",
+  "description": "Web para PH Sport",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PH-Sport/ph-sport-web.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PH-Sport/ph-sport-web/issues"
+  },
+  "homepage": "https://github.com/PH-Sport/ph-sport-web#readme",
+  "dependencies": {
+    "@tailwindcss/vite": "^4.2.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "gsap": "^3.14.2",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwindcss": "^4.2.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.7",
+    "@astrojs/react": "^4.4.2",
+    "@astrojs/sitemap": "^3.7.1",
+    "@types/node": "^25.3.3",
+    "astro": "^5.18.1",
+    "puppeteer": "^24.38.0",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "devalue": "5.6.4",
+    "svgo": "4.0.1"
+  }
+}

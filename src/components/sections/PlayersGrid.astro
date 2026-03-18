@@ -1,0 +1,197 @@
+---
+import { getCollection } from 'astro:content';
+import { useTranslations, type Lang } from '@/i18n/utils';
+import PlayerCard from '@/components/ui/PlayerCard.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const players = (await getCollection('players')).sort((a, b) =>
+  a.data.name.localeCompare(b.data.name),
+);
+---
+
+<section class="players-section">
+  <div class="ph-section">
+    <header class="players-header">
+      <div class="players-header-top">
+        <span class="ph-label">{t('nav.players')}</span>
+        <span class="players-count">{players.length}</span>
+      </div>
+      <div class="ph-divider mt-4"></div>
+      <h2 class="players-title">
+        {t('players.title')}
+      </h2>
+      <p class="players-subtitle">{t('players.subtitle')}</p>
+    </header>
+
+    <div class="players-grid">
+      {players.map((player) => (
+        <PlayerCard
+          name={player.data.name}
+          position={player.data.position}
+          club={player.data.club}
+          photo={player.data.photo}
+          slug={player.id.replace(/\.md$/, '')}
+          lang={lang}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .players-section {
+    position: relative;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(214, 178, 94, 0.02) 0%, transparent 50%),
+      var(--ph-black);
+  }
+
+  .players-header {
+    margin-bottom: 3rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--ph-white-10);
+  }
+
+  @media (min-width: 1024px) {
+    .players-header {
+      margin-bottom: 4rem;
+      padding-bottom: 3rem;
+    }
+  }
+
+  .players-header-top {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .players-count {
+    font-family: var(--ph-font-display);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--ph-white-60);
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--ph-white-10);
+    border-radius: var(--ph-radius);
+    letter-spacing: 0.04em;
+  }
+
+  .players-title {
+    margin-top: 2rem;
+    font-family: var(--ph-font-display);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--ph-white);
+  }
+
+  .players-subtitle {
+    margin-top: 1rem;
+    font-size: 1.0625rem;
+    color: var(--ph-white-60);
+  }
+
+  .players-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .players-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .players-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import {
+    reducedMotion,
+    wrapWords,
+    splitWords,
+    trackingReveal,
+  } from '@/scripts/ph-text-animations';
+
+  function initPlayersAnimations(): void {
+    const section = document.querySelector<HTMLElement>('.players-section');
+    if (!section || reducedMotion()) return;
+
+    // ── Cabecera ────────────────────────────────────────────────────────────
+    const label = section.querySelector<HTMLElement>('.ph-label');
+    if (label) {
+      trackingReveal(label, { trigger: label, start: 'top 88%', once: true });
+    }
+
+    const count = section.querySelector<HTMLElement>('.players-count');
+    if (count) {
+      gsap.from(count, {
+        opacity: 0,
+        scale: 0.85,
+        duration: 0.5,
+        ease: 'back.out(1.5)',
+        scrollTrigger: { trigger: count, start: 'top 88%', once: true },
+      });
+    }
+
+    const title = section.querySelector<HTMLElement>('.players-title');
+    if (title) {
+      const words = wrapWords(title);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.85,
+        stagger: 0.07,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: title, start: 'top 82%', once: true },
+      });
+    }
+
+    const subtitle = section.querySelector<HTMLElement>('.players-subtitle');
+    if (subtitle) {
+      const spans = splitWords(subtitle);
+      gsap.from(spans, {
+        opacity: 0,
+        filter: 'blur(6px)',
+        y: 6,
+        duration: 0.6,
+        stagger: 0.03,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: subtitle, start: 'top 88%', once: true },
+      });
+    }
+
+    // ── Cards: aparecen escalonadas al entrar en pantalla ───────────────────
+    const cards = section.querySelectorAll<HTMLElement>('.card');
+    if (cards.length) {
+      gsap.from(cards, {
+        opacity: 0,
+        y: 24,
+        duration: 0.55,
+        stagger: { each: 0.06, from: 'start' },
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.players-grid',
+          start: 'top 88%',
+          once: true,
+        },
+      });
+    }
+  }
+
+  document.addEventListener('astro:page-load', initPlayersAnimations);
+</script>

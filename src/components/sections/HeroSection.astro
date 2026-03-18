@@ -1,0 +1,230 @@
+---
+import { useTranslations, type Lang } from '@/i18n/utils';
+import Button from '@/components/ui/Button.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const isEn = lang === 'en';
+---
+
+<section class="hero relative flex min-h-screen items-center overflow-hidden">
+  <!-- Content -->
+  <div class="hero-content ph-section relative z-10 w-full">
+    <div class="max-w-2xl">
+      <p class="hero-tagline font-display text-xs font-semibold uppercase tracking-widest text-ph-gold sm:text-sm">
+        {t('hero.tagline')}
+      </p>
+
+      <div class="ph-divider mt-5"></div>
+
+      <h1 class="mt-8 font-display text-4xl font-black tracking-tightest sm:text-5xl lg:text-7xl">
+        {t('hero.claim')}
+      </h1>
+
+      <p class="mt-8 max-w-lg text-base leading-relaxed text-ph-white-60 lg:text-lg">
+        {t('site.description')}
+      </p>
+
+      <div class="mt-10 flex flex-wrap gap-5">
+        <Button href={isEn ? '/en/players/' : '/jugadores/'} variant="primary">
+          {t('hero.cta.primary')}
+        </Button>
+        <Button href={isEn ? '/en/about' : '/sobre-nosotros'} variant="secondary">
+          {t('hero.cta.secondary')}
+        </Button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="scroll-indicator" data-hero-scroll-indicator aria-hidden="true">
+    <div class="chevron"></div>
+    <div class="chevron"></div>
+    <div class="chevron"></div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    /* Sin overlay: el logo 3D del body se ve sin capa encima */
+    background: transparent;
+  }
+
+  /* Ocultar desde el inicio — GSAP restaura opacity antes de animar */
+  .hero-tagline,
+  .hero-content .ph-divider,
+  .hero-content h1,
+  .hero-content p:not(.hero-tagline),
+  .hero-content .mt-10 {
+    opacity: 0;
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateZ(0);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: opacity var(--ph-duration) var(--ph-ease);
+    z-index: 10;
+    backface-visibility: hidden;
+    isolation: isolate;
+  }
+
+  .scroll-indicator.is-hidden {
+    opacity: 0;
+  }
+
+  .chevron {
+    width: 14px;
+    height: 14px;
+    border-right: 1.5px solid var(--ph-gold);
+    border-bottom: 1.5px solid var(--ph-gold);
+    transform: rotate(45deg) translateZ(0);
+    animation: scroll-chevron 2s infinite;
+    opacity: 0;
+    margin-top: -6px;
+    backface-visibility: hidden;
+  }
+
+  .chevron:nth-child(1) { animation-delay: 0s; }
+  .chevron:nth-child(2) { animation-delay: 0.15s; }
+  .chevron:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes scroll-chevron {
+    0% {
+      opacity: 0;
+      transform: rotate(45deg) translate(-4px, -4px) translateZ(0);
+    }
+    50% {
+      opacity: 1;
+      transform: rotate(45deg) translate(0, 0) translateZ(0);
+    }
+    100% {
+      opacity: 0;
+      transform: rotate(45deg) translate(4px, 4px) translateZ(0);
+    }
+  }
+</style>
+
+<script>
+  // ── Scroll indicator ──────────────────────────────────────────────────────
+  const indicator = document.querySelector<HTMLElement>('[data-hero-scroll-indicator]');
+  if (indicator) {
+    const toggleIndicator = () => {
+      indicator.classList.toggle('is-hidden', window.scrollY > 48);
+    };
+    toggleIndicator();
+    document.addEventListener('scroll', toggleIndicator, { passive: true });
+  }
+</script>
+
+<script>
+  import { gsap } from 'gsap';
+  import {
+    reducedMotion,
+    scrambleReveal,
+    wrapWords,
+    splitWords,
+  } from '@/scripts/ph-text-animations';
+
+  const LOGO_SESSION_KEY = 'ph-logo-revealed';
+
+  function initHeroAnimations(): void {
+    const section = document.querySelector<HTMLElement>('.hero');
+    if (!section || reducedMotion()) return;
+
+    const tagline  = section.querySelector<HTMLElement>('.hero-tagline');
+    const divider  = section.querySelector<HTMLElement>('.ph-divider');
+    const h1       = section.querySelector<HTMLElement>('h1');
+    const desc     = section.querySelector<HTMLElement>('p.max-w-lg');
+    const btns     = section.querySelector<HTMLElement>('.mt-10');
+
+    const tl = gsap.timeline();
+
+    // Tagline: scramble de caracteres (gestiona su propio opacity internamente)
+    if (tagline) scrambleReveal(tagline, 0);
+
+    // Divisor dorado: restore opacity → crece desde la izquierda
+    if (divider) {
+      gsap.set(divider, { opacity: 1 });
+      tl.from(divider, {
+        scaleX: 0,
+        transformOrigin: 'left center',
+        duration: 0.7,
+        ease: 'expo.out',
+      }, 0.25);
+    }
+
+    // H1: restore opacity → palabras emergen desde debajo (cortina)
+    if (h1) {
+      const words = wrapWords(h1);
+      gsap.set(h1, { opacity: 1 }); // el h1 es visible, pero las palabras están detrás del clip
+      tl.from(words, {
+        yPercent: 115,
+        duration: 0.85,
+        stagger: 0.065,
+        ease: 'power4.out',
+      }, 0.5);
+    }
+
+    // Descripción: restore opacity → palabras cristalizan con desenfoque
+    if (desc) {
+      gsap.set(desc, { opacity: 1 });
+      const spans = splitWords(desc);
+      tl.from(spans, {
+        opacity: 0,
+        filter: 'blur(7px)',
+        y: 8,
+        duration: 0.65,
+        stagger: 0.035,
+        ease: 'power2.out',
+      }, 0.95);
+    }
+
+    // CTAs: restore opacity → aparecen con deslizamiento suave
+    if (btns) {
+      gsap.set(btns, { opacity: 1 });
+      tl.from(Array.from(btns.children), {
+        opacity: 0,
+        y: 18,
+        duration: 0.55,
+        stagger: 0.1,
+        ease: 'power3.out',
+      }, 1.15);
+    }
+  }
+
+  // ── Decide cuándo disparar ────────────────────────────────────────────────
+  document.addEventListener('astro:page-load', () => {
+    const section = document.querySelector('.hero');
+    if (!section) return;
+
+    const path = window.location.pathname.replace(/\/$/, '') || '/';
+    const isHome = path === '/' || path === '/en';
+    const isFirstVisit = !sessionStorage.getItem(LOGO_SESSION_KEY);
+    const navEntry = performance.getEntriesByType('navigation')[0] as
+      | PerformanceNavigationTiming
+      | undefined;
+    const isReload = navEntry?.type === 'reload';
+
+    // Si el logo va a reproducirse, esperamos su evento antes de animar
+    if (isHome && (isFirstVisit || isReload)) {
+      let fired = false;
+      const onRevealed = () => {
+        if (!fired) { fired = true; initHeroAnimations(); }
+      };
+      document.addEventListener('ph:logo-revealed', onRevealed, { once: true });
+      // Fallback por si el evento no llega (ej. React hidrata tarde)
+      setTimeout(onRevealed, 4500);
+    } else {
+      initHeroAnimations();
+    }
+  });
+</script>

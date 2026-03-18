@@ -1,0 +1,175 @@
+---
+import { useTranslations, getLangFromUrl } from '@/i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const isEn = lang === 'en';
+const year = new Date().getFullYear();
+
+const nav = isEn
+  ? [
+      { href: '/en/', label: t('nav.home') },
+      { href: '/en/players/', label: t('nav.players') },
+      { href: '/en/about', label: t('nav.about') },
+    ]
+  : [
+      { href: '/', label: t('nav.home') },
+      { href: '/jugadores/', label: t('nav.players') },
+      { href: '/sobre-nosotros', label: t('nav.about') },
+    ];
+---
+
+<footer class="footer">
+  <div class="footer-gold-rule" aria-hidden="true"></div>
+
+  <div class="ph-section footer-body">
+    <div class="footer-grid">
+      <!-- Brand -->
+      <div class="footer-brand">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 259.8 206.1" fill="currentColor" aria-hidden="true" class="footer-logo">
+          <polygon points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" />
+          <polygon points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" />
+        </svg>
+        <p class="footer-tagline">{t('site.tagline')}</p>
+      </div>
+
+      <!-- Nav -->
+      <nav aria-label={t('footer.nav.label')}>
+        <span class="footer-col-label">{isEn ? 'Pages' : 'Páginas'}</span>
+        <ul class="footer-nav">
+          {nav.map((item) => (
+            <li>
+              <a href={item.href} class="footer-link">{item.label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <!-- Contact -->
+      <div>
+        <span class="footer-col-label">{t('footer.contact')}</span>
+        <div class="footer-contact">
+          <a href={`mailto:${t('footer.email')}`} class="footer-email">
+            {t('footer.email')}
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="footer-bottom">
+      <p>&copy; {year} {t('site.name')}. {t('footer.rights')}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+  }
+
+  .footer-gold-rule {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--ph-gold-muted) 20%,
+      var(--ph-gold) 50%,
+      var(--ph-gold-muted) 80%,
+      transparent
+    );
+    opacity: 0.4;
+  }
+
+  .footer-body {
+    padding-block: 3.5rem 2.5rem;
+  }
+
+  .footer-grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 3rem;
+    }
+  }
+
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .footer-logo {
+    height: 2rem;
+    width: auto;
+    color: var(--ph-white);
+  }
+
+  .footer-tagline {
+    font-family: var(--ph-font-display);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--ph-white-60);
+  }
+
+  .footer-col-label {
+    font-family: var(--ph-font-display);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ph-gold);
+  }
+
+  .footer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    margin-top: 0.875rem;
+    list-style: none;
+  }
+
+  .footer-link {
+    font-family: var(--ph-font-display);
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--ph-white-60);
+    transition: color var(--ph-duration) var(--ph-ease);
+  }
+
+  .footer-link:hover {
+    color: var(--ph-white);
+  }
+
+  .footer-contact {
+    margin-top: 0.875rem;
+  }
+
+  .footer-email {
+    font-family: var(--ph-font-display);
+    font-size: 0.875rem;
+    color: var(--ph-white-60);
+    transition: color var(--ph-duration) var(--ph-ease);
+  }
+
+  .footer-email:hover {
+    color: var(--ph-gold);
+  }
+
+  .footer-bottom {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ph-white-10);
+  }
+
+  .footer-bottom p {
+    font-size: 0.75rem;
+    color: var(--ph-white-60);
+    letter-spacing: 0.02em;
+  }
+</style>

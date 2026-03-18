@@ -1,0 +1,18 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import PlayersGrid from '@/components/sections/PlayersGrid.astro';
+import { useTranslations, type Lang } from '@/i18n/utils';
+
+const lang: Lang = 'en';
+const t = useTranslations(lang);
+const SITE_URL = 'https://ph-sport-web.com';
+---
+
+<BaseLayout
+  title={`${t('players.title')} — ${t('site.name')}`}
+  description={t('site.description')}
+  lang={lang}
+  canonical={`${SITE_URL}/en/players/`}
+>
+  <PlayersGrid lang={lang} />
+</BaseLayout>

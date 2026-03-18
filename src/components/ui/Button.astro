@@ -1,0 +1,95 @@
+---
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary';
+  class?: string;
+  [key: string]: any;
+}
+
+const {
+  href,
+  variant = 'primary',
+  class: className = '',
+  ...rest
+} = Astro.props;
+---
+
+{href ? (
+  <a href={href} class:list={['btn', `btn--${variant}`, className]} {...rest}>
+    <span class="btn-label"><slot /></span>
+  </a>
+) : (
+  <button class:list={['btn', `btn--${variant}`, className]} {...rest}>
+    <span class="btn-label"><slot /></span>
+  </button>
+)}
+
+<style>
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    font-family: var(--ph-font-display);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    overflow: hidden;
+    border: 1px solid;
+    border-radius: var(--ph-radius);
+    cursor: pointer;
+    transition:
+      border-color var(--ph-duration) var(--ph-ease),
+      color var(--ph-duration) var(--ph-ease);
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--ph-duration) var(--ph-ease);
+  }
+
+  .btn:hover::before {
+    transform: scaleX(1);
+  }
+
+  .btn-label {
+    position: relative;
+    z-index: 1;
+    transition: color var(--ph-duration) var(--ph-ease);
+  }
+
+  /* Primary — gold fill slide-in */
+  .btn--primary {
+    border-color: var(--ph-gold);
+    color: var(--ph-gold);
+  }
+
+  .btn--primary::before {
+    background: var(--ph-gold);
+  }
+
+  .btn--primary:hover {
+    color: var(--ph-black);
+  }
+
+  /* Secondary — ghost, subtle fill */
+  .btn--secondary {
+    border-color: var(--ph-white-20);
+    color: var(--ph-white-60);
+  }
+
+  .btn--secondary::before {
+    background: var(--ph-white-10);
+  }
+
+  .btn--secondary:hover {
+    border-color: var(--ph-white-60);
+    color: var(--ph-white);
+  }
+</style>

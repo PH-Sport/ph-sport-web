@@ -1,0 +1,18 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import AboutSection from '@/components/sections/AboutSection.astro';
+import { useTranslations, type Lang } from '@/i18n/utils';
+
+const lang: Lang = 'en';
+const t = useTranslations(lang);
+const SITE_URL = 'https://ph-sport-web.com';
+---
+
+<BaseLayout
+  title={`${t('about.title')} — ${t('site.name')}`}
+  description={t('about.subtitle')}
+  lang={lang}
+  canonical={`${SITE_URL}/en/about`}
+>
+  <AboutSection lang={lang} />
+</BaseLayout>

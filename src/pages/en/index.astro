@@ -1,0 +1,21 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import LogoReveal from '@/components/islands/LogoReveal';
+import HeroSection from '@/components/sections/HeroSection.astro';
+import { useTranslations, type Lang } from '@/i18n/utils';
+
+const lang: Lang = 'en';
+const t = useTranslations(lang);
+const SITE_URL = 'https://ph-sport-web.com';
+---
+
+<BaseLayout
+  title={`${t('site.name')} — ${t('site.tagline')}`}
+  description={t('site.description')}
+  lang={lang}
+  canonical={`${SITE_URL}/en/`}
+  hasHero
+>
+  <LogoReveal client:load />
+  <HeroSection lang={lang} />
+</BaseLayout>

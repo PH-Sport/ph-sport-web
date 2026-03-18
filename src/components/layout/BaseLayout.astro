@@ -1,0 +1,137 @@
+---
+import '@/styles/global.css';
+import { ViewTransitions } from 'astro:transitions';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import { useTranslations, getAlternateLangUrl, type Lang } from '@/i18n/utils';
+
+interface Props {
+  title: string;
+  description: string;
+  lang: Lang;
+  canonical: string;
+  ogImage?: string;
+  hasHero?: boolean;
+}
+
+const SITE_URL = 'https://ph-sport-web.com';
+
+const { title, description, lang, canonical, ogImage, hasHero = false } = Astro.props;
+const t = useTranslations(lang);
+
+const alternatePath = getAlternateLangUrl(Astro.url);
+const esUrl = lang === 'es' ? canonical : `${SITE_URL}${alternatePath}`;
+const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <link rel="alternate" hreflang="es" href={esUrl} />
+    <link rel="alternate" hreflang="en" href={enUrl} />
+
+    {ogImage && <meta property="og:image" content={ogImage} />}
+
+    <link rel="preload" href="/fonts/sohne/sohne-buch.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/sohne/sohne-halbfett.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/sohne/sohne-dreiviertelfett.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/sohne/sohne-extrafett.woff2" as="font" type="font/woff2" crossorigin />
+
+    <ViewTransitions />
+  </head>
+  <body>
+    <div class="bg-logo-parallax" aria-hidden="true" role="presentation">
+      <div class="bg-logo-parallax__inner" data-parallax-inner></div>
+    </div>
+    <a href="#main-content" class="skip-link">{t('a11y.skip')}</a>
+    <Header />
+    <main id="main-content" class:list={[!hasHero && 'main--padded']}>
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      const HEADER_SCROLL_THRESHOLD = 16;
+      const PARALLAX_FACTOR = 0.1;
+
+      function updateScrollEffects() {
+        const header = document.querySelector('[data-header]');
+        const parallaxInner = document.querySelector('[data-parallax-inner]');
+        header?.classList.toggle('header--solid', window.scrollY > HEADER_SCROLL_THRESHOLD);
+        if (parallaxInner) {
+          (parallaxInner as HTMLElement).style.transform =
+            `translate3d(0, ${window.scrollY * PARALLAX_FACTOR}px, 0)`;
+        }
+      }
+
+      // Estado inicial + tras cada navegación con View Transitions
+      document.addEventListener('astro:page-load', updateScrollEffects);
+
+      // Listener de scroll registrado una sola vez
+      document.addEventListener('scroll', updateScrollEffects, { passive: true });
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  /* Fondo logo 3D con parallax (JS mueve __inner más lento que el scroll) */
+  .bg-logo-parallax {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .bg-logo-parallax__inner {
+    position: absolute;
+    inset: 0;
+    background-image: url('/logo-ph-3d.png');
+    background-size: min(92vw, 820px);
+    background-position: 90% 50%;
+    background-repeat: no-repeat;
+    opacity: 0.22;
+    will-change: transform;
+  }
+
+  #main-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .main--padded {
+    padding-top: 5rem;
+  }
+
+  [data-header] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: transparent;
+    border-bottom: 1px solid transparent;
+    backdrop-filter: blur(0);
+    -webkit-backdrop-filter: blur(0);
+    transition:
+      background-color var(--ph-duration) var(--ph-ease),
+      border-color var(--ph-duration) var(--ph-ease),
+      backdrop-filter var(--ph-duration) var(--ph-ease),
+      -webkit-backdrop-filter var(--ph-duration) var(--ph-ease);
+  }
+
+  [data-header].header--solid {
+    background-color: rgba(13, 15, 18, 0.92);
+    border-bottom-color: var(--ph-white-10);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+</style>

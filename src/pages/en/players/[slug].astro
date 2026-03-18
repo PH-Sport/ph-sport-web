@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import { useTranslations, type Lang } from '@/i18n/utils';
+
+export async function getStaticPaths() {
+  const players = await getCollection('players');
+  return players.map((player) => ({
+    params: { slug: player.id.replace(/\.md$/, '') },
+    props: { player },
+  }));
+}
+
+const lang: Lang = 'en';
+const t = useTranslations(lang);
+const SITE_URL = 'https://ph-sport-web.com';
+const { slug } = Astro.params;
+---
+
+<BaseLayout
+  title={`${slug} — ${t('site.name')}`}
+  description={t('site.description')}
+  lang={lang}
+  canonical={`${SITE_URL}/en/players/${slug}`}
+>
+  <div class="ph-section">
+    <p>Stub: /en/players/{slug}</p>
+  </div>
+</BaseLayout>

@@ -1,0 +1,583 @@
+---
+import { useTranslations, getLangFromUrl, getAlternateLangUrl } from '@/i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const alternateLangUrl = getAlternateLangUrl(Astro.url);
+const isEn = lang === 'en';
+const currentPath = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/$/, '');
+
+const nav = isEn
+  ? [
+      { href: '/en/', label: t('nav.home') },
+      { href: '/en/players/', label: t('nav.players') },
+      { href: '/en/about', label: t('nav.about') },
+    ]
+  : [
+      { href: '/', label: t('nav.home') },
+      { href: '/jugadores/', label: t('nav.players') },
+      { href: '/sobre-nosotros', label: t('nav.about') },
+    ];
+
+const isActive = (href: string): boolean => {
+  const normalizedHref = href === '/' ? '/' : href.replace(/\/$/, '');
+  return normalizedHref === currentPath;
+};
+---
+
+<header data-header transition:persist>
+  <div class="header-inner">
+    <a href={isEn ? '/en/' : '/'} class="header-logo" aria-label={t('a11y.logo')}>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 259.8 206.1" fill="currentColor" aria-hidden="true">
+        <polygon points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" />
+        <polygon points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" />
+      </svg>
+    </a>
+
+    <nav class="header-nav hidden md:block" aria-label={isEn ? 'Main navigation' : 'Navegación principal'}>
+      <div class="header-nav-list-wrap">
+        <span class="nav-indicator" aria-hidden="true" data-nav-indicator></span>
+        <ul class="header-nav-list">
+          {nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class:list={['nav-link', isActive(item.href) && 'is-active']}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+          <li>
+            <a
+              href={alternateLangUrl}
+              class="lang-switch"
+            aria-label={isEn ? 'Cambiar a español' : 'Switch to English'}
+          >
+            <img
+              src={isEn ? '/icons/flag-es.svg' : '/icons/flag-uk.svg'}
+              alt=""
+              width="20"
+              height="15"
+              class="lang-flag"
+            />
+            <span class="lang-label">{isEn ? 'ES' : 'EN'}</span>
+          </a>
+        </li>
+        </ul>
+      </div>
+    </nav>
+
+    <button
+      type="button"
+      class="menu-toggle md:hidden"
+      data-menu-toggle
+      aria-controls="mobile-menu"
+      aria-expanded="false"
+      aria-label={t('a11y.menu.open')}
+    >
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+        <path d="M4 6H20" />
+        <path d="M4 12H20" />
+        <path d="M4 18H20" />
+      </svg>
+    </button>
+  </div>
+
+  <div id="mobile-menu" class="mobile-menu" data-mobile-menu aria-hidden="true">
+    <div class="mobile-menu-inner">
+      <div class="mobile-menu-top">
+        <span class="header-logo" aria-label={t('a11y.logo')}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 259.8 206.1" fill="currentColor" aria-hidden="true">
+            <polygon points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" />
+            <polygon points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" />
+          </svg>
+        </span>
+        <button
+          type="button"
+          class="menu-toggle"
+          data-menu-toggle
+          data-menu-close
+          aria-controls="mobile-menu"
+          aria-expanded="false"
+          aria-label={t('a11y.menu.close')}
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+            <path d="M6 6L18 18" />
+            <path d="M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
+
+      <nav aria-label={isEn ? 'Mobile navigation' : 'Navegación móvil'}>
+        <ul class="mobile-nav-list">
+          {nav.map((item, i) => (
+            <li>
+              <a
+                href={item.href}
+                data-mobile-link
+                class:list={[
+                  'mobile-link',
+                  isActive(item.href) && 'mobile-link--active',
+                ]}
+              >
+                <span class="mobile-link-num">{String(i + 1).padStart(2, '0')}</span>
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="ph-divider"></div>
+
+      <a
+        href={alternateLangUrl}
+        data-mobile-link
+        class="lang-switch lang-switch--mobile"
+        aria-label={isEn ? 'Cambiar a español' : 'Switch to English'}
+      >
+        <img
+          src={isEn ? '/icons/flag-es.svg' : '/icons/flag-uk.svg'}
+          alt=""
+          width="24"
+          height="18"
+          class="lang-flag"
+        />
+        <span class="lang-label">{isEn ? 'Español' : 'English'}</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* ── Header bar ── */
+  .header-inner {
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: var(--ph-section-px);
+    padding-block: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* ── Logo ── */
+  .header-logo {
+    color: var(--ph-gold);
+    transition: color var(--ph-duration) var(--ph-ease);
+  }
+
+  .header-logo svg {
+    height: 1.75rem;
+    width: auto;
+  }
+
+  .header-logo:hover {
+    color: var(--ph-gold-muted);
+  }
+
+  /* ── Desktop nav ── */
+  .header-nav {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .header-nav {
+      display: block;
+    }
+  }
+
+  .header-nav-list {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-link {
+    font-family: var(--ph-font-display);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--ph-white-60);
+    position: relative;
+    padding-block: 0.25rem;
+    transition: color var(--ph-duration) var(--ph-ease);
+  }
+
+  .nav-link:hover,
+  .nav-link.is-active {
+    color: var(--ph-white);
+  }
+
+  .header-nav-list-wrap {
+    position: relative;
+  }
+
+  .nav-indicator {
+    position: absolute;
+    bottom: -0.375rem;
+    left: 0;
+    width: 0;
+    height: 1.5px;
+    background: var(--ph-gold);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  .nav-indicator.is-animated {
+    transition:
+      left 0.4s cubic-bezier(0.34, 1.2, 0.64, 1),
+      width 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+
+  /* ── Language switch ── */
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.3rem 0.625rem;
+    border: 1px solid var(--ph-white-10);
+    border-radius: var(--ph-radius);
+    transition:
+      border-color var(--ph-duration) var(--ph-ease),
+      background-color var(--ph-duration) var(--ph-ease);
+  }
+
+  .lang-switch:hover {
+    border-color: var(--ph-white-20);
+    background-color: var(--ph-white-10);
+  }
+
+  .lang-flag {
+    display: block;
+    height: 0.875rem;
+    width: auto;
+    border-radius: 1px;
+  }
+
+  .lang-label {
+    font-family: var(--ph-font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ph-white-60);
+  }
+
+  .lang-switch--mobile {
+    width: fit-content;
+    padding: 0.5rem 0.875rem;
+  }
+
+  .lang-switch--mobile .lang-flag {
+    height: 1.125rem;
+  }
+
+  .lang-switch--mobile .lang-label {
+    font-size: 0.875rem;
+  }
+
+  /* ── Mobile toggle ── */
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--ph-white-10);
+    border-radius: var(--ph-radius);
+    color: var(--ph-white);
+    background: transparent;
+    cursor: pointer;
+    transition:
+      border-color var(--ph-duration) var(--ph-ease),
+      color var(--ph-duration) var(--ph-ease),
+      background-color var(--ph-duration) var(--ph-ease);
+  }
+
+  @media (min-width: 768px) {
+    .menu-toggle {
+      display: none;
+    }
+  }
+
+  .menu-toggle:hover {
+    border-color: var(--ph-gold);
+    color: var(--ph-gold);
+    background-color: rgba(214, 178, 94, 0.05);
+  }
+
+  .menu-toggle svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ── Mobile menu overlay ── */
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: var(--ph-black);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-0.5rem);
+    pointer-events: none;
+    transition:
+      opacity var(--ph-duration) var(--ph-ease),
+      transform var(--ph-duration) var(--ph-ease),
+      visibility var(--ph-duration) var(--ph-ease);
+  }
+
+  .mobile-menu.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .mobile-menu-inner {
+    max-width: 1280px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin-inline: auto;
+    padding-inline: var(--ph-section-px);
+    padding-block: 1.25rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .mobile-menu-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mobile-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    list-style: none;
+    padding-top: 1rem;
+  }
+
+  /* ── Mobile nav links ── */
+  .mobile-link {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-family: var(--ph-font-display);
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ph-white-60);
+    transition: color var(--ph-duration) var(--ph-ease);
+  }
+
+  .mobile-link:hover,
+  .mobile-link--active {
+    color: var(--ph-white);
+  }
+
+  .mobile-link-num {
+    font-size: 0.6875rem;
+    font-weight: 400;
+    color: var(--ph-gold);
+    letter-spacing: 0;
+    min-width: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-menu {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // ── Nav indicator deslizante ──────────────────────────────────────────────
+  const wrap = document.querySelector<HTMLElement>('.header-nav-list-wrap');
+  const indicator = document.querySelector<HTMLElement>('[data-nav-indicator]');
+  const desktopLinks = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>('.header-nav .nav-link'),
+  );
+
+  let indicatorReady = false;
+
+  function setIndicatorToLink(link: HTMLElement) {
+    if (!wrap || !indicator || !link) return;
+    const wrapRect = wrap.getBoundingClientRect();
+    const linkRect = link.getBoundingClientRect();
+    indicator.style.left = `${linkRect.left - wrapRect.left}px`;
+    indicator.style.width = `${linkRect.width}px`;
+  }
+
+  // ── Rutas + traducciones i18n (espejo de src/i18n/utils.ts) ─────────────
+  const NAV_HREFS = {
+    es: ['/', '/jugadores/', '/sobre-nosotros'],
+    en: ['/en/', '/en/players/', '/en/about'],
+  } as const;
+
+  const NAV_LABELS = {
+    es: ['Inicio', 'Jugadores', 'Sobre nosotros'],
+    en: ['Home', 'Players', 'About'],
+  } as const;
+
+  const STATIC_ROUTE_PAIRS = [
+    { es: '/',               en: '/en/' },
+    { es: '/sobre-nosotros', en: '/en/about' },
+    { es: '/jugadores/',     en: '/en/players/' },
+  ];
+
+  function norm(p: string): string {
+    return p === '/' ? '/' : p.replace(/\/+$/, '');
+  }
+
+  function getAlternateUrl(pathname: string): string {
+    const p = norm(pathname);
+    for (const r of STATIC_ROUTE_PAIRS) {
+      if (p === norm(r.es)) return r.en;
+      if (p === norm(r.en)) return r.es;
+    }
+    if (p.startsWith('/jugadores/')) return '/en/players/' + p.slice('/jugadores/'.length);
+    if (p.startsWith('/en/players/')) return '/jugadores/' + p.slice('/en/players/'.length);
+    return '/';
+  }
+
+  function syncHeaderToCurrentPage() {
+    const isEn = window.location.pathname.startsWith('/en');
+    const lang = isEn ? 'en' : 'es';
+    const currentPath = norm(window.location.pathname);
+
+    // Actualizar hrefs, labels e is-active de los enlaces de escritorio
+    desktopLinks.forEach((link, i) => {
+      const href = NAV_HREFS[lang][i] ?? link.href;
+      link.href = href;
+      link.textContent = NAV_LABELS[lang][i] ?? link.textContent;
+      link.classList.toggle('is-active', norm(href) === currentPath);
+    });
+
+    // Actualizar hrefs, labels e is-active del menú móvil
+    document
+      .querySelectorAll<HTMLAnchorElement>('.mobile-nav-list .mobile-link')
+      .forEach((link, i) => {
+        const href = NAV_HREFS[lang][i];
+        const label = NAV_LABELS[lang][i];
+        if (href) link.href = href;
+        link.classList.toggle('mobile-link--active', norm(href ?? '') === currentPath);
+        // Preservar el span numerador y actualizar solo el texto del label
+        if (label) {
+          const numSpan = link.querySelector('.mobile-link-num');
+          link.textContent = label;
+          if (numSpan) link.prepend(numSpan);
+        }
+      });
+
+    // Logo
+    const logo = document.querySelector<HTMLAnchorElement>('a.header-logo');
+    if (logo) logo.href = isEn ? '/en/' : '/';
+
+    // Href del selector de idioma
+    const altUrl = getAlternateUrl(window.location.pathname);
+    document.querySelectorAll<HTMLAnchorElement>('.lang-switch').forEach((el) => {
+      el.href = altUrl;
+    });
+
+    // Flag (muestra la bandera del idioma DESTINO)
+    const targetLang = isEn ? 'es' : 'en';
+    document.querySelectorAll<HTMLImageElement>('.lang-flag').forEach((img) => {
+      img.src = targetLang === 'en' ? '/icons/flag-uk.svg' : '/icons/flag-es.svg';
+    });
+
+    // Label del selector — desktop: 'EN'/'ES' · móvil: 'English'/'Español'
+    const desktopLangSwitch = document.querySelector<HTMLElement>('.lang-switch:not(.lang-switch--mobile) .lang-label');
+    if (desktopLangSwitch) desktopLangSwitch.textContent = targetLang === 'en' ? 'EN' : 'ES';
+
+    const mobileLangLabel = document.querySelector<HTMLElement>('.lang-switch--mobile .lang-label');
+    if (mobileLangLabel) mobileLangLabel.textContent = targetLang === 'en' ? 'English' : 'Español';
+  }
+
+  if (wrap && indicator && desktopLinks.length > 0) {
+    document.addEventListener('astro:page-load', () => {
+      syncHeaderToCurrentPage();
+      const activeLink = desktopLinks.find((link) =>
+        link.classList.contains('is-active'),
+      );
+
+      if (!indicatorReady) {
+        // Primera carga: posicionar sin animación, luego activarla
+        if (activeLink) setIndicatorToLink(activeLink);
+        requestAnimationFrame(() => {
+          indicator.classList.add('is-animated');
+          indicatorReady = true;
+        });
+      } else {
+        // Navegaciones posteriores: el header persiste, la barra ya está en la
+        // posición anterior → animamos hasta el nuevo enlace activo
+        if (activeLink) {
+          setIndicatorToLink(activeLink);
+        } else {
+          indicator.style.width = '0';
+        }
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      const activeLink = desktopLinks.find((link) =>
+        link.classList.contains('is-active'),
+      );
+      if (activeLink) setIndicatorToLink(activeLink);
+    });
+  }
+
+  // ── Menú móvil ───────────────────────────────────────────────────────────
+  const mobileMenu = document.querySelector('[data-mobile-menu]');
+  const toggles = document.querySelectorAll('[data-menu-toggle]');
+  const mobileLinks = document.querySelectorAll('[data-mobile-link]');
+
+  if (mobileMenu && toggles.length > 0) {
+    const setOpen = (open: boolean) => {
+      mobileMenu.classList.toggle('is-open', open);
+      mobileMenu.setAttribute('aria-hidden', String(!open));
+      toggles.forEach((toggle) => {
+        toggle.setAttribute('aria-expanded', String(open));
+      });
+      if (open) {
+        const scrollbarWidth =
+          window.innerWidth - document.documentElement.clientWidth;
+        document.body.style.overflow = 'hidden';
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      } else {
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+      }
+    };
+
+    const toggleMenu = () =>
+      setOpen(!mobileMenu.classList.contains('is-open'));
+
+    toggles.forEach((toggle) => {
+      toggle.addEventListener('click', toggleMenu);
+    });
+
+    mobileLinks.forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+
+    // Cerrar el menú móvil al navegar con View Transitions
+    document.addEventListener('astro:page-load', () => setOpen(false));
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) setOpen(false);
+    });
+  }
+</script>

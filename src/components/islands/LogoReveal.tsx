@@ -4,6 +4,7 @@
 
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import { isDocumentReload } from '@/lib/is-document-reload';
 
 const LOGO_VIEWBOX = '0 0 259.8 206.1';
 const POLYGON_1_POINTS =
@@ -13,15 +14,72 @@ const POLYGON_2_POINTS =
 
 const SESSION_KEY = 'ph-logo-revealed';
 
+/** Rutas dedicadas a grabación: sin chrome del sitio; siempre animan y no tocan sessionStorage de la home. */
+const LOGO_REVEAL_RECORDING_PATHS = new Set(['/logo-reveal-recording']);
+/** Oculta chrome (header) mientras el overlay está activo: el island vive en main (z-index bajo) y el header fijo quedaría encima del overlay. */
+const REVEAL_CHROME_CLASS = 'ph-logo-reveal-active';
+
+const REF_RETRY_MAX = 40;
+/** Si getTotalLength() es 0 (SVG aún sin layout), reintentar; no usar umbral que dispare dismiss: eso saltaba la animación entera. */
+const LAYOUT_LENGTH_RETRIES_MAX = 32;
+const FALLBACK_LEN_1 = 920;
+const FALLBACK_LEN_2 = 780;
+
+function setRevealChromeVisible(visible: boolean) {
+  document.documentElement.classList.toggle(REVEAL_CHROME_CLASS, !visible);
+}
+
+/** Entrada suave del header tras el overlay (GSAP). Sin duplicar lógica en dismissOverlay / reduced motion. */
+function revealHeaderAfterIntro() {
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  if (!header) {
+    setRevealChromeVisible(true);
+    return;
+  }
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    setRevealChromeVisible(true);
+    return;
+  }
+
+  gsap.killTweensOf(header);
+  gsap.set(header, { opacity: 0, y: -14, pointerEvents: 'none' });
+  setRevealChromeVisible(true);
+  gsap.to(header, {
+    opacity: 1,
+    y: 0,
+    duration: 0.55,
+    ease: 'power3.out',
+    onComplete: () => {
+      gsap.set(header, { clearProps: 'opacity,transform,pointerEvents' });
+    },
+  });
+}
+
 function restoreLayout() {
   document.documentElement.style.overflow = '';
   document.documentElement.style.paddingRight = '';
 }
 
+function dispatchLogoRevealedToDocument() {
+  document.dispatchEvent(new CustomEvent('ph:logo-revealed'));
+}
+
+/**
+ * Si el dismiss ocurre en el mismo tick que la hidratación, el listener de Hero
+ * (astro:page-load) puede no existir aún y el evento se pierde → texto congelado ~4s.
+ */
+function scheduleLogoRevealed() {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => dispatchLogoRevealedToDocument());
+  });
+}
+
 function dismissOverlay(overlay: HTMLDivElement) {
   overlay.style.display = 'none';
   restoreLayout();
-  document.dispatchEvent(new CustomEvent('ph:logo-revealed'));
+  setRevealChromeVisible(true);
+  scheduleLogoRevealed();
 }
 
 export default function LogoReveal() {
@@ -31,93 +89,175 @@ export default function LogoReveal() {
   const line2Ref = useRef<SVGPolygonElement>(null);
 
   useEffect(() => {
-    const overlay = overlayRef.current;
-    const container = containerRef.current;
-    const line1 = line1Ref.current;
-    const line2 = line2Ref.current;
-    if (!overlay || !container || !line1 || !line2) return;
+    let cancelled = false;
+    let ctx: gsap.Context | null = null;
+    let revealDispatched = false;
+
+    const dispatchRevealOnce = () => {
+      if (revealDispatched) return;
+      revealDispatched = true;
+      dispatchLogoRevealedToDocument();
+    };
 
     const path = window.location.pathname.replace(/\/$/, '') || '/';
+    const isRecordingPage = LOGO_REVEAL_RECORDING_PATHS.has(path);
     const isHome = path === '/' || path === '/en';
-    if (!isHome) {
-      dismissOverlay(overlay);
-      return;
-    }
+    const shouldRunReveal = isHome || isRecordingPage;
 
-    const navEntry = performance.getEntriesByType('navigation')[0] as
-      | PerformanceNavigationTiming
-      | undefined;
-    const isReload = navEntry?.type === 'reload';
+    const teardownGsap = () => {
+      if (ctx) {
+        ctx.revert();
+        ctx = null;
+      }
+      const line1 = line1Ref.current;
+      const line2 = line2Ref.current;
+      const container = containerRef.current;
+      const overlay = overlayRef.current;
+      if (line1) gsap.killTweensOf(line1);
+      if (line2) gsap.killTweensOf(line2);
+      if (container) gsap.killTweensOf(container);
+      if (overlay) gsap.killTweensOf(overlay);
+    };
 
-    if (!isReload && sessionStorage.getItem(SESSION_KEY)) {
-      dismissOverlay(overlay);
-      return;
-    }
+    let attempts = 0;
+    let lengthAttempts = 0;
 
-    const len1 = line1.getTotalLength();
-    const len2 = line2.getTotalLength();
+    const tryRun = () => {
+      if (cancelled) return;
 
-    gsap.set([line1, line2], {
-      strokeDasharray: (i) => (i === 0 ? len1 : len2),
-      strokeDashoffset: (i) => (i === 0 ? len1 : len2),
-    });
+      const overlay = overlayRef.current;
+      const container = containerRef.current;
+      const line1 = line1Ref.current;
+      const line2 = line2Ref.current;
 
-    const scrollbarWidth =
-      window.innerWidth - document.documentElement.clientWidth;
-    document.documentElement.style.paddingRight = `${scrollbarWidth}px`;
-    document.documentElement.style.overflow = 'hidden';
+      if (!overlay) {
+        attempts += 1;
+        if (attempts >= REF_RETRY_MAX) {
+          restoreLayout();
+          setRevealChromeVisible(true);
+          scheduleLogoRevealed();
+          return;
+        }
+        requestAnimationFrame(tryRun);
+        return;
+      }
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        overlay.style.display = 'none';
-        if (!isReload) sessionStorage.setItem(SESSION_KEY, '1');
-        document.dispatchEvent(new CustomEvent('ph:logo-revealed'));
-      },
-    });
+      if (!shouldRunReveal) {
+        dismissOverlay(overlay);
+        return;
+      }
 
-    tl.to(line1, {
-      strokeDashoffset: 0,
-      duration: 0.8,
-      ease: 'power3.inOut',
-    })
-      .to(
-        line2,
-        {
+      if (!container || !line1 || !line2) {
+        attempts += 1;
+        if (attempts >= REF_RETRY_MAX) {
+          dismissOverlay(overlay);
+          return;
+        }
+        requestAnimationFrame(tryRun);
+        return;
+      }
+
+      const isReload = isDocumentReload();
+      if (!isRecordingPage && !isReload && sessionStorage.getItem(SESSION_KEY)) {
+        dismissOverlay(overlay);
+        return;
+      }
+
+      let len1 = line1.getTotalLength();
+      let len2 = line2.getTotalLength();
+      if (len1 < 1 || len2 < 1) {
+        lengthAttempts += 1;
+        if (lengthAttempts < LAYOUT_LENGTH_RETRIES_MAX) {
+          requestAnimationFrame(tryRun);
+          return;
+        }
+        len1 = FALLBACK_LEN_1;
+        len2 = FALLBACK_LEN_2;
+      }
+
+      gsap.set(overlay, { opacity: 1, display: 'flex' });
+
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+      document.documentElement.style.paddingRight = `${scrollbarWidth}px`;
+      document.documentElement.style.overflow = 'hidden';
+      setRevealChromeVisible(false);
+
+      ctx = gsap.context(() => {
+        gsap.set([line1, line2], {
+          strokeDasharray: (i) => (i === 0 ? len1 : len2),
+          strokeDashoffset: (i) => (i === 0 ? len1 : len2),
+        });
+
+        const tl = gsap.timeline({
+          onComplete: () => {
+            overlay.style.display = 'none';
+            if (!isRecordingPage && !isReload) sessionStorage.setItem(SESSION_KEY, '1');
+            dispatchRevealOnce();
+            revealHeaderAfterIntro();
+          },
+        });
+
+        tl.to(line1, {
           strokeDashoffset: 0,
-          duration: 0.7,
+          duration: 0.8,
           ease: 'power3.inOut',
-        },
-        '-=0.45',
-      )
-      .to(
-        container,
-        { color: '#D6B25E', duration: 0.3, ease: 'power2.inOut' },
-        '-=0.15',
-      )
-      .to(
-        [line1, line2],
-        { fill: '#D6B25E', duration: 0.35, ease: 'power2.inOut' },
-        '-=0.1',
-      )
-      .to([line1, line2], { stroke: 'none', duration: 0.2 }, '-=0.05')
-      .to({}, { duration: 0.3 });
+        })
+          .to(
+            line2,
+            {
+              strokeDashoffset: 0,
+              duration: 0.7,
+              ease: 'power3.inOut',
+            },
+            '-=0.45',
+          )
+          .to(
+            container,
+            { color: '#D6B25E', duration: 0.3, ease: 'power2.inOut' },
+            '-=0.15',
+          )
+          .to(
+            [line1, line2],
+            { fill: '#D6B25E', duration: 0.35, ease: 'power2.inOut' },
+            '-=0.1',
+          )
+          .to([line1, line2], { stroke: 'none', duration: 0.2 }, '-=0.05')
+          .to({}, { duration: 0.3 });
 
-    const exitDistance = window.innerWidth / 2 + 150;
-    tl.to(line1, {
-      x: -exitDistance,
-      opacity: 0,
-      duration: 0.6,
-      ease: 'expo.in',
-    }).to(
-      line2,
-      { x: exitDistance, opacity: 0, duration: 0.6, ease: 'expo.in' },
-      '<',
-    );
-    tl.to(overlay, {
-      opacity: 0,
-      duration: 0.3,
-      onStart: restoreLayout, // layout restaurado cuando el overlay aún cubre todo
-    }, '-=0.25');
+        const exitDistance = window.innerWidth / 2 + 150;
+        tl.to(line1, {
+          x: -exitDistance,
+          opacity: 0,
+          duration: 0.6,
+          ease: 'expo.in',
+        }).to(
+          line2,
+          { x: exitDistance, opacity: 0, duration: 0.6, ease: 'expo.in' },
+          '<',
+        );
+        tl.to(
+          overlay,
+          {
+            opacity: 0,
+            duration: 0.3,
+            onStart: restoreLayout,
+          },
+          '-=0.25',
+        );
+      }, overlay);
+    };
+
+    requestAnimationFrame(tryRun);
+
+    return () => {
+      cancelled = true;
+      teardownGsap();
+      restoreLayout();
+      setRevealChromeVisible(true);
+      const header = document.querySelector<HTMLElement>('[data-header]');
+      if (header) gsap.set(header, { clearProps: 'opacity,transform,pointerEvents' });
+    };
   }, []);
 
   return (

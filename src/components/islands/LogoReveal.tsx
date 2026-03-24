@@ -14,8 +14,6 @@ const POLYGON_2_POINTS =
 
 const SESSION_KEY = 'ph-logo-revealed';
 
-/** Rutas dedicadas a grabación: sin chrome del sitio; siempre animan y no tocan sessionStorage de la home. */
-const LOGO_REVEAL_RECORDING_PATHS = new Set(['/logo-reveal-recording']);
 /** Oculta chrome (header) mientras el overlay está activo: el island vive en main (z-index bajo) y el header fijo quedaría encima del overlay. */
 const REVEAL_CHROME_CLASS = 'ph-logo-reveal-active';
 
@@ -100,9 +98,7 @@ export default function LogoReveal() {
     };
 
     const path = window.location.pathname.replace(/\/$/, '') || '/';
-    const isRecordingPage = LOGO_REVEAL_RECORDING_PATHS.has(path);
     const isHome = path === '/' || path === '/en';
-    const shouldRunReveal = isHome || isRecordingPage;
 
     const teardownGsap = () => {
       if (ctx) {
@@ -142,7 +138,7 @@ export default function LogoReveal() {
         return;
       }
 
-      if (!shouldRunReveal) {
+      if (!isHome) {
         dismissOverlay(overlay);
         return;
       }
@@ -158,7 +154,7 @@ export default function LogoReveal() {
       }
 
       const isReload = isDocumentReload();
-      if (!isRecordingPage && !isReload && sessionStorage.getItem(SESSION_KEY)) {
+      if (!isReload && sessionStorage.getItem(SESSION_KEY)) {
         dismissOverlay(overlay);
         return;
       }
@@ -192,7 +188,7 @@ export default function LogoReveal() {
         const tl = gsap.timeline({
           onComplete: () => {
             overlay.style.display = 'none';
-            if (!isRecordingPage && !isReload) sessionStorage.setItem(SESSION_KEY, '1');
+            if (!isReload) sessionStorage.setItem(SESSION_KEY, '1');
             dispatchRevealOnce();
             revealHeaderAfterIntro();
           },

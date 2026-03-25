@@ -11,28 +11,34 @@ const t = useTranslations(lang);
 /** Nombres Lucide (kebab-case) alineados con cada área de servicio */
 const items = [
   {
-    icon: 'fingerprint',
-    title: t('services.items.branding.title'),
-    body: t('services.items.branding.body'),
-    short: t('services.items.branding.short'),
+    icon: 'users',
+    title: t('services.items.representation.title'),
+    body: t('services.items.representation.body'),
+    short: t('services.items.representation.short'),
+  },
+  {
+    icon: 'route',
+    title: t('services.items.career.title'),
+    body: t('services.items.career.body'),
+    short: t('services.items.career.short'),
+  },
+  {
+    icon: 'scale',
+    title: t('services.items.legal.title'),
+    body: t('services.items.legal.body'),
+    short: t('services.items.legal.short'),
   },
   {
     icon: 'megaphone',
-    title: t('services.items.marketing.title'),
-    body: t('services.items.marketing.body'),
-    short: t('services.items.marketing.short'),
+    title: t('services.items.image.title'),
+    body: t('services.items.image.body'),
+    short: t('services.items.image.short'),
   },
   {
-    icon: 'handshake',
-    title: t('services.items.partnerships.title'),
-    body: t('services.items.partnerships.body'),
-    short: t('services.items.partnerships.short'),
-  },
-  {
-    icon: 'clapperboard',
-    title: t('services.items.content.title'),
-    body: t('services.items.content.body'),
-    short: t('services.items.content.short'),
+    icon: 'globe',
+    title: t('services.items.scouting.title'),
+    body: t('services.items.scouting.body'),
+    short: t('services.items.scouting.short'),
   },
 ] as const;
 ---
@@ -163,7 +169,8 @@ const items = [
     justify-content: center;
     align-items: center;
     perspective: 1800px;
-    touch-action: pan-y;
+    /* Evita que el navegador interprete el swipe horizontal como scroll de página */
+    touch-action: none;
     transition:
       filter 0.4s ease,
       opacity 0.4s ease;
@@ -217,13 +224,16 @@ const items = [
     --r: 0deg;
   }
   .card:nth-child(2) {
-    --r: 90deg;
+    --r: 72deg;
   }
   .card:nth-child(3) {
-    --r: 180deg;
+    --r: 144deg;
   }
   .card:nth-child(4) {
-    --r: 270deg;
+    --r: 216deg;
+  }
+  .card:nth-child(5) {
+    --r: 288deg;
   }
 
   .card::before {
@@ -470,24 +480,74 @@ const items = [
 </style>
 
 <script>
+  import { gsap } from 'gsap';
+  import {
+    reducedMotion,
+    splitWords,
+    trackingReveal,
+    wrapWords,
+  } from '@/scripts/ph-text-animations';
+
+  function initServicesOrbitHeaderAnimations(): void {
+    const section = document.querySelector<HTMLElement>('.services-orbit-3d');
+    if (!section || reducedMotion()) return;
+
+    const label = section.querySelector<HTMLElement>('.ph-label');
+    if (label) {
+      trackingReveal(label, { trigger: label, start: 'top 88%', once: true });
+    }
+
+    const title = section.querySelector<HTMLElement>('.services-orbit-title');
+    if (title) {
+      const words = wrapWords(title);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.85,
+        stagger: 0.07,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: title, start: 'top 82%', once: true },
+      });
+    }
+
+    const subtitle = section.querySelector<HTMLElement>('.services-orbit-subtitle');
+    if (subtitle) {
+      const spans = splitWords(subtitle);
+      gsap.from(spans, {
+        opacity: 0,
+        filter: 'blur(6px)',
+        y: 6,
+        duration: 0.6,
+        stagger: 0.03,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: subtitle, start: 'top 88%', once: true },
+      });
+    }
+  }
+
+  document.addEventListener('astro:page-load', initServicesOrbitHeaderAnimations);
+</script>
+
+<script>
   import {
     createIcons,
-    Clapperboard,
-    Fingerprint,
-    Handshake,
+    Globe,
     Megaphone,
+    Route,
+    Scale,
+    Users,
   } from 'lucide';
   import { reducedMotion } from '@/scripts/ph-text-animations';
 
   const orbitIcons = {
-    Clapperboard,
-    Fingerprint,
-    Handshake,
+    Globe,
     Megaphone,
+    Route,
+    Scale,
+    Users,
   };
 
   function initServicesOrbit(root: HTMLElement): () => void {
-    const cardCount = Math.max(1, parseInt(root.dataset.cardCount ?? '4', 10));
+    const cardCount = Math.max(1, parseInt(root.dataset.cardCount ?? '5', 10));
     const cardStep = 360 / cardCount;
     const carousel = root.querySelector<HTMLElement>('[data-carousel]');
     const cards = root.querySelectorAll<HTMLElement>('.card');
@@ -515,35 +575,41 @@ const items = [
     const ac = new AbortController();
     const { signal } = ac;
 
-    const startDrag = (e: MouseEvent | TouchEvent) => {
+    const dragSensitivity = (e: PointerEvent) =>
+      e.pointerType === 'touch' || e.pointerType === 'pen' ? 0.36 : 0.15;
+
+    const onPointerDown = (e: PointerEvent) => {
       if (isModalOpen) return;
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
       isDragging = true;
       hasDragged = false;
-      startX = 'touches' in e ? e.touches[0].pageX : e.pageX;
+      startX = e.clientX;
       carousel.style.transition = 'none';
+      scene.setPointerCapture(e.pointerId);
     };
 
-    const moveDrag = (e: MouseEvent | TouchEvent) => {
+    const onPointerMove = (e: PointerEvent) => {
       if (!isDragging || isModalOpen) return;
-      const x = 'touches' in e ? e.touches[0].pageX : e.pageX;
+      const x = e.clientX;
       const deltaX = x - startX;
       if (Math.abs(deltaX) > 5) hasDragged = true;
-      targetRotation += deltaX * 0.15;
+      targetRotation += deltaX * dragSensitivity(e);
       startX = x;
     };
 
-    const endDrag = () => {
+    const onPointerUp = (e: PointerEvent) => {
       if (!isDragging) return;
       isDragging = false;
       carousel.style.transition = 'transform 0.1s ease-out';
+      if (scene.hasPointerCapture(e.pointerId)) {
+        scene.releasePointerCapture(e.pointerId);
+      }
     };
 
-    carousel.addEventListener('mousedown', startDrag, { signal });
-    window.addEventListener('mousemove', moveDrag, { signal });
-    window.addEventListener('mouseup', endDrag, { signal });
-    carousel.addEventListener('touchstart', startDrag, { passive: true, signal });
-    window.addEventListener('touchmove', moveDrag, { passive: true, signal });
-    window.addEventListener('touchend', endDrag, { signal });
+    scene.addEventListener('pointerdown', onPointerDown, { signal });
+    scene.addEventListener('pointermove', onPointerMove, { signal });
+    scene.addEventListener('pointerup', onPointerUp, { signal });
+    scene.addEventListener('pointercancel', onPointerUp, { signal });
 
     const closeModal = () => {
       globalModal.classList.remove('active');

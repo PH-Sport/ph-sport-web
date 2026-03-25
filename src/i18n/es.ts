@@ -50,19 +50,28 @@ const es = {
 
   // --- Servicios (página) ---
   'services.title': 'Servicios 360',
-  'services.subtitle': 'Más allá de la representación: capacidades integrales de agencia para marcas y talento.',
-  'services.items.branding.title': 'Branding e identidad',
-  'services.items.branding.body': 'Construcción y evolución de marca para jugadores, clubes y patrocinadores.',
-  'services.items.marketing.title': 'Marketing y activaciones',
-  'services.items.marketing.body': 'Campañas, contenido y experiencias que conectan con afición y partners.',
-  'services.items.partnerships.title': 'Partnerships y patrocinio',
-  'services.items.partnerships.body': 'Estructura comercial, acuerdos y relación con marcas.',
-  'services.items.content.title': 'Contenido y medios',
-  'services.items.content.body': 'Narrativa, producción y distribución en canales propios y externos.',
-  'services.items.branding.short': 'Branding',
-  'services.items.marketing.short': 'Marketing',
-  'services.items.partnerships.short': 'Patrocinio',
-  'services.items.content.short': 'Contenido',
+  'services.subtitle':
+    'Cinco pilares para acompañar la carrera del futbolista: representación, planificación, asesoría, imagen y proyección internacional.',
+  'services.items.representation.title': 'Representación e intermediación',
+  'services.items.representation.body':
+    'Diseñamos un plan a corto, medio y largo plazo que se adapta al perfil, los objetivos y el momento profesional de cada futbolista.',
+  'services.items.representation.short': 'Plan alineado con tu perfil y tus objetivos',
+  'services.items.career.title': 'Planificación de carrera deportiva',
+  'services.items.career.body':
+    'Evaluamos oportunidades, fijamos hitos y acompañamos cada decisión con criterio, visión y compromiso.',
+  'services.items.career.short': 'Decisiones con visión en cada etapa',
+  'services.items.legal.title': 'Asesoramiento legal y financiero',
+  'services.items.legal.body':
+    'Apoyo jurídico en contratos, transferencias y derechos de imagen, junto a orientación financiera para una gestión responsable.',
+  'services.items.legal.short': 'Contratos, imagen y finanzas con rigor',
+  'services.items.image.title': 'Imagen, comunicación y marketing',
+  'services.items.image.body':
+    'Potenciamos la marca personal del jugador en redes y medios, y articulamos colaboraciones estratégicas con patrocinadores.',
+  'services.items.image.short': 'Marca personal, redes y partners',
+  'services.items.scouting.title': 'Red de scouting y clubes',
+  'services.items.scouting.body':
+    'Conectamos a nuestros jugadores con redes de scouting y clubes nacionales e internacionales para ampliar su proyección profesional.',
+  'services.items.scouting.short': 'Oportunidades más allá de las fronteras',
   'services.blocksAriaLabel': 'Áreas de servicio',
   'services.orbitInstructions':
     'Carrusel de servicios en tres dimensiones. Arrastra para girar o abre una tarjeta para ver el detalle.',

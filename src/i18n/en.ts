@@ -52,19 +52,28 @@ const en: Record<TranslationKey, string> = {
 
   // --- Servicios (página) ---
   'services.title': '360 services',
-  'services.subtitle': 'Beyond representation: full-spectrum agency capabilities for brands and talent.',
-  'services.items.branding.title': 'Branding and identity',
-  'services.items.branding.body': 'Building and evolving brand for players, clubs and sponsors.',
-  'services.items.marketing.title': 'Marketing and activations',
-  'services.items.marketing.body': 'Campaigns, content and experiences that engage fans and partners.',
-  'services.items.partnerships.title': 'Partnerships and sponsorship',
-  'services.items.partnerships.body': 'Commercial structure, deals and brand relationships.',
-  'services.items.content.title': 'Content and media',
-  'services.items.content.body': 'Storytelling, production and distribution across owned and external channels.',
-  'services.items.branding.short': 'Branding',
-  'services.items.marketing.short': 'Marketing',
-  'services.items.partnerships.short': 'Partnerships',
-  'services.items.content.short': 'Content',
+  'services.subtitle':
+    'Five pillars to support a player’s career: representation, planning, advisory, brand, and international reach.',
+  'services.items.representation.title': 'Representation and intermediation',
+  'services.items.representation.body':
+    'We build short-, mid-, and long-term plans tailored to each player’s profile, goals, and stage of their career.',
+  'services.items.representation.short': 'A plan aligned with your profile and ambitions',
+  'services.items.career.title': 'Career planning',
+  'services.items.career.body':
+    'We assess opportunities, set milestones, and support every decision with judgement, vision, and commitment.',
+  'services.items.career.short': 'Clear direction at every step',
+  'services.items.legal.title': 'Legal and financial advisory',
+  'services.items.legal.body':
+    'Support on contracts, transfers, and image rights, plus financial guidance for responsible management.',
+  'services.items.legal.short': 'Contracts, image rights, and sound finances',
+  'services.items.image.title': 'Image, communications, and marketing',
+  'services.items.image.body':
+    'We grow the player’s personal brand across social and traditional media, and shape strategic sponsor partnerships.',
+  'services.items.image.short': 'Brand, channels, and sponsors',
+  'services.items.scouting.title': 'Scouting and club network',
+  'services.items.scouting.body':
+    'We connect players with scouting networks and clubs at home and abroad to broaden their professional horizon.',
+  'services.items.scouting.short': 'Opportunities beyond borders',
   'services.blocksAriaLabel': 'Service areas',
   'services.orbitInstructions':
     'Three-dimensional service carousel. Drag to rotate or open a card for details.',

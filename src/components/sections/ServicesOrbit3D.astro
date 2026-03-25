@@ -1,0 +1,659 @@
+---
+import { useTranslations, type Lang } from '@/i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+/** Nombres Lucide (kebab-case) alineados con cada área de servicio */
+const items = [
+  {
+    icon: 'fingerprint',
+    title: t('services.items.branding.title'),
+    body: t('services.items.branding.body'),
+    short: t('services.items.branding.short'),
+  },
+  {
+    icon: 'megaphone',
+    title: t('services.items.marketing.title'),
+    body: t('services.items.marketing.body'),
+    short: t('services.items.marketing.short'),
+  },
+  {
+    icon: 'handshake',
+    title: t('services.items.partnerships.title'),
+    body: t('services.items.partnerships.body'),
+    short: t('services.items.partnerships.short'),
+  },
+  {
+    icon: 'clapperboard',
+    title: t('services.items.content.title'),
+    body: t('services.items.content.body'),
+    short: t('services.items.content.short'),
+  },
+] as const;
+---
+
+<section
+  class="services-orbit-3d"
+  data-services-orbit
+  data-card-count={items.length}
+  aria-labelledby="services-heading"
+>
+  <div class="ph-section">
+    <header class="services-orbit-header">
+      <span class="ph-label">{t('nav.services')}</span>
+      <div class="ph-divider mt-4"></div>
+      <h1 id="services-heading" class="services-orbit-title">
+        {t('services.title')}
+      </h1>
+      <p class="services-orbit-subtitle">{t('services.subtitle')}</p>
+    </header>
+  </div>
+
+  <div class="orbit-section">
+    <p class="sr-only">{t('services.orbitInstructions')}</p>
+    <div class="scene">
+      <div class="carousel" data-carousel>
+        {
+          items.map((item, i) => (
+            <div class="card" data-index={i}>
+              <div class="card-content">
+                <i data-lucide={item.icon} class="card-icon" aria-hidden="true"></i>
+                <div class="card-number">{String(i + 1).padStart(2, '0')}</div>
+                <div class="card-title">{item.title}</div>
+                <div class="card-desc">{item.short}</div>
+              </div>
+              <div class="card-detail">
+                <button type="button" class="close-btn" aria-label={t('a11y.close')}>
+                  ✕
+                </button>
+                <i data-lucide={item.icon} class="detail-icon" aria-hidden="true"></i>
+                <h3 class="detail-title">{item.title}</h3>
+                <p class="detail-text">{item.body}</p>
+                <ul class="detail-list">
+                  <li>{item.short}</li>
+                </ul>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="global-modal"
+    data-global-modal
+    role="dialog"
+    aria-modal="true"
+    aria-label={t('services.modalAriaLabel')}
+    hidden
+  >
+    <div data-modal-content />
+  </div>
+</section>
+
+<style>
+  .services-orbit-3d {
+    --orbit-bg: var(--ph-black);
+    --orbit-accent: var(--ph-gold);
+    --orbit-text: var(--ph-white);
+    --orbit-muted: var(--ph-white-60);
+    --orbit-glass-bg: rgba(255, 255, 255, 0.03);
+    --orbit-glass-border: rgba(255, 255, 255, 0.08);
+
+    position: relative;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(214, 178, 94, 0.06) 0%, transparent 50%),
+      var(--orbit-bg);
+  }
+
+  .services-orbit-header {
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    .services-orbit-header {
+      margin-bottom: 3rem;
+    }
+  }
+
+  .services-orbit-title {
+    margin-top: 2rem;
+    font-family: var(--ph-font-display);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--orbit-text);
+  }
+
+  .services-orbit-subtitle {
+    margin-top: 1rem;
+    max-width: 40rem;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--orbit-muted);
+  }
+
+  @media (min-width: 1024px) {
+    .services-orbit-subtitle {
+      font-size: 1.125rem;
+    }
+  }
+
+  .orbit-section {
+    min-height: min(90vh, 720px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding-block: 2rem;
+  }
+
+  .scene {
+    width: 100%;
+    height: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1800px;
+    touch-action: pan-y;
+    transition:
+      filter 0.4s ease,
+      opacity 0.4s ease;
+  }
+
+  .scene.dimmed {
+    filter: blur(8px);
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  .carousel {
+    position: relative;
+    width: 1px;
+    height: 1px;
+    transform-style: preserve-3d;
+    transform: rotateX(-5deg);
+    cursor: grab;
+  }
+
+  .carousel:active {
+    cursor: grabbing;
+  }
+
+  .card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 320px;
+    height: 420px;
+    border-radius: 24px;
+    --r: 0deg;
+    transform: translate(-50%, -50%) rotateY(var(--r)) translateZ(450px);
+    background: var(--orbit-glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--orbit-glass-border);
+    box-shadow:
+      0 30px 60px rgba(0, 0, 0, 0.6),
+      inset 0 1px 1px rgba(255, 255, 255, 0.2),
+      inset 0 -1px 1px rgba(0, 0, 0, 0.5);
+    transition:
+      border-color 0.4s ease,
+      transform 0.4s ease;
+    user-select: none;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .card:nth-child(1) {
+    --r: 0deg;
+  }
+  .card:nth-child(2) {
+    --r: 90deg;
+  }
+  .card:nth-child(3) {
+    --r: 180deg;
+  }
+  .card:nth-child(4) {
+    --r: 270deg;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.7s ease;
+  }
+  .card:hover::before {
+    left: 200%;
+  }
+
+  .card:hover {
+    border-color: rgba(214, 178, 94, 0.4);
+    transform: translate(-50%, -50%) rotateY(var(--r)) translateZ(470px);
+  }
+
+  .card-content {
+    position: absolute;
+    inset: 0;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    transition: opacity 0.4s;
+  }
+
+  .card-icon {
+    color: var(--orbit-accent);
+    width: 42px;
+    height: 42px;
+    margin-bottom: auto;
+    stroke-width: 1.5px;
+    filter: drop-shadow(0 0 8px rgba(214, 178, 94, 0.3));
+  }
+
+  .card-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .card-number {
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--orbit-accent);
+    font-family: ui-monospace, monospace;
+    position: absolute;
+    top: 30px;
+    right: 30px;
+  }
+
+  .card-title {
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 10px;
+    color: var(--orbit-text);
+  }
+
+  .card-desc {
+    font-size: 0.9rem;
+    color: var(--orbit-muted);
+    line-height: 1.5;
+  }
+
+  .card-detail {
+    display: none;
+  }
+
+  .global-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5vw;
+    pointer-events: none;
+    opacity: 0;
+    background: rgba(13, 15, 18, 0.65);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: opacity 0.4s ease;
+  }
+
+  .global-modal:not([hidden]).active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .global-modal[hidden] {
+    display: none;
+  }
+
+  .modal-card {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    max-height: 85vh;
+    overflow-y: auto;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 30%),
+      var(--orbit-glass-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(214, 178, 94, 0.4);
+    box-shadow:
+      0 30px 60px rgba(0, 0, 0, 0.8),
+      inset 0 1px 1px rgba(255, 255, 255, 0.2),
+      inset 0 -1px 1px rgba(0, 0, 0, 0.5);
+    border-radius: 24px;
+    padding: 60px;
+    transform: scale(0.95) translateY(20px);
+    opacity: 0;
+    transition:
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.5s;
+  }
+
+  .modal-card::-webkit-scrollbar {
+    width: 0;
+  }
+
+  .global-modal.active .modal-card {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  .detail-icon {
+    color: var(--orbit-accent);
+    width: 48px;
+    height: 48px;
+    margin-bottom: 24px;
+    stroke-width: 1.5px;
+    filter: drop-shadow(0 0 12px rgba(214, 178, 94, 0.3));
+    display: block;
+  }
+
+  .detail-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .detail-title {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: var(--orbit-accent);
+    margin-top: 0;
+  }
+
+  .detail-text {
+    font-size: 1.1rem;
+    color: var(--orbit-text);
+    line-height: 1.6;
+    margin-bottom: 30px;
+    max-width: 600px;
+  }
+
+  .detail-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .detail-list li {
+    padding: 10px 20px;
+    border: 1px solid var(--ph-white-20);
+    border-radius: 30px;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--orbit-text);
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--orbit-text);
+    background: transparent;
+    color: var(--orbit-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .close-btn:hover {
+    background: var(--orbit-text);
+    color: var(--orbit-bg);
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 768px) {
+    .card {
+      width: 260px;
+      height: 340px;
+      transform: translate(-50%, -50%) rotateY(var(--r)) translateZ(280px);
+    }
+    .card:hover {
+      transform: translate(-50%, -50%) rotateY(var(--r)) translateZ(280px);
+    }
+
+    .global-modal {
+      padding: 20px;
+    }
+    .modal-card {
+      padding: 30px;
+      border-radius: 16px;
+    }
+    .detail-title {
+      font-size: 2rem;
+    }
+    .detail-icon {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 20px;
+    }
+    .detail-list {
+      flex-direction: column;
+      gap: 10px;
+    }
+    .close-btn {
+      top: 20px;
+      right: 20px;
+    }
+  }
+</style>
+
+<script>
+  import {
+    createIcons,
+    Clapperboard,
+    Fingerprint,
+    Handshake,
+    Megaphone,
+  } from 'lucide';
+  import { reducedMotion } from '@/scripts/ph-text-animations';
+
+  const orbitIcons = {
+    Clapperboard,
+    Fingerprint,
+    Handshake,
+    Megaphone,
+  };
+
+  function initServicesOrbit(root: HTMLElement): () => void {
+    const cardCount = Math.max(1, parseInt(root.dataset.cardCount ?? '4', 10));
+    const cardStep = 360 / cardCount;
+    const carousel = root.querySelector<HTMLElement>('[data-carousel]');
+    const cards = root.querySelectorAll<HTMLElement>('.card');
+    const globalModal = root.querySelector<HTMLElement>('[data-global-modal]');
+    const modalContentWrapper = root.querySelector<HTMLElement>('[data-modal-content]');
+    const scene = root.querySelector<HTMLElement>('.scene');
+
+    if (!carousel || !globalModal || !modalContentWrapper || !scene) {
+      return () => {};
+    }
+
+    createIcons({ icons: orbitIcons, root });
+
+    const autoRotate = !reducedMotion();
+    const autoRotateSpeed = 0.1;
+
+    let isDragging = false;
+    let hasDragged = false;
+    let startX = 0;
+    let currentRotation = 0;
+    let targetRotation = 0;
+    let isModalOpen = false;
+    let rafId = 0;
+
+    const ac = new AbortController();
+    const { signal } = ac;
+
+    const startDrag = (e: MouseEvent | TouchEvent) => {
+      if (isModalOpen) return;
+      isDragging = true;
+      hasDragged = false;
+      startX = 'touches' in e ? e.touches[0].pageX : e.pageX;
+      carousel.style.transition = 'none';
+    };
+
+    const moveDrag = (e: MouseEvent | TouchEvent) => {
+      if (!isDragging || isModalOpen) return;
+      const x = 'touches' in e ? e.touches[0].pageX : e.pageX;
+      const deltaX = x - startX;
+      if (Math.abs(deltaX) > 5) hasDragged = true;
+      targetRotation += deltaX * 0.15;
+      startX = x;
+    };
+
+    const endDrag = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      carousel.style.transition = 'transform 0.1s ease-out';
+    };
+
+    carousel.addEventListener('mousedown', startDrag, { signal });
+    window.addEventListener('mousemove', moveDrag, { signal });
+    window.addEventListener('mouseup', endDrag, { signal });
+    carousel.addEventListener('touchstart', startDrag, { passive: true, signal });
+    window.addEventListener('touchmove', moveDrag, { passive: true, signal });
+    window.addEventListener('touchend', endDrag, { signal });
+
+    const closeModal = () => {
+      globalModal.classList.remove('active');
+      globalModal.hidden = true;
+      scene.classList.remove('dimmed');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        isModalOpen = false;
+      }, 400);
+    };
+
+    globalModal.addEventListener(
+      'click',
+      (e) => {
+        if (e.target === globalModal) closeModal();
+      },
+      { signal },
+    );
+
+    document.addEventListener(
+      'keydown',
+      (e) => {
+        if (e.key !== 'Escape' || !globalModal.classList.contains('active')) return;
+        closeModal();
+      },
+      { signal },
+    );
+
+    const openModalFromCard = (card: HTMLElement) => {
+      isModalOpen = true;
+
+      const index = parseInt(card.getAttribute('data-index') ?? '0', 10);
+      const cardAngle = index * cardStep;
+      const idealRotation = -cardAngle;
+
+      let diff = (idealRotation - currentRotation) % 360;
+      if (diff > 180) diff -= 360;
+      if (diff < -180) diff += 360;
+      targetRotation = currentRotation + diff;
+
+      const detailHTML = card.querySelector('.card-detail')?.innerHTML ?? '';
+      modalContentWrapper.innerHTML = `<div class="modal-card">${detailHTML}</div>`;
+      createIcons({ icons: orbitIcons, root: modalContentWrapper });
+
+      globalModal.hidden = false;
+      requestAnimationFrame(() => {
+        globalModal.classList.add('active');
+      });
+      scene.classList.add('dimmed');
+      document.body.style.overflow = 'hidden';
+
+      const closeBtn = modalContentWrapper.querySelector('.close-btn');
+      closeBtn?.addEventListener(
+        'click',
+        (e) => {
+          e.stopPropagation();
+          closeModal();
+        },
+        { once: true },
+      );
+    };
+
+    cards.forEach((card) => {
+      card.addEventListener(
+        'click',
+        () => {
+          if (hasDragged || isModalOpen) return;
+          openModalFromCard(card);
+        },
+        { signal },
+      );
+    });
+
+    const animateOrbit = () => {
+      if (!isDragging && !isModalOpen && autoRotate) {
+        targetRotation -= autoRotateSpeed;
+      }
+
+      currentRotation += (targetRotation - currentRotation) * 0.08;
+      carousel.style.transform = `rotateX(-5deg) rotateY(${currentRotation}deg)`;
+
+      cards.forEach((card, index) => {
+        const totalAngle = currentRotation + index * cardStep;
+        const cosValue = Math.cos((totalAngle * Math.PI) / 180);
+        const content = card.querySelector<HTMLElement>('.card-content');
+        if (content) {
+          content.style.opacity = String(Math.max(0, cosValue * 1.5));
+        }
+      });
+
+      rafId = requestAnimationFrame(animateOrbit);
+    };
+
+    rafId = requestAnimationFrame(animateOrbit);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      ac.abort();
+      document.body.style.overflow = '';
+    };
+  }
+
+  let cleanup: (() => void) | undefined;
+
+  function setup() {
+    cleanup?.();
+    const root = document.querySelector<HTMLElement>('[data-services-orbit]');
+    if (!root) return;
+    cleanup = initServicesOrbit(root);
+  }
+
+  document.addEventListener('astro:page-load', setup);
+</script>

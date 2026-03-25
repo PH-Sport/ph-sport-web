@@ -13,6 +13,8 @@ const en: Record<TranslationKey, string> = {
   // --- Navegación ---
   'nav.home': 'Home',
   'nav.players': 'Players',
+  'nav.team': 'Team',
+  'nav.services': 'Services',
   'nav.about': 'About',
   'nav.contact': 'Contact',
   'nav.lang': 'Español',
@@ -28,7 +30,6 @@ const en: Record<TranslationKey, string> = {
   'players.title': 'Our players',
   'players.subtitle': 'A portfolio of talent built with purpose.',
   'players.cta': 'View profile',
-  'players.position.label': 'Position',
   'players.club.label': 'Club',
   'players.back': 'Back to players',
   'players.empty': 'No players available.',
@@ -43,6 +44,32 @@ const en: Record<TranslationKey, string> = {
   'about.block3.title': 'Forever Football.',
   'about.block3.body': 'Football is our passion and our commitment. We stand by our players beyond their professional careers.',
 
+  // --- Equipo (página) ---
+  'team.title': 'PH Sport team',
+  'team.subtitle': 'The people behind every career and every project.',
+  'team.placeholderName': 'TBC',
+  'team.placeholderRole': 'Role',
+
+  // --- Servicios (página) ---
+  'services.title': '360 services',
+  'services.subtitle': 'Beyond representation: full-spectrum agency capabilities for brands and talent.',
+  'services.items.branding.title': 'Branding and identity',
+  'services.items.branding.body': 'Building and evolving brand for players, clubs and sponsors.',
+  'services.items.marketing.title': 'Marketing and activations',
+  'services.items.marketing.body': 'Campaigns, content and experiences that engage fans and partners.',
+  'services.items.partnerships.title': 'Partnerships and sponsorship',
+  'services.items.partnerships.body': 'Commercial structure, deals and brand relationships.',
+  'services.items.content.title': 'Content and media',
+  'services.items.content.body': 'Storytelling, production and distribution across owned and external channels.',
+  'services.items.branding.short': 'Branding',
+  'services.items.marketing.short': 'Marketing',
+  'services.items.partnerships.short': 'Partnerships',
+  'services.items.content.short': 'Content',
+  'services.blocksAriaLabel': 'Service areas',
+  'services.orbitInstructions':
+    'Three-dimensional service carousel. Drag to rotate or open a card for details.',
+  'services.modalAriaLabel': 'Service details',
+
   // --- Footer ---
   'footer.rights': 'All rights reserved.',
   'footer.contact': 'Contact',
@@ -54,6 +81,7 @@ const en: Record<TranslationKey, string> = {
   'a11y.logo': 'PH Sport — Go to home',
   'a11y.menu.open': 'Open menu',
   'a11y.menu.close': 'Close menu',
+  'a11y.close': 'Close',
   'a11y.player.photo': 'Photo of',
 };
 

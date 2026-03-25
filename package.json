@@ -4,6 +4,7 @@
   "description": "Web para PH Sport",
   "scripts": {
     "dev": "astro dev",
+    "dev:fresh": "node -e \"require('fs').rmSync('node_modules/.vite',{recursive:true,force:true})\" && astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
@@ -25,9 +26,11 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "gsap": "^3.14.2",
+    "lucide": "^1.6.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "tailwindcss": "^4.2.1"
+    "tailwindcss": "^4.2.1",
+    "three": "^0.183.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.7",

@@ -11,11 +11,15 @@ const nav = isEn
   ? [
       { href: '/en/', label: t('nav.home') },
       { href: '/en/players/', label: t('nav.players') },
+      { href: '/en/team', label: t('nav.team') },
+      { href: '/en/services', label: t('nav.services') },
       { href: '/en/about', label: t('nav.about') },
     ]
   : [
       { href: '/', label: t('nav.home') },
       { href: '/jugadores/', label: t('nav.players') },
+      { href: '/equipo', label: t('nav.team') },
+      { href: '/servicios', label: t('nav.services') },
       { href: '/sobre-nosotros', label: t('nav.about') },
     ];
 
@@ -419,19 +423,21 @@ const isActive = (href: string): boolean => {
 
   // ── Rutas + traducciones i18n (espejo de src/i18n/utils.ts) ─────────────
   const NAV_HREFS = {
-    es: ['/', '/jugadores/', '/sobre-nosotros'],
-    en: ['/en/', '/en/players/', '/en/about'],
+    es: ['/', '/jugadores/', '/equipo', '/servicios', '/sobre-nosotros'],
+    en: ['/en/', '/en/players/', '/en/team', '/en/services', '/en/about'],
   } as const;
 
   const NAV_LABELS = {
-    es: ['Inicio', 'Jugadores', 'Sobre nosotros'],
-    en: ['Home', 'Players', 'About'],
+    es: ['Inicio', 'Jugadores', 'Equipo', 'Servicios', 'Sobre nosotros'],
+    en: ['Home', 'Players', 'Team', 'Services', 'About'],
   } as const;
 
   const STATIC_ROUTE_PAIRS = [
     { es: '/',               en: '/en/' },
     { es: '/sobre-nosotros', en: '/en/about' },
     { es: '/jugadores/',     en: '/en/players/' },
+    { es: '/equipo',         en: '/en/team' },
+    { es: '/servicios',      en: '/en/services' },
   ];
 
   function norm(p: string): string {

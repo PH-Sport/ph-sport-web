@@ -1,6 +1,6 @@
 ---
 import '@/styles/global.css';
-import { ViewTransitions } from 'astro:transitions';
+import { ViewTransitions, fade } from 'astro:transitions';
 import Header from './Header.astro';
 import Footer from './Footer.astro';
 import { useTranslations, getAlternateLangUrl, type Lang } from '@/i18n/utils';
@@ -12,11 +12,12 @@ interface Props {
   canonical: string;
   ogImage?: string;
   hasHero?: boolean;
+  noIndex?: boolean;
 }
 
 const SITE_URL = 'https://ph-sport-web.com';
 
-const { title, description, lang, canonical, ogImage, hasHero = false } = Astro.props;
+const { title, description, lang, canonical, ogImage, hasHero = false, noIndex = false } = Astro.props;
 const t = useTranslations(lang);
 
 const alternatePath = getAlternateLangUrl(Astro.url);
@@ -34,6 +35,7 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
 
     <link rel="alternate" hreflang="es" href={esUrl} />
     <link rel="alternate" hreflang="en" href={enUrl} />
@@ -53,7 +55,12 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
     </div>
     <a href="#main-content" class="skip-link">{t('a11y.skip')}</a>
     <Header />
-    <main id="main-content" class:list={[!hasHero && 'main--padded']}>
+    <main
+      id="main-content"
+      class:list={[!hasHero && 'main--padded']}
+      transition:name="page-main"
+      transition:animate={fade({ duration: '0.4s' })}
+    >
       <slot />
     </main>
     <Footer />
@@ -109,6 +116,14 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
 
   .main--padded {
     padding-top: 5rem;
+  }
+
+  /* LogoReveal vive dentro de main (z-index 1); el header fijo quedaría encima del overlay.
+     LogoReveal añade html.ph-logo-reveal-active mientras corre la animación. */
+  html.ph-logo-reveal-active [data-header] {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   [data-header] {

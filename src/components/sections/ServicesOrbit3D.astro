@@ -179,8 +179,8 @@ const items = [
     justify-content: center;
     align-items: center;
     perspective: 1800px;
-    /* Evita que el navegador interprete el swipe horizontal como scroll de página */
-    touch-action: none;
+    /* pan-y: permite scroll vertical con el dedo; el arrastre horizontal lo gestiona JS */
+    touch-action: pan-y;
     transition:
       filter 0.4s ease,
       opacity 0.4s ease;
@@ -578,7 +578,11 @@ const items = [
     let hasDragged = false;
     /** Target del pointerdown (la card); con setPointerCapture el `click` va a `scene`, no a la card */
     let pointerDownTarget: EventTarget | null = null;
+    /** En touch: solo true tras intención horizontal; evita capturar el puntero y bloquear scroll vertical */
+    let pointerLocked = false;
     let startX = 0;
+    let startY = 0;
+    const gestureSlopPx = 10;
     let currentRotation = 0;
     let targetRotation = 0;
     let isModalOpen = false;
@@ -597,12 +601,36 @@ const items = [
       isDragging = true;
       hasDragged = false;
       startX = e.clientX;
+      startY = e.clientY;
+      pointerLocked = e.pointerType !== 'touch';
       carousel.style.transition = 'none';
-      scene.setPointerCapture(e.pointerId);
+      if (pointerLocked) {
+        scene.setPointerCapture(e.pointerId);
+      }
     };
 
     const onPointerMove = (e: PointerEvent) => {
       if (!isDragging || isModalOpen) return;
+
+      if (e.pointerType === 'touch' && !pointerLocked) {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        if (Math.max(Math.abs(dx), Math.abs(dy)) < gestureSlopPx) return;
+
+        if (Math.abs(dy) > Math.abs(dx)) {
+          hasDragged = true;
+          isDragging = false;
+          return;
+        }
+
+        pointerLocked = true;
+        scene.setPointerCapture(e.pointerId);
+        if (Math.abs(dx) > 5) hasDragged = true;
+        targetRotation += dx * dragSensitivity(e);
+        startX = e.clientX;
+        return;
+      }
+
       const x = e.clientX;
       const deltaX = x - startX;
       if (Math.abs(deltaX) > 5) hasDragged = true;
@@ -611,12 +639,14 @@ const items = [
     };
 
     const onPointerUp = (e: PointerEvent) => {
-      if (!isDragging) return;
-      isDragging = false;
-      carousel.style.transition = 'transform 0.1s ease-out';
       if (scene.hasPointerCapture(e.pointerId)) {
         scene.releasePointerCapture(e.pointerId);
       }
+      if (isDragging) {
+        isDragging = false;
+        carousel.style.transition = 'transform 0.1s ease-out';
+      }
+      pointerLocked = false;
       setTimeout(() => {
         pointerDownTarget = null;
       }, 0);

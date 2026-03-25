@@ -321,12 +321,23 @@ const isActive = (href: string): boolean => {
     stroke-linejoin: round;
   }
 
-  /* ── Mobile menu overlay ── */
+  /* ── Mobile menu overlay (cristal + capa oscura; separa el contenido de lo que hay detrás) ── */
   .mobile-menu {
     position: fixed;
     inset: 0;
     z-index: 100;
-    background: var(--ph-black);
+    isolation: isolate;
+    background: linear-gradient(
+        165deg,
+        rgba(255, 255, 255, 0.06) 0%,
+        rgba(255, 255, 255, 0) 42%
+      ),
+      rgba(13, 15, 18, 0.82);
+    backdrop-filter: blur(20px) saturate(1.15);
+    -webkit-backdrop-filter: blur(20px) saturate(1.15);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 24px 80px rgba(0, 0, 0, 0.45);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-0.5rem);
@@ -337,6 +348,14 @@ const isActive = (href: string): boolean => {
       visibility var(--ph-duration) var(--ph-ease);
   }
 
+  @supports not (backdrop-filter: blur(1px)) {
+    .mobile-menu {
+      background: var(--ph-black);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+  }
+
   .mobile-menu.is-open {
     opacity: 1;
     visibility: visible;
@@ -345,6 +364,8 @@ const isActive = (href: string): boolean => {
   }
 
   .mobile-menu-inner {
+    position: relative;
+    z-index: 1;
     max-width: 1280px;
     min-height: 100vh;
     min-height: 100dvh;

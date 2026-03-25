@@ -118,13 +118,18 @@ const items = [
       var(--orbit-bg);
   }
 
+  /* El .ph-section global añade ~4–8rem de padding inferior; aquí el carrusel sigue al texto */
+  .services-orbit-3d > .ph-section {
+    padding-bottom: 0;
+  }
+
   .services-orbit-header {
-    margin-bottom: 2rem;
+    margin-bottom: 0.5rem;
   }
 
   @media (min-width: 1024px) {
     .services-orbit-header {
-      margin-bottom: 3rem;
+      margin-bottom: 0.75rem;
     }
   }
 
@@ -153,13 +158,18 @@ const items = [
   }
 
   .orbit-section {
-    min-height: min(90vh, 720px);
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     position: relative;
     overflow: hidden;
-    padding-block: 2rem;
+    padding-block: 0 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    .orbit-section {
+      padding-bottom: clamp(4rem, 7vw, 6.5rem);
+    }
   }
 
   .scene {
@@ -566,6 +576,8 @@ const items = [
 
     let isDragging = false;
     let hasDragged = false;
+    /** Target del pointerdown (la card); con setPointerCapture el `click` va a `scene`, no a la card */
+    let pointerDownTarget: EventTarget | null = null;
     let startX = 0;
     let currentRotation = 0;
     let targetRotation = 0;
@@ -581,6 +593,7 @@ const items = [
     const onPointerDown = (e: PointerEvent) => {
       if (isModalOpen) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
+      pointerDownTarget = e.target;
       isDragging = true;
       hasDragged = false;
       startX = e.clientX;
@@ -604,12 +617,25 @@ const items = [
       if (scene.hasPointerCapture(e.pointerId)) {
         scene.releasePointerCapture(e.pointerId);
       }
+      setTimeout(() => {
+        pointerDownTarget = null;
+      }, 0);
     };
 
     scene.addEventListener('pointerdown', onPointerDown, { signal });
     scene.addEventListener('pointermove', onPointerMove, { signal });
     scene.addEventListener('pointerup', onPointerUp, { signal });
     scene.addEventListener('pointercancel', onPointerUp, { signal });
+
+    const onSceneClick = (e: MouseEvent) => {
+      if (hasDragged || isModalOpen) return;
+      const fromTarget =
+        pointerDownTarget instanceof Element ? pointerDownTarget.closest('.card') : null;
+      const fromEvent = e.target instanceof Element ? e.target.closest('.card') : null;
+      const card = (fromTarget ?? fromEvent) as HTMLElement | null;
+      if (card) openModalFromCard(card);
+    };
+    scene.addEventListener('click', onSceneClick, { signal });
 
     const closeModal = () => {
       globalModal.classList.remove('active');
@@ -671,17 +697,6 @@ const items = [
         { once: true },
       );
     };
-
-    cards.forEach((card) => {
-      card.addEventListener(
-        'click',
-        () => {
-          if (hasDragged || isModalOpen) return;
-          openModalFromCard(card);
-        },
-        { signal },
-      );
-    });
 
     const animateOrbit = () => {
       if (!isDragging && !isModalOpen && autoRotate) {

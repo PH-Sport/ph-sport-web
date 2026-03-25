@@ -15,5 +15,13 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    // Evita 504 "Outdated Optimize Dep" al cargar three en dev (caché .vite desincronizada)
+    optimizeDeps: {
+      include: [
+        'three',
+        'three/examples/jsm/controls/OrbitControls.js',
+        'three/examples/jsm/environments/RoomEnvironment.js',
+      ],
+    },
   },
 });

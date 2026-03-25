@@ -14,22 +14,25 @@ const isEn = lang === 'en';
 <section class="hero relative flex min-h-screen items-center overflow-hidden">
   <!-- Content -->
   <div class="hero-content ph-section relative z-10 w-full">
-    <div class="max-w-2xl">
-      <p class="hero-tagline font-display text-xs font-semibold uppercase tracking-widest text-ph-gold sm:text-sm">
-        {t('hero.tagline')}
-      </p>
+    <div class="hero-copy-stack flex max-w-2xl flex-col gap-8 text-left sm:gap-10 md:gap-12 lg:gap-14">
+      <div class="hero-lead flex flex-col gap-2 sm:gap-3">
+        <div class="flex flex-col gap-3 sm:gap-4">
+          <p class="hero-tagline font-display text-xs font-semibold uppercase tracking-widest text-ph-gold sm:text-sm">
+            {t('hero.tagline')}
+          </p>
+          <div class="ph-divider"></div>
+        </div>
 
-      <div class="ph-divider mt-5"></div>
+        <h1 class="hero-heading font-display text-4xl font-black tracking-tightest sm:text-5xl lg:text-7xl">
+          {t('hero.claim')}
+        </h1>
+      </div>
 
-      <h1 class="mt-8 font-display text-4xl font-black tracking-tightest sm:text-5xl lg:text-7xl">
-        {t('hero.claim')}
-      </h1>
-
-      <p class="mt-8 max-w-lg text-base leading-relaxed text-ph-white-60 lg:text-lg">
+      <p class="hero-description max-w-2xl text-base leading-relaxed text-ph-white-60 lg:text-lg">
         {t('site.description')}
       </p>
 
-      <div class="mt-10 flex flex-wrap gap-5">
+      <div class="hero-ctas flex flex-wrap gap-5">
         <Button href={isEn ? '/en/players/' : '/jugadores/'} variant="primary">
           {t('hero.cta.primary')}
         </Button>
@@ -54,12 +57,27 @@ const isEn = lang === 'en';
     background: transparent;
   }
 
+  /* Más aire entre líneas del titular cuando GSAP envuelve palabras en .ph-clip */
+  .hero-heading {
+    line-height: 1.38;
+  }
+  @media (min-width: 640px) {
+    .hero-heading {
+      line-height: 1.32;
+    }
+  }
+  @media (min-width: 1024px) {
+    .hero-heading {
+      line-height: 1.2;
+    }
+  }
+
   /* Ocultar desde el inicio — GSAP restaura opacity antes de animar */
   .hero-tagline,
   .hero-content .ph-divider,
   .hero-content h1,
-  .hero-content p:not(.hero-tagline),
-  .hero-content .mt-10 {
+  .hero-content .hero-description,
+  .hero-content .hero-ctas {
     opacity: 0;
   }
 
@@ -133,6 +151,7 @@ const isEn = lang === 'en';
     wrapWords,
     splitWords,
   } from '@/scripts/ph-text-animations';
+  import { isDocumentReload } from '@/lib/is-document-reload';
 
   const LOGO_SESSION_KEY = 'ph-logo-revealed';
 
@@ -143,8 +162,8 @@ const isEn = lang === 'en';
     const tagline  = section.querySelector<HTMLElement>('.hero-tagline');
     const divider  = section.querySelector<HTMLElement>('.ph-divider');
     const h1       = section.querySelector<HTMLElement>('h1');
-    const desc     = section.querySelector<HTMLElement>('p.max-w-lg');
-    const btns     = section.querySelector<HTMLElement>('.mt-10');
+    const desc     = section.querySelector<HTMLElement>('.hero-description');
+    const btns     = section.querySelector<HTMLElement>('.hero-ctas');
 
     const tl = gsap.timeline();
 
@@ -209,10 +228,7 @@ const isEn = lang === 'en';
     const path = window.location.pathname.replace(/\/$/, '') || '/';
     const isHome = path === '/' || path === '/en';
     const isFirstVisit = !sessionStorage.getItem(LOGO_SESSION_KEY);
-    const navEntry = performance.getEntriesByType('navigation')[0] as
-      | PerformanceNavigationTiming
-      | undefined;
-    const isReload = navEntry?.type === 'reload';
+    const isReload = isDocumentReload();
 
     // Si el logo va a reproducirse, esperamos su evento antes de animar
     if (isHome && (isFirstVisit || isReload)) {
@@ -221,8 +237,8 @@ const isEn = lang === 'en';
         if (!fired) { fired = true; initHeroAnimations(); }
       };
       document.addEventListener('ph:logo-revealed', onRevealed, { once: true });
-      // Fallback por si el evento no llega (ej. React hidrata tarde)
-      setTimeout(onRevealed, 4500);
+      // Fallback por si el evento no llega (refs SVG / GSAP / Strict Mode)
+      setTimeout(onRevealed, 4000);
     } else {
       initHeroAnimations();
     }

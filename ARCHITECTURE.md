@@ -28,7 +28,7 @@ ph-sport-web/
 │   │   ├── islands/LogoReveal.tsx
 │   │   ├── layout/{BaseLayout,Header,Footer}.astro
 │   │   ├── sections/{HeroSection,PlayersGrid,AboutSection}.astro
-│   │   └── ui/{Button,PlayerCard}.astro
+│   │   └── ui/{Button,PortraitCard}.astro
 │   ├── content/
 │   │   ├── config.ts
 │   │   └── players/*.md
@@ -122,7 +122,7 @@ ph-sport/
 │   │   │   ├── PlayersGrid.astro      # Grid de cards de jugadores
 │   │   │   └── AboutSection.astro     # Storytelling de la agencia
 │   │   ├── ui/
-│   │   │   ├── PlayerCard.astro       # Card individual de jugador
+│   │   │   ├── PortraitCard.astro   # Card retrato (jugadores + equipo)
 │   │   │   ├── Button.astro           # Botón reutilizable
 │   │   │   └── ...                    # UI atoms adicionales si se necesitan
 │   │   └── islands/
@@ -189,10 +189,6 @@ const players = defineCollection({
       // carlos-garcia.md → slug: "carlos-garcia"
       // No declarar en el schema ni en el frontmatter.
 
-      position: z.object({
-        es: z.string(),   // "Delantero centro"
-        en: z.string(),   // "Center Forward"
-      }),
       club: z.object({
         name: z.string(),
         country: z.string().optional(),
@@ -221,9 +217,6 @@ export const collections = { players };
 # El nombre del archivo ES el slug. No añadir campo slug en el frontmatter.
 
 name: "Carlos García"
-position:
-  es: "Delantero centro"
-  en: "Center Forward"
 club:
   name: "RC Deportivo"
   country: "España"
@@ -525,7 +518,7 @@ Ver `DECISIONS.md` para el histórico completo. Resumen:
 | `LogoReveal.tsx` | ✅ Completo | Island GSAP, logo reveal en entrada |
 | `HeroSection.astro` | ✅ Completo | Fondo radial, halo de logo, scroll indicator, fade in con `--ph-ease` |
 | `PlayersGrid.astro` | ✅ Completo | Grid 2/3/4 col, header consistente + separador visual, Content Collections |
-| `PlayerCard.astro` | ⏳ Parcial | Borde/hover refinados + overlay legible. `href="#"` — pendiente decidir si hay página individual |
+| `PortraitCard.astro` | ✅ Completo | Nombre + subtítulo (club o cargo); jugadores con enlace stub `href="#"`; equipo sin enlace |
 | `AboutSection.astro` | ✅ Completo | Storytelling Now / Next / Forever, números watermark, layout editorial 1:2 |
 | `Button.astro` | ✅ Completo | Primary (gold border) / secondary (ghost), angular, `<a>` o `<button>` |
 | `LanguageSwitcher.astro` | — | Integrado en `Header.astro` (no existe como archivo separado) |
@@ -564,7 +557,7 @@ Orden recomendado:
 4. ~~**`Button.astro`** — componente reutilizable antes de añadir CTAs.~~ ✅ Completado 2026-03-05.
 5. ~~**Söhne** — integrar cuando el equipo pase los archivos `.woff2`.~~ ✅ Integrada 2026-03-05 (archivos test de Klim).
 6. **Fotos reales** de los 60 jugadores + datos completos en Content Collections.
-7. **Páginas de jugador** `[slug].astro` — contenido real con foto, posición, club.
+7. **Páginas de jugador** `[slug].astro` — contenido real con foto, club (datos técnicos vía Transfermarkt u otras fuentes externas).
 8. **Animaciones de refinamiento** — scroll reveal en secciones, transiciones entre páginas.
 
 ### Pendientes bloqueados por decisión externa
@@ -582,7 +575,7 @@ Orden recomendado:
 
 1. **SITE_URL duplicado** — Definido en 5 páginas; centralizar (p. ej. `Astro.site` o un único módulo).
 2. ~~**getAlternateLangUrl no traduce rutas**~~ ✅ Resuelto 2026-03-05. Ver DECISIONS.md.
-3. **PlayerCard con href="#"** — Usar `slug` y `lang` para enlazar a `/jugadores/[slug]` o `/en/players/[slug]`.
+3. **`PortraitCard` con href="#"** — Usar `data-slug` y rutas i18n para enlazar a `/jugadores/[slug]` o `/en/players/[slug]`.
 4. **Home sin grid de jugadores** — ARCHITECTURE dice "Hero + grid"; la home solo tiene Hero; alinear código o doc.
 5. **Preload de 4 fuentes** — Preload solo 700 y 900; 400 y 600 cargar bajo demanda.
 

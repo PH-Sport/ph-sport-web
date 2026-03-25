@@ -10,11 +10,6 @@ const players = defineCollection({
     z.object({
       name: z.string(),
 
-      position: z.object({
-        es: z.string(),
-        en: z.string(),
-      }),
-
       club: z.object({
         name: z.string(),
         country: z.string().optional(),

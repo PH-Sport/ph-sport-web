@@ -1,0 +1,325 @@
+---
+import { useTranslations, type Lang } from '@/i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const items = [
+  {
+    title: t('services.items.representation.title'),
+    body: t('services.items.representation.body'),
+    short: t('services.items.representation.short'),
+  },
+  {
+    title: t('services.items.career.title'),
+    body: t('services.items.career.body'),
+    short: t('services.items.career.short'),
+  },
+  {
+    title: t('services.items.legal.title'),
+    body: t('services.items.legal.body'),
+    short: t('services.items.legal.short'),
+  },
+  {
+    title: t('services.items.image.title'),
+    body: t('services.items.image.body'),
+    short: t('services.items.image.short'),
+  },
+  {
+    title: t('services.items.scouting.title'),
+    body: t('services.items.scouting.body'),
+    short: t('services.items.scouting.short'),
+  },
+];
+---
+
+<section class="services-section">
+  <div class="ph-section">
+    <header class="services-header">
+      <span class="ph-label">{t('nav.services')}</span>
+      <div class="ph-divider mt-4"></div>
+      <h1 id="services-heading" class="services-title">
+        {t('services.title')}
+      </h1>
+      <p class="services-subtitle">{t('services.subtitle')}</p>
+    </header>
+
+    <div class="services-blocks" aria-label={t('services.blocksAriaLabel')}>
+      {
+        items.map((item, i) => (
+          <article class="services-block">
+            <div class="services-block-left">
+              <span class="services-num" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <p class="services-block-eyebrow">{item.short}</p>
+              <h2 class="services-block-title">{item.title}</h2>
+            </div>
+            <div class="services-block-right">
+              <div class="services-block-accent" aria-hidden="true" />
+              <p class="services-block-body">{item.body}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Misma identidad que AboutSection: fondo, cabecera y bloques editoriales */
+  .services-section {
+    position: relative;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(214, 178, 94, 0.025) 0%, transparent 50%),
+      var(--ph-black);
+  }
+
+  .services-header {
+    margin-bottom: 4rem;
+  }
+
+  @media (min-width: 1024px) {
+    .services-header {
+      margin-bottom: 5rem;
+    }
+  }
+
+  .services-title {
+    margin-top: 2rem;
+    font-family: var(--ph-font-display);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--ph-white);
+  }
+
+  .services-subtitle {
+    margin-top: 1rem;
+    max-width: 40rem;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--ph-white-60);
+  }
+
+  @media (min-width: 1024px) {
+    .services-subtitle {
+      font-size: 1.125rem;
+    }
+  }
+
+  .services-blocks {
+    border-top: 1px solid var(--ph-white-10);
+  }
+
+  .services-block {
+    display: grid;
+    gap: 1.5rem;
+    padding-block: 3.5rem;
+    border-bottom: 1px solid var(--ph-white-10);
+  }
+
+  @media (min-width: 1024px) {
+    .services-block {
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+      align-items: baseline;
+      padding-block: 4.5rem;
+    }
+  }
+
+  .services-block-left {
+    position: relative;
+  }
+
+  .services-num {
+    position: absolute;
+    top: -0.5rem;
+    left: 0;
+    font-family: var(--ph-font-display);
+    font-size: 3.5rem;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--ph-gold);
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  @media (min-width: 1024px) {
+    .services-num {
+      font-size: 4.5rem;
+      top: -0.75rem;
+    }
+  }
+
+  .services-block-eyebrow {
+    position: relative;
+    margin: 0 0 0.5rem;
+    font-family: var(--ph-font-display);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ph-gold-muted);
+  }
+
+  .services-block-title {
+    position: relative;
+    margin: 0;
+    margin-top: 0.25rem;
+    font-family: var(--ph-font-display);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--ph-white);
+  }
+
+  @media (min-width: 1024px) {
+    .services-block-title {
+      margin-top: 0.5rem;
+    }
+  }
+
+  .services-block-right {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .services-block-accent {
+    flex-shrink: 0;
+    width: 2px;
+    min-height: 100%;
+    background: linear-gradient(to bottom, var(--ph-gold) 0%, var(--ph-gold-muted) 100%);
+    opacity: 0.3;
+    border-radius: 1px;
+  }
+
+  .services-block-body {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--ph-white-60);
+    max-width: none;
+  }
+
+  @media (min-width: 1024px) {
+    .services-block-body {
+      font-size: 1.125rem;
+      padding-top: 0.25rem;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import {
+    reducedMotion,
+    wrapWords,
+    splitWords,
+    trackingReveal,
+    counterReveal,
+  } from '@/scripts/ph-text-animations';
+
+  function initServicesAnimations(): void {
+    const section = document.querySelector<HTMLElement>('.services-section');
+    if (!section || reducedMotion()) return;
+
+    const label = section.querySelector<HTMLElement>('.ph-label');
+    if (label) {
+      trackingReveal(label, { trigger: label, start: 'top 88%', once: true });
+    }
+
+    const title = section.querySelector<HTMLElement>('.services-title');
+    if (title) {
+      const words = wrapWords(title);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.85,
+        stagger: 0.07,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: title, start: 'top 82%', once: true },
+      });
+    }
+
+    const subtitle = section.querySelector<HTMLElement>('.services-subtitle');
+    if (subtitle) {
+      const spans = splitWords(subtitle);
+      gsap.from(spans, {
+        opacity: 0,
+        filter: 'blur(6px)',
+        y: 6,
+        duration: 0.6,
+        stagger: 0.03,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: subtitle, start: 'top 88%', once: true },
+      });
+    }
+
+    section.querySelectorAll<HTMLElement>('.services-block').forEach((block, i) => {
+      const numEl = block.querySelector<HTMLElement>('.services-num');
+      if (numEl) {
+        counterReveal(numEl, i + 1, {
+          trigger: block,
+          start: 'top 82%',
+          once: true,
+        });
+      }
+
+      const blockTitle = block.querySelector<HTMLElement>('.services-block-title');
+      if (blockTitle) {
+        const words = wrapWords(blockTitle);
+        gsap.from(words, {
+          yPercent: 115,
+          duration: 0.8,
+          stagger: 0.05,
+          ease: 'power4.out',
+          scrollTrigger: { trigger: blockTitle, start: 'top 82%', once: true },
+        });
+      }
+
+      const eyebrow = block.querySelector<HTMLElement>('.services-block-eyebrow');
+      if (eyebrow) {
+        gsap.from(eyebrow, {
+          opacity: 0,
+          y: 8,
+          duration: 0.5,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: block, start: 'top 82%', once: true },
+        });
+      }
+
+      const accent = block.querySelector<HTMLElement>('.services-block-accent');
+      if (accent) {
+        gsap.from(accent, {
+          scaleY: 0,
+          transformOrigin: 'top center',
+          duration: 0.8,
+          ease: 'expo.out',
+          scrollTrigger: { trigger: block, start: 'top 78%', once: true },
+        });
+      }
+
+      const body = block.querySelector<HTMLElement>('.services-block-body');
+      if (body) {
+        const spans = splitWords(body);
+        gsap.from(spans, {
+          opacity: 0,
+          filter: 'blur(6px)',
+          y: 5,
+          duration: 0.6,
+          stagger: 0.025,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: body, start: 'top 88%', once: true },
+        });
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', initServicesAnimations);
+</script>

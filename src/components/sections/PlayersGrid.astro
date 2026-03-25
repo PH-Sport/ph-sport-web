@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import { useTranslations, type Lang } from '@/i18n/utils';
-import PlayerCard from '@/components/ui/PlayerCard.astro';
+import PortraitCard from '@/components/ui/PortraitCard.astro';
 
 interface Props {
   lang: Lang;
@@ -31,13 +31,12 @@ const players = (await getCollection('players')).sort((a, b) =>
 
     <div class="players-grid">
       {players.map((player) => (
-        <PlayerCard
+        <PortraitCard
           name={player.data.name}
-          position={player.data.position}
-          club={player.data.club}
+          subtitle={player.data.club.name}
           photo={player.data.photo}
-          slug={player.id.replace(/\.md$/, '')}
-          lang={lang}
+          href="#"
+          dataSlug={player.id.replace(/\.md$/, '')}
         />
       ))}
     </div>

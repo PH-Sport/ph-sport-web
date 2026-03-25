@@ -21,7 +21,7 @@ const en: Record<TranslationKey, string> = {
   'nav.lang.href': '/',
 
   // --- Hero ---
-  'hero.claim': 'Where talent builds its legacy',
+  'hero.claim': 'Brands add up, but people make the mark',
   'hero.tagline': 'Now. Next. Forever Football.',
   'hero.cta.primary': 'Meet our players',
   'hero.cta.secondary': 'Who we are',

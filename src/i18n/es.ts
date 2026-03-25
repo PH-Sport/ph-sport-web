@@ -19,7 +19,7 @@ const es = {
   'nav.lang.href': '/en/',        // Destino del switch
 
   // --- Hero ---
-  'hero.claim': 'Donde el talento construye su legado',
+  'hero.claim': 'Las marcas suman, pero las personas marcan',
   'hero.tagline': 'Now. Next. Forever Football.',
   'hero.cta.primary': 'Conoce a nuestros jugadores',
   'hero.cta.secondary': 'Quiénes somos',

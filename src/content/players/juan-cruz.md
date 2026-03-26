@@ -1,12 +1,10 @@
 ---
-# src/content/players/juan-cruz.md
-# El nombre del archivo ES el slug. No añadir campo slug en el frontmatter.
-
 name: "Juan Cruz"
 club:
   name: "CD Leganés"
   country: "España"
-photo: "../../assets/images/players/juan-cruz.jpg"
+photo: "../../assets/images/players/avatar-placeholder.svg"
 featured: false
-nationality: "Española"
+nationalityCodes:
+  - "ES"
 ---

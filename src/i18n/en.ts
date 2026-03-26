@@ -27,10 +27,23 @@ const en: Record<TranslationKey, string> = {
   'hero.cta.secondary': 'Who we are',
 
   // --- Jugadores ---
-  'players.title': 'Our players',
-  'players.subtitle': 'A portfolio of talent built with purpose.',
+  'players.title': 'Talent we represent',
+  'players.subtitle':
+    'Elite players and coaches united by the same professional vision.',
+  'players.subsection.players': 'Players',
+  'players.subsection.coaches': 'Coaches',
+  'players.tabs.aria': 'Choose between players and coaches',
   'players.cta': 'View profile',
   'players.club.label': 'Club',
+  'players.club.none': 'No club',
+  'players.sort.label': 'Order',
+  'players.sort.aria': 'Choose list order',
+  'players.sort.default': 'Agency order',
+  'players.sort.az': 'A → Z',
+  'players.sort.za': 'Z → A',
+  'players.sort.option.default': 'Default',
+  'players.sort.option.az': 'A-Z',
+  'players.sort.option.za': 'Z-A',
   'players.back': 'Back to players',
   'players.empty': 'No players available.',
 

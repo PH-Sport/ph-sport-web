@@ -25,10 +25,23 @@ const es = {
   'hero.cta.secondary': 'Quiénes somos',
 
   // --- Jugadores ---
-  'players.title': 'Nuestros jugadores',
-  'players.subtitle': 'Una cartera de talento construida con criterio.',
+  'players.title': 'Talento que representamos',
+  'players.subtitle':
+    'Jugadores y entrenadores de élite, unidos por una misma visión profesional.',
+  'players.subsection.players': 'Jugadores',
+  'players.subsection.coaches': 'Entrenadores',
+  'players.tabs.aria': 'Elegir entre jugadores y entrenadores',
   'players.cta': 'Ver perfil',
   'players.club.label': 'Club',
+  'players.club.none': 'Sin club',
+  'players.sort.label': 'Orden',
+  'players.sort.aria': 'Elegir orden de la lista',
+  'players.sort.default': 'Orden de la agencia',
+  'players.sort.az': 'A → Z',
+  'players.sort.za': 'Z → A',
+  'players.sort.option.default': 'Predeterminado',
+  'players.sort.option.az': 'A-Z',
+  'players.sort.option.za': 'Z-A',
   'players.back': 'Volver a jugadores',
   'players.empty': 'No hay jugadores disponibles.',
 

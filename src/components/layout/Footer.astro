@@ -6,6 +6,9 @@ const t = useTranslations(lang);
 const isEn = lang === 'en';
 const year = new Date().getFullYear();
 
+const playersPageReload = (href: string): boolean =>
+  href === '/jugadores/' || href === '/en/players/';
+
 const nav = isEn
   ? [
       { href: '/en/', label: t('nav.home') },
@@ -43,7 +46,13 @@ const nav = isEn
         <ul class="footer-nav">
           {nav.map((item) => (
             <li>
-              <a href={item.href} class="footer-link">{item.label}</a>
+              <a
+                href={item.href}
+                class="footer-link"
+                data-astro-reload={playersPageReload(item.href) ? true : undefined}
+              >
+                {item.label}
+              </a>
             </li>
           ))}
         </ul>

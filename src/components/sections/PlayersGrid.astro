@@ -1,7 +1,13 @@
 ---
-import { getCollection } from 'astro:content';
+import jugadoresData from '../../../data/jugadores.json';
+import entrenadoresData from '../../../data/entrenadores.json';
 import { useTranslations, type Lang } from '@/i18n/utils';
+import { formatNationalityAriaLabel } from '@/lib/countryLabels';
+import { getPlayerPhotoBySlug } from '@/lib/playerPhotos';
+import { parseSortParam, sortRosterByName } from '@/lib/sortRoster';
+import { slugify } from '@/lib/slugify';
 import PortraitCard from '@/components/ui/PortraitCard.astro';
+import PlayersSortRow from '@/components/ui/PlayersSortRow.astro';
 
 interface Props {
   lang: Lang;
@@ -10,17 +16,46 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const players = (await getCollection('players')).sort((a, b) =>
-  a.data.name.localeCompare(b.data.name),
-);
+/** Orden = orden de los arrays en `data/jugadores.json` y `data/entrenadores.json` (directiva). */
+const rosterPlayers = jugadoresData.map((row) => ({
+  ...row,
+  role: 'player' as const,
+  slug: slugify(row.name),
+}));
+
+const rosterCoaches = entrenadoresData.map((row) => ({
+  ...row,
+  role: 'coach' as const,
+  slug: slugify(row.name),
+}));
+
+const sortMode = parseSortParam(Astro.url.searchParams.get('sort'));
+const displayPlayers = sortRosterByName(rosterPlayers, sortMode, lang);
+const displayCoaches = sortRosterByName(rosterCoaches, sortMode, lang);
+
+const totalRoster = rosterPlayers.length + rosterCoaches.length;
+
+const hasPlayers = rosterPlayers.length > 0;
+const hasCoaches = rosterCoaches.length > 0;
+const showTabs = hasPlayers && hasCoaches;
+
+/** ?view=coaches | entrenadores → pestaña entrenadores; resto → jugadores */
+const viewParam = Astro.url.searchParams.get('view');
+const coachesTabFromUrl =
+  viewParam === 'coaches' || viewParam === 'entrenadores';
+const showCoachesPanelFirst = showTabs && coachesTabFromUrl;
+
+function subtitleFor(row: { club: { name: string } | null }): string {
+  return row.club?.name ?? t('players.club.none');
+}
 ---
 
-<section class="players-section">
+<section class="players-section" data-players-tabs={showTabs ? 'true' : undefined}>
   <div class="ph-section">
     <header class="players-header">
       <div class="players-header-top">
         <span class="ph-label">{t('nav.players')}</span>
-        <span class="players-count">{players.length}</span>
+        <span class="players-count">{totalRoster}</span>
       </div>
       <div class="ph-divider mt-4"></div>
       <h2 class="players-title">
@@ -29,17 +64,147 @@ const players = (await getCollection('players')).sort((a, b) =>
       <p class="players-subtitle">{t('players.subtitle')}</p>
     </header>
 
-    <div class="players-grid">
-      {players.map((player) => (
-        <PortraitCard
-          name={player.data.name}
-          subtitle={player.data.club.name}
-          photo={player.data.photo}
-          href="#"
-          dataSlug={player.id.replace(/\.md$/, '')}
-        />
-      ))}
-    </div>
+    {
+      totalRoster === 0 && (
+        <p class="players-empty">{t('players.empty')}</p>
+      )
+    }
+
+    {
+      showTabs && (
+        <div class="players-tabs-wrap">
+          <div class="players-toolbar">
+            <div class="players-tabs" role="tablist" aria-label={t('players.tabs.aria')}>
+              <button
+                type="button"
+                class="players-tab"
+                role="tab"
+                id="players-tab-players"
+                aria-selected={showCoachesPanelFirst ? 'false' : 'true'}
+                aria-controls="players-panel-players"
+                tabindex={showCoachesPanelFirst ? -1 : 0}
+                data-tab="players"
+              >
+                <span class="players-tab-label">{t('players.subsection.players')}</span>
+                <span class="players-tab-count">{rosterPlayers.length}</span>
+              </button>
+              <button
+                type="button"
+                class="players-tab"
+                role="tab"
+                id="players-tab-coaches"
+                aria-selected={showCoachesPanelFirst ? 'true' : 'false'}
+                aria-controls="players-panel-coaches"
+                tabindex={showCoachesPanelFirst ? 0 : -1}
+                data-tab="coaches"
+              >
+                <span class="players-tab-label">{t('players.subsection.coaches')}</span>
+                <span class="players-tab-count">{rosterCoaches.length}</span>
+              </button>
+            </div>
+            <PlayersSortRow lang={lang} sortMode={sortMode} />
+          </div>
+
+          <div
+            class="players-tabpanel"
+            id="players-panel-players"
+            role="tabpanel"
+            aria-labelledby="players-tab-players"
+            hidden={showCoachesPanelFirst ? true : undefined}
+          >
+            <div class="players-grid">
+              {displayPlayers.map((player) => (
+                <PortraitCard
+                  name={player.name}
+                  subtitle={subtitleFor(player)}
+                  photo={getPlayerPhotoBySlug(player.slug)}
+                  href="#"
+                  dataSlug={player.slug}
+                  nationalityCodes={player.nationalityCodes ?? []}
+                  nationalityAriaLabel={formatNationalityAriaLabel(player.nationalityCodes ?? [], lang)}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div
+            class="players-tabpanel"
+            id="players-panel-coaches"
+            role="tabpanel"
+            aria-labelledby="players-tab-coaches"
+            hidden={showCoachesPanelFirst ? undefined : true}
+          >
+            <div class="players-grid">
+              {displayCoaches.map((coach) => (
+                <PortraitCard
+                  name={coach.name}
+                  subtitle={subtitleFor(coach)}
+                  photo={getPlayerPhotoBySlug(coach.slug)}
+                  href="#"
+                  dataSlug={coach.slug}
+                  nationalityCodes={coach.nationalityCodes ?? []}
+                  nationalityAriaLabel={formatNationalityAriaLabel(coach.nationalityCodes ?? [], lang)}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    {
+      !showTabs && hasPlayers && (
+        <div class="players-subsection">
+          <div class="players-subsection-toolbar">
+            <div class="players-subsection-head">
+              <h3 class="players-section-title">{t('players.subsection.players')}</h3>
+              <span class="players-count">{rosterPlayers.length}</span>
+            </div>
+            <PlayersSortRow lang={lang} sortMode={sortMode} />
+          </div>
+          <div class="players-grid">
+            {displayPlayers.map((player) => (
+              <PortraitCard
+                name={player.name}
+                subtitle={subtitleFor(player)}
+                photo={getPlayerPhotoBySlug(player.slug)}
+                href="#"
+                dataSlug={player.slug}
+                nationalityCodes={player.nationalityCodes ?? []}
+                nationalityAriaLabel={formatNationalityAriaLabel(player.nationalityCodes ?? [], lang)}
+              />
+            ))}
+          </div>
+        </div>
+      )
+    }
+
+    {
+      !showTabs && !hasPlayers && hasCoaches && (
+        <div class="players-subsection">
+          <div class="players-subsection-toolbar">
+            <div class="players-subsection-head">
+              <h3 class="players-section-title">{t('players.subsection.coaches')}</h3>
+              <span class="players-count">{rosterCoaches.length}</span>
+            </div>
+            <PlayersSortRow lang={lang} sortMode={sortMode} />
+          </div>
+          <div class="players-grid">
+            {displayCoaches.map((coach) => (
+              <PortraitCard
+                name={coach.name}
+                subtitle={subtitleFor(coach)}
+                photo={getPlayerPhotoBySlug(coach.slug)}
+                href="#"
+                dataSlug={coach.slug}
+                nationalityCodes={coach.nationalityCodes ?? []}
+                nationalityAriaLabel={formatNationalityAriaLabel(coach.nationalityCodes ?? [], lang)}
+              />
+            ))}
+          </div>
+        </div>
+      )
+    }
   </div>
 </section>
 
@@ -97,6 +262,200 @@ const players = (await getCollection('players')).sort((a, b) =>
     color: var(--ph-white-60);
   }
 
+  .players-empty {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--ph-white-60);
+  }
+
+  /* ── Pestañas jugadores / entrenadores ── */
+  .players-tabs-wrap {
+    margin-top: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    .players-tabs-wrap {
+      margin-top: 2.5rem;
+    }
+  }
+
+  .players-tabs {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.26rem;
+    box-sizing: border-box;
+    padding: 0.38rem 0.5rem;
+    width: fit-content;
+    max-width: 100%;
+    border: 1px solid var(--ph-white-10);
+    border-radius: var(--ph-radius);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .players-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    padding: 0.26rem 0.52rem;
+    min-height: 0;
+    border: 1px solid transparent;
+    border-radius: calc(var(--ph-radius) - 3px);
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--ph-font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ph-white-50);
+    transition:
+      color 0.2s var(--ph-ease),
+      background-color 0.2s var(--ph-ease),
+      border-color 0.2s var(--ph-ease),
+      box-shadow 0.2s var(--ph-ease);
+  }
+
+  .players-tab-label {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .players-tab:hover {
+    color: var(--ph-white);
+    background: rgba(255, 255, 255, 0.07);
+    border-color: var(--ph-white-10);
+  }
+
+  .players-tab[aria-selected='true'] {
+    color: var(--ph-white);
+    background: rgba(214, 178, 94, 0.1);
+    border-color: rgba(214, 178, 94, 0.35);
+    box-shadow: none;
+  }
+
+  .players-tab:focus-visible {
+    outline: 2px solid var(--ph-gold);
+    outline-offset: 2px;
+  }
+
+  .players-tab-count {
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--ph-white-50);
+    padding: 0.14rem 0.34rem;
+    border: 1px solid var(--ph-white-10);
+    border-radius: calc(var(--ph-radius) - 4px);
+    letter-spacing: 0.06em;
+  }
+
+  .players-tab[aria-selected='true'] .players-tab-count {
+    color: var(--ph-gold);
+    border-color: rgba(214, 178, 94, 0.35);
+  }
+
+  /* Barra: pestañas a la izquierda, orden a la derecha (misma fila) */
+  .players-toolbar {
+    position: relative;
+    z-index: 50;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    width: 100%;
+  }
+
+  .players-toolbar .players-tabs {
+    flex: 0 1 auto;
+  }
+
+  .players-toolbar .players-sort-row {
+    margin-top: 0;
+    margin-bottom: 0;
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .players-subsection-toolbar {
+    position: relative;
+    z-index: 50;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    width: 100%;
+    margin-bottom: 1.5rem;
+  }
+
+  .players-subsection-toolbar .players-subsection-head {
+    margin-bottom: 0;
+    flex: 1 1 auto;
+    min-width: min(100%, 12rem);
+  }
+
+  .players-subsection-toolbar .players-sort-row {
+    margin-top: 0;
+    margin-bottom: 0;
+    flex: 0 0 auto;
+    align-items: center;
+  }
+
+  .players-tabpanel {
+    margin-top: 1.75rem;
+  }
+
+  .players-tabs-wrap .players-tabpanel {
+    margin-top: 1.25rem;
+  }
+
+  .players-tabpanel[hidden] {
+    display: none !important;
+  }
+
+  .players-subsection {
+    margin-top: 2.5rem;
+  }
+
+  .players-subsection:first-of-type {
+    margin-top: 0;
+  }
+
+  .players-subsection:not(:first-of-type) {
+    margin-top: 3rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--ph-white-10);
+  }
+
+  @media (min-width: 1024px) {
+    .players-subsection:not(:first-of-type) {
+      margin-top: 3.5rem;
+      padding-top: 3rem;
+    }
+  }
+
+  .players-subsection-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .players-section-title {
+    margin: 0;
+    font-family: var(--ph-font-display);
+    font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--ph-white);
+  }
+
   .players-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -126,27 +485,246 @@ const players = (await getCollection('players')).sort((a, b) =>
     splitWords,
     trackingReveal,
   } from '@/scripts/ph-text-animations';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initPlayersTabSwitch(): void {
+    const section = document.querySelector<HTMLElement>('.players-section[data-players-tabs="true"]');
+    if (!section) return;
+
+    const tabs = section.querySelectorAll<HTMLButtonElement>('.players-tab[role="tab"]');
+    const panels = section.querySelectorAll<HTMLElement>('.players-tabpanel');
+
+    let tabAnimating = false;
+
+    function getTabId(btn: HTMLButtonElement): 'players' | 'coaches' {
+      const v = btn.dataset.tab;
+      return v === 'coaches' ? 'coaches' : 'players';
+    }
+
+    function viewParamForTab(id: 'players' | 'coaches'): string {
+      return id === 'coaches' ? 'coaches' : 'players';
+    }
+
+    function panelEl(id: 'players' | 'coaches'): HTMLElement | null {
+      return section.querySelector<HTMLElement>(
+        id === 'coaches' ? '#players-panel-coaches' : '#players-panel-players',
+      );
+    }
+
+    function applyTabDOM(active: 'players' | 'coaches'): void {
+      tabs.forEach((btn) => {
+        const id = getTabId(btn);
+        const isSel = id === active;
+        btn.setAttribute('aria-selected', String(isSel));
+        btn.tabIndex = isSel ? 0 : -1;
+      });
+
+      panels.forEach((panel) => {
+        const pid = panel.id === 'players-panel-coaches' ? 'coaches' : 'players';
+        panel.hidden = pid !== active;
+      });
+
+      const url = new URL(window.location.href);
+      url.searchParams.set('view', viewParamForTab(active));
+      history.replaceState(null, '', url.pathname + url.search + url.hash);
+
+      requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+      });
+    }
+
+    function animateCardsIn(panel: HTMLElement | null): void {
+      if (!panel) return;
+      const newCards = panel.querySelectorAll<HTMLElement>('.card');
+      if (!newCards.length) return;
+      gsap.killTweensOf(newCards);
+      gsap.set(newCards, { opacity: 0, y: 18 });
+      gsap.to(newCards, {
+        opacity: 1,
+        y: 0,
+        duration: 0.48,
+        stagger: { each: 0.055, from: 'start' },
+        ease: 'power3.out',
+        onComplete: () => {
+          gsap.set(newCards, { clearProps: 'opacity,transform' });
+        },
+      });
+    }
+
+    function activateTab(active: 'players' | 'coaches'): void {
+      const selected = section.querySelector<HTMLButtonElement>('.players-tab[aria-selected="true"]');
+      const prev: 'players' | 'coaches' = selected ? getTabId(selected) : 'players';
+      if (prev === active) return;
+      if (tabAnimating) return;
+
+      if (reducedMotion()) {
+        applyTabDOM(active);
+        return;
+      }
+
+      const oldPanel = panelEl(prev);
+      const oldCards = oldPanel?.querySelectorAll<HTMLElement>('.card') ?? [];
+
+      tabAnimating = true;
+
+      const doneSwitch = (): void => {
+        applyTabDOM(active);
+        animateCardsIn(panelEl(active));
+        tabAnimating = false;
+      };
+
+      if (oldCards.length) {
+        gsap.killTweensOf(oldCards);
+        gsap.to(oldCards, {
+          opacity: 0,
+          duration: 0.22,
+          ease: 'power2.in',
+          onComplete: () => {
+            gsap.set(oldCards, { clearProps: 'opacity' });
+            doneSwitch();
+          },
+        });
+      } else {
+        doneSwitch();
+      }
+    }
+
+    tabs.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activateTab(getTabId(btn));
+      });
+    });
+
+    const tablist = section.querySelector<HTMLElement>('[role="tablist"]');
+    if (tablist) {
+      tablist.addEventListener('keydown', (e) => {
+        const keys = ['ArrowLeft', 'ArrowRight', 'Home', 'End'];
+        if (!keys.includes(e.key)) return;
+        const list = Array.from(tabs);
+        const ix = list.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+        if (ix < 0) return;
+        let next = ix;
+        if (e.key === 'ArrowRight') next = (ix + 1) % list.length;
+        if (e.key === 'ArrowLeft') next = (ix - 1 + list.length) % list.length;
+        if (e.key === 'Home') next = 0;
+        if (e.key === 'End') next = list.length - 1;
+        if (next !== ix) {
+          e.preventDefault();
+          activateTab(getTabId(list[next]!));
+          list[next]!.focus();
+        }
+      });
+    }
+  }
+
+  function initPlayersSortDropdown(): void {
+    const root = document.querySelector<HTMLElement>('[data-players-sort-root]');
+    if (!root) return;
+
+    const trigger = root.querySelector<HTMLButtonElement>('.players-sort-trigger');
+    const panel = root.querySelector<HTMLElement>('.players-sort-panel');
+    if (!trigger || !panel) return;
+
+    function close(): void {
+      if (panel.hidden) return;
+
+      if (reducedMotion()) {
+        panel.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+        return;
+      }
+
+      gsap.killTweensOf(panel);
+      gsap.to(panel, {
+        opacity: 0,
+        y: -6,
+        duration: 0.16,
+        ease: 'power2.in',
+        onComplete: () => {
+          panel.hidden = true;
+          trigger.setAttribute('aria-expanded', 'false');
+          gsap.set(panel, { clearProps: 'all' });
+        },
+      });
+    }
+
+    function open(): void {
+      if (!panel.hidden) return;
+
+      trigger.setAttribute('aria-expanded', 'true');
+      panel.hidden = false;
+
+      if (reducedMotion()) return;
+
+      gsap.killTweensOf(panel);
+      gsap.fromTo(
+        panel,
+        { opacity: 0, y: -8, scale: 0.98 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.22,
+          ease: 'power2.out',
+          onComplete: () => {
+            gsap.set(panel, { clearProps: 'opacity,transform' });
+          },
+        },
+      );
+    }
+
+    function toggle(): void {
+      if (panel.hidden) open();
+      else close();
+    }
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggle();
+    });
+
+    root.querySelectorAll<HTMLButtonElement>('[data-sort-value]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const v = btn.dataset.sortValue ?? 'default';
+        const u = new URL(window.location.href);
+        if (v === 'default') u.searchParams.delete('sort');
+        else u.searchParams.set('sort', v);
+        window.location.assign(u.pathname + u.search + u.hash);
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      const t = e.target as Node;
+      if (!root.contains(t) && !panel.hidden) close();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !panel.hidden) {
+        close();
+        trigger.focus();
+      }
+    });
+  }
 
   function initPlayersAnimations(): void {
     const section = document.querySelector<HTMLElement>('.players-section');
     if (!section || reducedMotion()) return;
 
-    // ── Cabecera ────────────────────────────────────────────────────────────
     const label = section.querySelector<HTMLElement>('.ph-label');
     if (label) {
       trackingReveal(label, { trigger: label, start: 'top 88%', once: true });
     }
 
-    const count = section.querySelector<HTMLElement>('.players-count');
-    if (count) {
+    section.querySelectorAll<HTMLElement>('.players-count').forEach((count) => {
       gsap.from(count, {
-        opacity: 0,
         scale: 0.85,
         duration: 0.5,
         ease: 'back.out(1.5)',
         scrollTrigger: { trigger: count, start: 'top 88%', once: true },
       });
-    }
+    });
 
     const title = section.querySelector<HTMLElement>('.players-title');
     if (title) {
@@ -164,33 +742,95 @@ const players = (await getCollection('players')).sort((a, b) =>
     if (subtitle) {
       const spans = splitWords(subtitle);
       gsap.from(spans, {
-        opacity: 0,
-        filter: 'blur(6px)',
-        y: 6,
-        duration: 0.6,
+        y: 10,
+        duration: 0.55,
         stagger: 0.03,
         ease: 'power2.out',
         scrollTrigger: { trigger: subtitle, start: 'top 88%', once: true },
       });
     }
 
-    // ── Cards: aparecen escalonadas al entrar en pantalla ───────────────────
-    const cards = section.querySelectorAll<HTMLElement>('.card');
-    if (cards.length) {
-      gsap.from(cards, {
+    section.querySelectorAll<HTMLElement>('.players-section-title').forEach((subTitle) => {
+      const words = wrapWords(subTitle);
+      gsap.from(words, {
+        yPercent: 100,
+        duration: 0.65,
+        stagger: 0.06,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: subTitle, start: 'top 88%', once: true },
+      });
+    });
+
+    const mainToolbar = section.querySelector<HTMLElement>('.players-toolbar');
+    if (mainToolbar) {
+      const rowKids = Array.from(mainToolbar.children);
+      const tabBadges = mainToolbar.querySelectorAll<HTMLElement>('.players-tab-count');
+      const tl = gsap.timeline({
+        scrollTrigger: { trigger: mainToolbar, start: 'top 88%', once: true },
+      });
+      tl.from(rowKids, {
         opacity: 0,
+        y: 12,
+        duration: 0.45,
+        stagger: 0.12,
+        ease: 'power2.out',
+      });
+      if (tabBadges.length) {
+        tl.from(
+          tabBadges,
+          {
+            scale: 0.82,
+            duration: 0.45,
+            stagger: 0.08,
+            ease: 'back.out(1.45)',
+          },
+          '-=0.2',
+        );
+      }
+    }
+
+    section.querySelectorAll<HTMLElement>('.players-subsection-toolbar').forEach((subToolbar) => {
+      const rowKids = Array.from(subToolbar.children);
+      if (!rowKids.length) return;
+      gsap.from(rowKids, {
+        opacity: 0,
+        y: 12,
+        duration: 0.45,
+        stagger: 0.12,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: subToolbar, start: 'top 88%', once: true },
+      });
+    });
+
+    const grids = section.querySelectorAll<HTMLElement>(
+      '.players-subsection .players-grid, .players-tabpanel:not([hidden]) .players-grid',
+    );
+    grids.forEach((grid) => {
+      const cards = grid.querySelectorAll<HTMLElement>('.card');
+      if (!cards.length) return;
+      gsap.from(cards, {
         y: 24,
         duration: 0.55,
         stagger: { each: 0.06, from: 'start' },
         ease: 'power3.out',
         scrollTrigger: {
-          trigger: '.players-grid',
+          trigger: grid,
           start: 'top 88%',
           once: true,
         },
       });
-    }
+    });
+
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+    });
   }
 
-  document.addEventListener('astro:page-load', initPlayersAnimations);
+  function initPlayersSection(): void {
+    initPlayersTabSwitch();
+    initPlayersSortDropdown();
+    initPlayersAnimations();
+  }
+
+  document.addEventListener('astro:page-load', initPlayersSection);
 </script>

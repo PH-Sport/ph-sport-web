@@ -33,7 +33,7 @@ const isEn = lang === 'en';
       </p>
 
       <div class="hero-ctas flex flex-wrap gap-5">
-        <Button href={isEn ? '/en/players/' : '/jugadores/'} variant="primary">
+        <Button href={isEn ? '/en/players/' : '/jugadores/'} variant="primary" data-astro-reload>
           {t('hero.cta.primary')}
         </Button>
         <Button href={isEn ? '/en/about' : '/sobre-nosotros'} variant="secondary">

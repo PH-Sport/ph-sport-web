@@ -1,0 +1,244 @@
+---
+import { useTranslations, type Lang } from '@/i18n/utils';
+import type { SortMode } from '@/lib/sortRoster';
+
+interface Props {
+  lang: Lang;
+  sortMode: SortMode;
+}
+
+const { lang, sortMode } = Astro.props;
+const t = useTranslations(lang);
+
+const labelCurrent =
+  sortMode === 'az'
+    ? t('players.sort.option.az')
+    : sortMode === 'za'
+      ? t('players.sort.option.za')
+      : t('players.sort.option.default');
+---
+
+<div class="players-sort-row" data-players-sort-root>
+  <span class="players-sort-label">{t('players.sort.label')}</span>
+  <div class="players-sort-dropdown">
+    <button
+      type="button"
+      class="players-sort-trigger"
+      id="players-sort-trigger"
+      aria-haspopup="listbox"
+      aria-expanded="false"
+      aria-controls="players-sort-listbox"
+      title={`${t('players.sort.aria')}: ${labelCurrent}`}
+      aria-label={`${t('players.sort.aria')}: ${labelCurrent}`}
+    >
+      <span class="players-sort-icon" aria-hidden="true">
+        <svg
+          class="players-sort-icon-svg"
+          width="23"
+          height="16"
+          viewBox="0 0 20 14"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g class="players-sort-arrows-g">
+            <path d="M6 1.5L2.5 5.5h7L6 1.5z" fill="currentColor" opacity="0.88" />
+            <path d="M6 12.5l3.5-4h-7l3.5 4z" fill="currentColor" opacity="0.88" />
+          </g>
+          <g class="players-sort-chevron-g">
+            <path
+              d="M14.5 5.5L17 8l2.5-2.5"
+              stroke="currentColor"
+              stroke-width="1.15"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              opacity="0.72"
+            />
+          </g>
+        </svg>
+      </span>
+    </button>
+    <div
+      id="players-sort-listbox"
+      class="players-sort-panel"
+      role="listbox"
+      aria-labelledby="players-sort-trigger"
+      hidden
+    >
+      <button
+        type="button"
+        class="players-sort-option"
+        role="option"
+        data-sort-value="default"
+        aria-selected={sortMode === 'default'}
+      >
+        {t('players.sort.option.default')}
+      </button>
+      <button
+        type="button"
+        class="players-sort-option"
+        role="option"
+        data-sort-value="az"
+        aria-selected={sortMode === 'az'}
+      >
+        {t('players.sort.option.az')}
+      </button>
+      <button
+        type="button"
+        class="players-sort-option"
+        role="option"
+        data-sort-value="za"
+        aria-selected={sortMode === 'za'}
+      >
+        {t('players.sort.option.za')}
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .players-sort-row {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.34rem;
+    box-sizing: border-box;
+    padding: 0.38rem 0.5rem;
+    border: 1px solid var(--ph-white-10);
+    border-radius: var(--ph-radius);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .players-sort-label {
+    flex: 0 0 auto;
+    font-family: var(--ph-font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ph-white-50);
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .players-sort-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+  }
+
+  .players-sort-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.26rem 0.36rem;
+    min-height: 0;
+    border: none;
+    border-radius: calc(var(--ph-radius) - 3px);
+    cursor: pointer;
+    color: var(--ph-white-70);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid transparent;
+    transition:
+      color 0.2s var(--ph-ease),
+      background-color 0.2s var(--ph-ease),
+      border-color 0.2s var(--ph-ease),
+      box-shadow 0.2s var(--ph-ease);
+  }
+
+  .players-sort-trigger:hover {
+    color: var(--ph-white);
+    background: rgba(255, 255, 255, 0.07);
+    border-color: var(--ph-white-10);
+  }
+
+  .players-sort-trigger:focus-visible {
+    outline: 2px solid var(--ph-gold);
+    outline-offset: 2px;
+  }
+
+  .players-sort-trigger[aria-expanded='true'] {
+    color: var(--ph-gold);
+    background: rgba(214, 178, 94, 0.1);
+    border-color: rgba(214, 178, 94, 0.35);
+  }
+
+  .players-sort-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+  }
+
+  .players-sort-icon-svg {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .players-sort-chevron-g {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.2s var(--ph-ease);
+  }
+
+  .players-sort-trigger[aria-expanded='true'] .players-sort-chevron-g {
+    transform: rotate(180deg);
+  }
+
+  .players-sort-panel {
+    position: absolute;
+    z-index: 100;
+    right: 0;
+    top: calc(100% + 0.35rem);
+    min-width: 10rem;
+    padding: 0.25rem;
+    border: 1px solid var(--ph-white-10);
+    border-radius: var(--ph-radius);
+    background: rgba(13, 15, 18, 0.98);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+  }
+
+  .players-sort-panel[hidden] {
+    display: none !important;
+  }
+
+  .players-sort-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.45rem 0.72rem;
+    margin: 0;
+    border: none;
+    border-radius: calc(var(--ph-radius) - 2px);
+    cursor: pointer;
+    font-family: var(--ph-font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ph-white-60);
+    background: transparent;
+    transition:
+      color 0.2s var(--ph-ease),
+      background-color 0.2s var(--ph-ease);
+  }
+
+  .players-sort-option:hover {
+    color: var(--ph-white);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .players-sort-option:focus-visible {
+    outline: 2px solid var(--ph-gold);
+    outline-offset: 0;
+  }
+
+  .players-sort-option[aria-selected='true'] {
+    color: var(--ph-white);
+    background: rgba(214, 178, 94, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(214, 178, 94, 0.3);
+  }
+</style>

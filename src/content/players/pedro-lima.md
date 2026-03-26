@@ -1,12 +1,10 @@
 ---
-# src/content/players/pedro-lima.md
-# El nombre del archivo ES el slug. No añadir campo slug en el frontmatter.
-
 name: "Pedro Lima"
 club:
   name: "Wolverhampton FC"
   country: "Inglaterra"
-photo: "../../assets/images/players/pedro-lima.jpg"
+photo: "../../assets/images/players/avatar-placeholder.svg"
 featured: true
-nationality: "Brasileña"
+nationalityCodes:
+  - "BR"
 ---

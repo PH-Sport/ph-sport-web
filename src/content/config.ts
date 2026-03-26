@@ -22,7 +22,17 @@ const players = defineCollection({
       // true → aparece en la sección de highlights del hero o inicio
       featured: z.boolean().default(false),
 
-      nationality: z.string().optional(),
+      /** player | coach — agrupa la grid en /jugadores/ */
+      role: z.enum(['player', 'coach']).default('player'),
+
+      /**
+       * ISO 3166-1 alpha-2 (0–2 banderas). Opcional para compatibilidad con frontmatter antiguo (`nationality` texto).
+       */
+      nationalityCodes: z
+        .array(z.string().length(2))
+        .max(2)
+        .transform((codes) => codes.map((c) => c.toUpperCase()))
+        .optional(),
       age: z.number().int().positive().optional(),
 
       social: z.object({

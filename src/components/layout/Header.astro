@@ -27,6 +27,10 @@ const isActive = (href: string): boolean => {
   const normalizedHref = href === '/' ? '/' : href.replace(/\/$/, '');
   return normalizedHref === currentPath;
 };
+
+/** Recarga completa al entrar en Jugadores (evita estado raro con View Transitions + content). */
+const playersPageReload = (href: string): boolean =>
+  href === '/jugadores/' || href === '/en/players/';
 ---
 
 <header data-header transition:persist>
@@ -47,6 +51,7 @@ const isActive = (href: string): boolean => {
               <a
                 href={item.href}
                 class:list={['nav-link', isActive(item.href) && 'is-active']}
+                data-astro-reload={playersPageReload(item.href) ? true : undefined}
               >
                 {item.label}
               </a>
@@ -122,6 +127,7 @@ const isActive = (href: string): boolean => {
             <a
               href={item.href}
               data-mobile-link
+              data-astro-reload={playersPageReload(item.href) ? true : undefined}
               class:list={[
                 'mobile-link',
                 isActive(item.href) && 'mobile-link--active',

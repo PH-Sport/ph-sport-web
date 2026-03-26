@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 640" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="ph-avatar-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1d22"/>
+      <stop offset="50%" stop-color="#252a31"/>
+      <stop offset="100%" stop-color="#1a1d22"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="640" fill="url(#ph-avatar-bg)"/>
+  <!-- Silueta busto: cabeza y hombros en un solo tono gris (sin capa interior oscura) -->
+  <g fill="#3d4450" opacity="0.92">
+    <ellipse cx="240" cy="220" rx="88" ry="96"/>
+    <path d="M120 520c0-88 54-152 120-152s120 64 120 152v120H120V520z"/>
+  </g>
+</svg>

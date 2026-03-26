@@ -2,6 +2,7 @@
 /* Sistema de diseno PH Sport */
 
 @import "tailwindcss";
+@import "./ph-ui-buttons.css";
 
 /* FUENTES - self-hosted
    Sohne: fuente de pago de Klim Type Foundry.

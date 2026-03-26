@@ -1,0 +1,90 @@
+/**
+ * Controles tipo botón reutilizables (toolbar jugadores, etc.).
+ * Tokens alineados con Button.astro (secondary + hover ::before).
+ */
+
+.ph-ui-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  overflow: hidden;
+  border: 1px solid var(--ph-white-20);
+  border-radius: var(--ph-radius);
+  cursor: pointer;
+  font-family: var(--ph-font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  padding: 0.5rem 0.75rem;
+  min-height: 2.75rem;
+  box-sizing: border-box;
+  isolation: isolate;
+  transition:
+    border-color var(--ph-duration) var(--ph-ease),
+    color var(--ph-duration) var(--ph-ease),
+    background-color var(--ph-duration) var(--ph-ease);
+}
+
+.ph-ui-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--ph-duration) var(--ph-ease);
+  z-index: 0;
+}
+
+.ph-ui-btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ph-ui-btn:hover::before {
+  transform: scaleX(1);
+}
+
+/* Ghost — mismo espíritu que .btn--secondary */
+.ph-ui-btn--secondary {
+  border-color: var(--ph-white-20);
+  color: var(--ph-white-60);
+  background: transparent;
+}
+
+.ph-ui-btn--secondary::before {
+  background: var(--ph-white-10);
+}
+
+.ph-ui-btn--secondary:hover {
+  border-color: var(--ph-white-60);
+  color: var(--ph-white);
+}
+
+/* Pestaña / estado activo (borde dorado, sin fill slide) */
+.ph-ui-btn--active {
+  border-color: rgba(214, 178, 94, 0.35);
+  color: var(--ph-white);
+  background: rgba(214, 178, 94, 0.1);
+}
+
+.ph-ui-btn--active::before {
+  transform: scaleX(0);
+}
+
+.ph-ui-btn--active:hover {
+  border-color: rgba(214, 178, 94, 0.45);
+  color: var(--ph-white);
+}
+
+.ph-ui-btn--active:hover::before {
+  transform: scaleX(0);
+}
+
+.ph-ui-btn:focus-visible {
+  outline: 2px solid var(--ph-gold);
+  outline-offset: 2px;
+}

@@ -32,12 +32,13 @@ const {
   nationalityAriaLabel,
 } = Astro.props;
 const alt = `${name} — ${subtitle}`;
+const cardTitle = alt;
 const showFlags = nationalityCodes.length > 0 && nationalityAriaLabel;
 ---
 
 {
   href !== undefined ? (
-    <a href={href} class="card" data-slug={dataSlug}>
+    <a href={href} class="card" data-slug={dataSlug} title={cardTitle}>
       {photo ? (
         <Image
           src={photo}
@@ -71,7 +72,7 @@ const showFlags = nationalityCodes.length > 0 && nationalityAriaLabel;
       </div>
     </a>
   ) : (
-    <article class="card" aria-label={ariaLabel}>
+    <article class="card" aria-label={ariaLabel ?? cardTitle} title={cardTitle}>
       {photo ? (
         <Image
           src={photo}
@@ -204,6 +205,11 @@ const showFlags = nationalityCodes.length > 0 && nationalityAriaLabel;
     font-size: 1rem;
     color: var(--ph-white);
     letter-spacing: -0.01em;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    word-break: break-word;
   }
 
   .card-subtitle {
@@ -214,5 +220,16 @@ const showFlags = nationalityCodes.length > 0 && nationalityAriaLabel;
     text-transform: uppercase;
     color: var(--ph-gold);
     margin-top: 0.35rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    word-break: break-word;
+  }
+
+  @media (max-width: 767px) {
+    .card-subtitle {
+      font-size: 0.625rem;
+    }
   }
 </style>

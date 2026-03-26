@@ -5,10 +5,15 @@ import type { SortMode } from '@/lib/sortRoster';
 interface Props {
   lang: Lang;
   sortMode: SortMode;
+  /** Sufijo para ids únicos si hay más de un control de orden en la página (p. ej. `-sheet`). */
+  idSuffix?: string;
 }
 
-const { lang, sortMode } = Astro.props;
+const { lang, sortMode, idSuffix = '' } = Astro.props;
 const t = useTranslations(lang);
+
+const triggerId = `players-sort-trigger${idSuffix}`;
+const listboxId = `players-sort-listbox${idSuffix}`;
 
 const labelCurrent =
   sortMode === 'az'
@@ -18,35 +23,31 @@ const labelCurrent =
       : t('players.sort.option.default');
 ---
 
-<div class="players-sort-row" data-players-sort-root>
-  <span class="players-sort-label">{t('players.sort.label')}</span>
+<div class="players-sort-root" data-players-sort-root>
   <div class="players-sort-dropdown">
     <button
       type="button"
-      class="players-sort-trigger"
-      id="players-sort-trigger"
+      class="players-sort-trigger ph-ui-btn ph-ui-btn--secondary"
+      id={triggerId}
       aria-haspopup="listbox"
       aria-expanded="false"
-      aria-controls="players-sort-listbox"
+      aria-controls={listboxId}
       title={`${t('players.sort.aria')}: ${labelCurrent}`}
       aria-label={`${t('players.sort.aria')}: ${labelCurrent}`}
     >
+      <span class="players-sort-label">{t('players.sort.label')}</span>
       <span class="players-sort-icon" aria-hidden="true">
         <svg
           class="players-sort-icon-svg"
-          width="23"
-          height="16"
-          viewBox="0 0 20 14"
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <g class="players-sort-arrows-g">
-            <path d="M6 1.5L2.5 5.5h7L6 1.5z" fill="currentColor" opacity="0.88" />
-            <path d="M6 12.5l3.5-4h-7l3.5 4z" fill="currentColor" opacity="0.88" />
-          </g>
           <g class="players-sort-chevron-g">
             <path
-              d="M14.5 5.5L17 8l2.5-2.5"
+              d="M3 4.5L6 7.5L9 4.5"
               stroke="currentColor"
               stroke-width="1.15"
               stroke-linecap="round"
@@ -58,10 +59,10 @@ const labelCurrent =
       </span>
     </button>
     <div
-      id="players-sort-listbox"
+      id={listboxId}
       class="players-sort-panel"
       role="listbox"
-      aria-labelledby="players-sort-trigger"
+      aria-labelledby={triggerId}
       hidden
     >
       <button
@@ -96,79 +97,66 @@ const labelCurrent =
 </div>
 
 <style>
-  .players-sort-row {
-    display: inline-flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    justify-content: center;
-    gap: 0.34rem;
-    box-sizing: border-box;
-    padding: 0.38rem 0.5rem;
-    border: 1px solid var(--ph-white-10);
-    border-radius: var(--ph-radius);
-    background: rgba(255, 255, 255, 0.02);
-  }
-
-  .players-sort-label {
-    flex: 0 0 auto;
-    font-family: var(--ph-font-display);
-    font-size: 0.75rem;
-    font-weight: 600;
-    line-height: 1;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ph-white-50);
-    display: inline-flex;
-    align-items: center;
+  .players-sort-root {
+    display: inline-block;
+    width: auto;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .players-sort-dropdown {
     position: relative;
-    display: flex;
-    align-items: center;
-    flex: 0 0 auto;
+    display: inline-block;
+    width: auto;
+    min-width: 0;
   }
 
   .players-sort-trigger {
+    width: auto;
+    max-width: 100%;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 2.35rem;
+    padding: 0.35rem 0.55rem;
+    text-align: left;
+  }
+
+  @media (min-width: 640px) {
+    .players-sort-trigger {
+      min-height: 2.75rem;
+      padding: 0.5rem 0.75rem;
+    }
+  }
+
+  .players-sort-label {
+    flex: 0 1 auto;
+    min-width: 0;
+    font-family: var(--ph-font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: inherit;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 0.26rem 0.36rem;
-    min-height: 0;
-    border: none;
-    border-radius: calc(var(--ph-radius) - 3px);
-    cursor: pointer;
-    color: var(--ph-white-70);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid transparent;
-    transition:
-      color 0.2s var(--ph-ease),
-      background-color 0.2s var(--ph-ease),
-      border-color 0.2s var(--ph-ease),
-      box-shadow 0.2s var(--ph-ease);
-  }
-
-  .players-sort-trigger:hover {
-    color: var(--ph-white);
-    background: rgba(255, 255, 255, 0.07);
-    border-color: var(--ph-white-10);
-  }
-
-  .players-sort-trigger:focus-visible {
-    outline: 2px solid var(--ph-gold);
-    outline-offset: 2px;
   }
 
   .players-sort-trigger[aria-expanded='true'] {
-    color: var(--ph-gold);
-    background: rgba(214, 178, 94, 0.1);
     border-color: rgba(214, 178, 94, 0.35);
+    color: var(--ph-white);
+    background: rgba(214, 178, 94, 0.1);
+  }
+
+  .players-sort-trigger[aria-expanded='true']::before {
+    transform: scaleX(0);
   }
 
   .players-sort-icon {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     line-height: 0;
   }
 

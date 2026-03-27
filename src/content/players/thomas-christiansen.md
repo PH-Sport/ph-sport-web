@@ -6,7 +6,7 @@ club:
   country: "Panamá"
 photo: "../../assets/images/players/avatar-placeholder.svg"
 featured: false
-nationalityCodes:
+nationalTeamCodes:
   - "DK"
   - "ES"
 ---

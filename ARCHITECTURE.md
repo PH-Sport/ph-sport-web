@@ -197,7 +197,7 @@ const players = defineCollection({
 
       // Opcionales — reservados para crecimiento futuro
       featured: z.boolean().default(false),
-      nationality: z.string().optional(),
+      nationalTeamCodes: z.array(z.string().length(2)).max(2).optional(),
       age: z.number().int().positive().optional(),
       social: z.object({
         instagram: z.string().url().optional(),
@@ -222,7 +222,8 @@ club:
   country: "España"
 photo: "../../assets/images/players/carlos-garcia.jpg"
 featured: true
-nationality: "Española"
+nationalTeamCodes:
+  - "ES"
 age: 24
 social:
   instagram: "https://instagram.com/carlosgarcia"

@@ -5,6 +5,6 @@ club:
   country: "Inglaterra"
 photo: "../../assets/images/players/avatar-placeholder.svg"
 featured: true
-nationalityCodes:
+nationalTeamCodes:
   - "BR"
 ---

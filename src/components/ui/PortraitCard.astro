@@ -15,10 +15,10 @@ interface Props {
   dataSlug?: string;
   /** Distingue miembros con el mismo nombre visible (p. ej. placeholders) */
   ariaLabel?: string;
-  /** Códigos ISO 3166-1 alpha-2 para banderas */
-  nationalityCodes?: string[];
+  /** Códigos ISO 3166-1 alpha-2 para banderas de selección */
+  nationalTeamCodes?: string[];
   /** Texto para lectores de pantalla (nombres de país localizados) */
-  nationalityAriaLabel?: string;
+  nationalTeamAriaLabel?: string;
 }
 
 const {
@@ -28,12 +28,12 @@ const {
   href,
   dataSlug,
   ariaLabel,
-  nationalityCodes = [],
-  nationalityAriaLabel,
+  nationalTeamCodes = [],
+  nationalTeamAriaLabel,
 } = Astro.props;
 const alt = `${name} — ${subtitle}`;
 const cardTitle = alt;
-const showFlags = nationalityCodes.length > 0 && nationalityAriaLabel;
+const showFlags = nationalTeamCodes.length > 0 && nationalTeamAriaLabel;
 ---
 
 {
@@ -60,8 +60,8 @@ const showFlags = nationalityCodes.length > 0 && nationalityAriaLabel;
         />
       )}
       {showFlags ? (
-        <div class="card-flags" role="group" aria-label={nationalityAriaLabel}>
-          {nationalityCodes.map((code) => (
+        <div class="card-flags" role="group" aria-label={nationalTeamAriaLabel}>
+          {nationalTeamCodes.map((code) => (
             <span class={`fi fi-${code.toLowerCase()}`} aria-hidden="true"></span>
           ))}
         </div>
@@ -94,8 +94,8 @@ const showFlags = nationalityCodes.length > 0 && nationalityAriaLabel;
         />
       )}
       {showFlags ? (
-        <div class="card-flags" role="group" aria-label={nationalityAriaLabel}>
-          {nationalityCodes.map((code) => (
+        <div class="card-flags" role="group" aria-label={nationalTeamAriaLabel}>
+          {nationalTeamCodes.map((code) => (
             <span class={`fi fi-${code.toLowerCase()}`} aria-hidden="true"></span>
           ))}
         </div>

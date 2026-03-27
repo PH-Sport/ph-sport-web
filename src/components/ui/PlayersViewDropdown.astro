@@ -3,18 +3,15 @@ import { useTranslations, type Lang } from '@/i18n/utils';
 
 interface Props {
   lang: Lang;
-  playerCount: number;
-  coachCount: number;
   showCoachesPanelFirst: boolean;
 }
 
-const { lang, playerCount, coachCount, showCoachesPanelFirst } = Astro.props;
+const { lang, showCoachesPanelFirst } = Astro.props;
 const t = useTranslations(lang);
 
 const labelPlayers = t('players.subsection.players');
 const labelCoaches = t('players.subsection.coaches');
 const currentLabel = showCoachesPanelFirst ? labelCoaches : labelPlayers;
-const currentCount = showCoachesPanelFirst ? coachCount : playerCount;
 const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
 ---
 
@@ -31,7 +28,6 @@ const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
     >
       <span class="players-view-trigger-text">
         <span id="players-view-trigger-mobile-label" class="players-view-trigger-label">{currentLabel}</span>
-        <span class="players-tab-count" id="players-view-trigger-mobile-count">{currentCount}</span>
       </span>
       <span class="players-view-icon" aria-hidden="true">
         <svg
@@ -70,7 +66,6 @@ const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
         aria-selected={!showCoachesPanelFirst}
       >
         <span class="players-view-option-label">{labelPlayers}</span>
-        <span class="players-tab-count">{playerCount}</span>
       </button>
       <button
         type="button"
@@ -80,7 +75,6 @@ const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
         aria-selected={showCoachesPanelFirst}
       >
         <span class="players-view-option-label">{labelCoaches}</span>
-        <span class="players-tab-count">{coachCount}</span>
       </button>
     </div>
   </div>
@@ -132,35 +126,6 @@ const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: inherit;
-  }
-
-  .players-view-trigger-text .players-tab-count {
-    flex-shrink: 0;
-    font-size: 0.625rem;
-    font-weight: 600;
-    line-height: 1;
-    color: var(--ph-white-50);
-    padding: 0.14rem 0.34rem;
-    border: 1px solid var(--ph-white-10);
-    border-radius: calc(var(--ph-radius) - 4px);
-    letter-spacing: 0.06em;
-  }
-
-  .players-view-option .players-tab-count {
-    flex-shrink: 0;
-    font-size: 0.625rem;
-    font-weight: 600;
-    line-height: 1;
-    color: var(--ph-white-50);
-    padding: 0.14rem 0.34rem;
-    border: 1px solid var(--ph-white-10);
-    border-radius: calc(var(--ph-radius) - 4px);
-    letter-spacing: 0.06em;
-  }
-
-  .players-view-option[aria-selected='true'] .players-tab-count {
-    color: var(--ph-gold);
-    border-color: rgba(214, 178, 94, 0.35);
   }
 
   .players-view-trigger[aria-expanded='true'] {
@@ -218,7 +183,7 @@ const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
   .players-view-option {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 0.5rem;
     width: 100%;
     text-align: left;

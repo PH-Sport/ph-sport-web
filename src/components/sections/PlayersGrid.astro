@@ -2,7 +2,7 @@
 import jugadoresData from '../../../data/jugadores.json';
 import entrenadoresData from '../../../data/entrenadores.json';
 import { useTranslations, type Lang } from '@/i18n/utils';
-import { formatNationalityAriaLabel } from '@/lib/countryLabels';
+import { formatNationalTeamAriaLabel } from '@/lib/countryLabels';
 import { getPlayerPhotoBySlug } from '@/lib/playerPhotos';
 import { parseSortParam, sortRosterByName } from '@/lib/sortRoster';
 import { slugify } from '@/lib/slugify';
@@ -57,15 +57,12 @@ function subtitleFor(row: { club: { name: string } | null }): string {
   data-players-tabs={showTabs ? 'true' : undefined}
   data-label-players={showTabs ? t('players.subsection.players') : undefined}
   data-label-coaches={showTabs ? t('players.subsection.coaches') : undefined}
-  data-view-count-players={showTabs ? String(rosterPlayers.length) : undefined}
-  data-view-count-coaches={showTabs ? String(rosterCoaches.length) : undefined}
   data-tabs-aria={showTabs ? t('players.tabs.aria') : undefined}
 >
   <div class="ph-section">
     <header class="players-header">
       <div class="players-header-top">
         <span class="ph-label">{t('nav.players')}</span>
-        <span class="players-count">{totalRoster}</span>
       </div>
       <div class="ph-divider mt-4"></div>
       <h2 class="players-title">
@@ -85,12 +82,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
         <div class="players-tabs-wrap">
           <div class="players-toolbar-mobile md:hidden" data-players-toolbar-animate>
             <div class="players-toolbar-mobile-view">
-              <PlayersViewDropdown
-                lang={lang}
-                playerCount={rosterPlayers.length}
-                coachCount={rosterCoaches.length}
-                showCoachesPanelFirst={showCoachesPanelFirst}
-              />
+              <PlayersViewDropdown lang={lang} showCoachesPanelFirst={showCoachesPanelFirst} />
             </div>
             <div class="players-toolbar-mobile-sort">
               <PlayersSortRow lang={lang} sortMode={sortMode} idSuffix="-mobile" />
@@ -110,7 +102,6 @@ function subtitleFor(row: { club: { name: string } | null }): string {
                 data-tab="players"
               >
                 <span class="players-tab-label">{t('players.subsection.players')}</span>
-                <span class="players-tab-count">{rosterPlayers.length}</span>
               </button>
               <button
                 type="button"
@@ -123,7 +114,6 @@ function subtitleFor(row: { club: { name: string } | null }): string {
                 data-tab="coaches"
               >
                 <span class="players-tab-label">{t('players.subsection.coaches')}</span>
-                <span class="players-tab-count">{rosterCoaches.length}</span>
               </button>
             </div>
             <PlayersSortRow lang={lang} sortMode={sortMode} />
@@ -144,8 +134,8 @@ function subtitleFor(row: { club: { name: string } | null }): string {
                   photo={getPlayerPhotoBySlug(player.slug)}
                   href="#"
                   dataSlug={player.slug}
-                  nationalityCodes={player.nationalityCodes ?? []}
-                  nationalityAriaLabel={formatNationalityAriaLabel(player.nationalityCodes ?? [], lang)}
+                  nationalTeamCodes={player.nationalTeamCodes ?? []}
+                  nationalTeamAriaLabel={formatNationalTeamAriaLabel(player.nationalTeamCodes ?? [], lang)}
                 />
               ))}
             </div>
@@ -166,8 +156,8 @@ function subtitleFor(row: { club: { name: string } | null }): string {
                   photo={getPlayerPhotoBySlug(coach.slug)}
                   href="#"
                   dataSlug={coach.slug}
-                  nationalityCodes={coach.nationalityCodes ?? []}
-                  nationalityAriaLabel={formatNationalityAriaLabel(coach.nationalityCodes ?? [], lang)}
+                  nationalTeamCodes={coach.nationalTeamCodes ?? []}
+                  nationalTeamAriaLabel={formatNationalTeamAriaLabel(coach.nationalTeamCodes ?? [], lang)}
                 />
               ))}
             </div>
@@ -182,7 +172,6 @@ function subtitleFor(row: { club: { name: string } | null }): string {
           <div class="players-subsection-toolbar">
             <div class="players-subsection-head">
               <h3 class="players-section-title">{t('players.subsection.players')}</h3>
-              <span class="players-count">{rosterPlayers.length}</span>
             </div>
             <PlayersSortRow lang={lang} sortMode={sortMode} />
           </div>
@@ -194,8 +183,8 @@ function subtitleFor(row: { club: { name: string } | null }): string {
                 photo={getPlayerPhotoBySlug(player.slug)}
                 href="#"
                 dataSlug={player.slug}
-                nationalityCodes={player.nationalityCodes ?? []}
-                nationalityAriaLabel={formatNationalityAriaLabel(player.nationalityCodes ?? [], lang)}
+                nationalTeamCodes={player.nationalTeamCodes ?? []}
+                nationalTeamAriaLabel={formatNationalTeamAriaLabel(player.nationalTeamCodes ?? [], lang)}
               />
             ))}
           </div>
@@ -209,7 +198,6 @@ function subtitleFor(row: { club: { name: string } | null }): string {
           <div class="players-subsection-toolbar">
             <div class="players-subsection-head">
               <h3 class="players-section-title">{t('players.subsection.coaches')}</h3>
-              <span class="players-count">{rosterCoaches.length}</span>
             </div>
             <PlayersSortRow lang={lang} sortMode={sortMode} />
           </div>
@@ -221,8 +209,8 @@ function subtitleFor(row: { club: { name: string } | null }): string {
                 photo={getPlayerPhotoBySlug(coach.slug)}
                 href="#"
                 dataSlug={coach.slug}
-                nationalityCodes={coach.nationalityCodes ?? []}
-                nationalityAriaLabel={formatNationalityAriaLabel(coach.nationalityCodes ?? [], lang)}
+                nationalTeamCodes={coach.nationalTeamCodes ?? []}
+                nationalTeamAriaLabel={formatNationalTeamAriaLabel(coach.nationalTeamCodes ?? [], lang)}
               />
             ))}
           </div>
@@ -257,17 +245,6 @@ function subtitleFor(row: { club: { name: string } | null }): string {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-  }
-
-  .players-count {
-    font-family: var(--ph-font-display);
-    font-size: 0.6875rem;
-    font-weight: 500;
-    color: var(--ph-white-60);
-    padding: 0.125rem 0.5rem;
-    border: 1px solid var(--ph-white-10);
-    border-radius: var(--ph-radius);
-    letter-spacing: 0.04em;
   }
 
   .players-title {
@@ -355,22 +332,6 @@ function subtitleFor(row: { club: { name: string } | null }): string {
 
   .players-tab[aria-selected='true']:hover::before {
     transform: scaleX(0);
-  }
-
-  .players-tab-count {
-    font-size: 0.625rem;
-    font-weight: 600;
-    line-height: 1;
-    color: var(--ph-white-50);
-    padding: 0.14rem 0.34rem;
-    border: 1px solid var(--ph-white-10);
-    border-radius: calc(var(--ph-radius) - 4px);
-    letter-spacing: 0.06em;
-  }
-
-  .players-tab[aria-selected='true'] .players-tab-count {
-    color: var(--ph-gold);
-    border-color: rgba(214, 178, 94, 0.35);
   }
 
   /* Móvil: dropdown vista + dropdown Orden (solo < md; no usar display:flex global para no pisar `md:hidden` de Tailwind) */
@@ -649,15 +610,9 @@ function subtitleFor(row: { club: { name: string } | null }): string {
       const lc = section.dataset.labelCoaches;
       const tabsAria = section.dataset.tabsAria;
       const triggerLabel = section.querySelector('#players-view-trigger-mobile-label');
-      const triggerCount = section.querySelector('#players-view-trigger-mobile-count');
-      const cp = section.dataset.viewCountPlayers ?? '';
-      const cc = section.dataset.viewCountCoaches ?? '';
       const trigger = section.querySelector<HTMLButtonElement>('#players-view-trigger-mobile');
       if (triggerLabel && lp && lc) {
         triggerLabel.textContent = active === 'coaches' ? lc : lp;
-      }
-      if (triggerCount && cp !== '' && cc !== '') {
-        triggerCount.textContent = active === 'coaches' ? cc : cp;
       }
       if (trigger && lp && lc && tabsAria) {
         const label = active === 'coaches' ? lc : lp;
@@ -963,15 +918,6 @@ function subtitleFor(row: { club: { name: string } | null }): string {
       trackingReveal(label, { trigger: label, start: 'top 88%', once: true });
     }
 
-    section.querySelectorAll<HTMLElement>('.players-count').forEach((count) => {
-      gsap.from(count, {
-        scale: 0.85,
-        duration: 0.5,
-        ease: 'back.out(1.5)',
-        scrollTrigger: { trigger: count, start: 'top 88%', once: true },
-      });
-    });
-
     const title = section.querySelector<HTMLElement>('.players-title');
     if (title) {
       const words = wrapWords(title);
@@ -1023,29 +969,14 @@ function subtitleFor(row: { club: { name: string } | null }): string {
     const mainToolbar = section.querySelector<HTMLElement>('.players-toolbar--desktop');
     if (mainToolbar) {
       const rowKids = Array.from(mainToolbar.children);
-      const tabBadges = mainToolbar.querySelectorAll<HTMLElement>('.players-tab-count');
-      const tl = gsap.timeline({
-        scrollTrigger: { trigger: mainToolbar, start: 'top 88%', once: true },
-      });
-      tl.from(rowKids, {
+      gsap.from(rowKids, {
         opacity: 0,
         y: 12,
         duration: 0.45,
         stagger: 0.12,
         ease: 'power2.out',
+        scrollTrigger: { trigger: mainToolbar, start: 'top 88%', once: true },
       });
-      if (tabBadges.length) {
-        tl.from(
-          tabBadges,
-          {
-            scale: 0.82,
-            duration: 0.45,
-            stagger: 0.08,
-            ease: 'back.out(1.45)',
-          },
-          '-=0.2',
-        );
-      }
     }
 
     section.querySelectorAll<HTMLElement>('.players-subsection-toolbar').forEach((subToolbar) => {

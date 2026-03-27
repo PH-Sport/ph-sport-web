@@ -5,6 +5,6 @@ club:
   country: "España"
 photo: "../../assets/images/players/avatar-placeholder.svg"
 featured: false
-nationalityCodes:
+nationalTeamCodes:
   - "ES"
 ---

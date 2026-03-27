@@ -1,4 +1,4 @@
 [
-  { "name": "Thomas Christiansen", "club": { "name": "Seleccionador Panamá" }, "nationalityCodes": ["DK", "ES"] },
-  { "name": "Nacho Castro", "club": null, "nationalityCodes": ["ES"] }
+  { "name": "Thomas Christiansen", "club": { "name": "Seleccionador Panamá" }, "nationalTeamCodes": ["PA"] },
+  { "name": "Nacho Castro", "club": null, "nationalTeamCodes": [] }
 ]

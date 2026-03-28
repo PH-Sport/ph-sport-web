@@ -2,6 +2,29 @@ import { gsap } from 'gsap';
 import { reducedMotion } from '@/scripts/ph-text-animations';
 import type { PlayerDetailPayload } from '@/lib/playerDetail';
 
+const FLIP_DURATION = 0.78;
+const FLIP_EASE = 'power3.inOut';
+const BACKDROP_EXIT_FADE = 0.28;
+
+function getTargetCardBox(): { targetW: number; targetH: number; cx: number; cy: number } {
+  const targetW = Math.min(320, window.innerWidth * 0.88);
+  const targetH = targetW * (4 / 3);
+  const cx = window.innerWidth / 2 - targetW / 2;
+  const cy = window.innerHeight / 2 - targetH / 2;
+  return { targetW, targetH, cx, cy };
+}
+
+function styleFlipFace(face: HTMLElement): void {
+  face.style.position = 'absolute';
+  face.style.left = '0';
+  face.style.top = '0';
+  face.style.width = '100%';
+  face.style.height = '100%';
+  face.style.margin = '0';
+  face.style.boxSizing = 'border-box';
+  face.style.backfaceVisibility = 'hidden';
+}
+
 type ModalState = {
   slug: string;
   opener: HTMLElement;
@@ -17,6 +40,9 @@ let cloneEl: HTMLElement | null = null;
 let popStateBound = false;
 let escapeKeyBound = false;
 let beforePrepBound = false;
+/** Cierre animado en curso; `exitPending` conserva estado para interrupción instantánea. */
+let exitAnimating = false;
+let exitPending: ModalState | null = null;
 
 function readPayloads(root: HTMLElement): Record<string, PlayerDetailPayload> {
   const raw = root.dataset.playerPayloads;
@@ -90,26 +116,72 @@ function destroyShellContent(): void {
   }
 }
 
+function killExitTweens(): void {
+  if (backdropEl) gsap.killTweensOf(backdropEl);
+  if (cloneEl) {
+    gsap.killTweensOf(cloneEl);
+    const inner = cloneEl.firstElementChild;
+    if (inner) gsap.killTweensOf(inner);
+  }
+}
+
 /**
  * Cierra el modal. Por defecto restaura la URL con replaceState (sin popstate → sin View Transition).
  * `skipUrlRestore`: la URL ya es correcta (popstate) o la va a fijar Astro (navegación).
+ * `instant`: sin animación de salida (navegación, reduced motion, o carga de página).
  */
-function closeModal(opts?: { skipUrlRestore?: boolean }): void {
+function closeModal(opts?: { skipUrlRestore?: boolean; instant?: boolean }): void {
+  if (exitAnimating) {
+    if (!opts?.instant) return;
+    const pend = exitPending;
+    exitAnimating = false;
+    exitPending = null;
+    killExitTweens();
+    document.body.style.overflow = '';
+    destroyShellContent();
+    removeClone();
+    if (pend && !opts?.skipUrlRestore) {
+      history.replaceState(history.state, '', pend.originalHref);
+    }
+    pend?.opener.focus();
+    return;
+  }
+
   const prev = active;
+  if (!prev) return;
+
+  const instant =
+    opts?.instant === true || reducedMotion() || !cloneEl;
+
+  if (instant) {
+    active = null;
+    document.body.style.overflow = '';
+    destroyShellContent();
+    removeClone();
+    if (!opts?.skipUrlRestore) {
+      history.replaceState(history.state, '', prev.originalHref);
+    }
+    prev.opener.focus();
+    return;
+  }
+
+  exitAnimating = true;
+  exitPending = prev;
   active = null;
 
-  document.body.style.overflow = '';
+  const flipRoot = cloneEl as HTMLDivElement;
 
-  destroyShellContent();
-  removeClone();
-
-  if (prev && !opts?.skipUrlRestore) {
-    history.replaceState(history.state, '', prev.originalHref);
-  }
-
-  if (prev?.opener) {
+  runFlipExitAnimation(flipRoot, prev.opener, () => {
+    exitAnimating = false;
+    exitPending = null;
+    document.body.style.overflow = '';
+    destroyShellContent();
+    removeClone();
+    if (!opts?.skipUrlRestore) {
+      history.replaceState(history.state, '', prev.originalHref);
+    }
     prev.opener.focus();
-  }
+  });
 }
 
 /** Cierra el flip: tarjeta legible + botón cerrar (sin bloque de biografía). */
@@ -190,14 +262,7 @@ function runFlipAnimation(
   backFace.classList.add('player-modal-card-clone');
 
   for (const face of [frontFace, backFace]) {
-    face.style.position = 'absolute';
-    face.style.left = '0';
-    face.style.top = '0';
-    face.style.width = '100%';
-    face.style.height = '100%';
-    face.style.margin = '0';
-    face.style.boxSizing = 'border-box';
-    face.style.backfaceVisibility = 'hidden';
+    styleFlipFace(face);
   }
 
   gsap.set(backFace, { rotationY: 180 });
@@ -208,10 +273,7 @@ function runFlipAnimation(
   document.body.appendChild(flipRoot);
   cloneEl = flipRoot;
 
-  const targetW = Math.min(320, window.innerWidth * 0.88);
-  const targetH = targetW * (4 / 3);
-  const cx = window.innerWidth / 2 - targetW / 2;
-  const cy = window.innerHeight / 2 - targetH / 2;
+  const { targetW, targetH, cx, cy } = getTargetCardBox();
 
   const flatten = (): void => {
     gsap.killTweensOf([flipRoot, flipInner]);
@@ -237,28 +299,118 @@ function runFlipAnimation(
   flipRoot.style.width = `${rect.width}px`;
   flipRoot.style.height = `${rect.height}px`;
 
-  const duration = 0.78;
-  const ease = 'power3.inOut';
-
   gsap
     .timeline({ onComplete: flatten })
     .to(
       flipRoot,
-      { left: cx, top: cy, width: targetW, height: targetH, duration, ease },
+      { left: cx, top: cy, width: targetW, height: targetH, duration: FLIP_DURATION, ease: FLIP_EASE },
       0,
     )
     .to(
       flipInner,
-      { rotationY: 180, duration, ease },
+      { rotationY: 180, duration: FLIP_DURATION, ease: FLIP_EASE },
       0,
     );
+}
+
+/**
+ * Invierte la entrada: reconstruye flipInner, anima hacia la tarjeta del grid y giro 180° → 0°.
+ */
+function runFlipExitAnimation(
+  flipRoot: HTMLDivElement,
+  opener: HTMLElement,
+  onComplete: () => void,
+): void {
+  const backdrop = backdropEl;
+
+  flipRoot.querySelector('.player-modal-close')?.remove();
+
+  const backFace = flipRoot.querySelector('.player-modal-card-clone') as HTMLElement | null;
+  if (!backFace) {
+    onComplete();
+    return;
+  }
+
+  const fromRect = backFace.getBoundingClientRect();
+
+  backFace.remove();
+
+  flipRoot.classList.remove('player-modal-flip-root--locked');
+  flipRoot.removeAttribute('role');
+  flipRoot.removeAttribute('aria-modal');
+  flipRoot.removeAttribute('aria-label');
+
+  flipRoot.style.display = 'block';
+  flipRoot.style.flexDirection = '';
+  flipRoot.style.overflow = 'visible';
+  flipRoot.style.maxHeight = 'none';
+  flipRoot.style.height = `${fromRect.height}px`;
+  flipRoot.style.left = `${fromRect.left}px`;
+  flipRoot.style.top = `${fromRect.top}px`;
+  flipRoot.style.width = `${fromRect.width}px`;
+  flipRoot.style.position = 'fixed';
+  flipRoot.style.margin = '0';
+  flipRoot.style.zIndex = '250';
+  flipRoot.style.boxSizing = 'border-box';
+  flipRoot.style.pointerEvents = 'none';
+
+  const flipInner = document.createElement('div');
+  flipInner.style.width = '100%';
+  flipInner.style.height = '100%';
+  flipInner.style.position = 'relative';
+  flipInner.style.transformStyle = 'preserve-3d';
+  flipInner.style.transformOrigin = 'center center';
+
+  const frontFace = opener.cloneNode(true) as HTMLElement;
+  frontFace.classList.add('player-modal-card-clone');
+  styleFlipFace(frontFace);
+  styleFlipFace(backFace);
+  gsap.set(backFace, { rotationY: 180 });
+
+  flipInner.appendChild(frontFace);
+  flipInner.appendChild(backFace);
+  flipRoot.replaceChildren(flipInner);
+
+  gsap.set(flipInner, { rotationY: 180 });
+
+  const toRect = opener.getBoundingClientRect();
+
+  if (backdrop) {
+    gsap.killTweensOf(backdrop);
+    backdrop.hidden = false;
+  }
+
+  const tl = gsap.timeline({ onComplete });
+  if (backdrop) {
+    tl.to(
+      backdrop,
+      { opacity: 0, duration: BACKDROP_EXIT_FADE, ease: 'power2.out' },
+      0,
+    );
+  }
+  tl.to(
+    flipRoot,
+    {
+      left: toRect.left,
+      top: toRect.top,
+      width: toRect.width,
+      height: toRect.height,
+      duration: FLIP_DURATION,
+      ease: FLIP_EASE,
+    },
+    0,
+  ).to(
+    flipInner,
+    { rotationY: 0, duration: FLIP_DURATION, ease: FLIP_EASE },
+    0,
+  );
 }
 
 function onPopState(): void {
   if (!active) return;
   const expected = expectedPathname(active.detailHref);
   if (window.location.pathname !== expected) {
-    closeModal({ skipUrlRestore: true });
+    closeModal({ skipUrlRestore: true, instant: true });
   }
 }
 
@@ -273,7 +425,7 @@ function bindBeforePreparation(): void {
   beforePrepBound = true;
   document.addEventListener('astro:before-preparation', () => {
     if (!active) return;
-    closeModal({ skipUrlRestore: true });
+    closeModal({ skipUrlRestore: true, instant: true });
   });
 }
 
@@ -330,7 +482,8 @@ export function initPlayerModal(root: HTMLElement): void {
   if (!escapeKeyBound) {
     escapeKeyBound = true;
     document.addEventListener('keydown', (e) => {
-      if (e.key !== 'Escape' || !active) return;
+      if (e.key !== 'Escape' || exitAnimating) return;
+      if (!active) return;
       e.preventDefault();
       closeModal();
     });
@@ -339,6 +492,9 @@ export function initPlayerModal(root: HTMLElement): void {
 
 document.addEventListener('astro:page-load', () => {
   active = null;
+  exitAnimating = false;
+  exitPending = null;
+  killExitTweens();
   document.body.style.overflow = '';
   removeClone();
   if (shellEl) {

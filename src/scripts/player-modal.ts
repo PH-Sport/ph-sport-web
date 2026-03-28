@@ -6,6 +6,8 @@ type ModalState = {
   slug: string;
   opener: HTMLElement;
   detailHref: string;
+  /** URL completa antes de abrir el modal (para restore sin history.back / popstate). */
+  originalHref: string;
 };
 
 let active: ModalState | null = null;
@@ -14,6 +16,7 @@ let backdropEl: HTMLDivElement | null = null;
 let cloneEl: HTMLElement | null = null;
 let popStateBound = false;
 let escapeKeyBound = false;
+let beforePrepBound = false;
 
 function readPayloads(root: HTMLElement): Record<string, PlayerDetailPayload> {
   const raw = root.dataset.playerPayloads;
@@ -63,7 +66,7 @@ function ensureShell(): { shell: HTMLDivElement; backdrop: HTMLDivElement } {
   shellEl = shell;
 
   backdrop.addEventListener('click', () => {
-    if (active) closeModal({ useHistoryBack: true });
+    if (active) closeModal();
   });
 
   return { shell, backdrop };
@@ -87,7 +90,11 @@ function destroyShellContent(): void {
   }
 }
 
-function closeModal(opts: { useHistoryBack: boolean }): void {
+/**
+ * Cierra el modal. Por defecto restaura la URL con replaceState (sin popstate → sin View Transition).
+ * `skipUrlRestore`: la URL ya es correcta (popstate) o la va a fijar Astro (navegación).
+ */
+function closeModal(opts?: { skipUrlRestore?: boolean }): void {
   const prev = active;
   active = null;
 
@@ -96,8 +103,8 @@ function closeModal(opts: { useHistoryBack: boolean }): void {
   destroyShellContent();
   removeClone();
 
-  if (opts.useHistoryBack && prev) {
-    history.back();
+  if (prev && !opts?.skipUrlRestore) {
+    history.replaceState(history.state, '', prev.originalHref);
   }
 
   if (prev?.opener) {
@@ -146,7 +153,7 @@ function finalizeOpenCard(
   flipRoot.appendChild(closeBtn);
 
   closeBtn.addEventListener('click', () => {
-    closeModal({ useHistoryBack: true });
+    closeModal();
   });
 
   const { backdrop } = ensureShell();
@@ -251,7 +258,7 @@ function onPopState(): void {
   if (!active) return;
   const expected = expectedPathname(active.detailHref);
   if (window.location.pathname !== expected) {
-    closeModal({ useHistoryBack: false });
+    closeModal({ skipUrlRestore: true });
   }
 }
 
@@ -259,6 +266,15 @@ function bindPopState(): void {
   if (popStateBound) return;
   window.addEventListener('popstate', onPopState);
   popStateBound = true;
+}
+
+function bindBeforePreparation(): void {
+  if (beforePrepBound) return;
+  beforePrepBound = true;
+  document.addEventListener('astro:before-preparation', () => {
+    if (!active) return;
+    closeModal({ skipUrlRestore: true });
+  });
 }
 
 export function initPlayerModal(root: HTMLElement): void {
@@ -287,9 +303,16 @@ export function initPlayerModal(root: HTMLElement): void {
 
     const payload = payloads[slug];
     const detailHref = href.startsWith('http') ? href : new URL(href, window.location.origin).href;
+    const detailUrl = new URL(href, window.location.origin);
 
-    active = { slug, opener: a, detailHref };
+    active = {
+      slug,
+      opener: a,
+      detailHref,
+      originalHref: window.location.href,
+    };
     bindPopState();
+    bindBeforePreparation();
 
     document.body.style.overflow = 'hidden';
 
@@ -297,7 +320,7 @@ export function initPlayerModal(root: HTMLElement): void {
     backdrop.hidden = false;
     gsap.fromTo(backdrop, { opacity: 0 }, { opacity: 0.55, duration: 0.2, ease: 'power2.out' });
 
-    history.pushState({ playerModal: slug }, '', href);
+    history.replaceState(history.state, '', `${detailUrl.pathname}${detailUrl.search}${detailUrl.hash}`);
 
     runFlipAnimation(a, (flipRoot, clone) => {
       finalizeOpenCard(flipRoot, clone, payload, closeLabel);
@@ -309,7 +332,7 @@ export function initPlayerModal(root: HTMLElement): void {
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape' || !active) return;
       e.preventDefault();
-      closeModal({ useHistoryBack: true });
+      closeModal();
     });
   }
 }

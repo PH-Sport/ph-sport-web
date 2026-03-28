@@ -1,14 +1,31 @@
 ---
-// La grid en /jugadores/ usa `data/jugadores.json` + `data/entrenadores.json`; las rutas de detalle siguen en la colección `players` (Markdown).
-import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '@/components/layout/BaseLayout.astro';
+import PlayerDetailView from '@/components/players/PlayerDetailView.astro';
+import {
+  buildPlayerDetailPayloadsForLang,
+  getAllRosterEntries,
+  getPlayersCollectionBySlug,
+  type PlayerDetailPayload,
+} from '@/lib/playerDetail';
+import { getPlayerPhotoBySlug } from '@/lib/playerPhotos';
 import { useTranslations, type Lang } from '@/i18n/utils';
 
+interface Props {
+  payload: PlayerDetailPayload;
+  collectionEntry: CollectionEntry<'players'> | null;
+}
+
 export async function getStaticPaths() {
-  const players = await getCollection('players');
-  return players.map((player) => ({
-    params: { slug: player.id.replace(/\.md$/, '') },
-    props: { player },
+  const bySlug = await getPlayersCollectionBySlug();
+  const entries = getAllRosterEntries();
+  const payloads = await buildPlayerDetailPayloadsForLang('es');
+  return entries.map(({ slug }) => ({
+    params: { slug },
+    props: {
+      payload: payloads[slug]!,
+      collectionEntry: bySlug.get(slug) ?? null,
+    },
   }));
 }
 
@@ -16,15 +33,30 @@ const lang: Lang = 'es';
 const t = useTranslations(lang);
 const SITE_URL = 'https://ph-sport-web.com';
 const { slug } = Astro.params;
+const { payload, collectionEntry } = Astro.props;
+
+const assetPhoto = getPlayerPhotoBySlug(slug!);
+const photo = assetPhoto ?? undefined;
+
+const title = `${payload.name} — ${t('site.name')}`;
+const description = `${payload.name} · ${payload.subtitle}`;
 ---
 
 <BaseLayout
-  title={`${slug} — ${t('site.name')}`}
-  description={t('site.description')}
+  title={title}
+  description={description}
   lang={lang}
   canonical={`${SITE_URL}/jugadores/${slug}`}
 >
-  <div class="ph-section">
-    <p>Stub: /jugadores/{slug}</p>
+  <div class="ph-section player-detail-page">
+    <PlayerDetailView
+      lang={lang}
+      payload={payload}
+      photo={photo}
+      collectionEntry={collectionEntry}
+      backHref="/jugadores/"
+      backLabel={t('players.back')}
+      bioEmptyLabel={t('players.detail.bioEmpty')}
+    />
   </div>
 </BaseLayout>

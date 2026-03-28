@@ -49,6 +49,7 @@ const en: Record<TranslationKey, string> = {
   'players.sort.option.za': 'Z-A',
   'players.back': 'Back to players',
   'players.empty': 'No players available.',
+  'players.detail.bioEmpty': 'More about this profile coming soon.',
 
   // --- Sobre nosotros ---
   'about.title': 'About PH Sport',

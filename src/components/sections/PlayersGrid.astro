@@ -6,6 +6,7 @@ import { formatNationalTeamAriaLabel } from '@/lib/countryLabels';
 import { getPlayerPhotoBySlug } from '@/lib/playerPhotos';
 import { parseSortParam, sortRosterByName } from '@/lib/sortRoster';
 import { slugify } from '@/lib/slugify';
+import { buildPlayerDetailPayloadsForLang } from '@/lib/playerDetail';
 import PortraitCard from '@/components/ui/PortraitCard.astro';
 import PlayersSortRow from '@/components/ui/PlayersSortRow.astro';
 import PlayersViewDropdown from '@/components/ui/PlayersViewDropdown.astro';
@@ -16,6 +17,10 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
+
+const playerPayloads = await buildPlayerDetailPayloadsForLang(lang);
+const playerPayloadsJson = JSON.stringify(playerPayloads);
+const detailBase = lang === 'es' ? '/jugadores' : '/en/players';
 
 /** Orden = orden de los arrays en `data/jugadores.json` y `data/entrenadores.json` (directiva). */
 const rosterPlayers = jugadoresData.map((row) => ({
@@ -58,6 +63,9 @@ function subtitleFor(row: { club: { name: string } | null }): string {
   data-label-players={showTabs ? t('players.subsection.players') : undefined}
   data-label-coaches={showTabs ? t('players.subsection.coaches') : undefined}
   data-tabs-aria={showTabs ? t('players.tabs.aria') : undefined}
+  data-player-detail-base={detailBase}
+  data-player-modal-close={t('a11y.close')}
+  data-player-payloads={playerPayloadsJson}
 >
   <div class="ph-section">
     <header class="players-header">
@@ -132,7 +140,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
                   name={player.name}
                   subtitle={subtitleFor(player)}
                   photo={getPlayerPhotoBySlug(player.slug)}
-                  href="#"
+                  href={`${detailBase}/${player.slug}`}
                   dataSlug={player.slug}
                   nationalTeamCodes={player.nationalTeamCodes ?? []}
                   nationalTeamAriaLabel={formatNationalTeamAriaLabel(player.nationalTeamCodes ?? [], lang)}
@@ -154,7 +162,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
                   name={coach.name}
                   subtitle={subtitleFor(coach)}
                   photo={getPlayerPhotoBySlug(coach.slug)}
-                  href="#"
+                  href={`${detailBase}/${coach.slug}`}
                   dataSlug={coach.slug}
                   nationalTeamCodes={coach.nationalTeamCodes ?? []}
                   nationalTeamAriaLabel={formatNationalTeamAriaLabel(coach.nationalTeamCodes ?? [], lang)}
@@ -181,7 +189,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
                 name={player.name}
                 subtitle={subtitleFor(player)}
                 photo={getPlayerPhotoBySlug(player.slug)}
-                href="#"
+                href={`${detailBase}/${player.slug}`}
                 dataSlug={player.slug}
                 nationalTeamCodes={player.nationalTeamCodes ?? []}
                 nationalTeamAriaLabel={formatNationalTeamAriaLabel(player.nationalTeamCodes ?? [], lang)}
@@ -207,7 +215,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
                 name={coach.name}
                 subtitle={subtitleFor(coach)}
                 photo={getPlayerPhotoBySlug(coach.slug)}
-                href="#"
+                href={`${detailBase}/${coach.slug}`}
                 dataSlug={coach.slug}
                 nationalTeamCodes={coach.nationalTeamCodes ?? []}
                 nationalTeamAriaLabel={formatNationalTeamAriaLabel(coach.nationalTeamCodes ?? [], lang)}
@@ -532,6 +540,86 @@ function subtitleFor(row: { club: { name: string } | null }): string {
   }
 </style>
 
+<style is:global>
+  .player-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(13, 15, 18, 0.82);
+    backdrop-filter: blur(6px);
+  }
+
+  .player-modal-shell {
+    position: fixed;
+    inset: 0;
+    z-index: 210;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: min(1.25rem, 4vw);
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+
+  .player-modal-close {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.65rem;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--ph-white-10);
+    border-radius: var(--ph-radius);
+    background: rgba(13, 15, 18, 0.9);
+    color: var(--ph-white);
+    font-size: 1.35rem;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      border-color 200ms var(--ph-ease),
+      color 200ms var(--ph-ease);
+  }
+
+  .player-modal-close:hover {
+    border-color: var(--ph-gold-muted);
+    color: var(--ph-gold);
+  }
+
+  .player-modal-close--on-card {
+    z-index: 5;
+  }
+
+  .player-modal-flip-root--locked {
+    border-radius: var(--ph-radius-card);
+    border: 1px solid var(--ph-white-10);
+    background: var(--ph-black);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+  }
+
+  .player-modal-flip-root--locked .player-modal-card-clone.card {
+    border: none;
+    border-radius: var(--ph-radius-card);
+    box-shadow: none;
+  }
+
+  .player-modal-flip-root {
+    perspective: min(1400px, 100vw);
+    transform-style: preserve-3d;
+  }
+
+  .player-modal-card-clone {
+    border-radius: var(--ph-radius-card);
+    overflow: hidden;
+    border: 1px solid var(--ph-white-10);
+    background: var(--ph-white-10);
+  }
+</style>
+
 <script>
   import { gsap } from 'gsap';
   import {
@@ -541,6 +629,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
     trackingReveal,
   } from '@/scripts/ph-text-animations';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { initPlayerModal } from '@/scripts/player-modal';
 
   gsap.registerPlugin(ScrollTrigger);
 
@@ -1021,6 +1110,11 @@ function subtitleFor(row: { club: { name: string } | null }): string {
     initPlayersViewDropdown();
     initPlayersSortDropdown();
     initPlayersAnimations();
+
+    const modalRoot = document.querySelector<HTMLElement>(
+      '.players-section[data-player-detail-base]',
+    );
+    if (modalRoot) initPlayerModal(modalRoot);
   }
 
   document.addEventListener('astro:page-load', initPlayersSection);

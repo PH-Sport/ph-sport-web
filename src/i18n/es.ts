@@ -47,6 +47,7 @@ const es = {
   'players.sort.option.za': 'Z-A',
   'players.back': 'Volver a jugadores',
   'players.empty': 'No hay jugadores disponibles.',
+  'players.detail.bioEmpty': 'Próximamente más información sobre este perfil.',
 
   // --- Sobre nosotros ---
   'about.title': 'Sobre PH Sport',

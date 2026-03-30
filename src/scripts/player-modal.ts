@@ -1,6 +1,7 @@
 import { gsap } from 'gsap';
 import { reducedMotion } from '@/scripts/ph-text-animations';
 import type { PlayerDetailPayload } from '@/lib/playerDetail';
+import './player-modal.css';
 
 const FLIP_DURATION = 0.78;
 const FLIP_EASE = 'power3.inOut';
@@ -140,10 +141,13 @@ function closeModal(opts?: { skipUrlRestore?: boolean; instant?: boolean }): voi
     document.body.style.overflow = '';
     destroyShellContent();
     removeClone();
-    if (pend && !opts?.skipUrlRestore) {
-      history.replaceState(history.state, '', pend.originalHref);
+    if (pend) {
+      pend.opener.style.visibility = '';
+      if (!opts?.skipUrlRestore) {
+        history.replaceState(history.state, '', pend.originalHref);
+      }
+      pend.opener.focus();
     }
-    pend?.opener.focus();
     return;
   }
 
@@ -158,6 +162,7 @@ function closeModal(opts?: { skipUrlRestore?: boolean; instant?: boolean }): voi
     document.body.style.overflow = '';
     destroyShellContent();
     removeClone();
+    prev.opener.style.visibility = '';
     if (!opts?.skipUrlRestore) {
       history.replaceState(history.state, '', prev.originalHref);
     }
@@ -177,6 +182,7 @@ function closeModal(opts?: { skipUrlRestore?: boolean; instant?: boolean }): voi
     document.body.style.overflow = '';
     destroyShellContent();
     removeClone();
+    prev.opener.style.visibility = '';
     if (!opts?.skipUrlRestore) {
       history.replaceState(history.state, '', prev.originalHref);
     }
@@ -258,8 +264,10 @@ function runFlipAnimation(
 
   const frontFace = card.cloneNode(true) as HTMLElement;
   frontFace.classList.add('player-modal-card-clone');
+  frontFace.style.visibility = 'visible';
   const backFace = card.cloneNode(true) as HTMLElement;
   backFace.classList.add('player-modal-card-clone');
+  backFace.style.visibility = 'visible';
 
   for (const face of [frontFace, backFace]) {
     styleFlipFace(face);
@@ -363,6 +371,7 @@ function runFlipExitAnimation(
 
   const frontFace = opener.cloneNode(true) as HTMLElement;
   frontFace.classList.add('player-modal-card-clone');
+  frontFace.style.visibility = 'visible';
   styleFlipFace(frontFace);
   styleFlipFace(backFace);
   gsap.set(backFace, { rotationY: 180 });
@@ -466,6 +475,7 @@ export function initPlayerModal(root: HTMLElement): void {
     bindPopState();
     bindBeforePreparation();
 
+    a.style.visibility = 'hidden';
     document.body.style.overflow = 'hidden';
 
     const { backdrop } = ensureShell();

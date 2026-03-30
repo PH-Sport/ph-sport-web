@@ -10,10 +10,32 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const TEAM_SIZE = 20;
-const slots = Array.from({ length: TEAM_SIZE }, (_, i) => i + 1);
+const detailBase = lang === 'es' ? '/equipo' : '/en/team';
+
+const slots = Array.from({ length: TEAM_SIZE }, (_, i) => {
+  const n = i + 1;
+  const slug = `miembro-${n}`;
+  return { n, slug };
+});
+
+const teamPayloads: Record<string, { slug: string; name: string; subtitle: string }> = {};
+for (const s of slots) {
+  teamPayloads[s.slug] = {
+    slug: s.slug,
+    name: t('team.placeholderName'),
+    subtitle: t('team.placeholderRole'),
+  };
+}
+const teamPayloadsJson = JSON.stringify(teamPayloads);
 ---
 
-<section class="team-section" aria-labelledby="team-heading">
+<section
+  class="team-section"
+  aria-labelledby="team-heading"
+  data-player-detail-base={detailBase}
+  data-player-modal-close={t('a11y.close')}
+  data-player-payloads={teamPayloadsJson}
+>
   <div class="ph-section">
     <header class="team-header">
       <div class="team-header-top">
@@ -28,11 +50,13 @@ const slots = Array.from({ length: TEAM_SIZE }, (_, i) => i + 1);
     </header>
 
     <ul class="team-grid">
-      {slots.map((n) => (
+      {slots.map(({ n, slug }) => (
         <li>
           <PortraitCard
             name={t('team.placeholderName')}
             subtitle={t('team.placeholderRole')}
+            href={`${detailBase}/${slug}`}
+            dataSlug={slug}
             ariaLabel={lang === 'en' ? `Team member ${n}` : `Miembro del equipo ${n}`}
           />
         </li>
@@ -133,6 +157,7 @@ const slots = Array.from({ length: TEAM_SIZE }, (_, i) => i + 1);
     splitWords,
     trackingReveal,
   } from '@/scripts/ph-text-animations';
+  import { initPlayerModal } from '@/scripts/player-modal';
 
   function initTeamAnimations(): void {
     const section = document.querySelector<HTMLElement>('.team-section');
@@ -197,5 +222,14 @@ const slots = Array.from({ length: TEAM_SIZE }, (_, i) => i + 1);
     }
   }
 
-  document.addEventListener('astro:page-load', initTeamAnimations);
+  function initTeamSection(): void {
+    initTeamAnimations();
+
+    const modalRoot = document.querySelector<HTMLElement>(
+      '.team-section[data-player-detail-base]',
+    );
+    if (modalRoot) initPlayerModal(modalRoot);
+  }
+
+  document.addEventListener('astro:page-load', initTeamSection);
 </script>

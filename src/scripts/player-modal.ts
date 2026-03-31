@@ -15,30 +15,6 @@ function getTargetCardBox(): { targetW: number; targetH: number; cx: number; cy:
   return { targetW, targetH, cx, cy };
 }
 
-/** FLIP con caja destino fija: escala + traslación para que el centro coincida (solo path simple / compositor). */
-function simpleFlipTransformFromTo(
-  fromRect: DOMRectReadOnly,
-  toBox: { left: number; top: number; width: number; height: number },
-): { x: number; y: number; scaleX: number; scaleY: number } {
-  const scaleX = fromRect.width / toBox.width;
-  const scaleY = fromRect.height / toBox.height;
-  const fromCx = fromRect.left + fromRect.width / 2;
-  const fromCy = fromRect.top + fromRect.height / 2;
-  const toCx = toBox.left + toBox.width / 2;
-  const toCy = toBox.top + toBox.height / 2;
-  return {
-    x: Math.round((fromCx - toCx) * 100) / 100,
-    y: Math.round((fromCy - toCy) * 100) / 100,
-    scaleX,
-    scaleY,
-  };
-}
-
-function setBackdropLightDuringSimpleTween(active: boolean): void {
-  if (!backdropEl) return;
-  backdropEl.classList.toggle('player-modal-backdrop--light', active);
-}
-
 function styleFlipFace(face: HTMLElement): void {
   face.style.position = 'absolute';
   face.style.left = '0';
@@ -142,7 +118,6 @@ function removeClone(): void {
 function hideBackdrop(): void {
   if (!backdropEl) return;
   gsap.killTweensOf(backdropEl);
-  backdropEl.classList.remove('player-modal-backdrop--light');
   backdropEl.hidden = true;
   backdropEl.style.opacity = '0';
 }
@@ -343,57 +318,22 @@ function runFlipAnimation(
     return;
   }
 
-  const simple = prefersSimpleFlip();
-  lastOpenUsedSimpleFlip = simple;
-
-  if (simple) {
-    ensureBackdrop();
-    setBackdropLightDuringSimpleTween(true);
-    flipRoot.style.left = `${cx}px`;
-    flipRoot.style.top = `${cy}px`;
-    flipRoot.style.width = `${targetW}px`;
-    flipRoot.style.height = `${targetH}px`;
-    const fromT = simpleFlipTransformFromTo(rect, {
-      left: cx,
-      top: cy,
-      width: targetW,
-      height: targetH,
-    });
-    flipRoot.style.willChange = 'transform';
-    gsap
-      .timeline({
-        onComplete: () => {
-          setBackdropLightDuringSimpleTween(false);
-          flipRoot.style.willChange = '';
-          gsap.set(flipRoot, { clearProps: 'transform' });
-          flatten();
-        },
-      })
-      .fromTo(
-        flipRoot,
-        {
-          ...fromT,
-          transformOrigin: '50% 50%',
-          force3D: true,
-        },
-        {
-          x: 0,
-          y: 0,
-          scaleX: 1,
-          scaleY: 1,
-          duration: FLIP_DURATION,
-          ease: FLIP_EASE,
-          force3D: true,
-        },
-        0,
-      );
-    return;
-  }
-
   flipRoot.style.left = `${rect.left}px`;
   flipRoot.style.top = `${rect.top}px`;
   flipRoot.style.width = `${rect.width}px`;
   flipRoot.style.height = `${rect.height}px`;
+
+  const simple = prefersSimpleFlip();
+  lastOpenUsedSimpleFlip = simple;
+
+  if (simple) {
+    gsap.timeline({ onComplete: flatten }).to(
+      flipRoot,
+      { left: cx, top: cy, width: targetW, height: targetH, duration: FLIP_DURATION, ease: FLIP_EASE },
+      0,
+    );
+    return;
+  }
 
   gsap
     .timeline({ onComplete: flatten })
@@ -440,6 +380,10 @@ function runFlipExitAnimation(
     flipRoot.style.flexDirection = '';
     flipRoot.style.overflow = 'visible';
     flipRoot.style.maxHeight = 'none';
+    flipRoot.style.height = `${fromRect.height}px`;
+    flipRoot.style.left = `${fromRect.left}px`;
+    flipRoot.style.top = `${fromRect.top}px`;
+    flipRoot.style.width = `${fromRect.width}px`;
     flipRoot.style.position = 'fixed';
     flipRoot.style.margin = '0';
     flipRoot.style.zIndex = '250';
@@ -458,36 +402,13 @@ function runFlipExitAnimation(
     flipRoot.replaceChildren(single);
 
     const toRect = opener.getBoundingClientRect();
-    /* Path simple: flipRoot ya en geometría final (grid); el tween solo transforma modal → tarjeta. */
-
-    flipRoot.style.left = `${toRect.left}px`;
-    flipRoot.style.top = `${toRect.top}px`;
-    flipRoot.style.width = `${toRect.width}px`;
-    flipRoot.style.height = `${toRect.height}px`;
-
-    const exitFromT = simpleFlipTransformFromTo(fromRect, {
-      left: toRect.left,
-      top: toRect.top,
-      width: toRect.width,
-      height: toRect.height,
-    });
 
     if (backdrop) {
       gsap.killTweensOf(backdrop);
       backdrop.hidden = false;
-      backdrop.classList.add('player-modal-backdrop--light');
     }
 
-    flipRoot.style.willChange = 'transform';
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        flipRoot.style.willChange = '';
-        gsap.set(flipRoot, { clearProps: 'transform' });
-        if (backdrop) backdrop.classList.remove('player-modal-backdrop--light');
-        onComplete();
-      },
-    });
+    const tl = gsap.timeline({ onComplete });
     if (backdrop) {
       tl.to(
         backdrop,
@@ -495,21 +416,15 @@ function runFlipExitAnimation(
         0,
       );
     }
-    tl.fromTo(
+    tl.to(
       flipRoot,
       {
-        ...exitFromT,
-        transformOrigin: '50% 50%',
-        force3D: true,
-      },
-      {
-        x: 0,
-        y: 0,
-        scaleX: 1,
-        scaleY: 1,
+        left: toRect.left,
+        top: toRect.top,
+        width: toRect.width,
+        height: toRect.height,
         duration: FLIP_DURATION,
         ease: FLIP_EASE,
-        force3D: true,
       },
       0,
     );

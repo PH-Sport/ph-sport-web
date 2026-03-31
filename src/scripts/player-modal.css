@@ -6,11 +6,6 @@
   backdrop-filter: blur(6px);
 }
 
-/* Path simple (móvil): sin blur durante el tween para no competir con el compositor en WebKit. */
-.player-modal-backdrop.player-modal-backdrop--light {
-  backdrop-filter: none;
-}
-
 .player-modal-close {
   position: absolute;
   top: 0.65rem;

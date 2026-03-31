@@ -117,6 +117,9 @@ const showFlags = nationalTeamCodes.length > 0 && nationalTeamAriaLabel;
     border-radius: var(--ph-radius-card);
     border: 1px solid var(--ph-white-10);
     background: var(--ph-white-10);
+    /* iOS: evita retardo de doble toque para zoom y mejora respuesta del primer tap en enlaces */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
     transition:
       border-color 500ms var(--ph-ease),
       box-shadow 500ms var(--ph-ease);
@@ -137,13 +140,20 @@ const showFlags = nationalTeamCodes.length > 0 && nationalTeamAriaLabel;
     border-radius: var(--ph-radius-card) var(--ph-radius-card) 0 0;
   }
 
-  .card:hover {
-    border-color: var(--ph-white-20);
-    box-shadow: 0 4px 32px rgba(214, 178, 94, 0.1);
-  }
+  /* Solo ratón/trackpad: en iPhone el :hover “pegajoso” hace que el 1er toque active hover y el 2º ejecute la acción */
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover {
+      border-color: var(--ph-white-20);
+      box-shadow: 0 4px 32px rgba(214, 178, 94, 0.1);
+    }
 
-  .card:hover::after {
-    transform: scaleX(1);
+    .card:hover::after {
+      transform: scaleX(1);
+    }
+
+    .card:hover .card-img {
+      transform: scale(1.06);
+    }
   }
 
   .card-img {
@@ -159,10 +169,6 @@ const showFlags = nationalTeamCodes.length > 0 && nationalTeamAriaLabel;
     object-fit: cover;
     object-position: center top;
     background: var(--ph-black);
-  }
-
-  .card:hover .card-img {
-    transform: scale(1.06);
   }
 
   .card-flags {

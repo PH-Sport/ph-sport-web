@@ -4,6 +4,7 @@ import { ViewTransitions, fade } from 'astro:transitions';
 import Header from './Header.astro';
 import Footer from './Footer.astro';
 import { useTranslations, getAlternateLangUrl, type Lang } from '@/i18n/utils';
+import { SITE_URL } from '@/lib/constants';
 
 interface Props {
   title: string;
@@ -14,8 +15,6 @@ interface Props {
   hasHero?: boolean;
   noIndex?: boolean;
 }
-
-const SITE_URL = 'https://ph-sport-web.com';
 
 const { title, description, lang, canonical, ogImage, hasHero = false, noIndex = false } = Astro.props;
 const t = useTranslations(lang);
@@ -51,7 +50,20 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
   </head>
   <body>
     <div class="bg-logo-parallax" aria-hidden="true" role="presentation">
-      <div class="bg-logo-parallax__inner" data-parallax-inner></div>
+      <div class="bg-logo-parallax__inner" data-parallax-inner>
+        <img
+          src="/logo-ph-3d.webp"
+          srcset="/logo-ph-3d-sm.webp 820w, /logo-ph-3d.webp 1640w"
+          sizes="min(92vw, 820px)"
+          alt=""
+          width="1640"
+          height="1321"
+          loading="lazy"
+          decoding="async"
+          fetchpriority="low"
+          class="bg-logo-parallax__img"
+        />
+      </div>
     </div>
     <a href="#main-content" class="skip-link">{t('a11y.skip')}</a>
     <Header />
@@ -101,12 +113,19 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
   .bg-logo-parallax__inner {
     position: absolute;
     inset: 0;
-    background-image: url('/logo-ph-3d.png');
-    background-size: min(92vw, 820px);
-    background-position: 90% 50%;
-    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10%;
     opacity: 0.22;
     will-change: transform;
+  }
+
+  .bg-logo-parallax__img {
+    width: min(92vw, 820px);
+    height: auto;
+    pointer-events: none;
+    user-select: none;
   }
 
   #main-content {

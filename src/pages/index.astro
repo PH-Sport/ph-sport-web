@@ -3,10 +3,10 @@ import BaseLayout from '@/components/layout/BaseLayout.astro';
 import LogoReveal from '@/components/islands/LogoReveal.tsx';
 import HeroSection from '@/components/sections/HeroSection.astro';
 import { useTranslations, getLangFromUrl } from '@/i18n/utils';
+import { SITE_URL } from '@/lib/constants';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const SITE_URL = 'https://ph-sport-web.com';
 ---
 
 <BaseLayout

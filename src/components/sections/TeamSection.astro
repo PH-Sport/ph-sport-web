@@ -130,6 +130,14 @@ const teamPayloadsJson = JSON.stringify(teamPayloads);
     padding: 0;
   }
 
+  .team-grid :global(.card) {
+    opacity: 0;
+  }
+
+  .team-grid.cards-revealed :global(.card) {
+    opacity: 1;
+  }
+
   @media (min-width: 768px) {
     .team-grid {
       grid-template-columns: repeat(3, 1fr);
@@ -205,20 +213,29 @@ const teamPayloadsJson = JSON.stringify(teamPayloads);
       });
     }
 
-    const cards = section.querySelectorAll<HTMLElement>('.card');
-    if (cards.length) {
-      gsap.from(cards, {
-        opacity: 0,
-        y: 24,
-        duration: 0.55,
-        stagger: { each: 0.06, from: 'start' },
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.team-grid',
-          start: 'top 88%',
-          once: true,
+    const grid = section.querySelector<HTMLElement>('.team-grid');
+    const cards = grid?.querySelectorAll<HTMLElement>('.card');
+    if (grid && cards?.length) {
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.55,
+          stagger: { each: 0.06, from: 'start' },
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: grid,
+            start: 'top 88%',
+            once: true,
+          },
+          onComplete: () => {
+            grid.classList.add('cards-revealed');
+            gsap.set(cards, { clearProps: 'opacity,transform' });
+          },
         },
-      });
+      );
     }
   }
 

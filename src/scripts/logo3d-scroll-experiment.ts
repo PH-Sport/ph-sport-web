@@ -2,13 +2,13 @@ import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { initLogo3DScene, type Logo3DSceneInstance } from '@/lib/logo3d/scene';
+import { reducedMotion } from '@/scripts/ph-text-animations';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const ROOT_SELECTOR = '[data-cine-exp]';
 const TRACK_SELECTOR = '[data-logo3d-scroll-track]';
 const MOUNT_SELECTOR = '[data-logo3d-scroll-root]';
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
 type Pose = {
   rotationX: number;
@@ -474,7 +474,7 @@ function initExperiment(): void {
   const poses = buildCinematicPoses(instance.basePositionY);
   const timelineSegments = buildTimelineSegments(poses);
 
-  const prefersReducedMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
+  const prefersReducedMotion = reducedMotion();
 
   const hideLogoCanvasReduced = () => {
     gsap.killTweensOf(mount);

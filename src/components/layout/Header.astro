@@ -1,5 +1,6 @@
 ---
 import { useTranslations, getLangFromUrl, getAlternateLangUrl } from '@/i18n/utils';
+import { NAV_ITEMS } from '@/lib/navigation';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -7,30 +8,15 @@ const alternateLangUrl = getAlternateLangUrl(Astro.url);
 const isEn = lang === 'en';
 const currentPath = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/$/, '');
 
-const nav = isEn
-  ? [
-      { href: '/en/', label: t('nav.home') },
-      { href: '/en/players/', label: t('nav.players') },
-      { href: '/en/team', label: t('nav.team') },
-      { href: '/en/services', label: t('nav.services') },
-      { href: '/en/about', label: t('nav.about') },
-    ]
-  : [
-      { href: '/', label: t('nav.home') },
-      { href: '/jugadores/', label: t('nav.players') },
-      { href: '/equipo', label: t('nav.team') },
-      { href: '/servicios', label: t('nav.services') },
-      { href: '/sobre-nosotros', label: t('nav.about') },
-    ];
+const nav = NAV_ITEMS.map((item) => ({
+  href: item.href[lang],
+  label: t(item.labelKey),
+}));
 
 const isActive = (href: string): boolean => {
   const normalizedHref = href === '/' ? '/' : href.replace(/\/$/, '');
   return normalizedHref === currentPath;
 };
-
-/** Recarga completa al entrar en Jugadores (evita estado raro con View Transitions + content). */
-const playersPageReload = (href: string): boolean =>
-  href === '/jugadores/' || href === '/en/players/';
 ---
 
 <header data-header transition:persist>
@@ -42,7 +28,7 @@ const playersPageReload = (href: string): boolean =>
       </svg>
     </a>
 
-    <nav class="header-nav hidden md:block" aria-label={isEn ? 'Main navigation' : 'Navegación principal'}>
+    <nav class="header-nav hidden md:block" aria-label={t('nav.aria.main')}>
       <div class="header-nav-list-wrap">
         <span class="nav-indicator" aria-hidden="true" data-nav-indicator></span>
         <ul class="header-nav-list">
@@ -51,7 +37,6 @@ const playersPageReload = (href: string): boolean =>
               <a
                 href={item.href}
                 class:list={['nav-link', isActive(item.href) && 'is-active']}
-                data-astro-reload={playersPageReload(item.href) ? true : undefined}
               >
                 {item.label}
               </a>
@@ -61,7 +46,7 @@ const playersPageReload = (href: string): boolean =>
             <a
               href={alternateLangUrl}
               class="lang-switch"
-            aria-label={isEn ? 'Cambiar a español' : 'Switch to English'}
+            aria-label={t('nav.lang.switch')}
           >
             <img
               src={isEn ? '/icons/flag-es.svg' : '/icons/flag-uk.svg'}
@@ -70,7 +55,7 @@ const playersPageReload = (href: string): boolean =>
               height="15"
               class="lang-flag"
             />
-            <span class="lang-label">{isEn ? 'ES' : 'EN'}</span>
+            <span class="lang-label">{t('nav.lang.label')}</span>
           </a>
         </li>
         </ul>
@@ -120,14 +105,13 @@ const playersPageReload = (href: string): boolean =>
       </button>
     </div>
 
-    <nav aria-label={isEn ? 'Mobile navigation' : 'Navegación móvil'}>
+    <nav aria-label={t('nav.aria.mobile')}>
       <ul class="mobile-nav-list">
         {nav.map((item, i) => (
           <li>
             <a
               href={item.href}
               data-mobile-link
-              data-astro-reload={playersPageReload(item.href) ? true : undefined}
               class:list={[
                 'mobile-link',
                 isActive(item.href) && 'mobile-link--active',
@@ -147,7 +131,7 @@ const playersPageReload = (href: string): boolean =>
       href={alternateLangUrl}
       data-mobile-link
       class="lang-switch lang-switch--mobile"
-      aria-label={isEn ? 'Cambiar a español' : 'Switch to English'}
+      aria-label={t('nav.lang.switch')}
     >
       <img
         src={isEn ? '/icons/flag-es.svg' : '/icons/flag-uk.svg'}
@@ -156,7 +140,7 @@ const playersPageReload = (href: string): boolean =>
         height="18"
         class="lang-flag"
       />
-      <span class="lang-label">{isEn ? 'Español' : 'English'}</span>
+      <span class="lang-label">{t('nav.lang.labelMobile')}</span>
     </a>
   </div>
 </div>
@@ -440,9 +424,6 @@ const playersPageReload = (href: string): boolean =>
   .mobile-menu.is-open .mobile-nav-list li:nth-child(5) {
     transition-delay: 0.3s;
   }
-  .mobile-menu.is-open .mobile-nav-list li:nth-child(6) {
-    transition-delay: 0.35s;
-  }
 
   .mobile-menu .ph-divider {
     opacity: 0;
@@ -564,24 +545,24 @@ const playersPageReload = (href: string): boolean =>
     indicator.style.width = `${linkRect.width}px`;
   }
 
-  // ── Rutas + traducciones i18n (espejo de src/i18n/utils.ts) ─────────────
+  // ── Rutas derivadas de la fuente central (src/lib/navigation.ts) ────────
+  import { NAV_ITEMS } from '@/lib/navigation';
+  import es from '@/i18n/es';
+  import en from '@/i18n/en';
+
+  const translations = { es, en } as const;
+
   const NAV_HREFS = {
-    es: ['/', '/jugadores/', '/equipo', '/servicios', '/sobre-nosotros'],
-    en: ['/en/', '/en/players/', '/en/team', '/en/services', '/en/about'],
-  } as const;
+    es: NAV_ITEMS.map((i) => i.href.es),
+    en: NAV_ITEMS.map((i) => i.href.en),
+  };
 
   const NAV_LABELS = {
-    es: ['Inicio', 'Jugadores', 'Equipo', 'Servicios', 'Sobre nosotros'],
-    en: ['Home', 'Players', 'Team', 'Services', 'About'],
-  } as const;
+    es: NAV_ITEMS.map((i) => translations.es[i.labelKey]),
+    en: NAV_ITEMS.map((i) => translations.en[i.labelKey]),
+  };
 
-  const STATIC_ROUTE_PAIRS = [
-    { es: '/',               en: '/en/' },
-    { es: '/sobre-nosotros', en: '/en/about' },
-    { es: '/jugadores/',     en: '/en/players/' },
-    { es: '/equipo',         en: '/en/team' },
-    { es: '/servicios',      en: '/en/services' },
-  ];
+  const STATIC_ROUTE_PAIRS = NAV_ITEMS.map((i) => i.href);
 
   function norm(p: string): string {
     return p === '/' ? '/' : p.replace(/\/+$/, '');

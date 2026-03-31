@@ -2,10 +2,10 @@
 import BaseLayout from '@/components/layout/BaseLayout.astro';
 import PlayersGrid from '@/components/sections/PlayersGrid.astro';
 import { useTranslations, type Lang } from '@/i18n/utils';
+import { SITE_URL } from '@/lib/constants';
 
 const lang: Lang = 'en';
 const t = useTranslations(lang);
-const SITE_URL = 'https://ph-sport-web.com';
 ---
 
 <BaseLayout

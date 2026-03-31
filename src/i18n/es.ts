@@ -14,9 +14,11 @@ const es = {
   'nav.team': 'Equipo',
   'nav.services': 'Servicios',
   'nav.about': 'Sobre nosotros',
-  'nav.contact': 'Contacto',
-  'nav.lang': 'English',          // Texto del switch de idioma
-  'nav.lang.href': '/en/',        // Destino del switch
+  'nav.aria.main': 'Navegación principal',
+  'nav.aria.mobile': 'Navegación móvil',
+  'nav.lang.switch': 'Switch to English',
+  'nav.lang.label': 'EN',
+  'nav.lang.labelMobile': 'English',
 
   // --- Hero ---
   'hero.claim': 'Las marcas suman, pero las personas marcan',
@@ -31,17 +33,9 @@ const es = {
   'players.subsection.players': 'Jugadores',
   'players.subsection.coaches': 'Entrenadores',
   'players.tabs.aria': 'Elegir entre jugadores y entrenadores',
-  'players.filters.open': 'Filtros',
-  'players.filters.sheetTitle': 'Lista y orden',
-  'players.filters.close': 'Cerrar',
-  'players.cta': 'Ver perfil',
-  'players.club.label': 'Club',
   'players.club.none': 'Sin club',
   'players.sort.label': 'Orden',
   'players.sort.aria': 'Elegir orden de la lista',
-  'players.sort.default': 'Orden de la agencia',
-  'players.sort.az': 'A → Z',
-  'players.sort.za': 'Z → A',
   'players.sort.option.default': 'Predeterminado',
   'players.sort.option.az': 'A-Z',
   'players.sort.option.za': 'Z-A',
@@ -94,6 +88,7 @@ const es = {
     'Carrusel de servicios en tres dimensiones. Arrastra para girar o abre una tarjeta para ver el detalle.',
   'services.modalAriaLabel': 'Detalle del servicio',
   // --- Footer ---
+  'footer.pages': 'Páginas',
   'footer.rights': 'Todos los derechos reservados.',
   'footer.contact': 'Contacto',
   'footer.email': 'info@phsport.com',
@@ -105,7 +100,6 @@ const es = {
   'a11y.menu.open': 'Abrir menú',
   'a11y.menu.close': 'Cerrar menú',
   'a11y.close': 'Cerrar',
-  'a11y.player.photo': 'Foto de',   // Uso: `${t('a11y.player.photo')} ${player.name}`
 } as const;
 
 export default es;

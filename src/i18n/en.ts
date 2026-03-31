@@ -16,9 +16,11 @@ const en: Record<TranslationKey, string> = {
   'nav.team': 'Team',
   'nav.services': 'Services',
   'nav.about': 'About',
-  'nav.contact': 'Contact',
-  'nav.lang': 'Español',
-  'nav.lang.href': '/',
+  'nav.aria.main': 'Main navigation',
+  'nav.aria.mobile': 'Mobile navigation',
+  'nav.lang.switch': 'Cambiar a español',
+  'nav.lang.label': 'ES',
+  'nav.lang.labelMobile': 'Español',
 
   // --- Hero ---
   'hero.claim': 'Brands add up, but people make the mark',
@@ -33,17 +35,9 @@ const en: Record<TranslationKey, string> = {
   'players.subsection.players': 'Players',
   'players.subsection.coaches': 'Coaches',
   'players.tabs.aria': 'Choose between players and coaches',
-  'players.filters.open': 'Filters',
-  'players.filters.sheetTitle': 'List and order',
-  'players.filters.close': 'Close',
-  'players.cta': 'View profile',
-  'players.club.label': 'Club',
   'players.club.none': 'No club',
   'players.sort.label': 'Order',
   'players.sort.aria': 'Choose list order',
-  'players.sort.default': 'Agency order',
-  'players.sort.az': 'A → Z',
-  'players.sort.za': 'Z → A',
   'players.sort.option.default': 'Default',
   'players.sort.option.az': 'A-Z',
   'players.sort.option.za': 'Z-A',
@@ -97,6 +91,7 @@ const en: Record<TranslationKey, string> = {
   'services.modalAriaLabel': 'Service details',
 
   // --- Footer ---
+  'footer.pages': 'Pages',
   'footer.rights': 'All rights reserved.',
   'footer.contact': 'Contact',
   'footer.email': 'info@phsport.com',
@@ -108,7 +103,6 @@ const en: Record<TranslationKey, string> = {
   'a11y.menu.open': 'Open menu',
   'a11y.menu.close': 'Close menu',
   'a11y.close': 'Close',
-  'a11y.player.photo': 'Photo of',
 };
 
 export default en;

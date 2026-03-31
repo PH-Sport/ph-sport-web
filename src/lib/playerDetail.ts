@@ -34,6 +34,12 @@ export type PlayerDetailPayload = {
   photoSrc: string;
 };
 
+export type ModalPayload = {
+  slug: string;
+  name: string;
+  subtitle: string;
+};
+
 export type RosterEntry = {
   slug: string;
   role: PlayerRole;
@@ -87,44 +93,68 @@ export async function buildPlayerDetailPayloadsForLang(
   const t = useTranslations(lang);
   const bySlug = await getPlayersCollectionBySlug();
   const roster = getAllRosterEntries();
-  const out: Record<string, PlayerDetailPayload> = {};
 
-  for (const { slug, role: rosterRole, row } of roster) {
-    const entry = bySlug.get(slug);
+  const entries = await Promise.all(
+    roster.map(async ({ slug, role: rosterRole, row }) => {
+      const entry = bySlug.get(slug);
 
-    let name: string;
-    let clubName: string | null;
-    let nationalTeamCodes: string[];
-    let role: PlayerRole;
-    let contentHtml: string;
+      let name: string;
+      let clubName: string | null;
+      let nationalTeamCodes: string[];
+      let role: PlayerRole;
+      let contentHtml: string;
 
-    if (entry) {
-      name = entry.data.name;
-      clubName = entry.data.club?.name ?? null;
-      nationalTeamCodes = entry.data.nationalTeamCodes ?? [];
-      role = entry.data.role === 'coach' ? 'coach' : 'player';
-      const raw = entry.body?.trim() ?? '';
-      contentHtml = raw ? (marked.parse(raw, { async: false }) as string) : '';
-    } else {
-      name = row.name;
-      clubName = row.club?.name ?? null;
-      nationalTeamCodes = row.nationalTeamCodes ?? [];
-      role = rosterRole;
-      contentHtml = '';
-    }
+      if (entry) {
+        name = entry.data.name;
+        clubName = entry.data.club?.name ?? null;
+        nationalTeamCodes = entry.data.nationalTeamCodes ?? [];
+        role = entry.data.role === 'coach' ? 'coach' : 'player';
+        const raw = entry.body?.trim() ?? '';
+        contentHtml = raw ? (marked.parse(raw, { async: false }) as string) : '';
+      } else {
+        name = row.name;
+        clubName = row.club?.name ?? null;
+        nationalTeamCodes = row.nationalTeamCodes ?? [];
+        role = rosterRole;
+        contentHtml = '';
+      }
 
-    const subtitle = clubName && clubName.length > 0 ? clubName : t('players.club.none');
-    const photoSrc = await resolvePhotoSrcForPayload(slug, entry);
+      const subtitle = clubName && clubName.length > 0 ? clubName : t('players.club.none');
+      const photoSrc = await resolvePhotoSrcForPayload(slug, entry);
 
+      const payload: PlayerDetailPayload = {
+        slug,
+        name,
+        subtitle,
+        role,
+        nationalTeamCodes,
+        contentHtml,
+        paths: { es: `/jugadores/${slug}`, en: `/en/players/${slug}` },
+        photoSrc,
+      };
+      return [slug, payload] as const;
+    }),
+  );
+
+  return Object.fromEntries(entries);
+}
+
+/**
+ * Payloads ligeros para el modal inline (solo los campos que necesita el flip card).
+ */
+export function buildModalPayloadsForLang(
+  lang: Lang,
+): Record<string, ModalPayload> {
+  const t = useTranslations(lang);
+  const roster = getAllRosterEntries();
+  const out: Record<string, ModalPayload> = {};
+
+  for (const { slug, row } of roster) {
+    const clubName = row.club?.name ?? null;
     out[slug] = {
       slug,
-      name,
-      subtitle,
-      role,
-      nationalTeamCodes,
-      contentHtml,
-      paths: { es: `/jugadores/${slug}`, en: `/en/players/${slug}` },
-      photoSrc,
+      name: row.name,
+      subtitle: clubName && clubName.length > 0 ? clubName : t('players.club.none'),
     };
   }
 

@@ -1,29 +1,16 @@
 ---
 import { useTranslations, getLangFromUrl } from '@/i18n/utils';
+import { NAV_ITEMS } from '@/lib/navigation';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const isEn = lang === 'en';
 const year = new Date().getFullYear();
 
-const playersPageReload = (href: string): boolean =>
-  href === '/jugadores/' || href === '/en/players/';
-
-const nav = isEn
-  ? [
-      { href: '/en/', label: t('nav.home') },
-      { href: '/en/players/', label: t('nav.players') },
-      { href: '/en/team', label: t('nav.team') },
-      { href: '/en/services', label: t('nav.services') },
-      { href: '/en/about', label: t('nav.about') },
-    ]
-  : [
-      { href: '/', label: t('nav.home') },
-      { href: '/jugadores/', label: t('nav.players') },
-      { href: '/equipo', label: t('nav.team') },
-      { href: '/servicios', label: t('nav.services') },
-      { href: '/sobre-nosotros', label: t('nav.about') },
-    ];
+const nav = NAV_ITEMS.map((item) => ({
+  href: item.href[lang],
+  label: t(item.labelKey),
+}));
 ---
 
 <footer class="footer">
@@ -42,14 +29,13 @@ const nav = isEn
 
       <!-- Nav -->
       <nav aria-label={t('footer.nav.label')}>
-        <span class="footer-col-label">{isEn ? 'Pages' : 'Páginas'}</span>
+        <span class="footer-col-label">{t('footer.pages')}</span>
         <ul class="footer-nav">
           {nav.map((item) => (
             <li>
               <a
                 href={item.href}
                 class="footer-link"
-                data-astro-reload={playersPageReload(item.href) ? true : undefined}
               >
                 {item.label}
               </a>

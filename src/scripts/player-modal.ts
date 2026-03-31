@@ -1,6 +1,6 @@
 import { gsap } from 'gsap';
 import { reducedMotion } from '@/scripts/ph-text-animations';
-import type { PlayerDetailPayload } from '@/lib/playerDetail';
+import type { ModalPayload } from '@/lib/playerDetail';
 import './player-modal.css';
 
 const FLIP_DURATION = 0.78;
@@ -35,7 +35,6 @@ type ModalState = {
 };
 
 let active: ModalState | null = null;
-let shellEl: HTMLDivElement | null = null;
 let backdropEl: HTMLDivElement | null = null;
 let cloneEl: HTMLElement | null = null;
 let popStateBound = false;
@@ -45,11 +44,11 @@ let beforePrepBound = false;
 let exitAnimating = false;
 let exitPending: ModalState | null = null;
 
-function readPayloads(root: HTMLElement): Record<string, PlayerDetailPayload> {
+function readPayloads(root: HTMLElement): Record<string, ModalPayload> {
   const raw = root.dataset.playerPayloads;
   if (!raw) return {};
   try {
-    return JSON.parse(raw) as Record<string, PlayerDetailPayload>;
+    return JSON.parse(raw) as Record<string, ModalPayload>;
   } catch {
     return {};
   }
@@ -71,32 +70,22 @@ function expectedPathname(detailHref: string): string {
   }
 }
 
-function ensureShell(): { shell: HTMLDivElement; backdrop: HTMLDivElement } {
-  if (shellEl && backdropEl) return { shell: shellEl, backdrop: backdropEl };
+function ensureBackdrop(): HTMLDivElement {
+  if (backdropEl) return backdropEl;
 
   const backdrop = document.createElement('div');
   backdrop.className = 'player-modal-backdrop';
   backdrop.setAttribute('aria-hidden', 'true');
   backdrop.hidden = true;
 
-  const shell = document.createElement('div');
-  shell.className = 'player-modal-shell';
-  shell.setAttribute('role', 'dialog');
-  shell.setAttribute('aria-modal', 'true');
-  shell.tabIndex = -1;
-  shell.hidden = true;
-
   document.body.appendChild(backdrop);
-  document.body.appendChild(shell);
-
   backdropEl = backdrop;
-  shellEl = shell;
 
   backdrop.addEventListener('click', () => {
     if (active) closeModal();
   });
 
-  return { shell, backdrop };
+  return backdrop;
 }
 
 function removeClone(): void {
@@ -106,15 +95,11 @@ function removeClone(): void {
   }
 }
 
-function destroyShellContent(): void {
-  if (!shellEl) return;
-  shellEl.innerHTML = '';
-  shellEl.hidden = true;
-  if (backdropEl) {
-    gsap.killTweensOf(backdropEl);
-    backdropEl.hidden = true;
-    backdropEl.style.opacity = '0';
-  }
+function hideBackdrop(): void {
+  if (!backdropEl) return;
+  gsap.killTweensOf(backdropEl);
+  backdropEl.hidden = true;
+  backdropEl.style.opacity = '0';
 }
 
 function killExitTweens(): void {
@@ -139,7 +124,7 @@ function closeModal(opts?: { skipUrlRestore?: boolean; instant?: boolean }): voi
     exitPending = null;
     killExitTweens();
     document.body.style.overflow = '';
-    destroyShellContent();
+    hideBackdrop();
     removeClone();
     if (pend) {
       pend.opener.style.visibility = '';
@@ -160,7 +145,7 @@ function closeModal(opts?: { skipUrlRestore?: boolean; instant?: boolean }): voi
   if (instant) {
     active = null;
     document.body.style.overflow = '';
-    destroyShellContent();
+    hideBackdrop();
     removeClone();
     prev.opener.style.visibility = '';
     if (!opts?.skipUrlRestore) {
@@ -180,7 +165,7 @@ function closeModal(opts?: { skipUrlRestore?: boolean; instant?: boolean }): voi
     exitAnimating = false;
     exitPending = null;
     document.body.style.overflow = '';
-    destroyShellContent();
+    hideBackdrop();
     removeClone();
     prev.opener.style.visibility = '';
     if (!opts?.skipUrlRestore) {
@@ -194,7 +179,7 @@ function closeModal(opts?: { skipUrlRestore?: boolean; instant?: boolean }): voi
 function finalizeOpenCard(
   flipRoot: HTMLDivElement,
   clone: HTMLElement,
-  payload: PlayerDetailPayload,
+  payload: ModalPayload,
   closeLabel: string,
 ): void {
   clone.removeAttribute('href');
@@ -234,7 +219,7 @@ function finalizeOpenCard(
     closeModal();
   });
 
-  const { backdrop } = ensureShell();
+  const backdrop = ensureBackdrop();
   backdrop.hidden = false;
   gsap.to(backdrop, { opacity: 1, duration: 0.28, ease: 'power2.out' });
 
@@ -478,7 +463,7 @@ export function initPlayerModal(root: HTMLElement): void {
     a.style.visibility = 'hidden';
     document.body.style.overflow = 'hidden';
 
-    const { backdrop } = ensureShell();
+    const backdrop = ensureBackdrop();
     backdrop.hidden = false;
     gsap.fromTo(backdrop, { opacity: 0 }, { opacity: 0.55, duration: 0.2, ease: 'power2.out' });
 
@@ -507,10 +492,6 @@ document.addEventListener('astro:page-load', () => {
   killExitTweens();
   document.body.style.overflow = '';
   removeClone();
-  if (shellEl) {
-    shellEl.remove();
-    shellEl = null;
-  }
   if (backdropEl) {
     backdropEl.remove();
     backdropEl = null;

@@ -2,10 +2,10 @@
 import BaseLayout from '@/components/layout/BaseLayout.astro';
 import ServicesOrbit3D from '@/components/sections/ServicesOrbit3D.astro';
 import { useTranslations, type Lang } from '@/i18n/utils';
+import { SITE_URL } from '@/lib/constants';
 
 const lang: Lang = 'en';
 const t = useTranslations(lang);
-const SITE_URL = 'https://ph-sport-web.com';
 ---
 
 <BaseLayout

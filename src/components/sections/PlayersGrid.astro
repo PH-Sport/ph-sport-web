@@ -6,7 +6,7 @@ import { formatNationalTeamAriaLabel } from '@/lib/countryLabels';
 import { getPlayerPhotoBySlug } from '@/lib/playerPhotos';
 import { parseSortParam, sortRosterByName } from '@/lib/sortRoster';
 import { slugify } from '@/lib/slugify';
-import { buildPlayerDetailPayloadsForLang } from '@/lib/playerDetail';
+import { buildModalPayloadsForLang } from '@/lib/playerDetail';
 import PortraitCard from '@/components/ui/PortraitCard.astro';
 import PlayersSortRow from '@/components/ui/PlayersSortRow.astro';
 import PlayersViewDropdown from '@/components/ui/PlayersViewDropdown.astro';
@@ -18,8 +18,8 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const playerPayloads = await buildPlayerDetailPayloadsForLang(lang);
-const playerPayloadsJson = JSON.stringify(playerPayloads);
+const modalPayloads = buildModalPayloadsForLang(lang);
+const playerPayloadsJson = JSON.stringify(modalPayloads);
 const detailBase = lang === 'es' ? '/jugadores' : '/en/players';
 
 /** Orden = orden de los arrays en `data/jugadores.json` y `data/entrenadores.json` (directiva). */
@@ -255,6 +255,14 @@ function subtitleFor(row: { club: { name: string } | null }): string {
     gap: 0.75rem;
   }
 
+  .players-header-top :global(.ph-label) {
+    opacity: 0;
+  }
+
+  .players-header-top.is-revealed :global(.ph-label) {
+    opacity: 1;
+  }
+
   .players-title {
     margin-top: 2rem;
     font-family: var(--ph-font-display);
@@ -263,6 +271,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
     letter-spacing: -0.02em;
     line-height: 1.1;
     color: var(--ph-white);
+    overflow: hidden;
   }
 
   .players-subtitle {
@@ -340,6 +349,24 @@ function subtitleFor(row: { club: { name: string } | null }): string {
 
   .players-tab[aria-selected='true']:hover::before {
     transform: scaleX(0);
+  }
+
+  .players-toolbar-mobile > *,
+  .players-toolbar--desktop > * {
+    opacity: 0;
+  }
+
+  .players-toolbar-mobile.is-revealed > *,
+  .players-toolbar--desktop.is-revealed > * {
+    opacity: 1;
+  }
+
+  .players-subsection-toolbar > * {
+    opacity: 0;
+  }
+
+  .players-subsection-toolbar.is-revealed > * {
+    opacity: 1;
   }
 
   /* Móvil: dropdown vista + dropdown Orden (solo < md; no usar display:flex global para no pisar `md:hidden` de Tailwind) */
@@ -525,6 +552,14 @@ function subtitleFor(row: { club: { name: string } | null }): string {
     gap: 1rem;
   }
 
+  .players-grid :global(.card) {
+    opacity: 0;
+  }
+
+  .players-grid.cards-revealed :global(.card) {
+    opacity: 1;
+  }
+
   @media (min-width: 768px) {
     .players-grid {
       grid-template-columns: repeat(3, 1fr);
@@ -547,10 +582,10 @@ function subtitleFor(row: { club: { name: string } | null }): string {
     reducedMotion,
     wrapWords,
     splitWords,
-    trackingReveal,
   } from '@/scripts/ph-text-animations';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import { initPlayerModal } from '@/scripts/player-modal';
+  import { createDropdown } from '@/scripts/dropdown';
 
   gsap.registerPlugin(ScrollTrigger);
 
@@ -747,86 +782,18 @@ function subtitleFor(row: { club: { name: string } | null }): string {
       const panel = root.querySelector<HTMLElement>('.players-view-panel');
       if (!trigger || !panel) return;
 
-      function close(): void {
-        if (panel.hidden) return;
-
-        if (reducedMotion()) {
-          panel.hidden = true;
-          trigger.setAttribute('aria-expanded', 'false');
-          return;
-        }
-
-        gsap.killTweensOf(panel);
-        gsap.to(panel, {
-          opacity: 0,
-          y: -6,
-          duration: 0.16,
-          ease: 'power2.in',
-          onComplete: () => {
-            panel.hidden = true;
-            trigger.setAttribute('aria-expanded', 'false');
-            gsap.set(panel, { clearProps: 'all' });
-          },
-        });
-      }
-
-      function open(): void {
-        if (!panel.hidden) return;
-
-        trigger.setAttribute('aria-expanded', 'true');
-        panel.hidden = false;
-
-        if (reducedMotion()) return;
-
-        gsap.killTweensOf(panel);
-        gsap.fromTo(
-          panel,
-          { opacity: 0, y: -8, scale: 0.98 },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.22,
-            ease: 'power2.out',
-            onComplete: () => {
-              gsap.set(panel, { clearProps: 'opacity,transform' });
-            },
-          },
-        );
-      }
-
-      function toggle(): void {
-        if (panel.hidden) open();
-        else close();
-      }
-
-      trigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggle();
-      });
+      const dd = createDropdown(root, trigger, panel);
 
       root.querySelectorAll<HTMLButtonElement>('.players-view-option[data-view-tab]').forEach((btn) => {
         btn.addEventListener('click', () => {
           const v = btn.dataset.viewTab;
-          close();
+          dd.close();
           if (v === 'coaches' || v === 'players') {
             section.dispatchEvent(
               new CustomEvent('players:activate-tab', { bubbles: true, detail: { tab: v } }),
             );
           }
         });
-      });
-
-      document.addEventListener('click', (e) => {
-        const t = e.target as Node;
-        if (!root.contains(t) && !panel.hidden) close();
-      });
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !panel.hidden) {
-          close();
-          trigger.focus();
-        }
       });
     });
   }
@@ -837,63 +804,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
       const panel = root.querySelector<HTMLElement>('.players-sort-panel');
       if (!trigger || !panel) return;
 
-      function close(): void {
-        if (panel.hidden) return;
-
-        if (reducedMotion()) {
-          panel.hidden = true;
-          trigger.setAttribute('aria-expanded', 'false');
-          return;
-        }
-
-        gsap.killTweensOf(panel);
-        gsap.to(panel, {
-          opacity: 0,
-          y: -6,
-          duration: 0.16,
-          ease: 'power2.in',
-          onComplete: () => {
-            panel.hidden = true;
-            trigger.setAttribute('aria-expanded', 'false');
-            gsap.set(panel, { clearProps: 'all' });
-          },
-        });
-      }
-
-      function open(): void {
-        if (!panel.hidden) return;
-
-        trigger.setAttribute('aria-expanded', 'true');
-        panel.hidden = false;
-
-        if (reducedMotion()) return;
-
-        gsap.killTweensOf(panel);
-        gsap.fromTo(
-          panel,
-          { opacity: 0, y: -8, scale: 0.98 },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.22,
-            ease: 'power2.out',
-            onComplete: () => {
-              gsap.set(panel, { clearProps: 'opacity,transform' });
-            },
-          },
-        );
-      }
-
-      function toggle(): void {
-        if (panel.hidden) open();
-        else close();
-      }
-
-      trigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggle();
-      });
+      createDropdown(root, trigger, panel);
 
       root.querySelectorAll<HTMLButtonElement>('[data-sort-value]').forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -904,102 +815,116 @@ function subtitleFor(row: { club: { name: string } | null }): string {
           window.location.assign(u.pathname + u.search + u.hash);
         });
       });
-
-      document.addEventListener('click', (e) => {
-        const t = e.target as Node;
-        if (!root.contains(t) && !panel.hidden) close();
-      });
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !panel.hidden) {
-          close();
-          trigger.focus();
-        }
-      });
     });
+  }
+
+  function clearAnimProps(els: HTMLElement[] | NodeListOf<HTMLElement> | Element[]): void {
+    gsap.set(els, { clearProps: 'opacity,transform,letterSpacing' });
   }
 
   function initPlayersAnimations(): void {
     const section = document.querySelector<HTMLElement>('.players-section');
-    if (!section || reducedMotion()) return;
+    if (!section) return;
+
+    if (reducedMotion()) {
+      section.querySelector('.players-header-top')?.classList.add('is-revealed');
+      section.querySelectorAll<HTMLElement>(
+        '[data-players-toolbar-animate], .players-toolbar--desktop, .players-subsection-toolbar',
+      ).forEach((el) => el.classList.add('is-revealed'));
+      section.querySelectorAll<HTMLElement>('.players-grid').forEach((g) => g.classList.add('cards-revealed'));
+      return;
+    }
 
     const label = section.querySelector<HTMLElement>('.ph-label');
     if (label) {
-      trackingReveal(label, { trigger: label, start: 'top 88%', once: true });
+      gsap.fromTo(
+        label,
+        { letterSpacing: '0.3em', opacity: 0 },
+        {
+          letterSpacing: '0em',
+          opacity: 1,
+          duration: 0.9,
+          ease: 'expo.out',
+          scrollTrigger: { trigger: label, start: 'top 88%', once: true },
+          onComplete: () => {
+            label.parentElement?.classList.add('is-revealed');
+            clearAnimProps([label]);
+          },
+        },
+      );
     }
 
     const title = section.querySelector<HTMLElement>('.players-title');
     if (title) {
       const words = wrapWords(title);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 0.85,
-        stagger: 0.07,
-        ease: 'power4.out',
-        scrollTrigger: { trigger: title, start: 'top 82%', once: true },
-      });
+      gsap.fromTo(
+        words,
+        { yPercent: 115 },
+        {
+          yPercent: 0,
+          duration: 0.85,
+          stagger: 0.07,
+          ease: 'power4.out',
+          scrollTrigger: { trigger: title, start: 'top 82%', once: true },
+        },
+      );
     }
 
     const subtitle = section.querySelector<HTMLElement>('.players-subtitle');
     if (subtitle) {
       const spans = splitWords(subtitle);
-      gsap.from(spans, {
-        y: 10,
-        duration: 0.55,
-        stagger: 0.03,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: subtitle, start: 'top 88%', once: true },
-      });
+      gsap.fromTo(
+        spans,
+        { opacity: 0, y: 10 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.55,
+          stagger: 0.03,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: subtitle, start: 'top 88%', once: true },
+          onComplete: () => clearAnimProps(spans),
+        },
+      );
     }
 
     section.querySelectorAll<HTMLElement>('.players-section-title').forEach((subTitle) => {
       const words = wrapWords(subTitle);
-      gsap.from(words, {
-        yPercent: 100,
-        duration: 0.65,
-        stagger: 0.06,
-        ease: 'power4.out',
-        scrollTrigger: { trigger: subTitle, start: 'top 88%', once: true },
-      });
+      gsap.fromTo(
+        words,
+        { yPercent: 100 },
+        {
+          yPercent: 0,
+          duration: 0.65,
+          stagger: 0.06,
+          ease: 'power4.out',
+          scrollTrigger: { trigger: subTitle, start: 'top 88%', once: true },
+        },
+      );
     });
 
-    const mobileToolbar = section.querySelector<HTMLElement>('[data-players-toolbar-animate]');
-    if (mobileToolbar) {
-      const rowKids = Array.from(mobileToolbar.children);
-      gsap.from(rowKids, {
-        opacity: 0,
-        y: 12,
-        duration: 0.45,
-        stagger: 0.12,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: mobileToolbar, start: 'top 88%', once: true },
-      });
-    }
-
-    const mainToolbar = section.querySelector<HTMLElement>('.players-toolbar--desktop');
-    if (mainToolbar) {
-      const rowKids = Array.from(mainToolbar.children);
-      gsap.from(rowKids, {
-        opacity: 0,
-        y: 12,
-        duration: 0.45,
-        stagger: 0.12,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: mainToolbar, start: 'top 88%', once: true },
-      });
-    }
-
-    section.querySelectorAll<HTMLElement>('.players-subsection-toolbar').forEach((subToolbar) => {
-      const rowKids = Array.from(subToolbar.children);
-      if (!rowKids.length) return;
-      gsap.from(rowKids, {
-        opacity: 0,
-        y: 12,
-        duration: 0.45,
-        stagger: 0.12,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: subToolbar, start: 'top 88%', once: true },
-      });
+    const toolbarContainers = section.querySelectorAll<HTMLElement>(
+      '[data-players-toolbar-animate], .players-toolbar--desktop, .players-subsection-toolbar',
+    );
+    toolbarContainers.forEach((container) => {
+      const kids = Array.from(container.children) as HTMLElement[];
+      if (!kids.length) return;
+      gsap.fromTo(
+        kids,
+        { opacity: 0, y: 12 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.45,
+          stagger: 0.12,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: container, start: 'top 88%', once: true },
+          onComplete: () => {
+            container.classList.add('is-revealed');
+            clearAnimProps(kids);
+          },
+        },
+      );
     });
 
     const grids = section.querySelectorAll<HTMLElement>(
@@ -1008,17 +933,26 @@ function subtitleFor(row: { club: { name: string } | null }): string {
     grids.forEach((grid) => {
       const cards = grid.querySelectorAll<HTMLElement>('.card');
       if (!cards.length) return;
-      gsap.from(cards, {
-        y: 24,
-        duration: 0.55,
-        stagger: { each: 0.06, from: 'start' },
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: grid,
-          start: 'top 88%',
-          once: true,
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.55,
+          stagger: { each: 0.06, from: 'start' },
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: grid,
+            start: 'top 88%',
+            once: true,
+          },
+          onComplete: () => {
+            grid.classList.add('cards-revealed');
+            gsap.set(cards, { clearProps: 'opacity,transform' });
+          },
         },
-      });
+      );
     });
 
     requestAnimationFrame(() => {
@@ -1030,12 +964,21 @@ function subtitleFor(row: { club: { name: string } | null }): string {
     initPlayersTabSwitch();
     initPlayersViewDropdown();
     initPlayersSortDropdown();
-    initPlayersAnimations();
 
-    const modalRoot = document.querySelector<HTMLElement>(
-      '.players-section[data-player-detail-base]',
-    );
-    if (modalRoot) initPlayerModal(modalRoot);
+    const runHeavy = (): void => {
+      initPlayersAnimations();
+
+      const modalRoot = document.querySelector<HTMLElement>(
+        '.players-section[data-player-detail-base]',
+      );
+      if (modalRoot) initPlayerModal(modalRoot);
+    };
+
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(runHeavy, { timeout: 300 });
+    } else {
+      setTimeout(runHeavy, 80);
+    }
   }
 
   document.addEventListener('astro:page-load', initPlayersSection);

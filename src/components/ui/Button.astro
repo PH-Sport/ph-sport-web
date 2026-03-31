@@ -1,10 +1,15 @@
 ---
-interface Props {
+type BaseProps = {
   href?: string;
   variant?: 'primary' | 'secondary';
   class?: string;
-  [key: string]: any;
-}
+};
+
+type Props = BaseProps &
+  (
+    | astroHTML.JSX.AnchorHTMLAttributes
+    | astroHTML.JSX.ButtonHTMLAttributes
+  );
 
 const {
   href,

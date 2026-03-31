@@ -159,6 +159,7 @@ const teamPayloadsJson = JSON.stringify(teamPayloads);
 
 <script>
   import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
     reducedMotion,
     wrapWords,
@@ -167,9 +168,33 @@ const teamPayloadsJson = JSON.stringify(teamPayloads);
   } from '@/scripts/ph-text-animations';
   import { initPlayerModal } from '@/scripts/player-modal';
 
+  gsap.registerPlugin(ScrollTrigger);
+
+  let teamScrollRefreshBound = false;
+
+  function bindDebouncedScrollTriggerRefreshOnce(): void {
+    if (teamScrollRefreshBound) return;
+    teamScrollRefreshBound = true;
+    let id: ReturnType<typeof setTimeout> | null = null;
+    const schedule = (): void => {
+      if (id !== null) window.clearTimeout(id);
+      id = window.setTimeout(() => {
+        id = null;
+        ScrollTrigger.refresh();
+      }, 150);
+    };
+    window.addEventListener('resize', schedule, { passive: true });
+    window.addEventListener('orientationchange', schedule);
+    window.visualViewport?.addEventListener('resize', schedule);
+  }
+
   function initTeamAnimations(): void {
     const section = document.querySelector<HTMLElement>('.team-section');
-    if (!section || reducedMotion()) return;
+    if (!section) return;
+    if (reducedMotion()) {
+      section.querySelectorAll<HTMLElement>('.team-grid').forEach((g) => g.classList.add('cards-revealed'));
+      return;
+    }
 
     const label = section.querySelector<HTMLElement>('.ph-label');
     if (label) {
@@ -237,9 +262,23 @@ const teamPayloadsJson = JSON.stringify(teamPayloads);
         },
       );
     }
+
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+    });
+
+    window.setTimeout(() => {
+      document.querySelectorAll<HTMLElement>('.team-grid:not(.cards-revealed)').forEach((grid) => {
+        const cardEls = grid.querySelectorAll<HTMLElement>('.card');
+        if (!cardEls.length) return;
+        grid.classList.add('cards-revealed');
+        gsap.set(cardEls, { clearProps: 'opacity,transform' });
+      });
+    }, 2200);
   }
 
   function initTeamSection(): void {
+    bindDebouncedScrollTriggerRefreshOnce();
     initTeamAnimations();
 
     const modalRoot = document.querySelector<HTMLElement>(

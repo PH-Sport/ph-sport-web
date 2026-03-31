@@ -589,6 +589,24 @@ function subtitleFor(row: { club: { name: string } | null }): string {
 
   gsap.registerPlugin(ScrollTrigger);
 
+  let playersScrollRefreshBound = false;
+
+  function bindDebouncedScrollTriggerRefreshOnce(): void {
+    if (playersScrollRefreshBound) return;
+    playersScrollRefreshBound = true;
+    let id: ReturnType<typeof setTimeout> | null = null;
+    const schedule = (): void => {
+      if (id !== null) window.clearTimeout(id);
+      id = window.setTimeout(() => {
+        id = null;
+        ScrollTrigger.refresh();
+      }, 150);
+    };
+    window.addEventListener('resize', schedule, { passive: true });
+    window.addEventListener('orientationchange', schedule);
+    window.visualViewport?.addEventListener('resize', schedule);
+  }
+
   function initPlayersTabSwitch(): void {
     const section = document.querySelector<HTMLElement>('.players-section[data-players-tabs="true"]');
     if (!section) return;
@@ -958,24 +976,34 @@ function subtitleFor(row: { club: { name: string } | null }): string {
     requestAnimationFrame(() => {
       ScrollTrigger.refresh();
     });
+
+    window.setTimeout(() => {
+      document.querySelectorAll<HTMLElement>('.players-grid:not(.cards-revealed)').forEach((grid) => {
+        const cards = grid.querySelectorAll<HTMLElement>('.card');
+        if (!cards.length) return;
+        grid.classList.add('cards-revealed');
+        gsap.set(cards, { clearProps: 'opacity,transform' });
+      });
+    }, 2200);
   }
 
   function initPlayersSection(): void {
     initPlayersTabSwitch();
     initPlayersViewDropdown();
     initPlayersSortDropdown();
+    bindDebouncedScrollTriggerRefreshOnce();
+
+    const modalRoot = document.querySelector<HTMLElement>(
+      '.players-section[data-player-detail-base]',
+    );
+    if (modalRoot) initPlayerModal(modalRoot);
 
     const runHeavy = (): void => {
       initPlayersAnimations();
-
-      const modalRoot = document.querySelector<HTMLElement>(
-        '.players-section[data-player-detail-base]',
-      );
-      if (modalRoot) initPlayerModal(modalRoot);
     };
 
     if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(runHeavy, { timeout: 300 });
+      window.requestIdleCallback(runHeavy, { timeout: 200 });
     } else {
       setTimeout(runHeavy, 80);
     }

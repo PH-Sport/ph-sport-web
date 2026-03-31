@@ -50,16 +50,19 @@
   border: none;
   border-radius: var(--ph-radius-card);
   box-shadow: none;
+  overflow: hidden;
 }
 
 .player-modal-flip-root {
-  perspective: min(1400px, 100vw);
+  /* Mínimo ~900px para que el giro 3D no use perspectiva = ancho del móvil (artefactos WebKit). */
+  perspective: min(1400px, max(900px, 100vw));
+  -webkit-perspective: min(1400px, max(900px, 100vw));
   transform-style: preserve-3d;
 }
 
 .player-modal-card-clone {
   border-radius: var(--ph-radius-card);
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid var(--ph-white-10);
   background: var(--ph-white-10);
 }

@@ -24,6 +24,7 @@ function styleFlipFace(face: HTMLElement): void {
   face.style.margin = '0';
   face.style.boxSizing = 'border-box';
   face.style.backfaceVisibility = 'hidden';
+  face.style.setProperty('-webkit-backface-visibility', 'hidden');
 }
 
 type ModalState = {
@@ -43,6 +44,25 @@ let beforePrepBound = false;
 /** Cierre animado en curso; `exitPending` conserva estado para interrupción instantánea. */
 let exitAnimating = false;
 let exitPending: ModalState | null = null;
+/** Opener con `visibility: hidden`; restaurar en close y en astro:page-load si el nodo sigue en el DOM. */
+let lastOpenerHidden: HTMLElement | null = null;
+/** Última apertura sin giro 3D (touch / viewport estrecho); la salida omite rotateY en exit. */
+let lastOpenUsedSimpleFlip = false;
+
+function clearOpenerHiddenStyle(): void {
+  if (lastOpenerHidden && document.contains(lastOpenerHidden)) {
+    lastOpenerHidden.style.visibility = '';
+  }
+  lastOpenerHidden = null;
+}
+
+function prefersSimpleFlip(): boolean {
+  if (typeof window.matchMedia !== 'function') return false;
+  return (
+    window.matchMedia('(max-width: 767px)').matches ||
+    window.matchMedia('(pointer: coarse)').matches
+  );
+}
 
 function readPayloads(root: HTMLElement): Record<string, ModalPayload> {
   const raw = root.dataset.playerPayloads;
@@ -127,7 +147,8 @@ function closeModal(opts?: { skipUrlRestore?: boolean; instant?: boolean }): voi
     hideBackdrop();
     removeClone();
     if (pend) {
-      pend.opener.style.visibility = '';
+      clearOpenerHiddenStyle();
+      lastOpenUsedSimpleFlip = false;
       if (!opts?.skipUrlRestore) {
         history.replaceState(history.state, '', pend.originalHref);
       }
@@ -147,7 +168,8 @@ function closeModal(opts?: { skipUrlRestore?: boolean; instant?: boolean }): voi
     document.body.style.overflow = '';
     hideBackdrop();
     removeClone();
-    prev.opener.style.visibility = '';
+    clearOpenerHiddenStyle();
+    lastOpenUsedSimpleFlip = false;
     if (!opts?.skipUrlRestore) {
       history.replaceState(history.state, '', prev.originalHref);
     }
@@ -167,7 +189,8 @@ function closeModal(opts?: { skipUrlRestore?: boolean; instant?: boolean }): voi
     document.body.style.overflow = '';
     hideBackdrop();
     removeClone();
-    prev.opener.style.visibility = '';
+    clearOpenerHiddenStyle();
+    lastOpenUsedSimpleFlip = false;
     if (!opts?.skipUrlRestore) {
       history.replaceState(history.state, '', prev.originalHref);
     }
@@ -258,7 +281,8 @@ function runFlipAnimation(
     styleFlipFace(face);
   }
 
-  gsap.set(backFace, { rotationY: 180 });
+  gsap.set(frontFace, { z: 0.1, force3D: true });
+  gsap.set(backFace, { rotationY: 180, z: 0.1, force3D: true });
 
   flipInner.appendChild(frontFace);
   flipInner.appendChild(backFace);
@@ -269,16 +293,23 @@ function runFlipAnimation(
   const { targetW, targetH, cx, cy } = getTargetCardBox();
 
   const flatten = (): void => {
-    gsap.killTweensOf([flipRoot, flipInner]);
-    frontFace.remove();
-    gsap.set(backFace, { rotationY: 0 });
-    backFace.style.backfaceVisibility = 'visible';
-    flipRoot.appendChild(backFace);
-    flipInner.remove();
-    onComplete(flipRoot, backFace);
+    const run = (): void => {
+      gsap.killTweensOf([flipRoot, flipInner]);
+      frontFace.remove();
+      gsap.set(backFace, { rotationY: 0 });
+      backFace.style.backfaceVisibility = 'visible';
+      backFace.style.setProperty('-webkit-backface-visibility', 'visible');
+      flipRoot.appendChild(backFace);
+      flipInner.remove();
+      onComplete(flipRoot, backFace);
+    };
+    requestAnimationFrame(() => {
+      requestAnimationFrame(run);
+    });
   };
 
   if (reducedMotion()) {
+    lastOpenUsedSimpleFlip = false;
     flipRoot.style.left = `${cx}px`;
     flipRoot.style.top = `${cy}px`;
     flipRoot.style.width = `${targetW}px`;
@@ -291,6 +322,18 @@ function runFlipAnimation(
   flipRoot.style.top = `${rect.top}px`;
   flipRoot.style.width = `${rect.width}px`;
   flipRoot.style.height = `${rect.height}px`;
+
+  const simple = prefersSimpleFlip();
+  lastOpenUsedSimpleFlip = simple;
+
+  if (simple) {
+    gsap.timeline({ onComplete: flatten }).to(
+      flipRoot,
+      { left: cx, top: cy, width: targetW, height: targetH, duration: FLIP_DURATION, ease: FLIP_EASE },
+      0,
+    );
+    return;
+  }
 
   gsap
     .timeline({ onComplete: flatten })
@@ -325,6 +368,68 @@ function runFlipExitAnimation(
   }
 
   const fromRect = backFace.getBoundingClientRect();
+
+  if (lastOpenUsedSimpleFlip) {
+    backFace.remove();
+    flipRoot.classList.remove('player-modal-flip-root--locked');
+    flipRoot.removeAttribute('role');
+    flipRoot.removeAttribute('aria-modal');
+    flipRoot.removeAttribute('aria-label');
+
+    flipRoot.style.display = 'block';
+    flipRoot.style.flexDirection = '';
+    flipRoot.style.overflow = 'visible';
+    flipRoot.style.maxHeight = 'none';
+    flipRoot.style.height = `${fromRect.height}px`;
+    flipRoot.style.left = `${fromRect.left}px`;
+    flipRoot.style.top = `${fromRect.top}px`;
+    flipRoot.style.width = `${fromRect.width}px`;
+    flipRoot.style.position = 'fixed';
+    flipRoot.style.margin = '0';
+    flipRoot.style.zIndex = '250';
+    flipRoot.style.boxSizing = 'border-box';
+    flipRoot.style.pointerEvents = 'none';
+
+    const single = opener.cloneNode(true) as HTMLElement;
+    single.classList.add('player-modal-card-clone');
+    single.style.visibility = 'visible';
+    single.style.position = 'absolute';
+    single.style.left = '0';
+    single.style.top = '0';
+    single.style.width = '100%';
+    single.style.height = '100%';
+    single.style.boxSizing = 'border-box';
+    flipRoot.replaceChildren(single);
+
+    const toRect = opener.getBoundingClientRect();
+
+    if (backdrop) {
+      gsap.killTweensOf(backdrop);
+      backdrop.hidden = false;
+    }
+
+    const tl = gsap.timeline({ onComplete });
+    if (backdrop) {
+      tl.to(
+        backdrop,
+        { opacity: 0, duration: BACKDROP_EXIT_FADE, ease: 'power2.out' },
+        0,
+      );
+    }
+    tl.to(
+      flipRoot,
+      {
+        left: toRect.left,
+        top: toRect.top,
+        width: toRect.width,
+        height: toRect.height,
+        duration: FLIP_DURATION,
+        ease: FLIP_EASE,
+      },
+      0,
+    );
+    return;
+  }
 
   backFace.remove();
 
@@ -460,6 +565,7 @@ export function initPlayerModal(root: HTMLElement): void {
     bindPopState();
     bindBeforePreparation();
 
+    lastOpenerHidden = a;
     a.style.visibility = 'hidden';
     document.body.style.overflow = 'hidden';
 
@@ -489,9 +595,11 @@ document.addEventListener('astro:page-load', () => {
   active = null;
   exitAnimating = false;
   exitPending = null;
+  lastOpenUsedSimpleFlip = false;
   killExitTweens();
   document.body.style.overflow = '';
   removeClone();
+  clearOpenerHiddenStyle();
   if (backdropEl) {
     backdropEl.remove();
     backdropEl = null;

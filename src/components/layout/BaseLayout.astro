@@ -138,7 +138,9 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
   }
 
   /* LogoReveal vive dentro de main (z-index 1); el header fijo quedaría encima del overlay.
-     LogoReveal añade html.ph-logo-reveal-active mientras corre la animación. */
+     LogoReveal añade html.ph-logo-reveal-active mientras corre la animación.
+     Mientras dura, el header queda oculto y sin pointer-events: evita que tape el overlay
+     y es intencional (no se puede abrir el menú u otras acciones del chrome hasta terminar). */
   html.ph-logo-reveal-active [data-header] {
     opacity: 0;
     visibility: hidden;

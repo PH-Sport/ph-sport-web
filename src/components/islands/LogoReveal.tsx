@@ -14,7 +14,8 @@ const POLYGON_2_POINTS =
 
 const SESSION_KEY = 'ph-logo-revealed';
 
-/** Oculta chrome (header) mientras el overlay está activo: el island vive en main (z-index bajo) y el header fijo quedaría encima del overlay. */
+/** Oculta chrome (header) mientras el overlay está activo: el island vive en main (z-index bajo) y el header fijo quedaría encima del overlay.
+ *  El header no es interactivo durante el reveal (ver comentario en BaseLayout.astro). */
 const REVEAL_CHROME_CLASS = 'ph-logo-reveal-active';
 
 const REF_RETRY_MAX = 40;

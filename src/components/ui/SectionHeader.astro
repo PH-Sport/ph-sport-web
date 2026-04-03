@@ -1,0 +1,102 @@
+---
+interface Props {
+  label: string;
+  title: string;
+  subtitle?: string;
+  count?: number;
+  id?: string;
+  tag?: 'h1' | 'h2';
+  noBorder?: boolean;
+}
+
+const {
+  label,
+  title,
+  subtitle,
+  count,
+  id,
+  tag: Tag = 'h1',
+  noBorder = false,
+} = Astro.props;
+---
+
+<header class:list={['section-header', noBorder && 'section-header--no-border']}>
+  <div class="section-header-top">
+    <span class="ph-label">{label}</span>
+    {count !== undefined && <span class="section-header-count">{count}</span>}
+  </div>
+  <div class="ph-divider mt-4"></div>
+  <Tag id={id} class="section-header-title">
+    {title}
+  </Tag>
+  {subtitle && <p class="section-header-subtitle">{subtitle}</p>}
+</header>
+
+<style>
+  .section-header {
+    margin-bottom: 3rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--color-ph-white-10);
+  }
+
+  @media (min-width: 1024px) {
+    .section-header {
+      margin-bottom: 4rem;
+      padding-bottom: 3rem;
+    }
+  }
+
+  .section-header--no-border {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .section-header--no-border {
+      margin-bottom: 5rem;
+      padding-bottom: 0;
+    }
+  }
+
+  .section-header-top {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-header-count {
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--color-ph-white-60);
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--color-ph-white-10);
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.04em;
+  }
+
+  .section-header-title {
+    margin-top: 2rem;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--color-ph-white);
+    overflow: hidden;
+  }
+
+  .section-header-subtitle {
+    margin-top: 1rem;
+    max-width: 40rem;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-ph-white-60);
+  }
+
+  @media (min-width: 1024px) {
+    .section-header-subtitle {
+      font-size: 1.125rem;
+    }
+  }
+</style>

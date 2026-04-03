@@ -1,0 +1,295 @@
+.player-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(13, 15, 18, 0.88);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  .player-modal-backdrop {
+    backdrop-filter: blur(var(--ph-glass-blur));
+    -webkit-backdrop-filter: blur(var(--ph-glass-blur));
+  }
+}
+
+.player-modal-close {
+  position: absolute;
+  top: max(0.65rem, env(safe-area-inset-top, 0px));
+  right: max(0.65rem, env(safe-area-inset-right, 0px));
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-ph-white-10);
+  border-radius: var(--radius-sm);
+  background: rgba(13, 15, 18, 0.9);
+  color: var(--color-ph-white);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    border-color 200ms var(--ease-ph),
+    color 200ms var(--ease-ph);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .player-modal-close:hover {
+    border-color: var(--color-ph-gold-muted);
+    color: var(--color-ph-gold);
+  }
+}
+
+.player-modal-close--on-card {
+  z-index: 10;
+}
+
+.player-modal-close--team-lightbox {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.player-modal-close--team-lightbox .player-modal-close-line {
+  display: block;
+  width: 1.35rem;
+  height: 2px;
+  margin: 0 auto;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .player-modal-close--team-lightbox:hover {
+    border-color: transparent;
+    color: var(--color-ph-gold);
+  }
+}
+
+.player-modal-flip-root--locked {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-ph-white-10);
+  background: var(--color-ph-black);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+}
+
+.player-modal-flip-root--locked .player-modal-card-clone.card {
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.player-modal-flip-root {
+  perspective: min(1400px, max(900px, 100vw));
+  -webkit-perspective: min(1400px, max(900px, 100vw));
+  transform-style: preserve-3d;
+}
+
+.player-modal-card-clone {
+  border-radius: var(--radius-md);
+  overflow: visible;
+  border: 1px solid var(--color-ph-white-10);
+  background: var(--color-ph-white-10);
+}
+
+/* --- Variante Equipo: lightbox apaisado --- */
+
+.player-modal-flip-root--team.player-modal-flip-root--locked {
+  box-sizing: border-box;
+  border-radius: var(--radius-md);
+  padding-left: max(0.5rem, env(safe-area-inset-left, 0px));
+  padding-right: max(0.5rem, env(safe-area-inset-right, 0px));
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(214, 178, 94, 0.12) 0%, transparent 55%),
+    linear-gradient(165deg, #22252c 0%, #121418 48%, #0a0b0d 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35),
+    0 32px 80px rgba(0, 0, 0, 0.65);
+}
+
+.player-modal-team-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  align-self: stretch;
+  min-height: 0;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.player-modal-team-poster {
+  position: relative;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  align-items: center;
+  justify-items: stretch;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding-inline: clamp(0.65rem, 2.5vw, 1.5rem);
+}
+
+.player-modal-team-watermark {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.player-modal-marquee-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  animation: player-modal-team-marquee 22s linear infinite;
+  will-change: transform;
+}
+
+.player-modal-marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: clamp(1.25rem, 4vw, 2.25rem);
+  padding-right: clamp(1.25rem, 4vw, 2.25rem);
+}
+
+.player-modal-marquee-word {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 12vmin, 4.25rem);
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.38);
+  text-transform: uppercase;
+}
+
+.player-modal-team-photo-shell {
+  position: relative;
+  z-index: 1;
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  padding-block: 0.25rem;
+}
+
+.player-modal-flip-root--team .player-modal-team-poster-card.card {
+  position: relative;
+  z-index: 1;
+  width: clamp(11rem, 30vw, 22rem);
+  max-width: 34%;
+  margin-inline: auto;
+  flex-shrink: 0;
+  border: none;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+}
+
+.player-modal-flip-root--team .player-modal-team-poster-card .card-overlay {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.player-modal-flip-root--team .player-modal-team-poster-card .card-img {
+  opacity: 1;
+  visibility: visible;
+}
+
+.player-modal-team-accent-name {
+  position: absolute;
+  top: max(0.5rem, env(safe-area-inset-top, 0px));
+  left: max(0.65rem, env(safe-area-inset-left, 0px));
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+  max-width: min(42%, 16rem);
+  text-transform: uppercase;
+  color: var(--color-ph-gold);
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+}
+
+.player-modal-team-accent-line {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(0.85rem, 2.8vmin, 1.35rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.05;
+}
+
+.player-modal-team-meta {
+  position: absolute;
+  right: max(0.65rem, env(safe-area-inset-right, 0px));
+  bottom: max(0.55rem, env(safe-area-inset-bottom, 0px));
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+  max-width: min(40%, 14rem);
+  text-align: right;
+}
+
+.player-modal-team-club-logo {
+  display: block;
+  width: auto;
+  height: clamp(2rem, 5.5vmin, 3rem);
+  max-width: min(100%, 5.5rem);
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+}
+
+.player-modal-team-meta-text {
+  font-family: var(--font-display);
+  font-size: clamp(0.65rem, 2vmin, 0.875rem);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.25;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.94);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55);
+}
+
+@keyframes player-modal-team-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player-modal-marquee-track {
+    animation: none;
+    transform: translate3d(0, 0, 0);
+  }
+}

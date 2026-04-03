@@ -1,18 +1,48 @@
 import { gsap } from 'gsap';
 import { reducedMotion } from '@/scripts/ph-text-animations';
 import type { ModalPayload } from '@/lib/playerDetail';
-import './player-modal.css';
+import '@/styles/player-modal.css';
+
+/** Solo Equipo: lightbox tipo póster (`data-player-modal-variant="team"`). */
+type ModalVariant = 'team' | undefined;
 
 const FLIP_DURATION = 0.78;
 const FLIP_EASE = 'power3.inOut';
 const BACKDROP_EXIT_FADE = 0.28;
 
-function getTargetCardBox(): { targetW: number; targetH: number; cx: number; cy: number } {
+function getDefaultCardBox(): { targetW: number; targetH: number; cx: number; cy: number } {
   const targetW = Math.min(320, window.innerWidth * 0.88);
   const targetH = targetW * (4 / 3);
   const cx = window.innerWidth / 2 - targetW / 2;
   const cy = window.innerHeight / 2 - targetH / 2;
   return { targetW, targetH, cx, cy };
+}
+
+/**
+ * Lightbox apaisado (~1.58). Ancho generoso pero **alto acotado** (no pantalla completa)
+ * para que la caja quede con margen vertical y el contenido pueda centrarse dentro.
+ */
+function getTeamLightboxBox(): { targetW: number; targetH: number; cx: number; cy: number } {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const marginX = Math.max(10, vw * 0.02);
+  const marginY = Math.max(10, vh * 0.03);
+  const maxW = vw - marginX * 2;
+  const maxH = Math.min(vh * 0.7, 620, vh - marginY * 2);
+  const targetAspect = 1.58;
+  let targetW = Math.min(maxW, 1200);
+  let targetH = targetW / targetAspect;
+  if (targetH > maxH) {
+    targetH = maxH;
+    targetW = Math.min(maxW, targetH * targetAspect);
+  }
+  const cx = (vw - targetW) / 2;
+  const cy = (vh - targetH) / 2;
+  return { targetW, targetH, cx, cy };
+}
+
+function getTargetCardBox(variant: ModalVariant): { targetW: number; targetH: number; cx: number; cy: number } {
+  return variant === 'team' ? getTeamLightboxBox() : getDefaultCardBox();
 }
 
 function styleFlipFace(face: HTMLElement): void {
@@ -72,6 +102,96 @@ function readPayloads(root: HTMLElement): Record<string, ModalPayload> {
   } catch {
     return {};
   }
+}
+
+function readModalVariant(root: HTMLElement): ModalVariant {
+  return root.dataset.playerModalVariant === 'team' ? 'team' : undefined;
+}
+
+const TEAM_MARQUEE_REPEATS = 8;
+
+function buildTeamMarqueeTrack(name: string): HTMLDivElement {
+  const track = document.createElement('div');
+  track.className = 'player-modal-marquee-track';
+  track.setAttribute('aria-hidden', 'true');
+
+  const g1 = document.createElement('div');
+  g1.className = 'player-modal-marquee-group';
+  const g2 = document.createElement('div');
+  g2.className = 'player-modal-marquee-group';
+
+  for (const group of [g1, g2]) {
+    for (let i = 0; i < TEAM_MARQUEE_REPEATS; i++) {
+      const span = document.createElement('span');
+      span.className = 'player-modal-marquee-word';
+      span.textContent = name;
+      group.appendChild(span);
+    }
+  }
+
+  track.append(g1, g2);
+  return track;
+}
+
+/** Dos líneas tipo cartel (p. ej. nombre + apellidos). */
+function splitNameAccentLines(name: string): string[] {
+  const t = name.trim();
+  if (!t) return [''];
+  const parts = t.split(/\s+/);
+  if (parts.length === 1) return [parts[0]!];
+  return [parts[0]!, parts.slice(1).join(' ')];
+}
+
+/** Modal Equipo: composición tipo póster (marca de agua + foto estrecha + acento + rol). */
+function buildTeamPosterStage(clone: HTMLElement, payload: ModalPayload): HTMLDivElement {
+  const stage = document.createElement('div');
+  stage.className = 'player-modal-team-stage';
+
+  const poster = document.createElement('div');
+  poster.className = 'player-modal-team-poster';
+
+  const watermark = document.createElement('div');
+  watermark.className = 'player-modal-team-watermark';
+  watermark.setAttribute('aria-hidden', 'true');
+  watermark.appendChild(buildTeamMarqueeTrack(payload.name));
+
+  const accent = document.createElement('div');
+  accent.className = 'player-modal-team-accent-name';
+  accent.setAttribute('aria-hidden', 'true');
+  for (const line of splitNameAccentLines(payload.name)) {
+    const lineEl = document.createElement('span');
+    lineEl.className = 'player-modal-team-accent-line';
+    lineEl.textContent = line;
+    accent.appendChild(lineEl);
+  }
+
+  const meta = document.createElement('div');
+  meta.className = 'player-modal-team-meta';
+  meta.setAttribute('aria-hidden', 'true');
+  const metaText = document.createElement('span');
+  metaText.className = 'player-modal-team-meta-text';
+  metaText.textContent = payload.subtitle;
+  if (payload.clubLogoSrc) {
+    const logo = document.createElement('img');
+    logo.className = 'player-modal-team-club-logo';
+    logo.src = payload.clubLogoSrc;
+    logo.alt = '';
+    logo.setAttribute('aria-hidden', 'true');
+    logo.decoding = 'async';
+    meta.appendChild(logo);
+  }
+  meta.appendChild(metaText);
+
+  const shell = document.createElement('div');
+  shell.className = 'player-modal-team-photo-shell';
+
+  clone.classList.add('player-modal-team-poster-card');
+  shell.appendChild(clone);
+
+  poster.append(watermark, shell, accent, meta);
+  stage.appendChild(poster);
+
+  return stage;
 }
 
 function slugFromDetailPath(pathname: string, detailBase: string): string | null {
@@ -198,44 +318,86 @@ function closeModal(opts?: { skipUrlRestore?: boolean; instant?: boolean }): voi
   });
 }
 
+/**
+ * El clon se crea con `cloneNode` **después** de que GSAP haya puesto `opacity` / `transform`
+ * en la tarjeta del grid (p. ej. reveal en Equipo). Esos estilos inline se copian y dejan
+ * la ficha invisible en el modal si la animación no ha terminado.
+ */
+function resetClonedCardFromGridAnimations(clone: HTMLElement): void {
+  gsap.killTweensOf(clone);
+  gsap.set(clone, { clearProps: 'opacity,transform,filter' });
+  clone.style.visibility = 'visible';
+  for (const img of clone.querySelectorAll('img')) {
+    img.loading = 'eager';
+  }
+}
+
 /** Cierra el flip: tarjeta legible + botón cerrar (sin bloque de biografía). */
 function finalizeOpenCard(
   flipRoot: HTMLDivElement,
   clone: HTMLElement,
   payload: ModalPayload,
   closeLabel: string,
+  modalVariant: ModalVariant = undefined,
 ): void {
+  resetClonedCardFromGridAnimations(clone);
+
   clone.removeAttribute('href');
   clone.setAttribute('tabindex', '-1');
 
   clone.style.position = 'relative';
   clone.style.left = '';
   clone.style.top = '';
-  clone.style.width = '100%';
+  /** Equipo: el ancho lo fija el CSS (`clamp` + `max-width`); `width: 100%` inline rompía el grid del póster (shell a 0px → foto invisible). */
+  if (modalVariant === 'team') {
+    clone.style.removeProperty('width');
+  } else {
+    clone.style.width = '100%';
+  }
   clone.style.height = '';
   clone.style.aspectRatio = '3 / 4';
   clone.style.margin = '0';
   clone.style.flexShrink = '0';
 
+  if (modalVariant === 'team' && flipRoot.contains(clone)) {
+    flipRoot.removeChild(clone);
+    const stage = buildTeamPosterStage(clone, payload);
+    flipRoot.appendChild(stage);
+    flipRoot.classList.add('player-modal-flip-root--team');
+  }
+
   flipRoot.classList.add('player-modal-flip-root--locked');
   gsap.set(flipRoot, { clearProps: 'height' });
   flipRoot.style.height = 'auto';
+
+  if (modalVariant === 'team') {
+    const tb = getTeamLightboxBox();
+    flipRoot.style.boxSizing = 'border-box';
+    flipRoot.style.width = `${tb.targetW}px`;
+    flipRoot.style.height = `${tb.targetH}px`;
+    flipRoot.style.minHeight = `${tb.targetH}px`;
+  }
 
   flipRoot.style.pointerEvents = 'auto';
   flipRoot.style.display = 'flex';
   flipRoot.style.flexDirection = 'column';
   flipRoot.style.overflow = 'hidden';
-  flipRoot.style.maxHeight = 'min(85vh, 900px)';
+  flipRoot.style.maxHeight = modalVariant === 'team' ? 'none' : 'min(85vh, 900px)';
   flipRoot.setAttribute('role', 'dialog');
   flipRoot.setAttribute('aria-modal', 'true');
   flipRoot.setAttribute('aria-label', `${payload.name} — ${payload.subtitle}`);
 
   const closeBtn = document.createElement('button');
   closeBtn.type = 'button';
-  closeBtn.className = 'player-modal-close player-modal-close--on-card';
+  closeBtn.className =
+    modalVariant === 'team'
+      ? 'player-modal-close player-modal-close--on-card player-modal-close--team-lightbox'
+      : 'player-modal-close player-modal-close--on-card';
   closeBtn.setAttribute('aria-label', closeLabel);
   closeBtn.innerHTML =
-    '<span class="player-modal-close-icon" aria-hidden="true">&times;</span>';
+    modalVariant === 'team'
+      ? '<span class="player-modal-close-line" aria-hidden="true"></span>'
+      : '<span class="player-modal-close-icon" aria-hidden="true">&times;</span>';
   flipRoot.appendChild(closeBtn);
 
   closeBtn.addEventListener('click', () => {
@@ -251,6 +413,7 @@ function finalizeOpenCard(
 
 function runFlipAnimation(
   card: HTMLElement,
+  modalVariant: ModalVariant,
   onComplete: (flipRoot: HTMLDivElement, clone: HTMLElement) => void,
 ): void {
   const rect = card.getBoundingClientRect();
@@ -290,7 +453,7 @@ function runFlipAnimation(
   document.body.appendChild(flipRoot);
   cloneEl = flipRoot;
 
-  const { targetW, targetH, cx, cy } = getTargetCardBox();
+  const { targetW, targetH, cx, cy } = getTargetCardBox(modalVariant);
 
   const flatten = (): void => {
     const run = (): void => {
@@ -537,6 +700,7 @@ export function initPlayerModal(root: HTMLElement): void {
 
   const payloads = readPayloads(root);
   const closeLabel = root.dataset.playerModalClose ?? 'Close';
+  const modalVariant = readModalVariant(root);
 
   root.addEventListener('click', (e) => {
     const t = e.target as HTMLElement | null;
@@ -575,8 +739,8 @@ export function initPlayerModal(root: HTMLElement): void {
 
     history.replaceState(history.state, '', `${detailUrl.pathname}${detailUrl.search}${detailUrl.hash}`);
 
-    runFlipAnimation(a, (flipRoot, clone) => {
-      finalizeOpenCard(flipRoot, clone, payload, closeLabel);
+    runFlipAnimation(a, modalVariant, (flipRoot, clone) => {
+      finalizeOpenCard(flipRoot, clone, payload, closeLabel, modalVariant);
     });
   });
 

@@ -114,15 +114,17 @@ const showFlags = nationalTeamCodes.length > 0 && nationalTeamAriaLabel;
     display: block;
     aspect-ratio: 3 / 4;
     overflow: hidden;
-    border-radius: var(--ph-radius-card);
-    border: 1px solid var(--ph-white-10);
-    background: var(--ph-white-10);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--ph-glass-border);
+    background: var(--ph-glass-bg);
+    backdrop-filter: blur(var(--ph-glass-blur));
+    -webkit-backdrop-filter: blur(var(--ph-glass-blur));
     /* iOS: evita retardo de doble toque para zoom y mejora respuesta del primer tap en enlaces */
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     transition:
-      border-color 500ms var(--ph-ease),
-      box-shadow 500ms var(--ph-ease);
+      border-color 500ms var(--ease-ph),
+      box-shadow 500ms var(--ease-ph);
   }
 
   .card::after {
@@ -132,18 +134,18 @@ const showFlags = nationalTeamCodes.length > 0 && nationalTeamAriaLabel;
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, var(--ph-gold), var(--ph-gold-muted));
+    background: linear-gradient(90deg, var(--color-ph-gold), var(--color-ph-gold-muted));
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform 500ms var(--ph-ease);
+    transition: transform 500ms var(--ease-ph);
     z-index: 3;
-    border-radius: var(--ph-radius-card) var(--ph-radius-card) 0 0;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
   }
 
   /* Solo ratón/trackpad: en iPhone el :hover “pegajoso” hace que el 1er toque active hover y el 2º ejecute la acción */
   @media (hover: hover) and (pointer: fine) {
     .card:hover {
-      border-color: var(--ph-white-20);
+      border-color: var(--color-ph-white-20);
       box-shadow: 0 4px 32px rgba(214, 178, 94, 0.1);
     }
 
@@ -162,13 +164,13 @@ const showFlags = nationalTeamCodes.length > 0 && nationalTeamAriaLabel;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 600ms var(--ph-ease);
+    transition: transform 600ms var(--ease-ph);
   }
 
   .card-img--placeholder {
     object-fit: cover;
     object-position: center top;
-    background: var(--ph-black);
+    background: var(--color-ph-black);
   }
 
   .card-flags {
@@ -206,10 +208,10 @@ const showFlags = nationalTeamCodes.length > 0 && nationalTeamAriaLabel;
   }
 
   .card-name {
-    font-family: var(--ph-font-display);
+    font-family: var(--font-display);
     font-weight: 700;
     font-size: 1rem;
-    color: var(--ph-white);
+    color: var(--color-ph-white);
     letter-spacing: -0.01em;
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -219,12 +221,12 @@ const showFlags = nationalTeamCodes.length > 0 && nationalTeamAriaLabel;
   }
 
   .card-subtitle {
-    font-family: var(--ph-font-body);
+    font-family: var(--font-body);
     font-size: 0.6875rem;
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--ph-gold);
+    color: var(--color-ph-gold);
     margin-top: 0.35rem;
     display: -webkit-box;
     -webkit-box-orient: vertical;

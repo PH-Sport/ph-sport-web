@@ -163,8 +163,8 @@ const isActive = (href: string): boolean => {
 
   /* ── Logo ── */
   .header-logo {
-    color: var(--ph-gold);
-    transition: color var(--ph-duration) var(--ph-ease);
+    color: var(--color-ph-gold);
+    transition: color var(--ph-duration) var(--ease-ph);
   }
 
   .header-logo svg {
@@ -173,7 +173,7 @@ const isActive = (href: string): boolean => {
   }
 
   .header-logo:hover {
-    color: var(--ph-gold-muted);
+    color: var(--color-ph-gold-muted);
   }
 
   /* ── Desktop nav ── */
@@ -195,19 +195,19 @@ const isActive = (href: string): boolean => {
   }
 
   .nav-link {
-    font-family: var(--ph-font-display);
+    font-family: var(--font-display);
     font-size: 0.875rem;
     font-weight: 500;
     letter-spacing: 0.04em;
-    color: var(--ph-white-60);
+    color: var(--color-ph-white-60);
     position: relative;
     padding-block: 0.25rem;
-    transition: color var(--ph-duration) var(--ph-ease);
+    transition: color var(--ph-duration) var(--ease-ph);
   }
 
   .nav-link:hover,
   .nav-link.is-active {
-    color: var(--ph-white);
+    color: var(--color-ph-white);
   }
 
   .header-nav-list-wrap {
@@ -220,7 +220,7 @@ const isActive = (href: string): boolean => {
     left: 0;
     width: 0;
     height: 1.5px;
-    background: var(--ph-gold);
+    background: var(--color-ph-gold);
     border-radius: 1px;
     pointer-events: none;
   }
@@ -237,16 +237,16 @@ const isActive = (href: string): boolean => {
     align-items: center;
     gap: 0.375rem;
     padding: 0.3rem 0.625rem;
-    border: 1px solid var(--ph-white-10);
-    border-radius: var(--ph-radius);
+    border: 1px solid var(--color-ph-white-10);
+    border-radius: var(--radius-sm);
     transition:
-      border-color var(--ph-duration) var(--ph-ease),
-      background-color var(--ph-duration) var(--ph-ease);
+      border-color var(--ph-duration) var(--ease-ph),
+      background-color var(--ph-duration) var(--ease-ph);
   }
 
   .lang-switch:hover {
-    border-color: var(--ph-white-20);
-    background-color: var(--ph-white-10);
+    border-color: var(--color-ph-white-20);
+    background-color: var(--color-ph-white-10);
   }
 
   .lang-flag {
@@ -257,11 +257,11 @@ const isActive = (href: string): boolean => {
   }
 
   .lang-label {
-    font-family: var(--ph-font-display);
+    font-family: var(--font-display);
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.06em;
-    color: var(--ph-white-60);
+    color: var(--color-ph-white-60);
   }
 
   .lang-switch--mobile {
@@ -286,15 +286,15 @@ const isActive = (href: string): boolean => {
     min-height: 2.75rem;
     width: 2.75rem;
     height: 2.75rem;
-    border: 1px solid var(--ph-white-10);
-    border-radius: var(--ph-radius);
-    color: var(--ph-white);
+    border: 1px solid var(--color-ph-white-10);
+    border-radius: var(--radius-sm);
+    color: var(--color-ph-white);
     background: transparent;
     cursor: pointer;
     transition:
-      border-color var(--ph-duration) var(--ph-ease),
-      color var(--ph-duration) var(--ph-ease),
-      background-color var(--ph-duration) var(--ph-ease);
+      border-color var(--ph-duration) var(--ease-ph),
+      color var(--ph-duration) var(--ease-ph),
+      background-color var(--ph-duration) var(--ease-ph);
   }
 
   @media (min-width: 768px) {
@@ -304,14 +304,14 @@ const isActive = (href: string): boolean => {
   }
 
   .menu-toggle:hover {
-    border-color: var(--ph-gold);
-    color: var(--ph-gold);
+    border-color: var(--color-ph-gold);
+    color: var(--color-ph-gold);
     background-color: rgba(214, 178, 94, 0.05);
   }
 
   .menu-toggle:active {
-    border-color: var(--ph-gold-muted);
-    color: var(--ph-gold-muted);
+    border-color: var(--color-ph-gold-muted);
+    color: var(--color-ph-gold-muted);
     background-color: rgba(214, 178, 94, 0.08);
     transition-duration: 120ms;
   }
@@ -337,7 +337,7 @@ const isActive = (href: string): boolean => {
     background:
       linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 32%),
       rgba(255, 255, 255, 0.03),
-      var(--ph-black);
+      var(--color-ph-black);
     backdrop-filter: blur(16px) saturate(1.08);
     -webkit-backdrop-filter: blur(16px) saturate(1.08);
     box-shadow:
@@ -347,13 +347,13 @@ const isActive = (href: string): boolean => {
     visibility: hidden;
     pointer-events: none;
     transition:
-      opacity var(--menu-anim-duration) var(--ph-ease),
+      opacity var(--menu-anim-duration) var(--ease-ph),
       visibility 0s linear var(--menu-anim-duration);
   }
 
   @supports not (backdrop-filter: blur(1px)) {
     .mobile-menu {
-      background: var(--ph-black);
+      background: var(--color-ph-black);
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
     }
@@ -364,7 +364,7 @@ const isActive = (href: string): boolean => {
     visibility: visible;
     pointer-events: auto;
     transition:
-      opacity var(--menu-anim-duration) var(--ph-ease),
+      opacity var(--menu-anim-duration) var(--ease-ph),
       visibility 0s linear 0s;
   }
 
@@ -392,8 +392,8 @@ const isActive = (href: string): boolean => {
     opacity: 0;
     transform: translateY(1rem);
     transition:
-      opacity calc(var(--menu-anim-duration) + 40ms) var(--ph-ease),
-      transform calc(var(--menu-anim-duration) + 40ms) var(--ph-ease);
+      opacity calc(var(--menu-anim-duration) + 40ms) var(--ease-ph),
+      transform calc(var(--menu-anim-duration) + 40ms) var(--ease-ph);
   }
 
   .mobile-menu.is-open .mobile-menu-inner {
@@ -413,8 +413,8 @@ const isActive = (href: string): boolean => {
     opacity: 0;
     transform: translateY(-0.5rem);
     transition:
-      opacity calc(var(--menu-anim-duration) + 20ms) var(--ph-ease),
-      transform calc(var(--menu-anim-duration) + 20ms) var(--ph-ease);
+      opacity calc(var(--menu-anim-duration) + 20ms) var(--ease-ph),
+      transform calc(var(--menu-anim-duration) + 20ms) var(--ease-ph);
   }
 
   .mobile-menu.is-open .mobile-menu-top {
@@ -428,8 +428,8 @@ const isActive = (href: string): boolean => {
     opacity: 0;
     transform: translateX(-0.75rem);
     transition:
-      opacity 0.38s var(--ph-ease),
-      transform 0.38s var(--ph-ease);
+      opacity 0.38s var(--ease-ph),
+      transform 0.38s var(--ease-ph);
   }
 
   .mobile-menu.is-open .mobile-nav-list li {
@@ -475,8 +475,8 @@ const isActive = (href: string): boolean => {
     opacity: 0;
     transform: translateY(0.35rem);
     transition:
-      opacity 0.35s var(--ph-ease),
-      transform 0.35s var(--ph-ease);
+      opacity 0.35s var(--ease-ph),
+      transform 0.35s var(--ease-ph);
   }
 
   .mobile-menu.is-open .ph-divider {
@@ -489,8 +489,8 @@ const isActive = (href: string): boolean => {
     opacity: 0;
     transform: translateY(0.35rem);
     transition:
-      opacity 0.38s var(--ph-ease),
-      transform 0.38s var(--ph-ease);
+      opacity 0.38s var(--ease-ph),
+      transform 0.38s var(--ease-ph);
   }
 
   .mobile-menu.is-open .lang-switch--mobile {
@@ -545,35 +545,35 @@ const isActive = (href: string): boolean => {
     display: flex;
     align-items: baseline;
     gap: 0.75rem;
-    font-family: var(--ph-font-display);
+    font-family: var(--font-display);
     font-size: 1.75rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    color: var(--ph-white-60);
-    transition: color var(--ph-duration) var(--ph-ease);
+    color: var(--color-ph-white-60);
+    transition: color var(--ph-duration) var(--ease-ph);
   }
 
   .mobile-link:hover,
   .mobile-link--active {
-    color: var(--ph-white);
+    color: var(--color-ph-white);
   }
 
   .mobile-link:active {
-    color: var(--ph-white);
+    color: var(--color-ph-white);
     opacity: 0.88;
     transition-duration: 120ms;
   }
 
   .lang-switch--mobile:active {
-    border-color: var(--ph-white-20);
-    background-color: var(--ph-white-10);
+    border-color: var(--color-ph-white-20);
+    background-color: var(--color-ph-white-10);
     transition-duration: 120ms;
   }
 
   .mobile-link-num {
     font-size: 0.6875rem;
     font-weight: 400;
-    color: var(--ph-gold);
+    color: var(--color-ph-gold);
     letter-spacing: 0;
     min-width: 1.5rem;
   }

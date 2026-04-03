@@ -10,10 +10,10 @@
   justify-content: center;
   gap: 0.35rem;
   overflow: hidden;
-  border: 1px solid var(--ph-white-20);
-  border-radius: var(--ph-radius);
+  border: 1px solid var(--color-ph-white-20);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-family: var(--ph-font-display);
+  font-family: var(--font-display);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -24,9 +24,9 @@
   box-sizing: border-box;
   isolation: isolate;
   transition:
-    border-color var(--ph-duration) var(--ph-ease),
-    color var(--ph-duration) var(--ph-ease),
-    background-color var(--ph-duration) var(--ph-ease);
+    border-color var(--ph-duration) var(--ease-ph),
+    color var(--ph-duration) var(--ease-ph),
+    background-color var(--ph-duration) var(--ease-ph);
 }
 
 .ph-ui-btn::before {
@@ -35,7 +35,7 @@
   inset: 0;
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform var(--ph-duration) var(--ph-ease);
+  transition: transform var(--ph-duration) var(--ease-ph);
   z-index: 0;
 }
 
@@ -50,24 +50,24 @@
 
 /* Ghost — mismo espíritu que .btn--secondary */
 .ph-ui-btn--secondary {
-  border-color: var(--ph-white-20);
-  color: var(--ph-white-60);
+  border-color: var(--color-ph-white-20);
+  color: var(--color-ph-white-60);
   background: transparent;
 }
 
 .ph-ui-btn--secondary::before {
-  background: var(--ph-white-10);
+  background: var(--color-ph-white-10);
 }
 
 .ph-ui-btn--secondary:hover {
-  border-color: var(--ph-white-60);
-  color: var(--ph-white);
+  border-color: var(--color-ph-white-60);
+  color: var(--color-ph-white);
 }
 
 /* Pestaña / estado activo (borde dorado, sin fill slide) */
 .ph-ui-btn--active {
   border-color: rgba(214, 178, 94, 0.35);
-  color: var(--ph-white);
+  color: var(--color-ph-white);
   background: rgba(214, 178, 94, 0.1);
 }
 
@@ -77,7 +77,7 @@
 
 .ph-ui-btn--active:hover {
   border-color: rgba(214, 178, 94, 0.45);
-  color: var(--ph-white);
+  color: var(--color-ph-white);
 }
 
 .ph-ui-btn--active:hover::before {

@@ -1,5 +1,6 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
 
 interface Props {
   lang: Lang;
@@ -17,16 +18,12 @@ const blocks = [
 
 <section class="about-section">
   <div class="ph-section">
-    <header class="about-header">
-      <span class="ph-label">{t('nav.about')}</span>
-      <div class="ph-divider mt-4"></div>
-      <h1 class="about-title">
-        {t('about.title')}
-      </h1>
-      <p class="about-subtitle">
-        {t('about.subtitle')}
-      </p>
-    </header>
+    <SectionHeader
+      label={t('nav.about')}
+      title={t('about.title')}
+      subtitle={t('about.subtitle')}
+      noBorder
+    />
 
     <div class="about-blocks">
       {blocks.map((block) => (
@@ -50,52 +47,19 @@ const blocks = [
     position: relative;
     background:
       radial-gradient(ellipse at 20% 80%, rgba(214, 178, 94, 0.025) 0%, transparent 50%),
-      var(--ph-black);
+      var(--color-ph-black);
   }
 
-  .about-header {
-    margin-bottom: 4rem;
-  }
-
-  @media (min-width: 1024px) {
-    .about-header {
-      margin-bottom: 5rem;
-    }
-  }
-
-  .about-title {
-    margin-top: 2rem;
-    font-family: var(--ph-font-display);
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    color: var(--ph-white);
-  }
-
-  .about-subtitle {
-    margin-top: 1rem;
-    max-width: 40rem;
-    font-size: 1.0625rem;
-    line-height: 1.6;
-    color: var(--ph-white-60);
-  }
-
-  @media (min-width: 1024px) {
-    .about-subtitle {
-      font-size: 1.125rem;
-    }
-  }
 
   .about-blocks {
-    border-top: 1px solid var(--ph-white-10);
+    border-top: 1px solid var(--color-ph-white-10);
   }
 
   .about-block {
     display: grid;
     gap: 1.5rem;
     padding-block: 3.5rem;
-    border-bottom: 1px solid var(--ph-white-10);
+    border-bottom: 1px solid var(--color-ph-white-10);
   }
 
   @media (min-width: 1024px) {
@@ -115,12 +79,12 @@ const blocks = [
     position: absolute;
     top: -0.5rem;
     left: 0;
-    font-family: var(--ph-font-display);
+    font-family: var(--font-display);
     font-size: 3.5rem;
     font-weight: 900;
     letter-spacing: -0.04em;
     line-height: 1;
-    color: var(--ph-gold);
+    color: var(--color-ph-gold);
     opacity: 0.12;
     pointer-events: none;
   }
@@ -135,12 +99,12 @@ const blocks = [
   .about-block-title {
     position: relative;
     margin-top: 1.5rem;
-    font-family: var(--ph-font-display);
+    font-family: var(--font-display);
     font-size: clamp(2.5rem, 6vw, 4.5rem);
     font-weight: 900;
     letter-spacing: -0.04em;
     line-height: 1;
-    color: var(--ph-white);
+    color: var(--color-ph-white);
   }
 
   @media (min-width: 1024px) {
@@ -160,8 +124,8 @@ const blocks = [
     min-height: 100%;
     background: linear-gradient(
       to bottom,
-      var(--ph-gold) 0%,
-      var(--ph-gold-muted) 100%
+      var(--color-ph-gold) 0%,
+      var(--color-ph-gold-muted) 100%
     );
     opacity: 0.3;
     border-radius: 1px;
@@ -170,7 +134,7 @@ const blocks = [
   .about-block-body {
     font-size: 1.0625rem;
     line-height: 1.7;
-    color: var(--ph-white-60);
+    color: var(--color-ph-white-60);
     max-width: none;
   }
 
@@ -202,7 +166,7 @@ const blocks = [
       trackingReveal(label, { trigger: label, start: 'top 88%', once: true });
     }
 
-    const title = section.querySelector<HTMLElement>('.about-title');
+    const title = section.querySelector<HTMLElement>('.section-header-title');
     if (title) {
       const words = wrapWords(title);
       gsap.from(words, {
@@ -214,7 +178,7 @@ const blocks = [
       });
     }
 
-    const subtitle = section.querySelector<HTMLElement>('.about-subtitle');
+    const subtitle = section.querySelector<HTMLElement>('.section-header-subtitle');
     if (subtitle) {
       const spans = splitWords(subtitle);
       gsap.from(spans, {

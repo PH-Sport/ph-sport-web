@@ -14,7 +14,7 @@ const isEn = lang === 'en';
 <section class="hero relative flex min-h-screen items-center overflow-hidden">
   <!-- Content -->
   <div class="hero-content ph-section relative z-10 w-full">
-    <div class="hero-copy-stack flex max-w-2xl flex-col gap-8 text-left sm:gap-10 md:gap-12 lg:gap-14">
+    <div class="hero-copy-stack flex max-w-2xl flex-col gap-6 text-left sm:gap-10 md:gap-12 lg:gap-14">
       <div class="hero-lead flex flex-col gap-2 sm:gap-3">
         <div class="flex flex-col gap-3 sm:gap-4">
           <p class="hero-tagline font-display text-xs font-semibold uppercase tracking-widest text-ph-gold sm:text-sm">
@@ -32,7 +32,7 @@ const isEn = lang === 'en';
         {t('site.description')}
       </p>
 
-      <div class="hero-ctas flex flex-wrap gap-5">
+      <div class="hero-ctas flex flex-wrap gap-3 sm:gap-5">
         <Button href={isEn ? '/en/players/' : '/jugadores/'} variant="primary">
           {t('hero.cta.primary')}
         </Button>
@@ -53,8 +53,32 @@ const isEn = lang === 'en';
 
 <style>
   .hero {
-    /* Sin overlay: el logo 3D del body se ve sin capa encima */
     background: transparent;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to right,
+      rgba(13, 15, 18, 0.85) 0%,
+      rgba(13, 15, 18, 0.4) 60%,
+      transparent 100%
+    );
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  @media (min-width: 1024px) {
+    .hero::before {
+      background: linear-gradient(
+        to right,
+        rgba(13, 15, 18, 0.7) 0%,
+        rgba(13, 15, 18, 0.2) 50%,
+        transparent 100%
+      );
+    }
   }
 
   /* Más aire entre líneas del titular cuando GSAP envuelve palabras en .ph-clip */
@@ -89,7 +113,7 @@ const isEn = lang === 'en';
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: opacity var(--ph-duration) var(--ph-ease);
+    transition: opacity var(--ph-duration) var(--ease-ph);
     z-index: 10;
     backface-visibility: hidden;
     isolation: isolate;
@@ -102,8 +126,8 @@ const isEn = lang === 'en';
   .chevron {
     width: 14px;
     height: 14px;
-    border-right: 1.5px solid var(--ph-gold);
-    border-bottom: 1.5px solid var(--ph-gold);
+    border-right: 1.5px solid var(--color-ph-gold);
+    border-bottom: 1.5px solid var(--color-ph-gold);
     transform: rotate(45deg) translateZ(0);
     animation: scroll-chevron 2s infinite;
     opacity: 0;

@@ -36,18 +36,18 @@ const {
     align-items: center;
     gap: 0.5rem;
     padding: 0.875rem 2rem;
-    font-family: var(--ph-font-display);
+    font-family: var(--font-display);
     font-size: 0.8125rem;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     overflow: hidden;
     border: 1px solid;
-    border-radius: var(--ph-radius);
+    border-radius: var(--radius-sm);
     cursor: pointer;
     transition:
-      border-color var(--ph-duration) var(--ph-ease),
-      color var(--ph-duration) var(--ph-ease);
+      border-color var(--ph-duration) var(--ease-ph),
+      color var(--ph-duration) var(--ease-ph);
   }
 
   .btn::before {
@@ -56,7 +56,7 @@ const {
     inset: 0;
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform var(--ph-duration) var(--ph-ease);
+    transition: transform var(--ph-duration) var(--ease-ph);
   }
 
   .btn:hover::before {
@@ -66,35 +66,35 @@ const {
   .btn-label {
     position: relative;
     z-index: 1;
-    transition: color var(--ph-duration) var(--ph-ease);
+    transition: color var(--ph-duration) var(--ease-ph);
   }
 
   /* Primary — gold fill slide-in */
   .btn--primary {
-    border-color: var(--ph-gold);
-    color: var(--ph-gold);
+    border-color: var(--color-ph-gold);
+    color: var(--color-ph-gold);
   }
 
   .btn--primary::before {
-    background: var(--ph-gold);
+    background: var(--color-ph-gold);
   }
 
   .btn--primary:hover {
-    color: var(--ph-black);
+    color: var(--color-ph-black);
   }
 
   /* Secondary — ghost, subtle fill */
   .btn--secondary {
-    border-color: var(--ph-white-20);
-    color: var(--ph-white-60);
+    border-color: var(--color-ph-white-20);
+    color: var(--color-ph-white-60);
   }
 
   .btn--secondary::before {
-    background: var(--ph-white-10);
+    background: var(--color-ph-white-10);
   }
 
   .btn--secondary:hover {
-    border-color: var(--ph-white-60);
-    color: var(--ph-white);
+    border-color: var(--color-ph-white-60);
+    color: var(--color-ph-white);
   }
 </style>

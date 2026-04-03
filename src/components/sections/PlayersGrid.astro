@@ -8,6 +8,7 @@ import { parseSortParam, sortRosterByName } from '@/lib/sortRoster';
 import { slugify } from '@/lib/slugify';
 import { buildModalPayloadsForLang } from '@/lib/playerDetail';
 import PortraitCard from '@/components/ui/PortraitCard.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
 import PlayersSortRow from '@/components/ui/PlayersSortRow.astro';
 import PlayersViewDropdown from '@/components/ui/PlayersViewDropdown.astro';
 
@@ -68,16 +69,12 @@ function subtitleFor(row: { club: { name: string } | null }): string {
   data-player-payloads={playerPayloadsJson}
 >
   <div class="ph-section">
-    <header class="players-header">
-      <div class="players-header-top">
-        <span class="ph-label">{t('nav.players')}</span>
-      </div>
-      <div class="ph-divider mt-4"></div>
-      <h2 class="players-title">
-        {t('players.title')}
-      </h2>
-      <p class="players-subtitle">{t('players.subtitle')}</p>
-    </header>
+    <SectionHeader
+      label={t('nav.players')}
+      title={t('players.title')}
+      subtitle={t('players.subtitle')}
+      tag="h2"
+    />
 
     {
       totalRoster === 0 && (
@@ -233,57 +230,14 @@ function subtitleFor(row: { club: { name: string } | null }): string {
     position: relative;
     background:
       radial-gradient(ellipse at 50% 0%, rgba(214, 178, 94, 0.02) 0%, transparent 50%),
-      var(--ph-black);
+      var(--color-ph-black);
   }
 
-  .players-header {
-    margin-bottom: 3rem;
-    padding-bottom: 2.5rem;
-    border-bottom: 1px solid var(--ph-white-10);
-  }
-
-  @media (min-width: 1024px) {
-    .players-header {
-      margin-bottom: 4rem;
-      padding-bottom: 3rem;
-    }
-  }
-
-  .players-header-top {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .players-header-top :global(.ph-label) {
-    opacity: 0;
-  }
-
-  .players-header-top.is-revealed :global(.ph-label) {
-    opacity: 1;
-  }
-
-  .players-title {
-    margin-top: 2rem;
-    font-family: var(--ph-font-display);
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    color: var(--ph-white);
-    overflow: hidden;
-  }
-
-  .players-subtitle {
-    margin-top: 1rem;
-    font-size: 1.0625rem;
-    color: var(--ph-white-60);
-  }
 
   .players-empty {
     margin: 0;
     font-size: 1rem;
-    color: var(--ph-white-60);
+    color: var(--color-ph-white-60);
   }
 
   /* ── Pestañas jugadores / entrenadores ── */
@@ -334,7 +288,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
 
   .players-tab[aria-selected='true'] {
     border-color: rgba(214, 178, 94, 0.35);
-    color: var(--ph-white);
+    color: var(--color-ph-white);
     background: rgba(214, 178, 94, 0.1);
   }
 
@@ -344,7 +298,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
 
   .players-tab[aria-selected='true']:hover {
     border-color: rgba(214, 178, 94, 0.45);
-    color: var(--ph-white);
+    color: var(--color-ph-white);
   }
 
   .players-tab[aria-selected='true']:hover::before {
@@ -518,7 +472,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
   .players-subsection:not(:first-of-type) {
     margin-top: 3rem;
     padding-top: 2.5rem;
-    border-top: 1px solid var(--ph-white-10);
+    border-top: 1px solid var(--color-ph-white-10);
   }
 
   @media (min-width: 1024px) {
@@ -539,11 +493,11 @@ function subtitleFor(row: { club: { name: string } | null }): string {
 
   .players-section-title {
     margin: 0;
-    font-family: var(--ph-font-display);
+    font-family: var(--font-display);
     font-size: clamp(1.125rem, 2.5vw, 1.375rem);
     font-weight: 600;
     letter-spacing: -0.02em;
-    color: var(--ph-white);
+    color: var(--color-ph-white);
   }
 
   .players-grid {
@@ -872,7 +826,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
       );
     }
 
-    const title = section.querySelector<HTMLElement>('.players-title');
+    const title = section.querySelector<HTMLElement>('.section-header-title');
     if (title) {
       const words = wrapWords(title);
       gsap.fromTo(
@@ -888,7 +842,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
       );
     }
 
-    const subtitle = section.querySelector<HTMLElement>('.players-subtitle');
+    const subtitle = section.querySelector<HTMLElement>('.section-header-subtitle');
     if (subtitle) {
       const spans = splitWords(subtitle);
       gsap.fromTo(

@@ -119,7 +119,7 @@ const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-family: var(--ph-font-display);
+    font-family: var(--font-display);
     font-size: 0.6875rem;
     font-weight: 600;
     line-height: 1.15;
@@ -130,7 +130,7 @@ const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
 
   .players-view-trigger[aria-expanded='true'] {
     border-color: rgba(214, 178, 94, 0.35);
-    color: var(--ph-white);
+    color: var(--color-ph-white);
     background: rgba(214, 178, 94, 0.1);
   }
 
@@ -154,7 +154,7 @@ const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
   .players-view-chevron-g {
     transform-box: fill-box;
     transform-origin: center;
-    transition: transform 0.2s var(--ph-ease);
+    transition: transform 0.2s var(--ease-ph);
   }
 
   .players-view-trigger[aria-expanded='true'] .players-view-chevron-g {
@@ -169,8 +169,8 @@ const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
     top: calc(100% + 0.35rem);
     min-width: 10rem;
     padding: 0.25rem;
-    border: 1px solid var(--ph-white-10);
-    border-radius: var(--ph-radius);
+    border: 1px solid var(--color-ph-white-10);
+    border-radius: var(--radius-sm);
     background: rgba(13, 15, 18, 0.98);
     box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(8px);
@@ -190,18 +190,18 @@ const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
     padding: 0.45rem 0.72rem;
     margin: 0;
     border: none;
-    border-radius: calc(var(--ph-radius) - 2px);
+    border-radius: calc(var(--radius-sm) - 2px);
     cursor: pointer;
-    font-family: var(--ph-font-display);
+    font-family: var(--font-display);
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--ph-white-60);
+    color: var(--color-ph-white-60);
     background: transparent;
     transition:
-      color 0.2s var(--ph-ease),
-      background-color 0.2s var(--ph-ease);
+      color 0.2s var(--ease-ph),
+      background-color 0.2s var(--ease-ph);
   }
 
   .players-view-option-label {
@@ -213,17 +213,17 @@ const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
   }
 
   .players-view-option:hover {
-    color: var(--ph-white);
+    color: var(--color-ph-white);
     background: rgba(255, 255, 255, 0.06);
   }
 
   .players-view-option:focus-visible {
-    outline: 2px solid var(--ph-gold);
+    outline: 2px solid var(--color-ph-gold);
     outline-offset: 0;
   }
 
   .players-view-option[aria-selected='true'] {
-    color: var(--ph-white);
+    color: var(--color-ph-white);
     background: rgba(214, 178, 94, 0.12);
     box-shadow: inset 0 0 0 1px rgba(214, 178, 94, 0.3);
   }

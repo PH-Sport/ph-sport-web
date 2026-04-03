@@ -1,5 +1,6 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
 
 interface Props {
   lang: Lang;
@@ -49,15 +50,14 @@ const items = [
   data-card-count={items.length}
   aria-labelledby="services-heading"
 >
-  <div class="ph-section">
-    <header class="services-orbit-header">
-      <span class="ph-label">{t('nav.services')}</span>
-      <div class="ph-divider mt-4"></div>
-      <h1 id="services-heading" class="services-orbit-title">
-        {t('services.title')}
-      </h1>
-      <p class="services-orbit-subtitle">{t('services.subtitle')}</p>
-    </header>
+  <div class="ph-section services-orbit-header-wrap">
+    <SectionHeader
+      label={t('nav.services')}
+      title={t('services.title')}
+      subtitle={t('services.subtitle')}
+      id="services-heading"
+      noBorder
+    />
   </div>
 
   <div class="orbit-section">
@@ -66,21 +66,21 @@ const items = [
       <div class="carousel" data-carousel>
         {
           items.map((item, i) => (
-            <div class="card" data-index={i}>
-              <div class="card-content">
-                <i data-lucide={item.icon} class="card-icon" aria-hidden="true"></i>
-                <div class="card-number">{String(i + 1).padStart(2, '0')}</div>
-                <div class="card-title">{item.title}</div>
-                <div class="card-desc">{item.short}</div>
+            <div class="orbit-card" data-index={i}>
+              <div class="orbit-card-content">
+                <i data-lucide={item.icon} class="orbit-card-icon" aria-hidden="true"></i>
+                <div class="orbit-card-number">{String(i + 1).padStart(2, '0')}</div>
+                <div class="orbit-card-title">{item.title}</div>
+                <div class="orbit-card-desc">{item.short}</div>
               </div>
-              <div class="card-detail">
-                <button type="button" class="close-btn" aria-label={t('a11y.close')}>
+              <div class="orbit-card-detail">
+                <button type="button" class="orbit-close-btn" aria-label={t('a11y.close')}>
                   ✕
                 </button>
-                <i data-lucide={item.icon} class="detail-icon" aria-hidden="true"></i>
-                <h3 class="detail-title">{item.title}</h3>
-                <p class="detail-text">{item.body}</p>
-                <ul class="detail-list">
+                <i data-lucide={item.icon} class="orbit-detail-icon" aria-hidden="true"></i>
+                <h3 class="orbit-detail-title">{item.title}</h3>
+                <p class="orbit-detail-text">{item.body}</p>
+                <ul class="orbit-detail-list">
                   <li>{item.short}</li>
                 </ul>
               </div>
@@ -105,12 +105,12 @@ const items = [
 
 <style>
   .services-orbit-3d {
-    --orbit-bg: var(--ph-black);
-    --orbit-accent: var(--ph-gold);
-    --orbit-text: var(--ph-white);
-    --orbit-muted: var(--ph-white-60);
-    --orbit-glass-bg: rgba(255, 255, 255, 0.03);
-    --orbit-glass-border: rgba(255, 255, 255, 0.08);
+    --orbit-bg: var(--color-ph-black);
+    --orbit-accent: var(--color-ph-gold);
+    --orbit-text: var(--color-ph-white);
+    --orbit-muted: var(--color-ph-white-60);
+    --orbit-glass-bg: var(--ph-glass-bg);
+    --orbit-glass-border: var(--ph-glass-border);
 
     position: relative;
     background:
@@ -118,43 +118,8 @@ const items = [
       var(--orbit-bg);
   }
 
-  /* El .ph-section global añade ~4–8rem de padding inferior; aquí el carrusel sigue al texto */
-  .services-orbit-3d > .ph-section {
+  .services-orbit-header-wrap {
     padding-bottom: 0;
-  }
-
-  .services-orbit-header {
-    margin-bottom: 0.5rem;
-  }
-
-  @media (min-width: 1024px) {
-    .services-orbit-header {
-      margin-bottom: 0.75rem;
-    }
-  }
-
-  .services-orbit-title {
-    margin-top: 2rem;
-    font-family: var(--ph-font-display);
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    color: var(--orbit-text);
-  }
-
-  .services-orbit-subtitle {
-    margin-top: 1rem;
-    max-width: 40rem;
-    font-size: 1.0625rem;
-    line-height: 1.6;
-    color: var(--orbit-muted);
-  }
-
-  @media (min-width: 1024px) {
-    .services-orbit-subtitle {
-      font-size: 1.125rem;
-    }
   }
 
   .orbit-section {
@@ -205,13 +170,13 @@ const items = [
     cursor: grabbing;
   }
 
-  .card {
+  .orbit-card {
     position: absolute;
     top: 50%;
     left: 50%;
     width: 320px;
     height: 420px;
-    border-radius: 24px;
+    border-radius: var(--radius-md);
     --r: 0deg;
     transform: translate(-50%, -50%) rotateY(var(--r)) translateZ(450px);
     background: var(--orbit-glass-bg);
@@ -230,23 +195,23 @@ const items = [
     cursor: pointer;
   }
 
-  .card:nth-child(1) {
+  .orbit-card:nth-child(1) {
     --r: 0deg;
   }
-  .card:nth-child(2) {
+  .orbit-card:nth-child(2) {
     --r: 72deg;
   }
-  .card:nth-child(3) {
+  .orbit-card:nth-child(3) {
     --r: 144deg;
   }
-  .card:nth-child(4) {
+  .orbit-card:nth-child(4) {
     --r: 216deg;
   }
-  .card:nth-child(5) {
+  .orbit-card:nth-child(5) {
     --r: 288deg;
   }
 
-  .card::before {
+  .orbit-card::before {
     content: '';
     position: absolute;
     top: 0;
@@ -257,16 +222,16 @@ const items = [
     transform: skewX(-20deg);
     transition: left 0.7s ease;
   }
-  .card:hover::before {
+  .orbit-card:hover::before {
     left: 200%;
   }
 
-  .card:hover {
+  .orbit-card:hover {
     border-color: rgba(214, 178, 94, 0.4);
     transform: translate(-50%, -50%) rotateY(var(--r)) translateZ(470px);
   }
 
-  .card-content {
+  .orbit-card-content {
     position: absolute;
     inset: 0;
     padding: 40px;
@@ -276,7 +241,7 @@ const items = [
     transition: opacity 0.4s;
   }
 
-  .card-icon {
+  .orbit-card-icon {
     color: var(--orbit-accent);
     width: 42px;
     height: 42px;
@@ -285,22 +250,22 @@ const items = [
     filter: drop-shadow(0 0 8px rgba(214, 178, 94, 0.3));
   }
 
-  .card-icon svg {
+  .orbit-card-icon svg {
     width: 100%;
     height: 100%;
   }
 
-  .card-number {
+  .orbit-card-number {
     font-size: 1.2rem;
     font-weight: 300;
     color: var(--orbit-accent);
-    font-family: ui-monospace, monospace;
+    font-family: var(--font-display);
     position: absolute;
     top: 30px;
     right: 30px;
   }
 
-  .card-title {
+  .orbit-card-title {
     font-size: clamp(1.25rem, 3vw, 2rem);
     font-weight: 700;
     letter-spacing: -0.02em;
@@ -309,13 +274,13 @@ const items = [
     color: var(--orbit-text);
   }
 
-  .card-desc {
+  .orbit-card-desc {
     font-size: 0.9rem;
     color: var(--orbit-muted);
     line-height: 1.5;
   }
 
-  .card-detail {
+  .orbit-card-detail {
     display: none;
   }
 
@@ -347,7 +312,7 @@ const items = [
     display: none;
   }
 
-  .modal-card {
+  .orbit-modal-card {
     position: relative;
     width: 100%;
     max-width: 800px;
@@ -363,7 +328,7 @@ const items = [
       0 30px 60px rgba(0, 0, 0, 0.8),
       inset 0 1px 1px rgba(255, 255, 255, 0.2),
       inset 0 -1px 1px rgba(0, 0, 0, 0.5);
-    border-radius: 24px;
+    border-radius: var(--radius-lg);
     padding: 60px;
     transform: scale(0.95) translateY(20px);
     opacity: 0;
@@ -372,16 +337,16 @@ const items = [
       opacity 0.5s;
   }
 
-  .modal-card::-webkit-scrollbar {
+  .orbit-modal-card::-webkit-scrollbar {
     width: 0;
   }
 
-  .global-modal.active .modal-card {
+  .global-modal.active .orbit-modal-card {
     transform: scale(1) translateY(0);
     opacity: 1;
   }
 
-  .detail-icon {
+  .orbit-detail-icon {
     color: var(--orbit-accent);
     width: 48px;
     height: 48px;
@@ -391,19 +356,19 @@ const items = [
     display: block;
   }
 
-  .detail-icon svg {
+  .orbit-detail-icon svg {
     width: 100%;
     height: 100%;
   }
 
-  .detail-title {
+  .orbit-detail-title {
     font-size: 3rem;
     margin-bottom: 20px;
     color: var(--orbit-accent);
     margin-top: 0;
   }
 
-  .detail-text {
+  .orbit-detail-text {
     font-size: 1.1rem;
     color: var(--orbit-text);
     line-height: 1.6;
@@ -411,7 +376,7 @@ const items = [
     max-width: 600px;
   }
 
-  .detail-list {
+  .orbit-detail-list {
     list-style: none;
     padding: 0;
     display: flex;
@@ -419,9 +384,9 @@ const items = [
     gap: 15px;
   }
 
-  .detail-list li {
+  .orbit-detail-list li {
     padding: 10px 20px;
-    border: 1px solid var(--ph-white-20);
+    border: 1px solid var(--color-ph-white-20);
     border-radius: 30px;
     font-size: 0.8rem;
     letter-spacing: 1px;
@@ -429,7 +394,7 @@ const items = [
     color: var(--orbit-text);
   }
 
-  .close-btn {
+  .orbit-close-btn {
     position: absolute;
     top: 30px;
     right: 30px;
@@ -447,42 +412,42 @@ const items = [
     transition: all 0.3s;
   }
 
-  .close-btn:hover {
+  .orbit-close-btn:hover {
     background: var(--orbit-text);
     color: var(--orbit-bg);
     transform: scale(1.1);
   }
 
   @media (max-width: 768px) {
-    .card {
+    .orbit-card {
       width: 260px;
       height: 340px;
       transform: translate(-50%, -50%) rotateY(var(--r)) translateZ(280px);
     }
-    .card:hover {
+    .orbit-card:hover {
       transform: translate(-50%, -50%) rotateY(var(--r)) translateZ(280px);
     }
 
     .global-modal {
       padding: 20px;
     }
-    .modal-card {
+    .orbit-modal-card {
       padding: 30px;
-      border-radius: 16px;
+      border-radius: var(--radius-md);
     }
-    .detail-title {
+    .orbit-detail-title {
       font-size: 2rem;
     }
-    .detail-icon {
+    .orbit-detail-icon {
       width: 40px;
       height: 40px;
       margin-bottom: 20px;
     }
-    .detail-list {
+    .orbit-detail-list {
       flex-direction: column;
       gap: 10px;
     }
-    .close-btn {
+    .orbit-close-btn {
       top: 20px;
       right: 20px;
     }
@@ -507,7 +472,7 @@ const items = [
       trackingReveal(label, { trigger: label, start: 'top 88%', once: true });
     }
 
-    const title = section.querySelector<HTMLElement>('.services-orbit-title');
+    const title = section.querySelector<HTMLElement>('.section-header-title');
     if (title) {
       const words = wrapWords(title);
       gsap.from(words, {
@@ -519,7 +484,7 @@ const items = [
       });
     }
 
-    const subtitle = section.querySelector<HTMLElement>('.services-orbit-subtitle');
+    const subtitle = section.querySelector<HTMLElement>('.section-header-subtitle');
     if (subtitle) {
       const spans = splitWords(subtitle);
       gsap.from(spans, {
@@ -560,7 +525,7 @@ const items = [
     const cardCount = Math.max(1, parseInt(root.dataset.cardCount ?? '5', 10));
     const cardStep = 360 / cardCount;
     const carousel = root.querySelector<HTMLElement>('[data-carousel]');
-    const cards = root.querySelectorAll<HTMLElement>('.card');
+    const cards = root.querySelectorAll<HTMLElement>('.orbit-card');
     const globalModal = root.querySelector<HTMLElement>('[data-global-modal]');
     const modalContentWrapper = root.querySelector<HTMLElement>('[data-modal-content]');
     const scene = root.querySelector<HTMLElement>('.scene');
@@ -660,8 +625,8 @@ const items = [
     const onSceneClick = (e: MouseEvent) => {
       if (hasDragged || isModalOpen) return;
       const fromTarget =
-        pointerDownTarget instanceof Element ? pointerDownTarget.closest('.card') : null;
-      const fromEvent = e.target instanceof Element ? e.target.closest('.card') : null;
+        pointerDownTarget instanceof Element ? pointerDownTarget.closest('.orbit-card') : null;
+      const fromEvent = e.target instanceof Element ? e.target.closest('.orbit-card') : null;
       const card = (fromTarget ?? fromEvent) as HTMLElement | null;
       if (card) openModalFromCard(card);
     };
@@ -706,8 +671,8 @@ const items = [
       if (diff < -180) diff += 360;
       targetRotation = currentRotation + diff;
 
-      const detailHTML = card.querySelector('.card-detail')?.innerHTML ?? '';
-      modalContentWrapper.innerHTML = `<div class="modal-card">${detailHTML}</div>`;
+      const detailHTML = card.querySelector('.orbit-card-detail')?.innerHTML ?? '';
+      modalContentWrapper.innerHTML = `<div class="orbit-modal-card">${detailHTML}</div>`;
       createIcons({ icons: orbitIcons, root: modalContentWrapper });
 
       globalModal.hidden = false;
@@ -717,7 +682,7 @@ const items = [
       scene.classList.add('dimmed');
       document.body.style.overflow = 'hidden';
 
-      const closeBtn = modalContentWrapper.querySelector('.close-btn');
+      const closeBtn = modalContentWrapper.querySelector('.orbit-close-btn');
       closeBtn?.addEventListener(
         'click',
         (e) => {
@@ -739,7 +704,7 @@ const items = [
       cards.forEach((card, index) => {
         const totalAngle = currentRotation + index * cardStep;
         const cosValue = Math.cos((totalAngle * Math.PI) / 180);
-        const content = card.querySelector<HTMLElement>('.card-content');
+        const content = card.querySelector<HTMLElement>('.orbit-card-content');
         if (content) {
           content.style.opacity = String(Math.max(0, cosValue * 1.5));
         }

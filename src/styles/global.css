@@ -1,15 +1,72 @@
 /* src/styles/global.css */
-/* Sistema de diseno PH Sport */
+/* Sistema de diseno PH Sport — Tailwind v4 @theme como fuente unica de tokens */
 
 @import "tailwindcss";
 @import "./ph-ui-buttons.css";
 
-/* FUENTES - self-hosted
-   Sohne: fuente de pago de Klim Type Foundry.
+/* ── DESIGN TOKENS (Tailwind v4 @theme) ────────────────────────────────────── */
+
+@theme {
+  /* Colores */
+  --color-ph-black:      #0d0f12;
+  --color-ph-white:      #ffffff;
+  --color-ph-gold:       #D6B25E;
+  --color-ph-gold-muted: #a8893e;
+
+  --color-ph-white-10:   rgba(255, 255, 255, 0.10);
+  --color-ph-white-20:   rgba(255, 255, 255, 0.20);
+  --color-ph-white-60:   rgba(255, 255, 255, 0.60);
+  --color-ph-white-80:   rgba(255, 255, 255, 0.80);
+  --color-ph-black-80:   rgba(13, 15, 18, 0.80);
+
+  /* Tipografia */
+  --font-display: 'Sohne', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body:    'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* Border-radius (generosos) */
+  --radius-sm:  0.5rem;   /*  8px — botones, inputs, badges */
+  --radius-md:  1rem;      /* 16px — cards, contenedores */
+  --radius-lg:  1.5rem;    /* 24px — modales, piezas hero */
+
+  /* Sombras */
+  --shadow-ph-sm: 0 2px 8px rgba(13, 15, 18, 0.4);
+  --shadow-ph:    0 4px 24px rgba(13, 15, 18, 0.6);
+  --shadow-ph-lg: 0 8px 48px rgba(13, 15, 18, 0.8);
+  --shadow-gold:  0 0 24px rgba(214, 178, 94, 0.25);
+
+  /* Easing */
+  --ease-ph: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Letter-spacing custom */
+  --tracking-tightest: -0.04em;
+  --tracking-tighter:  -0.02em;
+
+  /* Breakpoint adicional */
+  --breakpoint-xs: 375px;
+
+  /* Aspect ratios */
+  --aspect-player: 3 / 4;
+  --aspect-hero:   16 / 9;
+}
+
+/* ── CUSTOM PROPERTIES (no cubiertas por @theme) ───────────────────────────── */
+
+:root {
+  --ph-section-py: clamp(4rem, 8vw, 8rem);
+  --ph-section-px: clamp(1.5rem, 5vw, 6rem);
+  --ph-duration:   400ms;
+
+  /* Glassmorphism */
+  --ph-glass-bg:        rgba(255, 255, 255, 0.04);
+  --ph-glass-border:    rgba(255, 255, 255, 0.08);
+  --ph-glass-blur:      16px;
+  --ph-glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ── FUENTES (self-hosted) ─────────────────────────────────────────────────── */
+/* Sohne: fuente de pago de Klim Type Foundry.
    URL: https://klim.co.nz/retail-fonts/sohne/
-   Pesos: 400 (Buch), 600 (Halbfett), 700 (Dreiviertelfett), 900 (Extrafett)
-   Archivos .woff2 en /public/fonts/sohne/
-*/
+   Pesos: 400 (Buch), 600 (Halbfett), 700 (Dreiviertelfett), 900 (Extrafett) */
 
 @font-face {
   font-family: 'Sohne';
@@ -43,33 +100,7 @@
   font-display: swap;
 }
 
-/* CUSTOM PROPERTIES */
-
-:root {
-  --ph-black:       #0d0f12;
-  --ph-white:       #ffffff;
-  --ph-gold:        #D6B25E;
-  --ph-gold-muted:  #a8893e;
-
-  --ph-white-10:    rgba(255, 255, 255, 0.10);
-  --ph-white-20:    rgba(255, 255, 255, 0.20);
-  --ph-white-60:    rgba(255, 255, 255, 0.60);
-  --ph-black-80:    rgba(13, 15, 18, 0.80);
-
-  --ph-font-display: 'Sohne', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --ph-font-body:    'Helvetica Neue', Helvetica, Arial, sans-serif;
-
-  --ph-section-py:  clamp(4rem, 8vw, 8rem);
-  --ph-section-px:  clamp(1.5rem, 5vw, 6rem);
-
-  --ph-ease:        cubic-bezier(0.16, 1, 0.3, 1);
-  --ph-duration:    400ms;
-
-  --ph-radius:      0.375rem;   /* 6px — radio base para botones y elementos UI */
-  --ph-radius-card: 0.5rem;     /* 8px — cards y contenedores */
-}
-
-/* RESET */
+/* ── RESET ─────────────────────────────────────────────────────────────────── */
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -83,32 +114,30 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  /* Reserva siempre el espacio del scrollbar para evitar
-     desplazamiento de contenido al navegar entre páginas */
   scrollbar-gutter: stable;
 }
 
 body {
-  background-color: var(--ph-black);
-  color: var(--ph-white);
-  font-family: var(--ph-font-body);
+  background-color: var(--color-ph-black);
+  color: var(--color-ph-white);
+  font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.6;
   min-height: 100vh;
 }
 
-/* TIPOGRAFIA BASE */
+/* ── TIPOGRAFIA BASE ───────────────────────────────────────────────────────── */
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--ph-font-display);
+  font-family: var(--font-display);
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.02em;
-  color: var(--ph-white);
+  color: var(--color-ph-white);
 }
 
 p {
-  color: var(--ph-white-60);
+  color: var(--color-ph-white-60);
   max-width: 65ch;
 }
 
@@ -117,40 +146,39 @@ a {
   text-decoration: none;
 }
 
-/* Foco: sin anillo del user agent en puntero/táctil; anillo dorado con teclado (:focus-visible, WCAG 2.4.7). */
 :where(a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])):focus {
   outline: none;
 }
 
 :where(a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])):focus-visible {
-  outline: 2px solid var(--ph-gold);
+  outline: 2px solid var(--color-ph-gold);
   outline-offset: 2px;
 }
 
 strong {
   font-weight: 700;
-  color: var(--ph-white);
+  color: var(--color-ph-white);
 }
 
-/* UTILIDADES GLOBALES */
+/* ── UTILIDADES GLOBALES ───────────────────────────────────────────────────── */
 
 .ph-label {
-  font-family: var(--ph-font-body);
+  font-family: var(--font-body);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--ph-gold);
+  color: var(--color-ph-gold);
 }
 
 .ph-divider {
   width: 2.5rem;
   height: 2px;
-  background-color: var(--ph-gold);
+  background-color: var(--color-ph-gold);
 }
 
 .ph-accent {
-  color: var(--ph-gold);
+  color: var(--color-ph-gold);
 }
 
 .ph-section {
@@ -160,13 +188,21 @@ strong {
   margin-inline: auto;
 }
 
+.ph-glass {
+  background: var(--ph-glass-bg);
+  backdrop-filter: blur(var(--ph-glass-blur));
+  -webkit-backdrop-filter: blur(var(--ph-glass-blur));
+  border: 1px solid var(--ph-glass-border);
+  box-shadow: var(--ph-glass-highlight);
+}
+
 .skip-link {
   position: absolute;
   top: -100%;
   left: 1rem;
   padding: 0.5rem 1rem;
-  background: var(--ph-gold);
-  color: var(--ph-black);
+  background: var(--color-ph-gold);
+  color: var(--color-ph-black);
   font-weight: 700;
   z-index: 9999;
   transition: top 200ms;
@@ -176,25 +212,25 @@ strong {
   top: 1rem;
 }
 
-/* SELECCION DE TEXTO */
+/* ── SELECCION DE TEXTO ────────────────────────────────────────────────────── */
 
 ::selection {
-  background-color: var(--ph-gold);
-  color: var(--ph-black);
+  background-color: var(--color-ph-gold);
+  color: var(--color-ph-black);
 }
 
-/* SCROLLBAR */
+/* ── SCROLLBAR ─────────────────────────────────────────────────────────────── */
 
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--ph-black); }
-::-webkit-scrollbar-thumb { background: var(--ph-gold-muted); border-radius: 3px; }
+::-webkit-scrollbar-track { background: var(--color-ph-black); }
+::-webkit-scrollbar-thumb { background: var(--color-ph-gold-muted); border-radius: 3px; }
 
-/* Word-curtain helpers — añadidos dinámicamente por ph-text-animations.ts */
+/* ── Word-curtain helpers (ph-text-animations.ts) ──────────────────────────── */
+
 .ph-clip {
   display: inline-block;
   overflow: hidden;
   vertical-align: bottom;
-  /* Espacio para descendentes (g, p, y…) */
   padding-bottom: 0.1em;
   margin-bottom: -0.1em;
 }
@@ -203,7 +239,8 @@ strong {
   display: inline-block;
 }
 
-/* Logo reveal — tamaño responsive (móvil = 120px, desktop = 220px); overflow para que P/H salgan hasta el borde */
+/* ── Logo reveal ───────────────────────────────────────────────────────────── */
+
 .logo-reveal-container {
   width: 120px;
   overflow: visible;

@@ -25,3 +25,6 @@ Thumbs.db
 
 # Local generated assets
 logo-reveal-test.png
+
+# Playwright MCP snapshots / console dumps (local debugging)
+.playwright-mcp/

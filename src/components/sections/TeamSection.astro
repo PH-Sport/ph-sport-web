@@ -1,5 +1,6 @@
 ---
 import PortraitCard from '@/components/ui/PortraitCard.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
 import { useTranslations, type Lang } from '@/i18n/utils';
 
 interface Props {
@@ -18,36 +19,38 @@ const slots = Array.from({ length: TEAM_SIZE }, (_, i) => {
   return { n, slug };
 });
 
-const teamPayloads: Record<string, { slug: string; name: string; subtitle: string }> = {};
+const teamPayloads: Record<
+  string,
+  { slug: string; name: string; subtitle: string; clubLogoSrc?: string }
+> = {};
 for (const s of slots) {
   teamPayloads[s.slug] = {
     slug: s.slug,
     name: t('team.placeholderName'),
     subtitle: t('team.placeholderRole'),
+    clubLogoSrc: '/logo.svg',
   };
 }
 const teamPayloadsJson = JSON.stringify(teamPayloads);
 ---
 
+<!-- Modal de ficha: variante "team" (lightbox apaisado, ver player-modal.ts) -->
 <section
   class="team-section"
   aria-labelledby="team-heading"
   data-player-detail-base={detailBase}
   data-player-modal-close={t('a11y.close')}
   data-player-payloads={teamPayloadsJson}
+  data-player-modal-variant="team"
 >
   <div class="ph-section">
-    <header class="team-header">
-      <div class="team-header-top">
-        <span class="ph-label">{t('nav.team')}</span>
-        <span class="team-count">{TEAM_SIZE}</span>
-      </div>
-      <div class="ph-divider mt-4"></div>
-      <h1 id="team-heading" class="team-title">
-        {t('team.title')}
-      </h1>
-      <p class="team-subtitle">{t('team.subtitle')}</p>
-    </header>
+    <SectionHeader
+      label={t('nav.team')}
+      title={t('team.title')}
+      subtitle={t('team.subtitle')}
+      count={TEAM_SIZE}
+      id="team-heading"
+    />
 
     <ul class="team-grid">
       {slots.map(({ n, slug }) => (
@@ -70,56 +73,9 @@ const teamPayloadsJson = JSON.stringify(teamPayloads);
     position: relative;
     background:
       radial-gradient(ellipse at 50% 0%, rgba(214, 178, 94, 0.02) 0%, transparent 50%),
-      var(--ph-black);
+      var(--color-ph-black);
   }
 
-  .team-header {
-    margin-bottom: 3rem;
-    padding-bottom: 2.5rem;
-    border-bottom: 1px solid var(--ph-white-10);
-  }
-
-  @media (min-width: 1024px) {
-    .team-header {
-      margin-bottom: 4rem;
-      padding-bottom: 3rem;
-    }
-  }
-
-  .team-header-top {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .team-count {
-    font-family: var(--ph-font-display);
-    font-size: 0.6875rem;
-    font-weight: 500;
-    color: var(--ph-white-60);
-    padding: 0.125rem 0.5rem;
-    border: 1px solid var(--ph-white-10);
-    border-radius: var(--ph-radius);
-    letter-spacing: 0.04em;
-  }
-
-  .team-title {
-    margin-top: 2rem;
-    font-family: var(--ph-font-display);
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    color: var(--ph-white);
-  }
-
-  .team-subtitle {
-    margin-top: 1rem;
-    font-size: 1.0625rem;
-    color: var(--ph-white-60);
-    max-width: 40rem;
-    line-height: 1.6;
-  }
 
   .team-grid {
     display: grid;
@@ -201,7 +157,7 @@ const teamPayloadsJson = JSON.stringify(teamPayloads);
       trackingReveal(label, { trigger: label, start: 'top 88%', once: true });
     }
 
-    const count = section.querySelector<HTMLElement>('.team-count');
+    const count = section.querySelector<HTMLElement>('.section-header-count');
     if (count) {
       gsap.from(count, {
         opacity: 0,
@@ -212,7 +168,7 @@ const teamPayloadsJson = JSON.stringify(teamPayloads);
       });
     }
 
-    const title = section.querySelector<HTMLElement>('.team-title');
+    const title = section.querySelector<HTMLElement>('.section-header-title');
     if (title) {
       const words = wrapWords(title);
       gsap.from(words, {
@@ -224,7 +180,7 @@ const teamPayloadsJson = JSON.stringify(teamPayloads);
       });
     }
 
-    const subtitle = section.querySelector<HTMLElement>('.team-subtitle');
+    const subtitle = section.querySelector<HTMLElement>('.section-header-subtitle');
     if (subtitle) {
       const spans = splitWords(subtitle);
       gsap.from(spans, {

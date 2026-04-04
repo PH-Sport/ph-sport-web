@@ -5,26 +5,52 @@ coverage/
 .nyc_output/
 *.tsbuildinfo
 
+# Vite cache (por si algún día se configura fuera de node_modules)
+.vite/
+
 # Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+*.log
 
 # Environment variables
 .env
 .env.*
 !.env.example
+*.local
 
 # OS / Editor files
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 .vscode/
 .idea/
 .cursor/
+.fleet/
 
-# Local generated assets
-logo-reveal-test.png
+# Cachés de linters / formateadores (si se añaden más adelante)
+.eslintcache
+.stylelintcache
+.prettiercache
 
 # Playwright MCP snapshots / console dumps (local debugging)
 .playwright-mcp/
+
+# Playwright Test (reportes y artefactos E2E; por si se adopta oficialmente)
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Puppeteer / descargas de Chromium en proyecto (poco habitual, pero seguro)
+.cache/
+
+# Plataformas de despliegue (config local / enlaces)
+.vercel/
+.netlify/
+
+# Local generated assets
+logo-reveal-test.png

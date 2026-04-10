@@ -192,6 +192,8 @@ const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
     border: none;
     border-radius: calc(var(--radius-sm) - 2px);
     cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
     font-family: var(--font-display);
     font-size: 0.75rem;
     font-weight: 600;

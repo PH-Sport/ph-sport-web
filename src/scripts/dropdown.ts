@@ -7,13 +7,28 @@ export interface DropdownHandle {
   toggle(): void;
 }
 
+/* ── Registro global: al abrir uno se cierran los demás ── */
+const activeDropdowns = new Set<DropdownHandle>();
+
+function closeAllExcept(keep?: DropdownHandle): void {
+  activeDropdowns.forEach((dd) => {
+    if (dd !== keep) dd.close();
+  });
+}
+
 export function createDropdown(
   root: HTMLElement,
   trigger: HTMLButtonElement,
   panel: HTMLElement,
 ): DropdownHandle {
+  /* ── Mejoras tactiles universales ── */
+  trigger.style.touchAction = 'manipulation';
+  trigger.style.webkitTapHighlightColor = 'transparent';
+
   function close(): void {
     if (panel.hidden) return;
+
+    activeDropdowns.delete(handle);
 
     if (reducedMotion()) {
       panel.hidden = true;
@@ -38,8 +53,12 @@ export function createDropdown(
   function open(): void {
     if (!panel.hidden) return;
 
+    /* Cerrar cualquier otro dropdown abierto primero */
+    closeAllExcept(handle);
+
     trigger.setAttribute('aria-expanded', 'true');
     panel.hidden = false;
+    activeDropdowns.add(handle);
 
     if (reducedMotion()) return;
 
@@ -65,6 +84,8 @@ export function createDropdown(
     else close();
   }
 
+  const handle: DropdownHandle = { close, open, toggle };
+
   trigger.addEventListener('click', (e) => {
     e.stopPropagation();
     toggle();
@@ -82,5 +103,5 @@ export function createDropdown(
     }
   });
 
-  return { close, open, toggle };
+  return handle;
 }

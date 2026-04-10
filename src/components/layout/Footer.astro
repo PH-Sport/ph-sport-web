@@ -1,16 +1,27 @@
 ---
 import { useTranslations, getLangFromUrl } from '@/i18n/utils';
 import { NAV_ITEMS } from '@/lib/navigation';
+import { SOCIAL_LINKS, isSocialPlaceholder, type SocialId } from '@/lib/social';
+import FooterSocialIcon from '@/components/ui/FooterSocialIcon.astro';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const isEn = lang === 'en';
 const year = new Date().getFullYear();
 
 const nav = NAV_ITEMS.map((item) => ({
   href: item.href[lang],
   label: t(item.labelKey),
 }));
+
+const socialLabel = (id: SocialId) => {
+  const key =
+    id === 'instagram'
+      ? 'footer.social.instagram'
+      : id === 'linkedin'
+        ? 'footer.social.linkedin'
+        : 'footer.social.x';
+  return t(key);
+};
 ---
 
 <footer class="footer">
@@ -53,6 +64,37 @@ const nav = NAV_ITEMS.map((item) => ({
           </a>
         </div>
       </div>
+    </div>
+
+    <div class="footer-social-block">
+      <span class="footer-col-label">{t('footer.social.label')}</span>
+      <ul class="footer-social-list" role="list">
+        {
+          SOCIAL_LINKS.map((s) => (
+            <li>
+              {isSocialPlaceholder(s.href) ? (
+                <span
+                  class="footer-social-link footer-social-link--disabled"
+                  aria-disabled="true"
+                  title={socialLabel(s.id)}
+                >
+                  <FooterSocialIcon id={s.id} />
+                </span>
+              ) : (
+                <a
+                  href={s.href}
+                  class="footer-social-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={socialLabel(s.id)}
+                >
+                  <FooterSocialIcon id={s.id} />
+                </a>
+              )}
+            </li>
+          ))
+        }
+      </ul>
     </div>
 
     <!-- Bottom bar -->
@@ -170,5 +212,51 @@ const nav = NAV_ITEMS.map((item) => ({
     font-size: 0.75rem;
     color: var(--color-ph-white-60);
     letter-spacing: 0.02em;
+  }
+
+  .footer-social-block {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-ph-white-10);
+  }
+
+  .footer-social-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0.875rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer-social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-sm);
+    color: var(--color-ph-white-60);
+    border: 1px solid var(--color-ph-white-10);
+    transition:
+      color var(--ph-duration) var(--ease-ph),
+      border-color var(--ph-duration) var(--ease-ph),
+      background var(--ph-duration) var(--ease-ph);
+  }
+
+  .footer-social-link:hover {
+    color: var(--color-ph-gold);
+    border-color: var(--color-ph-gold-muted);
+    background: rgba(214, 178, 94, 0.06);
+  }
+
+  .footer-social-link--disabled {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .footer-social-svg {
+    width: 1.125rem;
+    height: 1.125rem;
   }
 </style>

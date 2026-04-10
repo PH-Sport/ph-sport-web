@@ -171,4 +171,10 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
     -webkit-backdrop-filter: blur(var(--ph-glass-blur));
     box-shadow: var(--ph-glass-highlight);
   }
+
+  /* Página laboratorio logo 3D: ocultar parallax del logo estático de fondo */
+  html:has([data-ph-logo-lab]) .bg-logo-parallax {
+    opacity: 0;
+    visibility: hidden;
+  }
 </style>

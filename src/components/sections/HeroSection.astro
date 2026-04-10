@@ -1,45 +1,127 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
 import Button from '@/components/ui/Button.astro';
+import { HERO_STATIC_IMAGE, HERO_VIDEO_POSTER, HERO_VIDEO_SOURCES } from '@/lib/heroMedia';
 
 interface Props {
   lang: Lang;
+  /** Home: vídeo de fondo, sin CTAs ni párrafo largo */
+  variant?: 'default' | 'home';
+  /** Ancla opcional (p. ej. inicio en la home) */
+  sectionId?: string;
 }
 
-const { lang } = Astro.props;
+const { lang, variant = 'default', sectionId } = Astro.props;
 const t = useTranslations(lang);
 const isEn = lang === 'en';
+const isHome = variant === 'home';
+const staticBackdrop = HERO_STATIC_IMAGE.trim().length > 0 ? HERO_STATIC_IMAGE : null;
+const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : undefined;
 ---
 
-<section class="hero relative flex min-h-screen items-center overflow-hidden">
+<section
+  id={sectionId}
+  class:list={[
+    'hero',
+    'relative',
+    'min-h-screen',
+    'overflow-hidden',
+    isHome ? 'hero--home' : 'flex items-center',
+  ]}
+>
+  {
+    isHome && (
+      <div class="hero-media" aria-hidden="true">
+        <div class="hero-video-fallback" />
+        {
+          staticBackdrop && (
+            <img
+              class="hero-static-image"
+              src={staticBackdrop}
+              alt=""
+              width="1920"
+              height="1080"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+            />
+          )
+        }
+        <video
+          class="hero-video"
+          data-hero-video
+          muted
+          loop
+          playsinline
+          autoplay
+          preload="auto"
+          poster={videoPoster}
+        >
+          {HERO_VIDEO_SOURCES.map((s) => (
+            <source src={s.src} type={s.type} />
+          ))}
+        </video>
+      </div>
+    )
+  }
   <!-- Content -->
-  <div class="hero-content ph-section relative z-10 w-full">
-    <div class="hero-copy-stack flex max-w-2xl flex-col gap-6 text-left sm:gap-10 md:gap-12 lg:gap-14">
-      <div class="hero-lead flex flex-col gap-2 sm:gap-3">
-        <div class="flex flex-col gap-3 sm:gap-4">
-          <p class="hero-tagline font-display text-xs font-semibold uppercase tracking-widest text-ph-gold sm:text-sm">
-            {t('hero.tagline')}
-          </p>
-          <div class="ph-divider"></div>
-        </div>
+  <div
+    class:list={[
+      'hero-content',
+      'relative',
+      'z-10',
+      'w-full',
+      isHome ? 'hero-content--home' : 'ph-section',
+    ]}
+  >
+    <div
+      class:list={[
+        'hero-copy-stack flex flex-col text-left',
+        isHome ? 'hero-copy-stack--home max-w-md gap-4 sm:gap-5' : 'max-w-2xl gap-6 sm:gap-10 md:gap-12 lg:gap-14',
+      ]}
+    >
+      {
+        isHome ? (
+          <div class="hero-lead hero-lead--home flex flex-col gap-3 sm:gap-4">
+            <h1 class="hero-tagline font-display text-base font-semibold uppercase tracking-widest text-ph-gold sm:text-lg lg:text-xl">
+              {t('hero.tagline')}
+            </h1>
+            <div class="ph-divider ph-divider--hero-home"></div>
+          </div>
+        ) : (
+          <div class="hero-lead flex flex-col gap-2 sm:gap-3">
+            <div class="flex flex-col gap-3 sm:gap-4">
+              <p class="hero-tagline font-display text-xs font-semibold uppercase tracking-widest text-ph-gold sm:text-sm">
+                {t('hero.tagline')}
+              </p>
+              <div class="ph-divider"></div>
+            </div>
 
-        <h1 class="hero-heading font-display text-4xl font-black tracking-tightest sm:text-5xl lg:text-7xl">
-          {t('hero.claim')}
-        </h1>
-      </div>
+            <h1 class="hero-heading font-display text-4xl font-black tracking-tightest sm:text-5xl lg:text-7xl">
+              {t('hero.claim')}
+            </h1>
+          </div>
+        )
+      }
 
-      <p class="hero-description max-w-2xl text-base leading-relaxed text-ph-white-60 lg:text-lg">
-        {t('site.description')}
-      </p>
+      {
+        !isHome && (
+          <>
+            <p class="hero-description max-w-2xl text-base leading-relaxed text-ph-white-60 lg:text-lg">
+              {t('site.description')}
+            </p>
 
-      <div class="hero-ctas flex flex-wrap gap-3 sm:gap-5">
-        <Button href={isEn ? '/en/players/' : '/jugadores/'} variant="primary">
-          {t('hero.cta.primary')}
-        </Button>
-        <Button href={isEn ? '/en/about' : '/sobre-nosotros'} variant="secondary">
-          {t('hero.cta.secondary')}
-        </Button>
-      </div>
+            <div class="hero-ctas flex flex-wrap gap-3 sm:gap-5">
+              <Button href={isEn ? '/en/players/' : '/jugadores/'} variant="primary">
+                {t('hero.cta.primary')}
+              </Button>
+              <Button href={isEn ? '/en/about' : '/sobre-nosotros'} variant="secondary">
+                {t('hero.cta.secondary')}
+              </Button>
+            </div>
+          </>
+        )
+      }
     </div>
   </div>
 
@@ -54,6 +136,126 @@ const isEn = lang === 'en';
 <style>
   .hero {
     background: transparent;
+  }
+
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .hero-video-fallback {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse at 70% 80%, rgba(214, 178, 94, 0.06) 0%, transparent 42%),
+      radial-gradient(ellipse at 30% 20%, rgba(214, 178, 94, 0.1) 0%, transparent 48%),
+      radial-gradient(ellipse at 50% 100%, rgba(13, 15, 18, 0.9) 0%, transparent 55%),
+      var(--color-ph-black);
+  }
+
+  .hero-static-image {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .hero-video {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero--home .hero-video {
+      display: none;
+    }
+  }
+
+  .hero--home.hero--video-error .hero-video {
+    display: none;
+  }
+
+  /*
+   * Home: esquina inferior izquierda del viewport (sin .ph-section: evita max-width + margin auto).
+   */
+  .hero-content--home {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: auto;
+    top: auto;
+    width: auto;
+    max-width: min(22rem, calc(100vw - var(--ph-section-px) * 2));
+    margin: 0;
+    padding-left: var(--ph-section-px);
+    padding-right: 1rem;
+    padding-bottom: max(4.5rem, env(safe-area-inset-bottom, 0px));
+    padding-top: 0;
+  }
+
+  @media (min-width: 640px) {
+    .hero-content--home {
+      max-width: min(28rem, calc(100vw - var(--ph-section-px) * 2));
+      padding-bottom: max(5.25rem, env(safe-area-inset-bottom));
+    }
+  }
+
+  .hero-copy-stack--home {
+    align-items: flex-start;
+  }
+
+  .ph-divider--hero-home {
+    max-width: 12rem;
+  }
+
+  /* Home: viñeta inferior + refuerzo izquierda para leer sobre el vídeo */
+  .hero--home::before {
+    background:
+      linear-gradient(
+        15deg,
+        rgba(13, 15, 18, 0.97) 0%,
+        rgba(13, 15, 18, 0.55) 38%,
+        transparent 62%
+      ),
+      linear-gradient(
+        to top,
+        rgba(13, 15, 18, 0.88) 0%,
+        rgba(13, 15, 18, 0.25) 45%,
+        transparent 72%
+      );
+    z-index: 3;
+  }
+
+  @media (min-width: 1024px) {
+    .hero--home::before {
+      background:
+        linear-gradient(
+          12deg,
+          rgba(13, 15, 18, 0.94) 0%,
+          rgba(13, 15, 18, 0.35) 42%,
+          transparent 68%
+        ),
+        linear-gradient(
+          to top,
+          rgba(13, 15, 18, 0.75) 0%,
+          transparent 58%
+        );
+    }
+  }
+
+  .hero--home .hero-tagline {
+    line-height: 1.35;
+    text-shadow: 0 1px 24px rgba(13, 15, 18, 0.85);
   }
 
   .hero::before {
@@ -165,6 +367,24 @@ const isEn = lang === 'en';
     toggleIndicator();
     document.addEventListener('scroll', toggleIndicator, { passive: true });
   }
+
+  // ── Hero vídeo (home): fallback si falla carga o autoplay ─────────────────
+  function initHeroVideo(): void {
+    const hero = document.querySelector<HTMLElement>('.hero--home');
+    const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
+    if (!hero || !video) return;
+
+    const markStatic = () => hero.classList.add('hero--video-error');
+
+    video.addEventListener('error', markStatic);
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    void video.play().catch(() => {
+      markStatic();
+    });
+  }
+
+  document.addEventListener('astro:page-load', initHeroVideo);
 </script>
 
 <script>
@@ -185,7 +405,7 @@ const isEn = lang === 'en';
 
     const tagline  = section.querySelector<HTMLElement>('.hero-tagline');
     const divider  = section.querySelector<HTMLElement>('.ph-divider');
-    const h1       = section.querySelector<HTMLElement>('h1');
+    const h1       = section.querySelector<HTMLElement>('h1.hero-heading');
     const desc     = section.querySelector<HTMLElement>('.hero-description');
     const btns     = section.querySelector<HTMLElement>('.hero-ctas');
 

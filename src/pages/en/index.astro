@@ -2,11 +2,21 @@
 import BaseLayout from '@/components/layout/BaseLayout.astro';
 import LogoReveal from '@/components/islands/LogoReveal.tsx';
 import HeroSection from '@/components/sections/HeroSection.astro';
+import HomePlayersSection from '@/components/sections/HomePlayersSection.astro';
+import HomeInstagramSection from '@/components/sections/HomeInstagramSection.astro';
+import HomeServicesSection from '@/components/sections/HomeServicesSection.astro';
+import HomeAboutSection from '@/components/sections/HomeAboutSection.astro';
 import { useTranslations, type Lang } from '@/i18n/utils';
 import { SITE_URL } from '@/lib/constants';
+import { buildPlayerDetailPayloadsForLang, getAllRosterEntries } from '@/lib/playerDetail';
 
 const lang: Lang = 'en';
 const t = useTranslations(lang);
+
+const rosterPlayers = getAllRosterEntries().filter((e) => e.role === 'player');
+const topSlugs = rosterPlayers.slice(0, 3).map((e) => e.slug);
+const payloads = await buildPlayerDetailPayloadsForLang(lang);
+const homePlayers = topSlugs.map((slug) => payloads[slug]).filter(Boolean);
 ---
 
 <BaseLayout
@@ -17,5 +27,9 @@ const t = useTranslations(lang);
   hasHero
 >
   <LogoReveal client:load />
-  <HeroSection lang={lang} />
+  <HeroSection lang={lang} variant="home" sectionId="inicio" />
+  <HomePlayersSection lang={lang} players={homePlayers} />
+  <HomeInstagramSection lang={lang} />
+  <HomeServicesSection lang={lang} />
+  <HomeAboutSection lang={lang} />
 </BaseLayout>

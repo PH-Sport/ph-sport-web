@@ -1,0 +1,77 @@
+---
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Button from '@/components/ui/Button.astro';
+import { useTranslations, type Lang } from '@/i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const isEn = lang === 'en';
+const aboutHref = isEn ? '/en/about' : '/sobre-nosotros';
+---
+
+<section id="sobre-nosotros" class="home-about-section" aria-labelledby="home-about-heading">
+  <div class="ph-section">
+    <SectionHeader
+      label={t('nav.about')}
+      title={t('home.about.title')}
+      subtitle={t('home.about.subtitle')}
+      id="home-about-heading"
+      tag="h2"
+      noBorder
+    />
+
+    <div class="home-about-copy">
+      <p class="home-about-lead">{t('home.about.lead')}</p>
+      <p class="home-about-body">{t('home.about.body')}</p>
+    </div>
+
+    <div class="home-section-cta">
+      <Button href={aboutHref} variant="secondary">
+        {t('home.about.cta')}
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .home-about-section {
+    position: relative;
+    padding-block: 4rem 4.5rem;
+    background: var(--color-ph-black);
+    border-top: 1px solid var(--color-ph-white-10);
+  }
+
+  @media (min-width: 1024px) {
+    .home-about-section {
+      padding-block: 5rem 5.5rem;
+    }
+  }
+
+  .home-about-copy {
+    max-width: 40rem;
+  }
+
+  .home-about-lead {
+    margin: 0 0 1rem;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--color-ph-white);
+  }
+
+  .home-about-body {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--color-ph-white-60);
+  }
+
+  .home-section-cta {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-start;
+  }
+</style>

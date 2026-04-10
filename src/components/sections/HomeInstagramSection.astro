@@ -1,0 +1,80 @@
+---
+import { useTranslations, type Lang } from '@/i18n/utils';
+import { getInstagramProfileUrl, isSocialPlaceholder } from '@/lib/social';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const instagramUrl = getInstagramProfileUrl();
+const hasLink = !isSocialPlaceholder(instagramUrl);
+---
+
+<section id="instagram" class="home-instagram-section" aria-labelledby="home-instagram-heading">
+  <div class="ph-section">
+    <div class="home-instagram-inner">
+      <h2 id="home-instagram-heading" class="home-instagram-title">
+        {t('home.instagram.title')}
+      </h2>
+      <p class="home-instagram-placeholder">{t('home.instagram.placeholder')}</p>
+      {
+        hasLink && (
+          <a href={instagramUrl} class="home-instagram-link" rel="noopener noreferrer" target="_blank">
+            {t('home.instagram.link')}
+          </a>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .home-instagram-section {
+    position: relative;
+    padding-block: 3.5rem 4rem;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(214, 178, 94, 0.06) 0%, transparent 55%),
+      var(--color-ph-black);
+    border-top: 1px solid var(--color-ph-white-10);
+  }
+
+  .home-instagram-inner {
+    max-width: 36rem;
+  }
+
+  .home-instagram-title {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-ph-white);
+  }
+
+  .home-instagram-placeholder {
+    margin: 0 0 1rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-ph-white-60);
+  }
+
+  .home-instagram-link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-ph-gold);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition:
+      color var(--ph-duration) var(--ease-ph),
+      border-color var(--ph-duration) var(--ease-ph);
+  }
+
+  .home-instagram-link:hover {
+    color: var(--color-ph-white);
+    border-bottom-color: var(--color-ph-gold-muted);
+  }
+</style>

@@ -16,15 +16,37 @@ function closeAllExcept(keep?: DropdownHandle): void {
   });
 }
 
+/**
+ * Cierra todos los dropdowns abiertos cuando el usuario toca/clica
+ * fuera de cualquier dropdown registrado.
+ *
+ * Se delega en `document` (igual que Header.astro para el menú móvil)
+ * porque iOS Safari siempre despacha eventos al document, incluso cuando
+ * falla el hit-testing directo sobre elementos post-animación.
+ */
+let outsideListenerBound = false;
+const dropdownRoots = new Set<HTMLElement>();
+
+function bindOutsideListener(): void {
+  if (outsideListenerBound) return;
+  outsideListenerBound = true;
+
+  document.addEventListener('pointerdown', (e) => {
+    const target = e.target as Node;
+    // Si el toque fue dentro de algún dropdown registrado, no hacer nada
+    for (const root of dropdownRoots) {
+      if (root.contains(target)) return;
+    }
+    // Toque fuera → cerrar todos
+    closeAllExcept();
+  });
+}
+
 export function createDropdown(
   root: HTMLElement,
   trigger: HTMLButtonElement,
   panel: HTMLElement,
 ): DropdownHandle {
-  /* ── Mejoras tactiles universales ── */
-  trigger.style.touchAction = 'manipulation';
-  trigger.style.webkitTapHighlightColor = 'transparent';
-
   function close(): void {
     if (panel.hidden) return;
 
@@ -86,15 +108,49 @@ export function createDropdown(
 
   const handle: DropdownHandle = { close, open, toggle };
 
-  trigger.addEventListener('click', (e) => {
-    e.stopPropagation();
+  /**
+   * Usamos `pointerup` en vez de `click` para el toggle.
+   *
+   * Motivo: iOS Safari puede ignorar el primer `click` en botones
+   * cuyos contenedores fueron animados (GSAP, ViewTransitions…)
+   * o que tengan pseudo-elementos `::before` posicionados.
+   *
+   * `pointerup` se dispara de forma fiable en TODOS los navegadores
+   * y dispositivos (touch + mouse), inmediatamente al levantar el dedo.
+   * Además, NO se dispara si el usuario hace scroll (se emite
+   * `pointercancel` en su lugar), por lo que es seguro para mobile.
+   */
+  trigger.addEventListener('pointerup', (e) => {
+    e.preventDefault();
     toggle();
   });
 
-  document.addEventListener('click', (e) => {
-    const t = e.target as Node;
-    if (!root.contains(t) && !panel.hidden) close();
+  /**
+   * Suplimos `click` para dos fines:
+   * 1. Evitar que el click sintético (que dispara el navegador tras
+   *    pointerup) burbujee hasta el handler global de cierre-fuera.
+   * 2. Accesibilidad: lectores de pantalla y teclados usan `click`
+   *    (ej. al pulsar Enter/Space en un botón). En ese caso pointerup
+   *    puede no haberse disparado, así que togglamos aquí también.
+   */
+  let toggledByPointer = false;
+  trigger.addEventListener('pointerup', () => {
+    toggledByPointer = true;
+    requestAnimationFrame(() => {
+      toggledByPointer = false;
+    });
   });
+
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    // Si ya se gestionó en pointerup, no duplicar
+    if (toggledByPointer) return;
+    toggle();
+  });
+
+  /* ── Registrar root y montar el listener global (una sola vez) ── */
+  dropdownRoots.add(root);
+  bindOutsideListener();
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !panel.hidden) {

@@ -216,9 +216,11 @@ const labelCurrent =
       background-color 0.2s var(--ease-ph);
   }
 
-  .players-sort-option:hover {
-    color: var(--color-ph-white);
-    background: rgba(255, 255, 255, 0.06);
+  @media (hover: hover) {
+    .players-sort-option:hover {
+      color: var(--color-ph-white);
+      background: rgba(255, 255, 255, 0.06);
+    }
   }
 
   .players-sort-option:focus-visible {

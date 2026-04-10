@@ -297,13 +297,15 @@ function subtitleFor(row: { club: { name: string } | null }): string {
     transform: scaleX(0);
   }
 
-  .players-tab[aria-selected='true']:hover {
-    border-color: rgba(214, 178, 94, 0.45);
-    color: var(--color-ph-white);
-  }
+  @media (hover: hover) {
+    .players-tab[aria-selected='true']:hover {
+      border-color: rgba(214, 178, 94, 0.45);
+      color: var(--color-ph-white);
+    }
 
-  .players-tab[aria-selected='true']:hover::before {
-    transform: scaleX(0);
+    .players-tab[aria-selected='true']:hover::before {
+      transform: scaleX(0);
+    }
   }
 
   .players-toolbar-mobile > *,

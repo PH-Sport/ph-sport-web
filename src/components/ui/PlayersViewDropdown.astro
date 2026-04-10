@@ -214,9 +214,11 @@ const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
     white-space: nowrap;
   }
 
-  .players-view-option:hover {
-    color: var(--color-ph-white);
-    background: rgba(255, 255, 255, 0.06);
+  @media (hover: hover) {
+    .players-view-option:hover {
+      color: var(--color-ph-white);
+      background: rgba(255, 255, 255, 0.06);
+    }
   }
 
   .players-view-option:focus-visible {

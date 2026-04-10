@@ -45,6 +45,8 @@ const {
     border: 1px solid;
     border-radius: var(--radius-sm);
     cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
     transition:
       border-color var(--ph-duration) var(--ease-ph),
       color var(--ph-duration) var(--ease-ph);
@@ -59,8 +61,10 @@ const {
     transition: transform var(--ph-duration) var(--ease-ph);
   }
 
-  .btn:hover::before {
-    transform: scaleX(1);
+  @media (hover: hover) {
+    .btn:hover::before {
+      transform: scaleX(1);
+    }
   }
 
   .btn-label {
@@ -79,8 +83,10 @@ const {
     background: var(--color-ph-gold);
   }
 
-  .btn--primary:hover {
-    color: var(--color-ph-black);
+  @media (hover: hover) {
+    .btn--primary:hover {
+      color: var(--color-ph-black);
+    }
   }
 
   /* Secondary — ghost, subtle fill */
@@ -93,8 +99,10 @@ const {
     background: var(--color-ph-white-10);
   }
 
-  .btn--secondary:hover {
-    border-color: var(--color-ph-white-60);
-    color: var(--color-ph-white);
+  @media (hover: hover) {
+    .btn--secondary:hover {
+      border-color: var(--color-ph-white-60);
+      color: var(--color-ph-white);
+    }
   }
 </style>

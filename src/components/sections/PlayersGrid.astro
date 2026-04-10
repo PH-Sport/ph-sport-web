@@ -776,20 +776,88 @@ function subtitleFor(row: { club: { name: string } | null }): string {
   }
 
   function initPlayersSortDropdown(): void {
+    const grids = document.querySelectorAll<HTMLElement>('.players-grid');
+    
+    // Asignar el índice original a las tarjetas para 'predeterminado'
+    grids.forEach(grid => {
+      grid.querySelectorAll<HTMLElement>('.card').forEach((card, i) => {
+        if (!card.dataset.originalIndex) card.dataset.originalIndex = String(i);
+      });
+    });
+
     document.querySelectorAll<HTMLElement>('[data-players-sort-root]').forEach((root) => {
       const trigger = root.querySelector<HTMLButtonElement>('.players-sort-trigger');
       const panel = root.querySelector<HTMLElement>('.players-sort-panel');
       if (!trigger || !panel) return;
 
-      createDropdown(root, trigger, panel);
+      const dd = createDropdown(root, trigger, panel);
+      const options = root.querySelectorAll<HTMLButtonElement>('[data-sort-value]');
+      const triggerLabel = trigger.querySelector('.players-sort-label');
 
-      root.querySelectorAll<HTMLButtonElement>('[data-sort-value]').forEach((btn) => {
+      options.forEach((btn) => {
         btn.addEventListener('click', () => {
           const v = btn.dataset.sortValue ?? 'default';
+          
+          dd.close();
+
+          options.forEach(opt => opt.setAttribute('aria-selected', String(opt === btn)));
+          if (triggerLabel) {
+            triggerLabel.textContent = btn.textContent?.trim() || triggerLabel.textContent;
+          }
+
           const u = new URL(window.location.href);
           if (v === 'default') u.searchParams.delete('sort');
           else u.searchParams.set('sort', v);
-          window.location.assign(u.pathname + u.search + u.hash);
+          history.replaceState(null, '', u.pathname + u.search + u.hash);
+
+          grids.forEach(grid => {
+            const cards = Array.from(grid.querySelectorAll<HTMLElement>('.card'));
+            if (cards.length < 2) return;
+
+            const sortCards = () => {
+              cards.sort((a, b) => {
+                if (v === 'default') {
+                  return Number(a.dataset.originalIndex) - Number(b.dataset.originalIndex);
+                }
+                const nameA = a.querySelector('.card-name')?.textContent || '';
+                const nameB = b.querySelector('.card-name')?.textContent || '';
+                const cmp = nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
+                return v === 'az' ? cmp : -cmp;
+              });
+              cards.forEach(c => grid.appendChild(c));
+            };
+
+            if (reducedMotion()) {
+              sortCards();
+              ScrollTrigger.refresh();
+              return;
+            }
+
+            gsap.killTweensOf(cards);
+            gsap.to(cards, {
+              opacity: 0,
+              y: 8,
+              duration: 0.15,
+              onComplete: () => {
+                sortCards();
+                gsap.fromTo(
+                  cards,
+                  { opacity: 0, y: 12 },
+                  {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.35,
+                    stagger: 0.03,
+                    ease: 'power2.out',
+                    onComplete: () => {
+                      gsap.set(cards, { clearProps: 'opacity,transform' });
+                      ScrollTrigger.refresh();
+                    }
+                  }
+                );
+              }
+            });
+          });
         });
       });
     });

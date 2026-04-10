@@ -291,6 +291,8 @@ const isActive = (href: string): boolean => {
     color: var(--color-ph-white);
     background: transparent;
     cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
     transition:
       border-color var(--ph-duration) var(--ease-ph),
       color var(--ph-duration) var(--ease-ph),
@@ -303,10 +305,12 @@ const isActive = (href: string): boolean => {
     }
   }
 
-  .menu-toggle:hover {
-    border-color: var(--color-ph-gold);
-    color: var(--color-ph-gold);
-    background-color: rgba(214, 178, 94, 0.05);
+  @media (hover: hover) {
+    .menu-toggle:hover {
+      border-color: var(--color-ph-gold);
+      color: var(--color-ph-gold);
+      background-color: rgba(214, 178, 94, 0.05);
+    }
   }
 
   .menu-toggle:active {
@@ -751,11 +755,18 @@ const isActive = (href: string): boolean => {
     setMobileMenuOpen(!mobileMenu.classList.contains('is-open'));
   }
 
-  function onMobileMenuDocumentClick(e: MouseEvent) {
+  /**
+   * Handler principal: `pointerup` se dispara de forma fiable en
+   * TODOS los dispositivos (touch + mouse) y NO requiere dos toques
+   * en iOS Safari como `click` puede requerir con elementos con
+   * :hover CSS o post-animación.
+   */
+  function onMobileMenuPointerUp(e: PointerEvent) {
     const target = e.target as Element | null;
     if (!target) return;
 
     if (target.closest('[data-menu-toggle]')) {
+      e.preventDefault();
       toggleMobileMenu();
       return;
     }
@@ -763,12 +774,24 @@ const isActive = (href: string): boolean => {
       setMobileMenuOpen(false);
       return;
     }
+  }
+
+  /**
+   * `click` se mantiene para:
+   * - Accesibilidad (teclado/screen reader)
+   * - Enlaces de navegación del menú (.mobile-link)
+   */
+  function onMobileMenuClick(e: MouseEvent) {
+    const target = e.target as Element | null;
+    if (!target) return;
+
     if (target.closest('[data-mobile-link]')) {
       setMobileMenuOpen(false);
     }
   }
 
-  document.addEventListener('click', onMobileMenuDocumentClick);
+  document.addEventListener('pointerup', onMobileMenuPointerUp);
+  document.addEventListener('click', onMobileMenuClick);
 
   document.addEventListener('astro:page-load', () => setMobileMenuOpen(false));
 

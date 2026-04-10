@@ -28,6 +28,27 @@ const en: Record<TranslationKey, string> = {
   'hero.cta.primary': 'Meet our players',
   'hero.cta.secondary': 'Who we are',
 
+  // --- Inicio (secciones) ---
+  'home.players.title': 'Talent on the pitch',
+  'home.players.subtitle':
+    'Three profiles from our roster. The full list is one step further.',
+  'home.players.cta': 'View all players',
+  'home.services.title': 'How we support your career',
+  'home.services.subtitle':
+    'Three pillars of our 360 service. See the rest in full detail.',
+  'home.services.cta': 'View all services',
+  'home.about.title': 'PH Sport in essence',
+  'home.about.subtitle': 'Present, future, and legacy in one vision.',
+  'home.about.lead':
+    'We are a football-focused representation agency: contracts, image, and career planning.',
+  'home.about.body':
+    'On the About page we go deeper into our values and how we work with you every day.',
+  'home.about.cta': 'About us',
+  'home.instagram.title': 'Instagram',
+  'home.instagram.placeholder':
+    'We will show recent posts here soon. In the meantime, follow us on the network.',
+  'home.instagram.link': 'Open Instagram',
+
   // --- Jugadores ---
   'players.title': 'Talent we represent',
   'players.subtitle':
@@ -96,6 +117,10 @@ const en: Record<TranslationKey, string> = {
   'footer.contact': 'Contact',
   'footer.email': 'info@phsport.com',
   'footer.nav.label': 'Footer navigation',
+  'footer.social.label': 'Social media',
+  'footer.social.instagram': 'Instagram',
+  'footer.social.linkedin': 'LinkedIn',
+  'footer.social.x': 'X',
 
   // --- Accesibilidad ---
   'a11y.skip': 'Skip to main content',

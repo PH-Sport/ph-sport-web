@@ -26,6 +26,25 @@ const es = {
   'hero.cta.primary': 'Conoce a nuestros jugadores',
   'hero.cta.secondary': 'Quiénes somos',
 
+  // --- Inicio (secciones) ---
+  'home.players.title': 'Talento en el campo',
+  'home.players.subtitle': 'Tres perfiles de nuestro roster. La lista completa te espera un paso más allá.',
+  'home.players.cta': 'Ver todos los jugadores',
+  'home.services.title': 'Cómo acompañamos tu carrera',
+  'home.services.subtitle': 'Tres pilares de nuestro servicio 360. Descubre el resto en detalle.',
+  'home.services.cta': 'Ver todos los servicios',
+  'home.about.title': 'PH Sport en esencia',
+  'home.about.subtitle': 'Presente, futuro y legado, en una sola visión.',
+  'home.about.lead':
+    'Somos una agencia de representación especializada en fútbol: contratos, imagen y planificación de carrera.',
+  'home.about.body':
+    'En la página Sobre nosotros profundizamos en nuestros valores y en cómo trabajamos día a día contigo.',
+  'home.about.cta': 'Sobre nosotros',
+  'home.instagram.title': 'Instagram',
+  'home.instagram.placeholder':
+    'Pronto mostraremos aquí las últimas publicaciones. Mientras tanto, síguenos en la red.',
+  'home.instagram.link': 'Abrir Instagram',
+
   // --- Jugadores ---
   'players.title': 'Talento que representamos',
   'players.subtitle':
@@ -93,6 +112,10 @@ const es = {
   'footer.contact': 'Contacto',
   'footer.email': 'info@phsport.com',
   'footer.nav.label': 'Navegación de pie de página',
+  'footer.social.label': 'Redes sociales',
+  'footer.social.instagram': 'Instagram',
+  'footer.social.linkedin': 'LinkedIn',
+  'footer.social.x': 'X',
 
   // --- Accesibilidad ---
   'a11y.skip': 'Ir al contenido principal',

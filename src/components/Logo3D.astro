@@ -1,78 +1,12 @@
 ---
-// Logo3D — escena Three.js del logo extruido. Uso: import y <Logo3D />
+// Contenedor listo para reutilizar cuando volváis a montar el logo 3D (p. ej. Three.js).
 ---
 
-<div id="logo3d-container"></div>
+<div class="logo3d-root" data-logo3d-root></div>
 
 <style>
-  #logo3d-container {
+  .logo3d-root {
     width: 100%;
-    height: 100vh;
-    overflow: hidden;
-    position: relative;
-  }
-
-  #logo3d-container canvas {
-    display: block;
-    width: 100% !important;
-    height: 100% !important;
-  }
-
-  #logo3d-hint {
-    position: absolute;
-    bottom: 28px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: rgba(255, 255, 255, 0.3);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    pointer-events: none;
-    font-family: 'Helvetica Neue', sans-serif;
-    transition: opacity 1.5s ease;
+    min-height: 0;
   }
 </style>
-
-<script lang="ts">
-  import { initLogo3DScene } from '@/lib/logo3d/scene';
-
-  const container = document.getElementById('logo3d-container');
-  if (!container) throw new Error('Logo3D: #logo3d-container not found');
-
-  const hint = document.createElement('div');
-  hint.id = 'logo3d-hint';
-  hint.textContent = 'Drag to rotate · Scroll to zoom';
-  container.appendChild(hint);
-  setTimeout(() => {
-    hint.style.opacity = '0';
-  }, 4000);
-
-  const logoScene = initLogo3DScene(container, {
-    backgroundColor: 0x0a0e14,
-    floating: true,
-    controls: {
-      enablePan: false,
-      autoRotate: true,
-      autoRotateSpeed: 1.6,
-      minDistance: 2,
-      maxDistance: 12,
-      dampingFactor: 0.07,
-    },
-  });
-
-  const stopAutoRotate = () => {
-    logoScene.controls.autoRotate = false;
-  };
-
-  logoScene.renderer.domElement.addEventListener('pointerdown', stopAutoRotate);
-  logoScene.start();
-
-  document.addEventListener(
-    'astro:before-swap',
-    () => {
-      logoScene.renderer.domElement.removeEventListener('pointerdown', stopAutoRotate);
-      logoScene.dispose();
-    },
-    { once: true },
-  );
-</script>

@@ -1,0 +1,145 @@
+---
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Button from '@/components/ui/Button.astro';
+import { getServicesItems } from '@/lib/servicesItems';
+import { useTranslations, type Lang } from '@/i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const isEn = lang === 'en';
+const allItems = getServicesItems(lang);
+const items = allItems.slice(0, 3);
+const servicesHref = isEn ? '/en/services' : '/servicios';
+---
+
+<section id="servicios" class="home-services-section" data-home-services aria-labelledby="home-services-heading">
+  <div class="ph-section">
+    <SectionHeader
+      label={t('nav.services')}
+      title={t('home.services.title')}
+      subtitle={t('home.services.subtitle')}
+      id="home-services-heading"
+      tag="h2"
+      noBorder
+    />
+
+    <ul class="home-services-grid">
+      {
+        items.map((item) => (
+          <li class="home-service-card">
+            <div class="home-service-card-icon-wrap">
+              <i data-lucide={item.icon} class="home-service-icon" aria-hidden="true" />
+            </div>
+            <h3 class="home-service-title">{item.title}</h3>
+            <p class="home-service-short">{item.short}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="home-section-cta">
+      <Button href={servicesHref} variant="secondary">
+        {t('home.services.cta')}
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .home-services-section {
+    position: relative;
+    padding-block: 4rem 4.5rem;
+    background:
+      radial-gradient(ellipse at 80% 30%, rgba(214, 178, 94, 0.04) 0%, transparent 50%),
+      var(--color-ph-black);
+  }
+
+  @media (min-width: 1024px) {
+    .home-services-section {
+      padding-block: 5rem 5.5rem;
+    }
+  }
+
+  .home-services-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .home-services-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+  }
+
+  .home-service-card {
+    padding: 1.5rem 1.25rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-ph-white-10);
+    background: var(--ph-glass-bg);
+    backdrop-filter: blur(var(--ph-glass-blur));
+    -webkit-backdrop-filter: blur(var(--ph-glass-blur));
+  }
+
+  .home-service-card-icon-wrap {
+    margin-bottom: 1rem;
+    color: var(--color-ph-gold);
+  }
+
+  .home-service-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    stroke-width: 1.5;
+  }
+
+  .home-service-title {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-ph-white);
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin: 0 0 0.5rem;
+  }
+
+  .home-service-short {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-ph-white-60);
+  }
+
+  .home-section-cta {
+    margin-top: 2.5rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  @media (min-width: 768px) {
+    .home-section-cta {
+      justify-content: flex-start;
+    }
+  }
+</style>
+
+<script>
+  import { createIcons, Globe, Megaphone, Route, Scale, Users } from 'lucide';
+
+  function initHomeServicesIcons(): void {
+    const root = document.querySelector<HTMLElement>('[data-home-services]');
+    if (!root) return;
+    createIcons({
+      icons: { Globe, Megaphone, Route, Scale, Users },
+      root,
+    });
+  }
+
+  document.addEventListener('astro:page-load', initHomeServicesIcons);
+</script>

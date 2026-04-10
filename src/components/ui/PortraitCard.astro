@@ -10,6 +10,8 @@ interface Props {
   /** Línea dorada (club, cargo, etc.), ya localizada si aplica */
   subtitle: string;
   photo?: ImageMetadata;
+  /** URL remota o ya resuelta (p. ej. payload de jugador); tiene prioridad sobre `photo` si ambas existen */
+  photoUrl?: string;
   /** Si se omite, la card no es un enlace (p. ej. equipo interno) */
   href?: string;
   dataSlug?: string;
@@ -25,6 +27,7 @@ const {
   name,
   subtitle,
   photo,
+  photoUrl,
   href,
   dataSlug,
   ariaLabel,
@@ -34,12 +37,23 @@ const {
 const alt = `${name} — ${subtitle}`;
 const cardTitle = alt;
 const showFlags = nationalTeamCodes.length > 0 && nationalTeamAriaLabel;
+const useRemotePhoto = Boolean(photoUrl && photoUrl.length > 0);
 ---
 
 {
   href !== undefined ? (
     <a href={href} class="card" data-slug={dataSlug} title={cardTitle}>
-      {photo ? (
+      {useRemotePhoto ? (
+        <img
+          src={photoUrl}
+          alt={alt}
+          class="card-img"
+          width={480}
+          height={640}
+          loading="lazy"
+          decoding="async"
+        />
+      ) : photo ? (
         <Image
           src={photo}
           alt={alt}
@@ -73,7 +87,17 @@ const showFlags = nationalTeamCodes.length > 0 && nationalTeamAriaLabel;
     </a>
   ) : (
     <article class="card" aria-label={ariaLabel ?? cardTitle} title={cardTitle}>
-      {photo ? (
+      {useRemotePhoto ? (
+        <img
+          src={photoUrl}
+          alt={alt}
+          class="card-img"
+          width={480}
+          height={640}
+          loading="lazy"
+          decoding="async"
+        />
+      ) : photo ? (
         <Image
           src={photo}
           alt={alt}

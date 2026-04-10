@@ -38,7 +38,7 @@ export type ModalPayload = {
   slug: string;
   name: string;
   subtitle: string;
-  /** Escudo o logo del club (modal Equipo / referencia tipo Leaderbrock). */
+  /** Escudo o logo del club (modal variante póster / referencia tipo Leaderbrock). */
   clubLogoSrc?: string;
 };
 

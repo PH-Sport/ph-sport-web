@@ -1,0 +1,102 @@
+---
+import PortraitCard from '@/components/ui/PortraitCard.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Button from '@/components/ui/Button.astro';
+import { formatNationalTeamAriaLabel } from '@/lib/countryLabels';
+import type { PlayerDetailPayload } from '@/lib/playerDetail';
+import { useTranslations, type Lang } from '@/i18n/utils';
+
+interface Props {
+  lang: Lang;
+  players: PlayerDetailPayload[];
+}
+
+const { lang, players } = Astro.props;
+const t = useTranslations(lang);
+const isEn = lang === 'en';
+const listHref = isEn ? '/en/players/' : '/jugadores/';
+---
+
+<section id="jugadores" class="home-players-section" aria-labelledby="home-players-heading">
+  <div class="ph-section">
+    <SectionHeader
+      label={t('nav.players')}
+      title={t('home.players.title')}
+      subtitle={t('home.players.subtitle')}
+      id="home-players-heading"
+      tag="h2"
+      noBorder
+    />
+
+    {
+      players.length === 0 ? (
+        <p class="home-players-empty">{t('players.empty')}</p>
+      ) : (
+        <>
+          <div class="home-players-grid">
+            {players.map((p) => (
+              <PortraitCard
+                name={p.name}
+                subtitle={p.subtitle}
+                photoUrl={p.photoSrc}
+                href={isEn ? p.paths.en : p.paths.es}
+                dataSlug={p.slug}
+                nationalTeamCodes={p.nationalTeamCodes}
+                nationalTeamAriaLabel={formatNationalTeamAriaLabel(p.nationalTeamCodes, lang)}
+              />
+            ))}
+          </div>
+          <div class="home-section-cta">
+            <Button href={listHref} variant="primary">
+              {t('home.players.cta')}
+            </Button>
+          </div>
+        </>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .home-players-section {
+    position: relative;
+    background: var(--color-ph-black);
+    padding-block: 4rem 4.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .home-players-section {
+      padding-block: 5rem 5.5rem;
+    }
+  }
+
+  .home-players-grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .home-players-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+  }
+
+  .home-players-empty {
+    color: var(--color-ph-white-60);
+    font-size: 1.0625rem;
+  }
+
+  .home-section-cta {
+    margin-top: 2.5rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  @media (min-width: 768px) {
+    .home-section-cta {
+      justify-content: flex-start;
+    }
+  }
+</style>

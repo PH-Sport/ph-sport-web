@@ -34,14 +34,13 @@ for (const s of slots) {
 const teamPayloadsJson = JSON.stringify(teamPayloads);
 ---
 
-<!-- Modal de ficha: variante "team" (lightbox apaisado, ver player-modal.ts) -->
+<!-- Modal de ficha: variante por defecto (tarjeta vertical, ver player-modal.ts) -->
 <section
   class="team-section"
   aria-labelledby="team-heading"
   data-player-detail-base={detailBase}
   data-player-modal-close={t('a11y.close')}
   data-player-payloads={teamPayloadsJson}
-  data-player-modal-variant="team"
 >
   <div class="ph-section">
     <SectionHeader
@@ -197,26 +196,24 @@ const teamPayloadsJson = JSON.stringify(teamPayloads);
     const grid = section.querySelector<HTMLElement>('.team-grid');
     const cards = grid?.querySelectorAll<HTMLElement>('.card');
     if (grid && cards?.length) {
-      gsap.fromTo(
-        cards,
-        { opacity: 0, y: 24 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.55,
-          stagger: { each: 0.06, from: 'start' },
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: grid,
-            start: 'top 88%',
-            once: true,
-          },
-          onComplete: () => {
-            grid.classList.add('cards-revealed');
-            gsap.set(cards, { clearProps: 'opacity,transform' });
-          },
+      gsap.killTweensOf(cards);
+      gsap.set(cards, { opacity: 0, y: 18 });
+      gsap.to(cards, {
+        opacity: 1,
+        y: 0,
+        duration: 0.48,
+        stagger: { each: 0.055, from: 'start' },
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: grid,
+          start: 'top 88%',
+          once: true,
         },
-      );
+        onComplete: () => {
+          grid.classList.add('cards-revealed');
+          gsap.set(cards, { clearProps: 'opacity,transform' });
+        },
+      });
     }
 
     requestAnimationFrame(() => {

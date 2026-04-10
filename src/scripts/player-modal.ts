@@ -3,7 +3,7 @@ import { reducedMotion } from '@/scripts/ph-text-animations';
 import type { ModalPayload } from '@/lib/playerDetail';
 import '@/styles/player-modal.css';
 
-/** Solo Equipo: lightbox tipo póster (`data-player-modal-variant="team"`). */
+/** Lightbox apaisado tipo póster (marca de agua, etc.): `data-player-modal-variant="team"`. */
 type ModalVariant = 'team' | undefined;
 
 const FLIP_DURATION = 0.78;
@@ -142,7 +142,7 @@ function splitNameAccentLines(name: string): string[] {
   return [parts[0]!, parts.slice(1).join(' ')];
 }
 
-/** Modal Equipo: composición tipo póster (marca de agua + foto estrecha + acento + rol). */
+/** Variante póster: composición tipo cartel (marca de agua + foto estrecha + acento + rol). */
 function buildTeamPosterStage(clone: HTMLElement, payload: ModalPayload): HTMLDivElement {
   const stage = document.createElement('div');
   stage.className = 'player-modal-team-stage';
@@ -320,7 +320,7 @@ function closeModal(opts?: { skipUrlRestore?: boolean; instant?: boolean }): voi
 
 /**
  * El clon se crea con `cloneNode` **después** de que GSAP haya puesto `opacity` / `transform`
- * en la tarjeta del grid (p. ej. reveal en Equipo). Esos estilos inline se copian y dejan
+ * en la tarjeta del grid (p. ej. reveal al scroll). Esos estilos inline se copian y dejan
  * la ficha invisible en el modal si la animación no ha terminado.
  */
 function resetClonedCardFromGridAnimations(clone: HTMLElement): void {
@@ -348,7 +348,7 @@ function finalizeOpenCard(
   clone.style.position = 'relative';
   clone.style.left = '';
   clone.style.top = '';
-  /** Equipo: el ancho lo fija el CSS (`clamp` + `max-width`); `width: 100%` inline rompía el grid del póster (shell a 0px → foto invisible). */
+  /** Variante póster: el ancho lo fija el CSS (`clamp` + `max-width`); `width: 100%` inline rompía el grid del póster (shell a 0px → foto invisible). */
   if (modalVariant === 'team') {
     clone.style.removeProperty('width');
   } else {

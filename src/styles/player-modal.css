@@ -103,7 +103,7 @@
   background: var(--color-ph-white-10);
 }
 
-/* --- Variante Equipo: lightbox apaisado --- */
+/* --- Variante póster (data-player-modal-variant="team"): lightbox apaisado --- */
 
 .player-modal-flip-root--team.player-modal-flip-root--locked {
   box-sizing: border-box;

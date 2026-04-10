@@ -67,6 +67,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
   data-player-detail-base={detailBase}
   data-player-modal-close={t('a11y.close')}
   data-player-payloads={playerPayloadsJson}
+  data-player-modal-variant="team"
 >
   <div class="ph-section">
     <SectionHeader
@@ -655,12 +656,12 @@ function subtitleFor(row: { club: { name: string } | null }): string {
       const newCards = panel.querySelectorAll<HTMLElement>('.card');
       if (!newCards.length) return;
       gsap.killTweensOf(newCards);
-      gsap.set(newCards, { opacity: 0, y: 18 });
+      gsap.set(newCards, { opacity: 0, y: 24 });
       gsap.to(newCards, {
         opacity: 1,
         y: 0,
-        duration: 0.48,
-        stagger: { each: 0.055, from: 'start' },
+        duration: 0.55,
+        stagger: { each: 0.06, from: 'start' },
         ease: 'power3.out',
         onComplete: () => {
           gsap.set(newCards, { clearProps: 'opacity,transform' });

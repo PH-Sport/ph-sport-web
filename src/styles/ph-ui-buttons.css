@@ -39,6 +39,7 @@
   transform-origin: left;
   transition: transform var(--ph-duration) var(--ease-ph);
   z-index: 0;
+  pointer-events: none;
 }
 
 .ph-ui-btn > * {

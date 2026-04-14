@@ -72,7 +72,10 @@ const labelCurrent =
         data-sort-value="default"
         aria-selected={sortMode === 'default'}
       >
-        {t('players.sort.option.default')}
+        <span class="players-sort-option-label">{t('players.sort.option.default')}</span>
+        <svg class="players-sort-check" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 7.5L5.5 10L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </button>
       <button
         type="button"
@@ -81,7 +84,10 @@ const labelCurrent =
         data-sort-value="az"
         aria-selected={sortMode === 'az'}
       >
-        {t('players.sort.option.az')}
+        <span class="players-sort-option-label">{t('players.sort.option.az')}</span>
+        <svg class="players-sort-check" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 7.5L5.5 10L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </button>
       <button
         type="button"
@@ -90,7 +96,10 @@ const labelCurrent =
         data-sort-value="za"
         aria-selected={sortMode === 'za'}
       >
-        {t('players.sort.option.za')}
+        <span class="players-sort-option-label">{t('players.sort.option.za')}</span>
+        <svg class="players-sort-check" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 7.5L5.5 10L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </button>
     </div>
   </div>
@@ -194,7 +203,10 @@ const labelCurrent =
   }
 
   .players-sort-option {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
     width: 100%;
     text-align: left;
     padding: 0.45rem 0.72rem;
@@ -214,6 +226,22 @@ const labelCurrent =
     transition:
       color 0.2s var(--ease-ph),
       background-color 0.2s var(--ease-ph);
+  }
+
+  .players-sort-option-label {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .players-sort-check {
+    flex-shrink: 0;
+    opacity: 0;
+    color: var(--color-ph-gold, #d6b25e);
+    transition: opacity 0.15s var(--ease-ph);
+  }
+
+  .players-sort-option[aria-selected='true'] .players-sort-check {
+    opacity: 1;
   }
 
   @media (hover: hover) {

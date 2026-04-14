@@ -667,9 +667,8 @@ function subtitleFor(row: { club: { name: string } | null }): string {
         duration: 0.55,
         stagger: { each: 0.06, from: 'start' },
         ease: 'power3.out',
-        onComplete: () => {
-          gsap.set(newCards, { clearProps: 'opacity,transform' });
-        },
+        // Eliminamos clearProps: 'transform' para evitar el parpadeo
+        // de repintado del backdrop-filter al perder hardware acceleration.
       });
     }
 
@@ -792,7 +791,6 @@ function subtitleFor(row: { club: { name: string } | null }): string {
 
       const dd = createDropdown(root, trigger, panel);
       const options = root.querySelectorAll<HTMLButtonElement>('[data-sort-value]');
-      const triggerLabel = trigger.querySelector('.players-sort-label');
 
       options.forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -800,10 +798,8 @@ function subtitleFor(row: { club: { name: string } | null }): string {
           
           dd.close();
 
+          // Actualizar aria-selected (NO cambiar el texto del trigger, siempre dice "Orden")
           options.forEach(opt => opt.setAttribute('aria-selected', String(opt === btn)));
-          if (triggerLabel) {
-            triggerLabel.textContent = btn.textContent?.trim() || triggerLabel.textContent;
-          }
 
           const u = new URL(window.location.href);
           if (v === 'default') u.searchParams.delete('sort');
@@ -811,8 +807,35 @@ function subtitleFor(row: { club: { name: string } | null }): string {
           history.replaceState(null, '', u.pathname + u.search + u.hash);
 
           grids.forEach(grid => {
+            // No animar grids ocultos (p. ej. panel de entrenadores)
+            const tabpanel = grid.closest('.players-tabpanel');
+            if (tabpanel && (tabpanel as HTMLElement).hidden) {
+              // Solo reordenar silenciosamente
+              const cards = Array.from(grid.querySelectorAll<HTMLElement>('.card'));
+              if (cards.length < 2) return;
+              cards.sort((a, b) => {
+                if (v === 'default') return Number(a.dataset.originalIndex) - Number(b.dataset.originalIndex);
+                const nameA = a.querySelector('.card-name')?.textContent || '';
+                const nameB = b.querySelector('.card-name')?.textContent || '';
+                const cmp = nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
+                return v === 'az' ? cmp : -cmp;
+              });
+              cards.forEach(c => grid.appendChild(c));
+              return;
+            }
+
             const cards = Array.from(grid.querySelectorAll<HTMLElement>('.card'));
             if (cards.length < 2) return;
+
+            /*
+             * FIX: Asegurar que `cards-revealed` esté en el grid ANTES de animar.
+             * Evita carrera con la animación inicial (ScrollTrigger + stagger).
+             */
+            gsap.killTweensOf(cards);
+            grid.classList.add('cards-revealed');
+            // Limpiar inline styles que killTweensOf haya dejado atascados
+            // (p. ej. opacity:0 de tarjetas que el stagger inicial no alcanzó)
+            gsap.set(cards, { opacity: 1, y: 0 });
 
             const sortCards = () => {
               cards.sort((a, b) => {
@@ -833,7 +856,6 @@ function subtitleFor(row: { club: { name: string } | null }): string {
               return;
             }
 
-            gsap.killTweensOf(cards);
             gsap.to(cards, {
               opacity: 0,
               y: 8,
@@ -849,10 +871,8 @@ function subtitleFor(row: { club: { name: string } | null }): string {
                     duration: 0.35,
                     stagger: 0.03,
                     ease: 'power2.out',
-                    onComplete: () => {
-                      gsap.set(cards, { clearProps: 'opacity,transform' });
-                      ScrollTrigger.refresh();
-                    }
+                    // Eliminado el onComplete con clearProps y ScrollTrigger.refresh()
+                    // para evitar el recálculo masivo (flicker) al terminar el stagger.
                   }
                 );
               }
@@ -994,7 +1014,6 @@ function subtitleFor(row: { club: { name: string } | null }): string {
           },
           onComplete: () => {
             grid.classList.add('cards-revealed');
-            gsap.set(cards, { clearProps: 'opacity,transform' });
           },
         },
       );
@@ -1009,7 +1028,6 @@ function subtitleFor(row: { club: { name: string } | null }): string {
         const cards = grid.querySelectorAll<HTMLElement>('.card');
         if (!cards.length) return;
         grid.classList.add('cards-revealed');
-        gsap.set(cards, { clearProps: 'opacity,transform' });
       });
     }, 2200);
   }

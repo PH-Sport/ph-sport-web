@@ -212,6 +212,11 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
     transition: none;
   }
 
+  /* Menú móvil (z-index 100): el chrome del header debe quedar encima para un solo control morph */
+  html:has(#mobile-menu.is-open) [data-header] {
+    z-index: 110;
+  }
+
   /* Hit target: solo la cápsula recibe eventos */
   [data-header] .header-shell {
     pointer-events: auto;

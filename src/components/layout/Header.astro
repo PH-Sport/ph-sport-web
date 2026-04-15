@@ -65,17 +65,19 @@ const isActive = (href: string): boolean => {
 
       <button
         type="button"
-        class="menu-toggle md:hidden"
+        class="menu-toggle menu-toggle--hamburger md:hidden"
         data-menu-toggle
+        data-label-open={t('a11y.menu.open')}
+        data-label-close={t('a11y.menu.close')}
         aria-controls="mobile-menu"
         aria-expanded="false"
         aria-label={t('a11y.menu.open')}
       >
-        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-          <path d="M4 6H20" />
-          <path d="M4 12H20" />
-          <path d="M4 18H20" />
-        </svg>
+        <span class="menu-toggle__inner" aria-hidden="true">
+          <span class="menu-toggle__bar"></span>
+          <span class="menu-toggle__bar"></span>
+          <span class="menu-toggle__bar"></span>
+        </span>
       </button>
     </div>
   </div>
@@ -89,28 +91,6 @@ const isActive = (href: string): boolean => {
     aria-hidden="true"
   ></div>
   <div class="mobile-menu-inner">
-    <div class="mobile-menu-top">
-      <span class="header-logo" aria-label={t('a11y.logo')}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 259.8 206.1" fill="currentColor" aria-hidden="true">
-          <polygon points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" />
-          <polygon points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" />
-        </svg>
-      </span>
-      <button
-        type="button"
-        class="menu-toggle"
-        data-menu-toggle
-        aria-controls="mobile-menu"
-        aria-expanded="false"
-        aria-label={t('a11y.menu.close')}
-      >
-        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-          <path d="M6 6L18 18" />
-          <path d="M18 6L6 18" />
-        </svg>
-      </button>
-    </div>
-
     <nav aria-label={t('nav.aria.mobile')}>
       <ul class="mobile-nav-list">
         {nav.map((item, i) => (
@@ -167,12 +147,24 @@ const isActive = (href: string): boolean => {
       box-shadow var(--ph-duration) var(--ease-ph);
   }
 
+  @media (max-width: 767px) {
+    .header-shell {
+      margin-top: 0.5rem;
+    }
+  }
+
   .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding-inline: var(--ph-section-px);
     padding-block: 1.25rem;
+  }
+
+  @media (max-width: 767px) {
+    .header-inner {
+      padding-block: 0.875rem;
+    }
   }
 
   /* ── Logo ── */
@@ -291,7 +283,7 @@ const isActive = (href: string): boolean => {
     font-size: 0.875rem;
   }
 
-  /* ── Mobile toggle (min ~44px área táctil) ── */
+  /* ── Mobile toggle: hamburguesa asimétrica → X (sin caja en móvil) ── */
   .menu-toggle {
     display: inline-flex;
     align-items: center;
@@ -313,17 +305,51 @@ const isActive = (href: string): boolean => {
       background-color var(--ph-duration) var(--ease-ph);
   }
 
+  @media (max-width: 767px) {
+    .menu-toggle--hamburger {
+      width: auto;
+      height: auto;
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .menu-toggle--hamburger:hover,
+    .menu-toggle--hamburger:active {
+      background: transparent;
+    }
+
+    .menu-toggle--hamburger:focus {
+      outline: none;
+    }
+
+    .menu-toggle--hamburger:focus-visible {
+      outline: 2px solid var(--color-ph-gold-muted);
+      outline-offset: 4px;
+      border-radius: var(--radius-sm);
+    }
+  }
+
   @media (min-width: 768px) {
     .menu-toggle {
       display: none;
     }
   }
 
-  @media (hover: hover) {
+  @media (hover: hover) and (min-width: 768px) {
     .menu-toggle:hover {
       border-color: var(--color-ph-gold);
       color: var(--color-ph-gold);
       background-color: rgba(214, 178, 94, 0.05);
+    }
+  }
+
+  @media (hover: hover) {
+    .menu-toggle--hamburger:hover {
+      color: var(--color-ph-gold);
     }
   }
 
@@ -334,18 +360,74 @@ const isActive = (href: string): boolean => {
     transition-duration: 120ms;
   }
 
-  .menu-toggle svg {
-    width: 1.25rem;
-    height: 1.25rem;
-    stroke: currentColor;
-    stroke-width: 1.75;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+  @media (max-width: 767px) {
+    .menu-toggle--hamburger:active {
+      color: var(--color-ph-gold-muted);
+      background: transparent;
+    }
+  }
+
+  .menu-toggle__inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 1.375rem;
+    height: 0.875rem;
+    flex-shrink: 0;
+  }
+
+  .menu-toggle__bar {
+    display: block;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    align-self: flex-start;
+    transform-origin: center;
+    transition:
+      transform 0.32s var(--ease-ph),
+      opacity 0.22s var(--ease-ph),
+      width 0.22s var(--ease-ph);
+  }
+
+  .menu-toggle__bar:nth-child(1) {
+    width: 100%;
+  }
+
+  /* Barra central: sobresale a la izquierda y un poco más larga hacia la derecha que antes */
+  .menu-toggle__bar:nth-child(2) {
+    width: 78%;
+    margin-left: -0.1875rem;
+  }
+
+  .menu-toggle__bar:nth-child(3) {
+    width: 85%;
+  }
+
+  .menu-toggle--hamburger[aria-expanded='true'] .menu-toggle__bar:nth-child(1) {
+    width: 100%;
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  .menu-toggle--hamburger[aria-expanded='true'] .menu-toggle__bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-toggle--hamburger[aria-expanded='true'] .menu-toggle__bar:nth-child(3) {
+    width: 100%;
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-toggle__bar {
+      transition: none;
+    }
   }
 
   /* ── Mobile menu: base opaca + glass; overlay con opacity (visibility retardada al cerrar para permitir transición) ── */
   .mobile-menu {
     --menu-anim-duration: 420ms;
+    --menu-nav-stagger-step: 0.04s;
+    --menu-nav-li-duration: 0.38s;
     position: fixed;
     inset: 0;
     z-index: 100;
@@ -395,6 +477,7 @@ const isActive = (href: string): boolean => {
   }
 
   .mobile-menu-inner {
+    --menu-inner-duration: calc(var(--menu-anim-duration) + 40ms);
     position: relative;
     z-index: 1;
     pointer-events: none;
@@ -403,51 +486,40 @@ const isActive = (href: string): boolean => {
     min-height: 100dvh;
     margin-inline: auto;
     padding-inline: var(--ph-section-px);
-    padding-block: 1.25rem 3rem;
+    /* padding-top explícito para poder interpolarlo al cerrar (evita el salto al quitar .is-open) */
+    padding-top: 1.25rem;
+    padding-bottom: 3rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
     opacity: 0;
     transform: translateY(1rem);
     transition:
-      opacity calc(var(--menu-anim-duration) + 40ms) var(--ease-ph),
-      transform calc(var(--menu-anim-duration) + 40ms) var(--ease-ph);
+      opacity var(--menu-inner-duration) var(--ease-ph),
+      transform var(--menu-inner-duration) var(--ease-ph),
+      padding-top var(--menu-inner-duration) var(--ease-ph);
   }
 
   .mobile-menu.is-open .mobile-menu-inner {
     opacity: 1;
     transform: translateY(0);
     transition-delay: 0.04s;
+    /* Contenido por debajo del header fijo (medido en JS → --mobile-menu-chrome-offset) */
+    padding-top: calc(var(--mobile-menu-chrome-offset, 0px) + 0.75rem);
   }
 
-  .mobile-menu-inner .mobile-menu-top,
   .mobile-menu-inner nav,
   .mobile-menu-inner .lang-switch--mobile {
     pointer-events: auto;
   }
 
-  /* Cabecera del panel (logo + cerrar) */
-  .mobile-menu .mobile-menu-top {
-    opacity: 0;
-    transform: translateY(-0.5rem);
-    transition:
-      opacity calc(var(--menu-anim-duration) + 20ms) var(--ease-ph),
-      transform calc(var(--menu-anim-duration) + 20ms) var(--ease-ph);
-  }
-
-  .mobile-menu.is-open .mobile-menu-top {
-    opacity: 1;
-    transform: translateY(0);
-    transition-delay: 0.06s;
-  }
-
-  /* Enlaces: entrada escalonada al abrir; cierre rápido sin escalón */
+  /* Enlaces: entrada escalonada al abrir; cierre escalonado inverso con .mobile-menu--closing */
   .mobile-menu .mobile-nav-list li {
     opacity: 0;
     transform: translateX(-0.75rem);
     transition:
-      opacity 0.38s var(--ease-ph),
-      transform 0.38s var(--ease-ph);
+      opacity var(--menu-nav-li-duration) var(--ease-ph),
+      transform var(--menu-nav-li-duration) var(--ease-ph);
   }
 
   .mobile-menu.is-open .mobile-nav-list li {
@@ -487,6 +559,53 @@ const isActive = (href: string): boolean => {
     .mobile-menu.is-open .mobile-nav-list li:nth-child(5) {
       transition-delay: 0.2s;
     }
+  }
+
+  /* Cierre inverso (5→1), mantiene .is-open hasta que JS quite ambas clases */
+  .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li {
+    opacity: 0;
+    transform: translateX(-0.75rem);
+  }
+
+  .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li:nth-child(5) {
+    transition-delay: 0s;
+  }
+
+  .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li:nth-child(4) {
+    transition-delay: var(--menu-nav-stagger-step);
+  }
+
+  .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li:nth-child(3) {
+    transition-delay: calc(2 * var(--menu-nav-stagger-step));
+  }
+
+  .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li:nth-child(2) {
+    transition-delay: calc(3 * var(--menu-nav-stagger-step));
+  }
+
+  .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li:nth-child(1) {
+    transition-delay: calc(4 * var(--menu-nav-stagger-step));
+  }
+
+  .mobile-menu.is-open.mobile-menu--closing .ph-divider {
+    opacity: 0;
+    transform: translateY(0.35rem);
+    transition-delay: 0.22s;
+  }
+
+  .mobile-menu.is-open.mobile-menu--closing .lang-switch--mobile {
+    opacity: 0;
+    transform: translateY(0.35rem);
+    transition-delay: 0.26s;
+  }
+
+  .mobile-menu.mobile-menu--closing .mobile-menu-backdrop {
+    pointer-events: none;
+  }
+
+  .mobile-menu.mobile-menu--closing .mobile-menu-inner nav,
+  .mobile-menu.mobile-menu--closing .mobile-menu-inner .lang-switch--mobile {
+    pointer-events: none;
   }
 
   .mobile-menu .ph-divider {
@@ -529,14 +648,15 @@ const isActive = (href: string): boolean => {
 
     .mobile-menu-inner,
     .mobile-menu.is-open .mobile-menu-inner,
-    .mobile-menu .mobile-menu-top,
-    .mobile-menu.is-open .mobile-menu-top,
     .mobile-menu .mobile-nav-list li,
     .mobile-menu.is-open .mobile-nav-list li,
+    .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li,
     .mobile-menu .ph-divider,
     .mobile-menu.is-open .ph-divider,
+    .mobile-menu.is-open.mobile-menu--closing .ph-divider,
     .mobile-menu .lang-switch--mobile,
-    .mobile-menu.is-open .lang-switch--mobile {
+    .mobile-menu.is-open .lang-switch--mobile,
+    .mobile-menu.is-open.mobile-menu--closing .lang-switch--mobile {
       opacity: 1;
       transform: none;
       transition: none;
@@ -544,18 +664,12 @@ const isActive = (href: string): boolean => {
     }
   }
 
-  .mobile-menu-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
   .mobile-nav-list {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
     list-style: none;
-    padding-top: 1rem;
+    padding-top: 0.25rem;
   }
 
   /* ── Mobile nav links ── */
@@ -748,25 +862,116 @@ const isActive = (href: string): boolean => {
     return document.querySelector<HTMLElement>('[data-mobile-menu]');
   }
 
+  function syncMobileMenuChromeOffset() {
+    const header = document.querySelector<HTMLElement>('[data-header]');
+    if (!header) return;
+    const bottom = header.getBoundingClientRect().bottom;
+    const clamped = Math.max(48, Math.min(bottom, 220));
+    document.documentElement.style.setProperty(
+      '--mobile-menu-chrome-offset',
+      `${Math.round(clamped * 10) / 10}px`,
+    );
+  }
+
+  function updateMenuToggleA11y(open: boolean) {
+    const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+    if (!toggle) return;
+    const openLbl = toggle.getAttribute('data-label-open');
+    const closeLbl = toggle.getAttribute('data-label-close');
+    if (openLbl && closeLbl) {
+      toggle.setAttribute('aria-label', open ? closeLbl : openLbl);
+    }
+  }
+
+  /** (n-1)*40ms + 380ms por ítem; divider/lang hasta ~640ms + margen */
+  const MENU_CLOSE_TOTAL_MS = 700;
+
+  let mobileMenuCloseTimer: ReturnType<typeof setTimeout> | null = null;
+
+  function prefersReducedMotionMenu(): boolean {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function finalizeMobileMenuClose() {
+    if (mobileMenuCloseTimer) {
+      clearTimeout(mobileMenuCloseTimer);
+      mobileMenuCloseTimer = null;
+    }
+    const mobileMenu = getMobileMenu();
+    if (!mobileMenu) return;
+    mobileMenu.classList.remove('is-open', 'mobile-menu--closing');
+    mobileMenu.setAttribute('aria-hidden', 'true');
+    document.querySelectorAll<HTMLElement>('[data-menu-toggle]').forEach((toggle) => {
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+    updateMenuToggleA11y(false);
+    document.documentElement.style.removeProperty('--mobile-menu-chrome-offset');
+    document.body.style.overflow = '';
+  }
+
   function setMobileMenuOpen(open: boolean) {
     const mobileMenu = getMobileMenu();
     if (!mobileMenu) return;
-    mobileMenu.classList.toggle('is-open', open);
-    mobileMenu.setAttribute('aria-hidden', String(!open));
-    document.querySelectorAll<HTMLElement>('[data-menu-toggle]').forEach((toggle) => {
-      toggle.setAttribute('aria-expanded', String(open));
-    });
+
     if (open) {
+      if (mobileMenuCloseTimer) {
+        clearTimeout(mobileMenuCloseTimer);
+        mobileMenuCloseTimer = null;
+      }
+      mobileMenu.classList.remove('mobile-menu--closing');
+      syncMobileMenuChromeOffset();
+      requestAnimationFrame(() => syncMobileMenuChromeOffset());
+      mobileMenu.classList.add('is-open');
+      mobileMenu.setAttribute('aria-hidden', 'false');
+      document.querySelectorAll<HTMLElement>('[data-menu-toggle]').forEach((toggle) => {
+        toggle.setAttribute('aria-expanded', 'true');
+      });
+      updateMenuToggleA11y(true);
       document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
+      return;
+    }
+
+    if (!mobileMenu.classList.contains('is-open')) return;
+
+    if (mobileMenu.classList.contains('mobile-menu--closing')) {
+      finalizeMobileMenuClose();
+      return;
+    }
+
+    if (prefersReducedMotionMenu()) {
+      finalizeMobileMenuClose();
+      return;
+    }
+
+    mobileMenu.classList.add('mobile-menu--closing');
+    mobileMenuCloseTimer = setTimeout(() => {
+      mobileMenuCloseTimer = null;
+      finalizeMobileMenuClose();
+    }, MENU_CLOSE_TOTAL_MS);
+  }
+
+  function onMobileMenuLayoutResize() {
+    if (getMobileMenu()?.classList.contains('is-open')) {
+      syncMobileMenuChromeOffset();
     }
   }
 
   function toggleMobileMenu() {
     const mobileMenu = getMobileMenu();
     if (!mobileMenu) return;
-    setMobileMenuOpen(!mobileMenu.classList.contains('is-open'));
+    if (mobileMenu.classList.contains('mobile-menu--closing')) {
+      if (mobileMenuCloseTimer) {
+        clearTimeout(mobileMenuCloseTimer);
+        mobileMenuCloseTimer = null;
+      }
+      mobileMenu.classList.remove('mobile-menu--closing');
+      return;
+    }
+    if (mobileMenu.classList.contains('is-open')) {
+      setMobileMenuOpen(false);
+    } else {
+      setMobileMenuOpen(true);
+    }
   }
 
   /**
@@ -807,7 +1012,7 @@ const isActive = (href: string): boolean => {
   document.addEventListener('pointerup', onMobileMenuPointerUp);
   document.addEventListener('click', onMobileMenuClick);
 
-  document.addEventListener('astro:page-load', () => setMobileMenuOpen(false));
+  document.addEventListener('astro:page-load', () => finalizeMobileMenuClose());
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') setMobileMenuOpen(false);
@@ -815,5 +1020,9 @@ const isActive = (href: string): boolean => {
 
   window.addEventListener('resize', () => {
     if (window.innerWidth >= 768) setMobileMenuOpen(false);
+    else onMobileMenuLayoutResize();
   });
+
+  window.visualViewport?.addEventListener('resize', onMobileMenuLayoutResize);
+  window.addEventListener('orientationchange', onMobileMenuLayoutResize);
 </script>

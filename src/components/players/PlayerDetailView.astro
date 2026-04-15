@@ -5,7 +5,7 @@ import type { CollectionEntry } from 'astro:content';
 import type { Lang } from '@/i18n/utils';
 import type { PlayerDetailPayload } from '@/lib/playerDetail';
 import { formatNationalTeamAriaLabel } from '@/lib/countryLabels';
-import 'flag-icons/css/flag-icons.min.css';
+import { nationalTeamBadgeSrc } from '@/lib/nationalTeamBadge';
 
 /** `?url` para placeholder SVG */
 import placeholderSrc from '@/assets/images/players/avatar-placeholder.svg?url';
@@ -24,10 +24,15 @@ interface Props {
 const { lang, payload, photo, collectionEntry, backHref, backLabel, bioEmptyLabel } = Astro.props;
 
 const { name, subtitle, nationalTeamCodes, contentHtml } = payload;
-const showFlags = nationalTeamCodes.length > 0;
-const nationalTeamAriaLabel = showFlags
-  ? formatNationalTeamAriaLabel(nationalTeamCodes, lang)
-  : undefined;
+const badgeItems = nationalTeamCodes
+  .map((code) => {
+    const src = nationalTeamBadgeSrc(code);
+    return src ? { code, src } : null;
+  })
+  .filter((x): x is { code: string; src: string } => x !== null);
+const nationalTeamAriaLabel =
+  nationalTeamCodes.length > 0 ? formatNationalTeamAriaLabel(nationalTeamCodes, lang) : undefined;
+const showBadges = badgeItems.length > 0 && Boolean(nationalTeamAriaLabel);
 
 const alt = `${name} — ${subtitle}`;
 const hasBio = contentHtml.trim().length > 0;
@@ -65,10 +70,19 @@ const resolvedPhoto: ImageMetadata | undefined =
         )
       }
       {
-        showFlags && nationalTeamAriaLabel ? (
-          <div class="player-detail-flags" role="group" aria-label={nationalTeamAriaLabel}>
-            {nationalTeamCodes.map((code) => (
-              <span class={`fi fi-${code.toLowerCase()}`} aria-hidden="true"></span>
+        showBadges ? (
+          <div class="player-detail-national-badges" role="group" aria-label={nationalTeamAriaLabel}>
+            {badgeItems.map(({ code, src }) => (
+              <img
+                src={src}
+                alt=""
+                class="player-detail-national-badge"
+                width="32"
+                height="32"
+                loading="lazy"
+                decoding="async"
+                data-national-code={code}
+              />
             ))}
           </div>
         ) : null
@@ -159,7 +173,7 @@ const resolvedPhoto: ImageMetadata | undefined =
     background: var(--color-ph-black);
   }
 
-  .player-detail-flags {
+  .player-detail-national-badges {
     position: absolute;
     bottom: 0.625rem;
     right: 0.625rem;
@@ -171,11 +185,13 @@ const resolvedPhoto: ImageMetadata | undefined =
     pointer-events: none;
   }
 
-  .player-detail-flags :global(.fi) {
-    width: 1.35rem;
-    height: auto;
-    border-radius: 2px;
+  .player-detail-national-badge {
+    width: 2rem;
+    height: 2rem;
+    object-fit: contain;
+    border-radius: 3px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    background: rgba(13, 15, 18, 0.35);
   }
 
   .player-detail-meta {

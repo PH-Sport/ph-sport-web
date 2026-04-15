@@ -20,62 +20,64 @@ const isActive = (href: string): boolean => {
 ---
 
 <header data-header transition:persist>
-  <div class="header-inner">
-    <a href={isEn ? '/en/' : '/'} class="header-logo" aria-label={t('a11y.logo')}>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 259.8 206.1" fill="currentColor" aria-hidden="true">
-        <polygon points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" />
-        <polygon points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" />
-      </svg>
-    </a>
+  <div class="header-shell">
+    <div class="header-inner">
+      <a href={isEn ? '/en/' : '/'} class="header-logo" aria-label={t('a11y.logo')}>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 259.8 206.1" fill="currentColor" aria-hidden="true">
+          <polygon points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" />
+          <polygon points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" />
+        </svg>
+      </a>
 
-    <nav class="header-nav hidden md:block" aria-label={t('nav.aria.main')}>
-      <div class="header-nav-list-wrap">
-        <span class="nav-indicator" aria-hidden="true" data-nav-indicator></span>
-        <ul class="header-nav-list">
-          {nav.map((item) => (
+      <nav class="header-nav hidden md:block" aria-label={t('nav.aria.main')}>
+        <div class="header-nav-list-wrap">
+          <span class="nav-indicator" aria-hidden="true" data-nav-indicator></span>
+          <ul class="header-nav-list">
+            {nav.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class:list={['nav-link', isActive(item.href) && 'is-active']}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
             <li>
               <a
-                href={item.href}
-                class:list={['nav-link', isActive(item.href) && 'is-active']}
+                href={alternateLangUrl}
+                class="lang-switch"
+                aria-label={t('nav.lang.switch')}
               >
-                {item.label}
+                <img
+                  src={isEn ? '/icons/flag-es.svg' : '/icons/flag-uk.svg'}
+                  alt=""
+                  width="20"
+                  height="15"
+                  class="lang-flag"
+                />
+                <span class="lang-label">{t('nav.lang.label')}</span>
               </a>
             </li>
-          ))}
-          <li>
-            <a
-              href={alternateLangUrl}
-              class="lang-switch"
-            aria-label={t('nav.lang.switch')}
-          >
-            <img
-              src={isEn ? '/icons/flag-es.svg' : '/icons/flag-uk.svg'}
-              alt=""
-              width="20"
-              height="15"
-              class="lang-flag"
-            />
-            <span class="lang-label">{t('nav.lang.label')}</span>
-          </a>
-        </li>
-        </ul>
-      </div>
-    </nav>
+          </ul>
+        </div>
+      </nav>
 
-    <button
-      type="button"
-      class="menu-toggle md:hidden"
-      data-menu-toggle
-      aria-controls="mobile-menu"
-      aria-expanded="false"
-      aria-label={t('a11y.menu.open')}
-    >
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-        <path d="M4 6H20" />
-        <path d="M4 12H20" />
-        <path d="M4 18H20" />
-      </svg>
-    </button>
+      <button
+        type="button"
+        class="menu-toggle md:hidden"
+        data-menu-toggle
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+        aria-label={t('a11y.menu.open')}
+      >
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+          <path d="M4 6H20" />
+          <path d="M4 12H20" />
+          <path d="M4 18H20" />
+        </svg>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -150,15 +152,27 @@ const isActive = (href: string): boolean => {
 </div>
 
 <style>
-  /* ── Header bar ── */
-  .header-inner {
-    max-width: 1280px;
+  /* ── Cápsula flotante (glass / sólido / hide-on-scroll en BaseLayout global) ── */
+  .header-shell {
+    width: min(1280px, calc(100% - 2 * var(--ph-section-px)));
     margin-inline: auto;
-    padding-inline: var(--ph-section-px);
-    padding-block: 1.25rem;
+    margin-top: 0.875rem;
+    border-radius: var(--radius-lg);
+    transition:
+      transform var(--ph-duration) var(--ease-ph),
+      background-color var(--ph-duration) var(--ease-ph),
+      border-color var(--ph-duration) var(--ease-ph),
+      backdrop-filter var(--ph-duration) var(--ease-ph),
+      -webkit-backdrop-filter var(--ph-duration) var(--ease-ph),
+      box-shadow var(--ph-duration) var(--ease-ph);
+  }
+
+  .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding-inline: var(--ph-section-px);
+    padding-block: 1.25rem;
   }
 
   /* ── Logo ── */

@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 /** `?url` fuerza una URL de cadena válida para `<img src>` (el import por defecto del SVG suele fallar en runtime). */
 import placeholderSrc from '@/assets/images/players/avatar-placeholder.svg?url';
-import 'flag-icons/css/flag-icons.min.css';
+import { nationalTeamBadgeSrc } from '@/lib/nationalTeamBadge';
 
 interface Props {
   name: string;
@@ -17,7 +17,7 @@ interface Props {
   dataSlug?: string;
   /** Distingue miembros con el mismo nombre visible (p. ej. placeholders) */
   ariaLabel?: string;
-  /** Códigos ISO 3166-1 alpha-2 para banderas de selección */
+  /** Códigos ISO 3166-1 alpha-2 para escudos de selección */
   nationalTeamCodes?: string[];
   /** Texto para lectores de pantalla (nombres de país localizados) */
   nationalTeamAriaLabel?: string;
@@ -36,7 +36,13 @@ const {
 } = Astro.props;
 const alt = `${name} — ${subtitle}`;
 const cardTitle = alt;
-const showFlags = nationalTeamCodes.length > 0 && nationalTeamAriaLabel;
+const badgeItems = nationalTeamCodes
+  .map((code) => {
+    const src = nationalTeamBadgeSrc(code);
+    return src ? { code, src } : null;
+  })
+  .filter((x): x is { code: string; src: string } => x !== null);
+const showBadges = badgeItems.length > 0 && Boolean(nationalTeamAriaLabel);
 const useRemotePhoto = Boolean(photoUrl && photoUrl.length > 0);
 ---
 
@@ -73,10 +79,10 @@ const useRemotePhoto = Boolean(photoUrl && photoUrl.length > 0);
           decoding="async"
         />
       )}
-      {showFlags ? (
-        <div class="card-flags" role="group" aria-label={nationalTeamAriaLabel}>
-          {nationalTeamCodes.map((code) => (
-            <span class={`fi fi-${code.toLowerCase()}`} aria-hidden="true"></span>
+      {showBadges ? (
+        <div class="card-national-badges" role="group" aria-label={nationalTeamAriaLabel}>
+          {badgeItems.map(({ code, src }) => (
+            <img src={src} alt="" class="card-national-badge" width="28" height="28" loading="lazy" decoding="async" data-national-code={code} />
           ))}
         </div>
       ) : null}
@@ -117,10 +123,10 @@ const useRemotePhoto = Boolean(photoUrl && photoUrl.length > 0);
           decoding="async"
         />
       )}
-      {showFlags ? (
-        <div class="card-flags" role="group" aria-label={nationalTeamAriaLabel}>
-          {nationalTeamCodes.map((code) => (
-            <span class={`fi fi-${code.toLowerCase()}`} aria-hidden="true"></span>
+      {showBadges ? (
+        <div class="card-national-badges" role="group" aria-label={nationalTeamAriaLabel}>
+          {badgeItems.map(({ code, src }) => (
+            <img src={src} alt="" class="card-national-badge" width="28" height="28" loading="lazy" decoding="async" data-national-code={code} />
           ))}
         </div>
       ) : null}
@@ -197,7 +203,7 @@ const useRemotePhoto = Boolean(photoUrl && photoUrl.length > 0);
     background: var(--color-ph-black);
   }
 
-  .card-flags {
+  .card-national-badges {
     position: absolute;
     bottom: 0.625rem;
     right: 0.625rem;
@@ -210,11 +216,13 @@ const useRemotePhoto = Boolean(photoUrl && photoUrl.length > 0);
     pointer-events: none;
   }
 
-  .card-flags :global(.fi) {
-    width: 1.35rem;
-    height: auto;
-    border-radius: 2px;
+  .card-national-badge {
+    width: 1.75rem;
+    height: 1.75rem;
+    object-fit: contain;
+    border-radius: 3px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    background: rgba(13, 15, 18, 0.35);
   }
 
   .card-overlay {

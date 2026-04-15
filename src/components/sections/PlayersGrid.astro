@@ -548,6 +548,13 @@ function subtitleFor(row: { club: { name: string } | null }): string {
 
   gsap.registerPlugin(ScrollTrigger);
 
+  /** Evita que el tween inicial (ScrollTrigger + stagger) siga vivo tras reordenar: killTweensOf no siempre destruye el trigger. */
+  function killScrollTriggersForElement(el: HTMLElement): void {
+    ScrollTrigger.getAll().forEach((st) => {
+      if (st.trigger === el) st.kill(false);
+    });
+  }
+
   let playersScrollRefreshBound = false;
 
   function bindDebouncedScrollTriggerRefreshOnce(): void {
@@ -831,6 +838,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
              * FIX: Asegurar que `cards-revealed` esté en el grid ANTES de animar.
              * Evita carrera con la animación inicial (ScrollTrigger + stagger).
              */
+            killScrollTriggersForElement(grid);
             gsap.killTweensOf(cards);
             grid.classList.add('cards-revealed');
             // Limpiar inline styles que killTweensOf haya dejado atascados
@@ -871,8 +879,9 @@ function subtitleFor(row: { club: { name: string } | null }): string {
                     duration: 0.35,
                     stagger: 0.03,
                     ease: 'power2.out',
-                    // Eliminado el onComplete con clearProps y ScrollTrigger.refresh()
-                    // para evitar el recálculo masivo (flicker) al terminar el stagger.
+                    onComplete: () => {
+                      gsap.set(cards, { clearProps: 'opacity,transform' });
+                    },
                   }
                 );
               }
@@ -996,6 +1005,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
       '.players-subsection .players-grid, .players-tabpanel:not([hidden]) .players-grid',
     );
     grids.forEach((grid) => {
+      if (grid.classList.contains('cards-revealed')) return;
       const cards = grid.querySelectorAll<HTMLElement>('.card');
       if (!cards.length) return;
       gsap.fromTo(
@@ -1014,6 +1024,7 @@ function subtitleFor(row: { club: { name: string } | null }): string {
           },
           onComplete: () => {
             grid.classList.add('cards-revealed');
+            gsap.set(cards, { clearProps: 'opacity,transform' });
           },
         },
       );
@@ -1027,7 +1038,10 @@ function subtitleFor(row: { club: { name: string } | null }): string {
       document.querySelectorAll<HTMLElement>('.players-grid:not(.cards-revealed)').forEach((grid) => {
         const cards = grid.querySelectorAll<HTMLElement>('.card');
         if (!cards.length) return;
+        killScrollTriggersForElement(grid);
+        gsap.killTweensOf(cards);
         grid.classList.add('cards-revealed');
+        gsap.set(cards, { clearProps: 'opacity,transform' });
       });
     }, 2200);
   }

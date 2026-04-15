@@ -79,22 +79,74 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
 
     <script>
       const HEADER_SCROLL_THRESHOLD = 16;
+      const SCROLL_HIDE_MIN_Y = 64;
+      const SCROLL_DIRECTION_DELTA = 6;
       const PARALLAX_FACTOR = 0.1;
+
+      let lastScrollY = 0;
+
+      function prefersReducedMotion(): boolean {
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      }
+
+      function isMobileMenuOpen(): boolean {
+        return document.querySelector('[data-mobile-menu]')?.classList.contains('is-open') ?? false;
+      }
 
       function updateScrollEffects() {
         const header = document.querySelector('[data-header]');
         const parallaxInner = document.querySelector('[data-parallax-inner]');
-        header?.classList.toggle('header--solid', window.scrollY > HEADER_SCROLL_THRESHOLD);
+        const y = window.scrollY;
+
+        header?.classList.toggle('header--solid', y > HEADER_SCROLL_THRESHOLD);
         if (parallaxInner) {
           (parallaxInner as HTMLElement).style.transform =
-            `translate3d(0, ${window.scrollY * PARALLAX_FACTOR}px, 0)`;
+            `translate3d(0, ${y * PARALLAX_FACTOR}px, 0)`;
         }
+
+        if (!header) {
+          return;
+        }
+
+        if (prefersReducedMotion()) {
+          header.classList.remove('header--scroll-hidden');
+          lastScrollY = y;
+          return;
+        }
+
+        if (
+          document.documentElement.classList.contains('ph-logo-reveal-active') ||
+          isMobileMenuOpen()
+        ) {
+          header.classList.remove('header--scroll-hidden');
+          lastScrollY = y;
+          return;
+        }
+
+        if (y < SCROLL_HIDE_MIN_Y) {
+          header.classList.remove('header--scroll-hidden');
+          lastScrollY = y;
+          return;
+        }
+
+        const delta = y - lastScrollY;
+        if (Math.abs(delta) >= SCROLL_DIRECTION_DELTA) {
+          if (delta > 0) {
+            header.classList.add('header--scroll-hidden');
+          } else {
+            header.classList.remove('header--scroll-hidden');
+          }
+        }
+        lastScrollY = y;
       }
 
-      // Estado inicial + tras cada navegación con View Transitions
-      document.addEventListener('astro:page-load', updateScrollEffects);
+      function onPageLoad() {
+        lastScrollY = window.scrollY;
+        document.querySelector('[data-header]')?.classList.remove('header--scroll-hidden');
+        updateScrollEffects();
+      }
 
-      // Listener de scroll registrado una sola vez
+      document.addEventListener('astro:page-load', onPageLoad);
       document.addEventListener('scroll', updateScrollEffects, { passive: true });
     </script>
   </body>
@@ -134,7 +186,8 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
   }
 
   .main--padded {
-    padding-top: 5rem;
+    /* 5rem reserva la zona del header; +0.875rem el margen superior de la cápsula flotante */
+    padding-top: calc(5rem + 0.875rem);
   }
 
   /* LogoReveal vive dentro de main (z-index 1); el header fijo quedaría encima del overlay.
@@ -153,23 +206,47 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
     left: 0;
     right: 0;
     z-index: 50;
-    background-color: transparent;
-    border-bottom: 1px solid transparent;
-    backdrop-filter: blur(0);
-    -webkit-backdrop-filter: blur(0);
-    transition:
-      background-color var(--ph-duration) var(--ease-ph),
-      border-color var(--ph-duration) var(--ease-ph),
-      backdrop-filter var(--ph-duration) var(--ease-ph),
-      -webkit-backdrop-filter var(--ph-duration) var(--ease-ph);
+    background: transparent;
+    border: none;
+    pointer-events: none;
+    transition: none;
   }
 
-  [data-header].header--solid {
+  /* Hit target: solo la cápsula recibe eventos */
+  [data-header] .header-shell {
+    pointer-events: auto;
+  }
+
+  [data-header].header--scroll-hidden {
+    pointer-events: none;
+  }
+
+  [data-header] .header-shell {
+    background-color: transparent;
+    border: 1px solid transparent;
+    backdrop-filter: blur(0);
+    -webkit-backdrop-filter: blur(0);
+    box-shadow: none;
+  }
+
+  [data-header].header--solid .header-shell {
     background-color: rgba(13, 15, 18, 0.88);
-    border-bottom-color: var(--ph-glass-border);
+    border-color: var(--ph-glass-border);
     backdrop-filter: blur(var(--ph-glass-blur));
     -webkit-backdrop-filter: blur(var(--ph-glass-blur));
     box-shadow: var(--ph-glass-highlight);
+  }
+
+  [data-header].header--scroll-hidden .header-shell {
+    transform: translateY(calc(-100% - 0.875rem));
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-header].header--scroll-hidden .header-shell {
+      transform: none;
+      pointer-events: auto;
+    }
   }
 
   /* Página laboratorio logo 3D: ocultar parallax del logo estático de fondo */

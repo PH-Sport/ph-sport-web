@@ -15,5 +15,10 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    /** Si 4321 está ocupado, falla en lugar de servir en 4322+ (evita abrir la URL equivocada). */
+    server: {
+      port: 4321,
+      strictPort: true,
+    },
   },
 });

@@ -7,6 +7,5 @@ club:
 photo: "../../assets/images/players/avatar-placeholder.svg"
 featured: false
 nationalTeamCodes:
-  - "DK"
-  - "ES"
+  - "PA"
 ---

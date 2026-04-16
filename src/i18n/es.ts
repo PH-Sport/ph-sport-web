@@ -38,6 +38,7 @@ const es = {
   'home.about.body':
     'En la página Sobre nosotros profundizamos en nuestros valores y en cómo trabajamos día a día contigo.',
   'home.about.cta': 'Sobre nosotros',
+  'home.about.statement': 'Gestionamos tu carrera, tu presente y tu futuro.',
   'home.instagram.title': 'Instagram',
   'home.instagram.postAria': 'Abrir publicación en Instagram',
 
@@ -73,9 +74,6 @@ const es = {
   'home.360.pillar5.title': 'Family Office',
   'home.360.pillar5.body': 'Gestión patrimonial, planificación fiscal y estructura financiera del jugador.',
   'home.360.aria': 'Los cinco pilares del acompañamiento PHSPORT',
-
-  // --- Home: About (nuevo statement para split) ---
-  'home.about.statement': 'Gestionamos tu carrera, tu presente y tu futuro.',
 
   // --- Jugadores ---
   'players.title': 'Talento que representamos',

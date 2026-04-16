@@ -41,6 +41,7 @@ const en: Record<TranslationKey, string> = {
   'home.about.body':
     'On the About page we go deeper into our values and how we work with you every day.',
   'home.about.cta': 'About us',
+  'home.about.statement': 'We manage your career, your present and your future.',
   'home.instagram.title': 'Instagram',
   'home.instagram.postAria': 'Open post on Instagram',
 
@@ -76,9 +77,6 @@ const en: Record<TranslationKey, string> = {
   'home.360.pillar5.title': 'Family Office',
   'home.360.pillar5.body': 'Wealth management, tax planning and financial structure for the player.',
   'home.360.aria': 'The five pillars of PHSPORT support',
-
-  // --- Home: About (new statement) ---
-  'home.about.statement': 'We manage your career, your present and your future.',
 
   // --- Jugadores ---
   'players.title': 'Talent we represent',

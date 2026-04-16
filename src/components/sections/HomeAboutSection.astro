@@ -1,5 +1,4 @@
 ---
-import SectionHeader from '@/components/ui/SectionHeader.astro';
 import Button from '@/components/ui/Button.astro';
 import { useTranslations, type Lang } from '@/i18n/utils';
 
@@ -13,26 +12,28 @@ const isEn = lang === 'en';
 const aboutHref = isEn ? '/en/about' : '/sobre-nosotros';
 ---
 
-<section id="sobre-nosotros" class="home-about-section" aria-labelledby="home-about-heading">
-  <div class="ph-section">
-    <SectionHeader
-      label={t('nav.about')}
-      title={t('home.about.title')}
-      subtitle={t('home.about.subtitle')}
-      id="home-about-heading"
-      tag="h2"
-      noBorder
-    />
-
-    <div class="home-about-copy">
-      <p class="home-about-lead">{t('home.about.lead')}</p>
-      <p class="home-about-body">{t('home.about.body')}</p>
+<section
+  id="sobre-nosotros"
+  class="home-about-section"
+  aria-labelledby="home-about-heading"
+  data-home-about
+>
+  <div class="ph-section home-about-grid">
+    <div class="home-about-left" data-about-left>
+      <p class="home-about-eyebrow">{t('nav.about')}</p>
+      <div class="ph-divider home-about-divider"></div>
+      <h2 id="home-about-heading" class="home-about-statement">
+        {t('home.about.statement')}
+      </h2>
     </div>
 
-    <div class="home-section-cta">
-      <Button href={aboutHref} variant="secondary">
-        {t('home.about.cta')}
-      </Button>
+    <div class="home-about-right" data-about-right>
+      <p class="home-about-body">{t('home.about.body')}</p>
+      <div class="home-about-cta">
+        <Button href={aboutHref} variant="secondary">
+          {t('home.about.cta')}
+        </Button>
+      </div>
     </div>
   </div>
 </section>
@@ -41,25 +42,77 @@ const aboutHref = isEn ? '/en/about' : '/sobre-nosotros';
   .home-about-section {
     position: relative;
     padding-block: 4rem 4.5rem;
-    background: var(--color-ph-black);
+    background: var(--ph-section-bg);
     border-top: 1px solid var(--color-ph-white-10);
   }
 
   @media (min-width: 1024px) {
     .home-about-section {
-      padding-block: 5rem 5.5rem;
+      padding-block: 6rem 7rem;
     }
   }
 
-  .home-about-copy {
-    max-width: 40rem;
+  /* ── Split grid ──────────────────────────────────────────────────────────── */
+
+  .home-about-grid {
+    display: grid;
+    gap: 3rem;
+    grid-template-columns: 1fr;
+    align-items: center;
   }
 
-  .home-about-lead {
-    margin: 0 0 1rem;
-    font-size: 1.125rem;
-    line-height: 1.6;
+  @media (min-width: 768px) {
+    .home-about-grid {
+      grid-template-columns: 3fr 2fr;
+      gap: 4rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .home-about-grid {
+      grid-template-columns: 3fr 2fr;
+      gap: 6rem;
+    }
+  }
+
+  /* ── Left: statement ─────────────────────────────────────────────────────── */
+
+  .home-about-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .home-about-eyebrow {
+    font-family: var(--font-body);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-ph-gold);
+    margin: 0;
+  }
+
+  .home-about-divider {
+    max-width: 10rem;
+  }
+
+  .home-about-statement {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 900;
     color: var(--color-ph-white);
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  /* ── Right: text + CTA ───────────────────────────────────────────────────── */
+
+  .home-about-right {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
   }
 
   .home-about-body {
@@ -69,9 +122,48 @@ const aboutHref = isEn ? '/en/about' : '/sobre-nosotros';
     color: var(--color-ph-white-60);
   }
 
-  .home-section-cta {
-    margin-top: 2rem;
+  .home-about-cta {
     display: flex;
     justify-content: flex-start;
   }
 </style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { reducedMotion, wrapWords } from '@/scripts/ph-text-animations';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.addEventListener('astro:page-load', () => {
+    const section = document.querySelector<HTMLElement>('[data-home-about]');
+    if (!section || reducedMotion()) return;
+
+    const left  = section.querySelector<HTMLElement>('[data-about-left]');
+    const right = section.querySelector<HTMLElement>('[data-about-right]');
+
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: section, start: 'top 75%', once: true },
+    });
+
+    if (left) {
+      const statement = left.querySelector<HTMLElement>('.home-about-statement');
+      if (statement) {
+        const words = wrapWords(statement);
+        gsap.set(statement, { opacity: 1 });
+        tl.from(words, { yPercent: 115, duration: 0.85, stagger: 0.05, ease: 'power4.out' }, 0);
+      }
+      const eyebrow = left.querySelector<HTMLElement>('.home-about-eyebrow');
+      const divider = left.querySelector<HTMLElement>('.home-about-divider');
+      if (eyebrow) tl.from(eyebrow, { opacity: 0, y: 8, duration: 0.5, ease: 'power3.out' }, 0);
+      if (divider) {
+        gsap.set(divider, { opacity: 1 });
+        tl.from(divider, { scaleX: 0, transformOrigin: 'left center', duration: 0.6, ease: 'expo.out' }, 0.1);
+      }
+    }
+
+    if (right) {
+      tl.from(right, { opacity: 0, y: 20, duration: 0.7, ease: 'power3.out' }, 0.25);
+    }
+  });
+</script>

@@ -1,0 +1,210 @@
+---
+import { useTranslations, type Lang } from '@/i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const pillars = [
+  { key: '1', title: t('home.360.pillar1.title'), body: t('home.360.pillar1.body') },
+  { key: '2', title: t('home.360.pillar2.title'), body: t('home.360.pillar2.body') },
+  { key: '3', title: t('home.360.pillar3.title'), body: t('home.360.pillar3.body') },
+  { key: '4', title: t('home.360.pillar4.title'), body: t('home.360.pillar4.body') },
+  { key: '5', title: t('home.360.pillar5.title'), body: t('home.360.pillar5.body') },
+] as const;
+---
+
+<section
+  id="acompanamiento-360"
+  class="home-360-section"
+  aria-labelledby="home-360-heading"
+  data-home-360
+>
+  <div class="ph-section">
+    <div class="home-360-header" data-360-header>
+      <div class="home-360-eyebrow-row">
+        <p class="home-360-eyebrow">{t('home.360.label')}</p>
+        <span class="home-360-eyebrow-line" aria-hidden="true"></span>
+      </div>
+      <h2 id="home-360-heading" class="home-360-title">{t('home.360.title')}</h2>
+      <p class="home-360-subtitle">{t('home.360.subtitle')}</p>
+    </div>
+
+    <ul
+      class="home-360-grid"
+      aria-label={t('home.360.aria')}
+    >
+      {
+        pillars.map((p) => (
+          <li class="home-360-pillar" data-360-pillar>
+            <h3 class="home-360-pillar-title">{p.title}</h3>
+            <p class="home-360-pillar-body">{p.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .home-360-section {
+    position: relative;
+    padding-block: 4rem 4.5rem;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(214, 178, 94, 0.05) 0%, transparent 50%),
+      var(--ph-section-bg);
+    border-top: 1px solid var(--color-ph-white-10);
+  }
+
+  @media (min-width: 1024px) {
+    .home-360-section {
+      padding-block: 5rem 5.5rem;
+    }
+  }
+
+  /* ── Header ──────────────────────────────────────────────────────────────── */
+
+  .home-360-header {
+    margin-bottom: 3rem;
+    max-width: 40rem;
+  }
+
+  .home-360-eyebrow-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .home-360-eyebrow {
+    font-family: var(--font-body);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-ph-gold);
+    white-space: nowrap;
+    margin: 0;
+  }
+
+  .home-360-eyebrow-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(214, 178, 94, 0.4) 0%, transparent 100%);
+    max-width: 12rem;
+  }
+
+  .home-360-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 900;
+    color: var(--color-ph-white);
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    margin: 0 0 0.75rem;
+  }
+
+  .home-360-subtitle {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-ph-white-60);
+  }
+
+  /* ── Grid de pilares ─────────────────────────────────────────────────────── */
+
+  .home-360-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .home-360-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .home-360-grid {
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.25rem;
+    }
+  }
+
+  .home-360-pillar {
+    padding: 1.5rem 1.25rem;
+    border: 1px solid var(--color-ph-white-10);
+    border-radius: var(--radius-md);
+    background: var(--ph-glass-bg);
+    backdrop-filter: var(--ph-glass-backdrop);
+    -webkit-backdrop-filter: var(--ph-glass-backdrop);
+    transition:
+      border-color var(--ph-duration) var(--ease-ph),
+      box-shadow var(--ph-duration) var(--ease-ph);
+  }
+
+  .home-360-pillar:hover {
+    border-color: rgba(214, 178, 94, 0.3);
+    box-shadow: var(--ph-glass-highlight);
+  }
+
+  .home-360-pillar-title {
+    font-family: var(--font-body);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-ph-gold);
+    margin: 0 0 0.625rem;
+  }
+
+  .home-360-pillar-body {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--color-ph-white-60);
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { reducedMotion } from '@/scripts/ph-text-animations';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.addEventListener('astro:page-load', () => {
+    const section = document.querySelector<HTMLElement>('[data-home-360]');
+    if (!section || reducedMotion()) return;
+
+    const header = section.querySelector<HTMLElement>('[data-360-header]');
+    if (header) {
+      gsap.from(header, {
+        opacity: 0,
+        y: 16,
+        duration: 0.7,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: header, start: 'top 85%', once: true },
+      });
+    }
+
+    const pillars = section.querySelectorAll<HTMLElement>('[data-360-pillar]');
+    if (pillars.length) {
+      gsap.from(pillars, {
+        opacity: 0,
+        y: 24,
+        duration: 0.75,
+        stagger: 0.07,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: section, start: 'top 72%', once: true },
+      });
+    }
+  });
+</script>

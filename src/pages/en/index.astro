@@ -2,9 +2,11 @@
 import BaseLayout from '@/components/layout/BaseLayout.astro';
 import LogoReveal from '@/components/islands/LogoReveal.tsx';
 import HeroSection from '@/components/sections/HeroSection.astro';
+import HomeStatsStrip from '@/components/sections/HomeStatsStrip.astro';
 import HomePlayersSection from '@/components/sections/HomePlayersSection.astro';
-import HomeInstagramSection from '@/components/sections/HomeInstagramSection.astro';
+import HomeManifestoSection from '@/components/sections/HomeManifestoSection.astro';
 import HomeServicesSection from '@/components/sections/HomeServicesSection.astro';
+import Home360Section from '@/components/sections/Home360Section.astro';
 import HomeAboutSection from '@/components/sections/HomeAboutSection.astro';
 import { useTranslations, type Lang } from '@/i18n/utils';
 import { SITE_URL } from '@/lib/constants';
@@ -28,8 +30,10 @@ const homePlayers = topSlugs.map((slug) => payloads[slug]).filter(Boolean);
 >
   <LogoReveal client:load />
   <HeroSection lang={lang} variant="home" sectionId="inicio" />
+  <HomeStatsStrip lang={lang} />
   <HomePlayersSection lang={lang} players={homePlayers} />
-  <HomeInstagramSection lang={lang} />
+  <HomeManifestoSection lang={lang} />
   <HomeServicesSection lang={lang} />
+  <Home360Section lang={lang} />
   <HomeAboutSection lang={lang} />
 </BaseLayout>

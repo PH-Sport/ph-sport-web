@@ -11,12 +11,16 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const isEn = lang === 'en';
-const allItems = getServicesItems(lang);
-const items = allItems.slice(0, 3);
+const items = getServicesItems(lang);
 const servicesHref = isEn ? '/en/services' : '/servicios';
 ---
 
-<section id="servicios" class="home-services-section" data-home-services aria-labelledby="home-services-heading">
+<section
+  id="servicios"
+  class="home-services-section"
+  aria-labelledby="home-services-heading"
+  data-home-services
+>
   <div class="ph-section">
     <SectionHeader
       label={t('nav.services')}
@@ -27,19 +31,21 @@ const servicesHref = isEn ? '/en/services' : '/servicios';
       noBorder
     />
 
-    <ul class="home-services-grid">
+    <ol class="services-list" aria-label={t('nav.services')}>
       {
-        items.map((item) => (
-          <li class="home-service-card">
-            <div class="home-service-card-icon-wrap">
-              <i data-lucide={item.icon} class="home-service-icon" aria-hidden="true" />
+        items.map((item, i) => (
+          <li class="services-list-item" data-service-item>
+            <span class="services-list-num" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <div class="services-list-body">
+              <h3 class="services-list-title">{item.title}</h3>
+              <p class="services-list-short">{item.short}</p>
             </div>
-            <h3 class="home-service-title">{item.title}</h3>
-            <p class="home-service-short">{item.short}</p>
           </li>
         ))
       }
-    </ul>
+    </ol>
 
     <div class="home-section-cta">
       <Button href={servicesHref} variant="secondary">
@@ -55,7 +61,8 @@ const servicesHref = isEn ? '/en/services' : '/servicios';
     padding-block: 4rem 4.5rem;
     background:
       radial-gradient(ellipse at 80% 30%, rgba(214, 178, 94, 0.04) 0%, transparent 50%),
-      var(--color-ph-black);
+      var(--ph-section-bg);
+    border-top: 1px solid var(--color-ph-white-10);
   }
 
   @media (min-width: 1024px) {
@@ -64,82 +71,116 @@ const servicesHref = isEn ? '/en/services' : '/servicios';
     }
   }
 
-  .home-services-grid {
+  /* ── Lista editorial ─────────────────────────────────────────────────────── */
+
+  .services-list {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: 1.25rem;
+  }
+
+  .services-list-item {
+    display: flex;
+    align-items: baseline;
+    gap: 2rem;
+    padding-block: 1.75rem;
+    border-bottom: 1px solid var(--color-ph-white-10);
+    transition: border-color var(--ph-duration) var(--ease-ph);
+  }
+
+  .services-list-item:first-child {
+    border-top: 1px solid var(--color-ph-white-10);
+  }
+
+  .services-list-item:hover {
+    border-bottom-color: rgba(214, 178, 94, 0.3);
+  }
+
+  .services-list-num {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    color: rgba(214, 178, 94, 0.18);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 3.5rem;
+    text-align: right;
+    transition: color var(--ph-duration) var(--ease-ph);
+    user-select: none;
+  }
+
+  .services-list-item:hover .services-list-num {
+    color: rgba(214, 178, 94, 0.45);
+  }
+
+  .services-list-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
   }
 
   @media (min-width: 768px) {
-    .home-services-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
+    .services-list-body {
+      flex-direction: row;
+      align-items: baseline;
+      gap: 2rem;
     }
   }
 
-  .home-service-card {
-    padding: 1.5rem 1.25rem;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--color-ph-white-10);
-    background: var(--ph-glass-bg);
-    backdrop-filter: blur(var(--ph-glass-blur));
-    -webkit-backdrop-filter: blur(var(--ph-glass-blur));
-  }
-
-  .home-service-card-icon-wrap {
-    margin-bottom: 1rem;
-    color: var(--color-ph-gold);
-  }
-
-  .home-service-icon {
-    width: 1.75rem;
-    height: 1.75rem;
-    stroke-width: 1.5;
-  }
-
-  .home-service-title {
+  .services-list-title {
     font-family: var(--font-display);
-    font-size: 1.125rem;
+    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
     font-weight: 700;
     color: var(--color-ph-white);
     letter-spacing: -0.02em;
-    line-height: 1.25;
-    margin: 0 0 0.5rem;
+    line-height: 1.2;
+    margin: 0;
+    flex-shrink: 0;
   }
 
-  .home-service-short {
+  @media (min-width: 768px) {
+    .services-list-title {
+      min-width: 16rem;
+    }
+  }
+
+  .services-list-short {
     margin: 0;
     font-size: 0.9375rem;
     line-height: 1.5;
     color: var(--color-ph-white-60);
   }
 
+  /* ── CTA ─────────────────────────────────────────────────────────────────── */
+
   .home-section-cta {
     margin-top: 2.5rem;
     display: flex;
-    justify-content: center;
-  }
-
-  @media (min-width: 768px) {
-    .home-section-cta {
-      justify-content: flex-start;
-    }
+    justify-content: flex-start;
   }
 </style>
 
 <script>
-  import { createIcons, Globe, Megaphone, Route, Scale, Users } from 'lucide';
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { reducedMotion } from '@/scripts/ph-text-animations';
 
-  function initHomeServicesIcons(): void {
-    const root = document.querySelector<HTMLElement>('[data-home-services]');
-    if (!root) return;
-    createIcons({
-      icons: { Globe, Megaphone, Route, Scale, Users },
-      root,
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.addEventListener('astro:page-load', () => {
+    const section = document.getElementById('servicios');
+    if (!section || reducedMotion()) return;
+
+    const items = section.querySelectorAll<HTMLElement>('[data-service-item]');
+    gsap.from(items, {
+      opacity: 0,
+      x: -20,
+      duration: 0.7,
+      stagger: 0.08,
+      ease: 'power4.out',
+      scrollTrigger: { trigger: section, start: 'top 75%', once: true },
     });
-  }
-
-  document.addEventListener('astro:page-load', initHomeServicesIcons);
+  });
 </script>

@@ -4,7 +4,7 @@
 
 const es = {
   // --- SEO / Meta ---
-  'site.name': 'PH Sport',
+  'site.name': 'PHSPORT',
   'site.tagline': 'Now. Next. Forever Football.',
   'site.description': 'Agencia de representación deportiva especializada en fútbol. Gestionamos carreras, negociamos contratos y acompañamos a los jugadores en cada etapa de su trayectoria.',
 
@@ -27,13 +27,11 @@ const es = {
   'hero.cta.secondary': 'Quiénes somos',
 
   // --- Inicio (secciones) ---
-  'home.players.title': 'Talento en el campo',
-  'home.players.subtitle': 'Tres perfiles de nuestro roster. La lista completa te espera un paso más allá.',
   'home.players.cta': 'Ver todos los jugadores',
   'home.services.title': 'Cómo acompañamos tu carrera',
   'home.services.subtitle': 'Tres pilares de nuestro servicio 360. Descubre el resto en detalle.',
   'home.services.cta': 'Ver todos los servicios',
-  'home.about.title': 'PH Sport en esencia',
+  'home.about.title': 'PHSPORT en esencia',
   'home.about.subtitle': 'Presente, futuro y legado, en una sola visión.',
   'home.about.lead':
     'Somos una agencia de representación especializada en fútbol: contratos, imagen y planificación de carrera.',
@@ -41,9 +39,43 @@ const es = {
     'En la página Sobre nosotros profundizamos en nuestros valores y en cómo trabajamos día a día contigo.',
   'home.about.cta': 'Sobre nosotros',
   'home.instagram.title': 'Instagram',
-  'home.instagram.placeholder':
-    'Pronto mostraremos aquí las últimas publicaciones. Mientras tanto, síguenos en la red.',
-  'home.instagram.link': 'Abrir Instagram',
+  'home.instagram.postAria': 'Abrir publicación en Instagram',
+
+  // --- Home: Stats Strip ---
+  'home.stats.aria': 'Cifras PHSPORT',
+  'home.stats.players.value': '+100',
+  'home.stats.players.label': 'Jugadores',
+  'home.stats.countries.value': '12',
+  'home.stats.countries.label': 'Países',
+  'home.stats.service.value': '360°',
+  'home.stats.service.label': 'Acompañamiento',
+
+  // --- Home: Manifesto ---
+  'home.manifesto.eyebrow': 'Representar con propósito',
+  'home.manifesto.statement': 'Construimos y protegemos la carrera de nuestros jugadores con representación estratégica, visión internacional y enfoque a largo plazo.',
+  'home.manifesto.value1': 'Rigor',
+  'home.manifesto.value2': 'Cercanía',
+  'home.manifesto.value3': 'Excelencia',
+  'home.manifesto.values.aria': 'Valores de PHSPORT',
+
+  // --- Home: 360° ---
+  'home.360.label': 'Acompañamiento 360°',
+  'home.360.title': 'Más allá de la representación',
+  'home.360.subtitle': 'Construimos una estructura integral que acompaña al jugador en cada área clave de su carrera.',
+  'home.360.pillar1.title': 'Prensa',
+  'home.360.pillar1.body': 'Imagen pública, relación con medios y posicionamiento del jugador.',
+  'home.360.pillar2.title': 'Media',
+  'home.360.pillar2.body': 'Estrategia digital, creación de contenido y gestión de redes sociales.',
+  'home.360.pillar3.title': 'Psicología deportiva',
+  'home.360.pillar3.body': 'Preparación mental, gestión de la presión y acompañamiento competitivo.',
+  'home.360.pillar4.title': 'Rendimiento',
+  'home.360.pillar4.body': 'Análisis físico, seguimiento continuo y optimización del rendimiento.',
+  'home.360.pillar5.title': 'Family Office',
+  'home.360.pillar5.body': 'Gestión patrimonial, planificación fiscal y estructura financiera del jugador.',
+  'home.360.aria': 'Los cinco pilares del acompañamiento PHSPORT',
+
+  // --- Home: About (nuevo statement para split) ---
+  'home.about.statement': 'Gestionamos tu carrera, tu presente y tu futuro.',
 
   // --- Jugadores ---
   'players.title': 'Talento que representamos',
@@ -63,7 +95,7 @@ const es = {
   'players.detail.bioEmpty': 'Próximamente más información sobre este perfil.',
 
   // --- Sobre nosotros ---
-  'about.title': 'Sobre PH Sport',
+  'about.title': 'Sobre PHSPORT',
   'about.subtitle': 'Agencia de representación fundada sobre tres principios: presente, futuro y legado.',
   'about.block1.title': 'Now.',
   'about.block1.body': 'Gestionamos el día a día de cada jugador con atención personalizada. Contratos, imagen, rendimiento.',
@@ -73,7 +105,7 @@ const es = {
   'about.block3.body': 'El fútbol es nuestra pasión y nuestro compromiso. Acompañamos a los jugadores más allá de su etapa profesional.',
 
   // --- Equipo (página) ---
-  'team.title': 'Equipo PH Sport',
+  'team.title': 'Equipo PHSPORT',
   'team.subtitle': 'Las personas que impulsan cada carrera y cada proyecto.',
   'team.placeholderName': 'Por definir',
   'team.placeholderRole': 'Rol',
@@ -119,7 +151,7 @@ const es = {
 
   // --- Accesibilidad ---
   'a11y.skip': 'Ir al contenido principal',
-  'a11y.logo': 'PH Sport — Ir a inicio',
+  'a11y.logo': 'PHSPORT — Ir a inicio',
   'a11y.menu.open': 'Abrir menú',
   'a11y.menu.close': 'Cerrar menú',
   'a11y.close': 'Cerrar',

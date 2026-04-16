@@ -6,7 +6,7 @@ import type { TranslationKey } from './es';
 
 const en: Record<TranslationKey, string> = {
   // --- SEO / Meta ---
-  'site.name': 'PH Sport',
+  'site.name': 'PHSPORT',
   'site.tagline': 'Now. Next. Forever Football.',
   'site.description': 'Sports representation agency specialised in football. We manage careers, negotiate contracts and support players at every stage of their journey.',
 
@@ -29,15 +29,12 @@ const en: Record<TranslationKey, string> = {
   'hero.cta.secondary': 'Who we are',
 
   // --- Inicio (secciones) ---
-  'home.players.title': 'Talent on the pitch',
-  'home.players.subtitle':
-    'Three profiles from our roster. The full list is one step further.',
   'home.players.cta': 'View all players',
   'home.services.title': 'How we support your career',
   'home.services.subtitle':
     'Three pillars of our 360 service. See the rest in full detail.',
   'home.services.cta': 'View all services',
-  'home.about.title': 'PH Sport in essence',
+  'home.about.title': 'PHSPORT in essence',
   'home.about.subtitle': 'Present, future, and legacy in one vision.',
   'home.about.lead':
     'We are a football-focused representation agency: contracts, image, and career planning.',
@@ -45,9 +42,43 @@ const en: Record<TranslationKey, string> = {
     'On the About page we go deeper into our values and how we work with you every day.',
   'home.about.cta': 'About us',
   'home.instagram.title': 'Instagram',
-  'home.instagram.placeholder':
-    'We will show recent posts here soon. In the meantime, follow us on the network.',
-  'home.instagram.link': 'Open Instagram',
+  'home.instagram.postAria': 'Open post on Instagram',
+
+  // --- Home: Stats Strip ---
+  'home.stats.aria': 'PHSPORT figures',
+  'home.stats.players.value': '+100',
+  'home.stats.players.label': 'Players',
+  'home.stats.countries.value': '12',
+  'home.stats.countries.label': 'Countries',
+  'home.stats.service.value': '360°',
+  'home.stats.service.label': 'Support',
+
+  // --- Home: Manifesto ---
+  'home.manifesto.eyebrow': 'Representing with purpose',
+  'home.manifesto.statement': 'We build and protect the careers of our players through strategic representation, international vision and a long-term approach.',
+  'home.manifesto.value1': 'Rigour',
+  'home.manifesto.value2': 'Closeness',
+  'home.manifesto.value3': 'Excellence',
+  'home.manifesto.values.aria': 'PHSPORT values',
+
+  // --- Home: 360° ---
+  'home.360.label': '360° Support',
+  'home.360.title': 'Beyond representation',
+  'home.360.subtitle': 'We build a comprehensive structure that accompanies the player across every key area of their career.',
+  'home.360.pillar1.title': 'Press',
+  'home.360.pillar1.body': 'Public image, media relations and player positioning.',
+  'home.360.pillar2.title': 'Media',
+  'home.360.pillar2.body': 'Digital strategy, content creation and social media management.',
+  'home.360.pillar3.title': 'Sports psychology',
+  'home.360.pillar3.body': 'Mental preparation, pressure management and competitive support.',
+  'home.360.pillar4.title': 'Performance',
+  'home.360.pillar4.body': 'Physical analysis, ongoing monitoring and performance optimisation.',
+  'home.360.pillar5.title': 'Family Office',
+  'home.360.pillar5.body': 'Wealth management, tax planning and financial structure for the player.',
+  'home.360.aria': 'The five pillars of PHSPORT support',
+
+  // --- Home: About (new statement) ---
+  'home.about.statement': 'We manage your career, your present and your future.',
 
   // --- Jugadores ---
   'players.title': 'Talent we represent',
@@ -67,7 +98,7 @@ const en: Record<TranslationKey, string> = {
   'players.detail.bioEmpty': 'More about this profile coming soon.',
 
   // --- Sobre nosotros ---
-  'about.title': 'About PH Sport',
+  'about.title': 'About PHSPORT',
   'about.subtitle': 'A representation agency built on three principles: present, future and legacy.',
   'about.block1.title': 'Now.',
   'about.block1.body': 'We manage the day-to-day for every player with personalised attention. Contracts, image, performance.',
@@ -77,7 +108,7 @@ const en: Record<TranslationKey, string> = {
   'about.block3.body': 'Football is our passion and our commitment. We stand by our players beyond their professional careers.',
 
   // --- Equipo (página) ---
-  'team.title': 'PH Sport team',
+  'team.title': 'PHSPORT team',
   'team.subtitle': 'The people behind every career and every project.',
   'team.placeholderName': 'TBC',
   'team.placeholderRole': 'Role',
@@ -124,7 +155,7 @@ const en: Record<TranslationKey, string> = {
 
   // --- Accesibilidad ---
   'a11y.skip': 'Skip to main content',
-  'a11y.logo': 'PH Sport — Go to home',
+  'a11y.logo': 'PHSPORT — Go to home',
   'a11y.menu.open': 'Open menu',
   'a11y.menu.close': 'Close menu',
   'a11y.close': 'Close',

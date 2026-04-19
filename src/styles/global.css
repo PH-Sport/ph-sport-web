@@ -60,7 +60,30 @@
   --ph-glass-bg:        rgba(255, 255, 255, 0.04);
   --ph-glass-border:    rgba(255, 255, 255, 0.08);
   --ph-glass-blur:      16px;
+  --ph-glass-blur-ui:   8px;
+  --ph-glass-blur-overlay: 10px;
+  --ph-glass-blur-modal: 24px;
+  --ph-glass-saturate:  1.1;
   --ph-glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  /* Cadenas completas para backdrop-filter (-webkit duplicado en componentes) */
+  --ph-glass-backdrop: blur(var(--ph-glass-blur)) saturate(var(--ph-glass-saturate));
+  --ph-glass-backdrop-ui: blur(var(--ph-glass-blur-ui)) saturate(var(--ph-glass-saturate));
+  --ph-glass-backdrop-overlay: blur(var(--ph-glass-blur-overlay)) saturate(var(--ph-glass-saturate));
+  --ph-glass-backdrop-modal: blur(var(--ph-glass-blur-modal)) saturate(var(--ph-glass-saturate));
+
+  /* Secciones página: transparente para ver el fondo (body / logo parallax) a través de main */
+  --ph-section-bg: transparent;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --ph-glass-blur: 0px;
+    --ph-glass-blur-ui: 0px;
+    --ph-glass-blur-overlay: 0px;
+    --ph-glass-blur-modal: 0px;
+    --ph-glass-saturate: 1;
+    --ph-glass-bg: rgba(255, 255, 255, 0.08);
+  }
 }
 
 /* ── FUENTES (self-hosted) ─────────────────────────────────────────────────── */
@@ -181,19 +204,78 @@ strong {
   color: var(--color-ph-gold);
 }
 
+/* Ancho de columna: sin tope en desktop; el aire lateral lo marca --ph-section-px */
 .ph-section {
   padding-block: var(--ph-section-py);
   padding-inline: var(--ph-section-px);
-  max-width: 1280px;
+  width: 100%;
+  max-width: none;
   margin-inline: auto;
 }
 
 .ph-glass {
   background: var(--ph-glass-bg);
-  backdrop-filter: blur(var(--ph-glass-blur));
-  -webkit-backdrop-filter: blur(var(--ph-glass-blur));
+  backdrop-filter: var(--ph-glass-backdrop);
+  -webkit-backdrop-filter: var(--ph-glass-backdrop);
   border: 1px solid var(--ph-glass-border);
   box-shadow: var(--ph-glass-highlight);
+}
+
+
+/**
+ * Glass “brillante” (variante experimental): capas de sombra + bordes con gradiente.
+ * Sin dimensiones fijas: el contenedor define width/height o aspect-ratio.
+ */
+.glass-card {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 16px 8px rgba(255, 255, 255, 0.8);
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+}
+
+.glass-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.8),
+    transparent,
+    rgba(255, 255, 255, 0.3)
+  );
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.14);
+  }
 }
 
 .skip-link {

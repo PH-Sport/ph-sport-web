@@ -7,8 +7,8 @@
 
 @supports (backdrop-filter: blur(1px)) {
   .player-modal-backdrop {
-    backdrop-filter: blur(var(--ph-glass-blur));
-    -webkit-backdrop-filter: blur(var(--ph-glass-blur));
+    backdrop-filter: var(--ph-glass-backdrop-overlay);
+    -webkit-backdrop-filter: var(--ph-glass-backdrop-overlay);
   }
 }
 

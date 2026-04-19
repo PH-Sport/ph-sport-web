@@ -1,6 +1,5 @@
 ---
 import PortraitCard from '@/components/ui/PortraitCard.astro';
-import SectionHeader from '@/components/ui/SectionHeader.astro';
 import Button from '@/components/ui/Button.astro';
 import { formatNationalTeamAriaLabel } from '@/lib/countryLabels';
 import type { PlayerDetailPayload } from '@/lib/playerDetail';
@@ -15,38 +14,49 @@ const { lang, players } = Astro.props;
 const t = useTranslations(lang);
 const isEn = lang === 'en';
 const listHref = isEn ? '/en/players/' : '/jugadores/';
+
+const count = players.length;
+const clusterTriple = count === 3;
+const gridClass = [
+  'home-players-grid',
+  clusterTriple && 'home-players-grid--cluster',
+  count === 2 && 'home-players-grid--duo',
+  count === 1 && 'home-players-grid--solo',
+]
+  .filter(Boolean)
+  .join(' ');
+
+const clusterPositions = ['first', 'middle', 'last'] as const;
 ---
 
 <section id="jugadores" class="home-players-section" aria-labelledby="home-players-heading">
   <div class="ph-section">
-    <SectionHeader
-      label={t('nav.players')}
-      title={t('home.players.title')}
-      subtitle={t('home.players.subtitle')}
-      id="home-players-heading"
-      tag="h2"
-      noBorder
-    />
+    <div class="home-players-header" data-reveal-header>
+      <h2 id="home-players-heading" class="home-players-eyebrow">{t('nav.players')}</h2>
+      <span class="home-players-eyebrow-line" aria-hidden="true"></span>
+    </div>
 
     {
-      players.length === 0 ? (
+      count === 0 ? (
         <p class="home-players-empty">{t('players.empty')}</p>
       ) : (
         <>
-          <div class="home-players-grid">
-            {players.map((p) => (
-              <PortraitCard
-                name={p.name}
-                subtitle={p.subtitle}
-                photoUrl={p.photoSrc}
-                href={isEn ? p.paths.en : p.paths.es}
-                dataSlug={p.slug}
-                nationalTeamCodes={p.nationalTeamCodes}
-                nationalTeamAriaLabel={formatNationalTeamAriaLabel(p.nationalTeamCodes, lang)}
-              />
+          <div class={gridClass}>
+            {players.map((p, i) => (
+              <div class="home-player-item">
+                <PortraitCard
+                  href={listHref}
+                  name={p.name}
+                  subtitle={p.subtitle}
+                  photoUrl={p.photoSrc}
+                  clusterPosition={clusterTriple ? clusterPositions[i] : undefined}
+                  nationalTeamCodes={p.nationalTeamCodes}
+                  nationalTeamAriaLabel={formatNationalTeamAriaLabel(p.nationalTeamCodes, lang)}
+                />
+              </div>
             ))}
           </div>
-          <div class="home-section-cta">
+          <div class="home-section-cta" data-players-cta>
             <Button href={listHref} variant="primary">
               {t('home.players.cta')}
             </Button>
@@ -57,10 +67,57 @@ const listHref = isEn ? '/en/players/' : '/jugadores/';
   </div>
 </section>
 
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { reducedMotion } from '@/scripts/ph-text-animations';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.addEventListener('astro:page-load', () => {
+    const section = document.getElementById('jugadores');
+    if (!section || reducedMotion()) return;
+
+    const header = section.querySelector<HTMLElement>('[data-reveal-header]');
+    if (header) {
+      gsap.from(header, {
+        opacity: 0,
+        y: 16,
+        duration: 0.7,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: header, start: 'top 85%', once: true },
+      });
+    }
+
+    const items = section.querySelectorAll<HTMLElement>('.home-player-item');
+    if (items.length) {
+      gsap.from(items, {
+        opacity: 0,
+        y: 40,
+        duration: 0.85,
+        stagger: 0.12,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: section, start: 'top 78%', once: true },
+      });
+    }
+
+    const cta = section.querySelector<HTMLElement>('[data-players-cta]');
+    if (cta) {
+      gsap.from(cta, {
+        opacity: 0,
+        y: 20,
+        duration: 0.7,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: cta, start: 'top 90%', once: true },
+      });
+    }
+  });
+</script>
+
 <style>
   .home-players-section {
     position: relative;
-    background: var(--color-ph-black);
+    background: var(--ph-section-bg);
     padding-block: 4rem 4.5rem;
   }
 
@@ -70,18 +127,81 @@ const listHref = isEn ? '/en/players/' : '/jugadores/';
     }
   }
 
+  /* ── Eyebrow header ─────────────────────────────────────────────────────── */
+
+  .home-players-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .home-players-eyebrow {
+    font-family: var(--font-body);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-ph-gold);
+    white-space: nowrap;
+  }
+
+  .home-players-eyebrow-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgba(214, 178, 94, 0.4) 0%,
+      transparent 100%
+    );
+  }
+
+  /* ── Grid ───────────────────────────────────────────────────────────────── */
+
   .home-players-grid {
     display: grid;
     gap: 1.25rem;
     grid-template-columns: 1fr;
   }
 
-  @media (min-width: 640px) {
-    .home-players-grid {
+  @media (max-width: 639px) {
+    .home-players-grid--cluster {
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
+      gap: 0;
+      border: 1px solid var(--ph-glass-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .home-players-grid--duo {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
     }
   }
+
+  @media (min-width: 640px) {
+    .home-players-grid {
+      gap: 1.5rem;
+    }
+
+    .home-players-grid--cluster {
+      grid-template-columns: repeat(3, 1fr);
+      max-width: 42rem;
+      margin-inline: auto;
+    }
+
+    .home-players-grid--duo {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .home-players-grid--solo {
+      grid-template-columns: 1fr;
+      max-width: 22rem;
+      margin-inline: auto;
+    }
+  }
+
+  /* ── Miscelánea ─────────────────────────────────────────────────────────── */
 
   .home-players-empty {
     color: var(--color-ph-white-60);

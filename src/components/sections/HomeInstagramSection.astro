@@ -1,6 +1,6 @@
 ---
+import { INSTAGRAM_HOME_POSTS } from '@/lib/instagramHomeFeed';
 import { useTranslations, type Lang } from '@/i18n/utils';
-import { getInstagramProfileUrl, isSocialPlaceholder } from '@/lib/social';
 
 interface Props {
   lang: Lang;
@@ -8,25 +8,33 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-const instagramUrl = getInstagramProfileUrl();
-const hasLink = !isSocialPlaceholder(instagramUrl);
+const postLabel = t('home.instagram.postAria');
 ---
 
 <section id="instagram" class="home-instagram-section" aria-labelledby="home-instagram-heading">
   <div class="ph-section">
-    <div class="home-instagram-inner">
-      <h2 id="home-instagram-heading" class="home-instagram-title">
-        {t('home.instagram.title')}
-      </h2>
-      <p class="home-instagram-placeholder">{t('home.instagram.placeholder')}</p>
+    <h2 id="home-instagram-heading" class="sr-only">{t('home.instagram.title')}</h2>
+    <ul class="home-instagram-track">
       {
-        hasLink && (
-          <a href={instagramUrl} class="home-instagram-link" rel="noopener noreferrer" target="_blank">
-            {t('home.instagram.link')}
-          </a>
-        )
+        INSTAGRAM_HOME_POSTS.map((post, i) => (
+          <li class="home-instagram-item">
+            <a
+              href={post.href}
+              class="home-instagram-card glass-card"
+              rel="noopener noreferrer"
+              target="_blank"
+              aria-label={`${postLabel} (${i + 1})`}
+            >
+              {post.imageSrc ? (
+                <img class="home-instagram-img" src={post.imageSrc} alt="" loading="lazy" width="320" height="320" />
+              ) : (
+                <span class="home-instagram-fallback" aria-hidden="true" />
+              )}
+            </a>
+          </li>
+        ))
       }
-    </div>
+    </ul>
   </div>
 </section>
 
@@ -36,45 +44,89 @@ const hasLink = !isSocialPlaceholder(instagramUrl);
     padding-block: 3.5rem 4rem;
     background:
       radial-gradient(ellipse at 20% 50%, rgba(214, 178, 94, 0.06) 0%, transparent 55%),
-      var(--color-ph-black);
+      var(--ph-section-bg);
     border-top: 1px solid var(--color-ph-white-10);
   }
 
-  .home-instagram-inner {
-    max-width: 36rem;
+  .home-instagram-track {
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem 0 0.75rem;
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--ph-section-px, 1.5rem);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-color: var(--color-ph-white-20) transparent;
   }
 
-  .home-instagram-title {
-    margin: 0 0 0.75rem;
-    font-family: var(--font-display);
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--color-ph-white);
+  .home-instagram-track::-webkit-scrollbar {
+    height: 6px;
   }
 
-  .home-instagram-placeholder {
-    margin: 0 0 1rem;
-    font-size: 1rem;
-    line-height: 1.6;
-    color: var(--color-ph-white-60);
+  .home-instagram-track::-webkit-scrollbar-thumb {
+    background: var(--color-ph-white-20);
+    border-radius: 999px;
   }
 
-  .home-instagram-link {
-    display: inline-flex;
-    align-items: center;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--color-ph-gold);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
+  .home-instagram-item {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    width: min(14rem, 72vw);
+  }
+
+  .home-instagram-card {
+    display: block;
+    aspect-ratio: 1;
+    /* borde/fondo: .glass-card (global.css) */
     transition:
-      color var(--ph-duration) var(--ease-ph),
-      border-color var(--ph-duration) var(--ease-ph);
+      border-color var(--ph-duration) var(--ease-ph),
+      box-shadow var(--ph-duration) var(--ease-ph),
+      transform var(--ph-duration) var(--ease-ph);
   }
 
-  .home-instagram-link:hover {
-    color: var(--color-ph-white);
-    border-bottom-color: var(--color-ph-gold-muted);
+  .home-instagram-card:hover {
+    border-color: rgba(214, 178, 94, 0.45);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.18),
+      0 0 28px rgba(214, 178, 94, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 0 16px 8px rgba(255, 255, 255, 0.55);
+    transform: translateY(-2px);
+  }
+
+  .home-instagram-card:focus-visible {
+    outline: 2px solid var(--color-ph-gold);
+    outline-offset: 3px;
+  }
+
+  .home-instagram-img {
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .home-instagram-fallback {
+    position: relative;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background:
+      linear-gradient(145deg, rgba(214, 178, 94, 0.12) 0%, transparent 45%),
+      linear-gradient(210deg, rgba(255, 255, 255, 0.06) 0%, transparent 50%),
+      var(--color-ph-black);
+  }
+
+  @media (min-width: 768px) {
+    .home-instagram-item {
+      width: min(15rem, 28vw);
+    }
   }
 </style>

@@ -124,6 +124,7 @@ const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
     transition: transform 0.35s cubic-bezier(.7, 0, .2, 1);
     text-decoration: none;
     color: inherit;
+    transform-origin: center bottom;
   }
 
   .home-players__photo { position: relative; aspect-ratio: 3 / 4; }
@@ -255,3 +256,63 @@ const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
     .home-players__meta { padding: 14px; }
   }
 </style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { reducedMotion, wrapWords, trackingReveal } from '@/scripts/ph-text-animations';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initHomePlayersAnimations(): void {
+    const section = document.querySelector<HTMLElement>('.home-players');
+    if (!section) return;
+    if (reducedMotion()) return;
+
+    const eyebrow = section.querySelector<HTMLElement>('.home-players__eyebrow');
+    const title = section.querySelector<HTMLElement>('.home-players__title');
+    const lead = section.querySelector<HTMLElement>('.home-players__lead');
+    const head = section.querySelector<HTMLElement>('.home-players__head');
+    const grid = section.querySelector<HTMLElement>('.home-players__grid');
+    const cards = section.querySelectorAll<HTMLElement>('.home-players__card');
+
+    if (eyebrow && head) {
+      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
+    }
+    if (title && head) {
+      const words = wrapWords(title);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.9,
+        ease: 'power4.out',
+        stagger: 0.08,
+        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
+      });
+    }
+    if (lead && head) {
+      gsap.from(lead, {
+        opacity: 0,
+        y: 18,
+        duration: 0.8,
+        ease: 'power3.out',
+        delay: 0.2,
+        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
+      });
+    }
+    if (cards.length && grid) {
+      gsap.from(cards, {
+        opacity: 0,
+        scale: 0.96,
+        y: 24,
+        duration: 0.9,
+        ease: 'power3.out',
+        stagger: 0.12,
+        scrollTrigger: { trigger: grid, start: 'top 80%', once: true },
+      });
+    }
+
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+  }
+
+  document.addEventListener('astro:page-load', initHomePlayersAnimations);
+</script>

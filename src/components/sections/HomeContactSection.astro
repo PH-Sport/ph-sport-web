@@ -147,3 +147,60 @@ const t = useTranslations(lang);
     .home-contact__image { display: none; }
   }
 </style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import {
+    reducedMotion, wrapWords, trackingReveal, clipPathReveal, magneticHover,
+  } from '@/scripts/ph-text-animations';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initHomeContactAnimations(): void {
+    const section = document.querySelector<HTMLElement>('.home-contact');
+    if (!section) return;
+    if (reducedMotion()) return;
+
+    const eyebrow = section.querySelector<HTMLElement>('.home-contact__eyebrow');
+    const title = section.querySelector<HTMLElement>('.home-contact__title');
+    const lead = section.querySelector<HTMLElement>('.home-contact__lead');
+    const head = section.querySelector<HTMLElement>('.home-contact__head');
+    const image = section.querySelector<HTMLElement>('.home-contact__image');
+    const email = section.querySelector<HTMLElement>('.home-contact__email a');
+
+    if (eyebrow && head) {
+      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
+    }
+    if (title && head) {
+      const words = wrapWords(title);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.9,
+        ease: 'power4.out',
+        stagger: 0.08,
+        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
+      });
+    }
+    if (lead && head) {
+      gsap.from(lead, {
+        opacity: 0,
+        y: 18,
+        duration: 0.8,
+        ease: 'power3.out',
+        delay: 0.2,
+        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
+      });
+    }
+    if (image && window.matchMedia('(min-width: 901px)').matches) {
+      clipPathReveal(image, 'left', { trigger: image, start: 'top 80%', once: true });
+    }
+    if (email instanceof HTMLElement) {
+      magneticHover(email, 0.25);
+    }
+
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+  }
+
+  document.addEventListener('astro:page-load', initHomeContactAnimations);
+</script>

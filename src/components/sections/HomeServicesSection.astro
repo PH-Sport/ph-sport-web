@@ -267,8 +267,7 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
     const details = document.querySelectorAll<HTMLDetailsElement>('.home-services__row');
     if (!details.length) return;
 
-    const DURATION_OPEN = 0.45;
-    const DURATION_CLOSE = 0.4;
+    const DURATION = 0.5;
     const EASE = 'power3.out';
     const active = new WeakMap<HTMLElement, gsap.core.Tween>();
 
@@ -280,15 +279,18 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
       body.style.overflow = 'hidden';
       body.style.display = 'block';
       body.style.height = current + 'px';
+      body.style.opacity = '1';
       d.removeAttribute('open');
       const tween = gsap.to(body, {
         height: 0,
-        duration: DURATION_CLOSE,
+        opacity: 0,
+        duration: DURATION,
         ease: EASE,
         onComplete: () => {
           body.style.height = '';
           body.style.overflow = '';
           body.style.display = '';
+          body.style.opacity = '';
           active.delete(body);
         },
       });
@@ -302,16 +304,19 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
       body.style.overflow = 'hidden';
       body.style.display = 'block';
       body.style.height = '0px';
+      body.style.opacity = '0';
       d.setAttribute('open', '');
       const target = body.scrollHeight;
       const tween = gsap.to(body, {
         height: target,
-        duration: DURATION_OPEN,
+        opacity: 1,
+        duration: DURATION,
         ease: EASE,
         onComplete: () => {
           body.style.height = '';
           body.style.overflow = '';
           body.style.display = '';
+          body.style.opacity = '';
           active.delete(body);
         },
       });

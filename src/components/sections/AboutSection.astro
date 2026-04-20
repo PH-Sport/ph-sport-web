@@ -68,8 +68,42 @@ const FLAGS = {
   </div>
 
   <!-- 03 EQUIPO -->
-  <div class="abt-team" id="equipo">
-    <div class="abt-team__head">[equipo placeholder — Task 9]</div>
+  <div class="abt-team" id="equipo" aria-labelledby="about-team-title">
+    <div class="abt-team__head">
+      <div>
+        <div class="abt-eyebrow" style="color: var(--abt-gold);">{t('about.team.eyebrow')}</div>
+        <h2 id="about-team-title" class="abt-team__title">
+          {t('about.team.titlePre')}<span class="abt-gold">{t('about.team.titleAccent')}</span>{t('about.team.titlePost')}
+        </h2>
+      </div>
+      <div class="abt-team__meta">{t('about.team.meta')}</div>
+    </div>
+
+    <div class="abt-team-table" role="list">
+      {teamMembers.map((m) => (
+        <div class="abt-team-row" role="listitem" data-id={m.id}>
+          <span class="abt-team-row__idx">{m.index}</span>
+          <div class="abt-team-row__name">
+            <span class="abt-team-row__name-text">{m.name}</span>
+            <span class="abt-team-row__mobile-extras">
+              <span>{m.role}</span>
+              {m.country && <span>· {m.country}</span>}
+            </span>
+          </div>
+          <span class="abt-team-row__role">{m.role}</span>
+          <span class="abt-team-row__flag">
+            {m.nationality ? (
+              <Fragment>
+                <span class="abt-team-row__flag-svg" set:html={FLAGS[m.nationality]} />
+                <span>{m.country?.toUpperCase()}</span>
+              </Fragment>
+            ) : (
+              <span class="abt-team-row__flag-muted">{m.defaultLocation}</span>
+            )}
+          </span>
+        </div>
+      ))}
+    </div>
   </div>
 
   <!-- 04 PRESENCIA -->
@@ -295,8 +329,135 @@ const FLAGS = {
     }
   }
 
+  /* ── 03 EQUIPO ── */
+  .abt-team {
+    padding: clamp(72px, 10vw, 140px) var(--edge);
+    border-bottom: 1px solid var(--abt-line);
+  }
+  .abt-team__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: clamp(32px, 5vw, 64px);
+  }
+  .abt-team__title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(36px, 5vw, 64px);
+    letter-spacing: -0.02em;
+    margin: 10px 0 0;
+    line-height: 1;
+  }
+  .abt-team__meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-ink-faint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .abt-team-table {
+    border-top: 1px solid var(--abt-line-strong);
+  }
+  .abt-team-row {
+    display: grid;
+    grid-template-columns: 60px 1.4fr 1.2fr;
+    gap: 24px;
+    align-items: center;
+    padding-block: clamp(18px, 2.5vw, 28px);
+    border-bottom: 1px solid var(--abt-line);
+    transition: padding 300ms var(--ease-ph, ease), background 300ms var(--ease-ph, ease);
+  }
+  @media (hover: hover) {
+    .abt-team-row:hover {
+      padding-inline: 18px;
+      background: rgba(201, 164, 90, 0.04);
+    }
+    .abt-team-row:hover .abt-team-row__name-text {
+      color: var(--abt-gold);
+    }
+  }
+  .abt-team-row__idx {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-ink-faint);
+    letter-spacing: 0.15em;
+  }
+  .abt-team-row__name-text {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(22px, 2.4vw, 34px);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    transition: color 300ms var(--ease-ph, ease);
+  }
+  .abt-team-row__role {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-ink-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .abt-team-row__flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-ink-soft);
+    letter-spacing: 0.1em;
+  }
+  .abt-team-row__flag-svg {
+    display: inline-block;
+    width: 22px;
+    height: 14px;
+  }
+  .abt-team-row__flag-svg svg {
+    width: 100%;
+    height: 100%;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px var(--abt-line-strong);
+    display: block;
+  }
+  .abt-team-row__flag-muted {
+    color: var(--abt-ink-faint);
+    opacity: 0.5;
+  }
+  .abt-team-row__mobile-extras {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .abt-team-row {
+      grid-template-columns: 40px 1fr;
+      gap: 10px;
+      padding-block: 18px;
+    }
+    .abt-team-row__role,
+    .abt-team-row__flag {
+      display: none;
+    }
+    .abt-team-row__name {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .abt-team-row__mobile-extras {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--abt-ink-soft);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-style: normal;
+    }
+  }
+
   /* Placeholder sections (replaced in later tasks). */
-  .abt-team,
   .abt-presencia,
   .abt-closing {
     padding: clamp(72px, 10vw, 140px) var(--edge);

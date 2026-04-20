@@ -146,6 +146,45 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
 
     <div class="srv-areas__foot srv-mono">{t('services.areas.foot')}</div>
   </div>
+
+  {/* 03 — Model intro */}
+  <div class="srv-model">
+    <div class="srv-model__stem" aria-hidden="true"></div>
+    <div class="srv-model__inner">
+      <div class="srv-model__eyebrow">
+        <span class="srv-mono">{t('services.model.eyebrow')}</span>
+      </div>
+      <h2 class="srv-model__title">
+        {t('services.model.titleLead')}<em>{t('services.model.titleAccent')}</em>{t('services.model.titleTrail')}
+      </h2>
+      <p class="srv-model__lead">{t('services.model.lead')}</p>
+    </div>
+  </div>
+
+  {/* 04 — Six pillar blocks */}
+  <div class="srv-pillars" role="list">
+    {items.map((item, idx) => {
+      const roman = ['I', 'II', 'III', 'IV', 'V', 'VI'][idx];
+      const even = idx % 2 === 1;
+      return (
+        <article class:list={['srv-block', { 'srv-block--even': even }]} role="listitem">
+          <div class="srv-block__text">
+            <div class="srv-block__roman">{roman}</div>
+            <h3 class="srv-block__title">{item.title}</h3>
+            <p class="srv-block__body">{item.body}</p>
+            <div class="srv-block__tags">
+              {item.tags.map((tag) => (
+                <span class="srv-tag srv-mono">{tag}</span>
+              ))}
+            </div>
+          </div>
+          <div class="srv-block__img" aria-hidden="true">
+            <span class="srv-block__imgTag srv-mono">{roman} / VI</span>
+          </div>
+        </article>
+      );
+    })}
+  </div>
 </section>
 
 <style>
@@ -375,6 +414,141 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     .srv-area-row__toggle,
     .srv-area-row__toggle span,
     .srv-area-row__panel { transition: none !important; }
+  }
+
+  /* ── 03 Model intro ──────────────────────────────────── */
+  .srv-model {
+    border-top: 1px solid var(--srv-line);
+    padding: clamp(48px, 7vw, 96px) var(--srv-edge) clamp(56px, 8vw, 96px);
+    text-align: center;
+    position: relative;
+  }
+  .srv-model__stem {
+    width: 1px;
+    height: clamp(40px, 6vw, 72px);
+    background: var(--srv-line-strong);
+    margin: 0 auto clamp(24px, 3vw, 40px);
+  }
+  .srv-model__inner { max-width: 900px; margin: 0 auto; }
+  .srv-model__eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-bottom: clamp(16px, 2vw, 24px);
+  }
+  .srv-model__eyebrow::before,
+  .srv-model__eyebrow::after {
+    content: ""; width: 28px; height: 1px; background: var(--srv-gold);
+  }
+  .srv-model__eyebrow .srv-mono { color: var(--srv-gold); }
+  .srv-model__title {
+    font-family: var(--srv-display);
+    font-weight: 500;
+    font-size: clamp(28px, 4vw, 52px);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 0 0 clamp(18px, 2.5vw, 28px);
+    color: var(--srv-ink);
+  }
+  .srv-model__title em { font-style: italic; color: var(--srv-gold); font-weight: 400; }
+  .srv-model__lead {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--srv-ink-soft);
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* ── 04 Pillar blocks ────────────────────────────────── */
+  .srv-pillars { display: flex; flex-direction: column; }
+
+  .srv-block {
+    display: grid; grid-template-columns: 1fr 1fr;
+    min-height: clamp(420px, 58vw, 640px);
+    border-top: 1px solid var(--srv-line);
+  }
+  .srv-block:nth-child(even) { background: var(--srv-bg-2); }
+
+  .srv-block__text {
+    padding: clamp(48px, 7vw, 96px) var(--srv-edge);
+    display: flex; flex-direction: column; justify-content: center;
+    gap: clamp(16px, 2vw, 24px);
+  }
+  .srv-block__roman {
+    font-family: var(--srv-display);
+    font-style: italic;
+    font-weight: 500;
+    color: var(--srv-gold);
+    font-size: clamp(56px, 9vw, 120px);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .srv-block__title {
+    font-family: var(--srv-display);
+    font-weight: 500;
+    font-size: clamp(36px, 5.5vw, 72px);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0;
+    color: var(--srv-ink);
+  }
+  .srv-block__body {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--srv-ink-soft);
+    max-width: 480px;
+    margin: 0;
+  }
+  .srv-block__tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 4px;
+  }
+  .srv-tag {
+    display: inline-flex; align-items: center;
+    padding: 6px 12px;
+    border: 1px solid var(--srv-line-strong);
+    border-radius: 999px;
+    color: var(--srv-ink-soft);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    background: transparent;
+  }
+
+  .srv-block__img {
+    position: relative;
+    background:
+      repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 10px),
+      var(--srv-bg-2);
+    border-left: 1px solid var(--srv-line);
+    min-height: clamp(240px, 50vw, 520px);
+  }
+  .srv-block--even .srv-block__img { order: -1; border-left: 0; border-right: 1px solid var(--srv-line); }
+  .srv-block--even .srv-block__text { order: 0; }
+  .srv-block:nth-child(even) .srv-block__img {
+    background:
+      repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 10px),
+      var(--srv-bg-3);
+  }
+  .srv-block__imgTag {
+    position: absolute; top: 16px; left: 16px;
+    background: rgba(14, 14, 14, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    color: var(--srv-ink);
+    padding: 6px 10px;
+    border: 1px solid var(--srv-line);
+    border-radius: 4px;
+  }
+
+  @media (max-width: 900px) {
+    .srv-block { grid-template-columns: 1fr; min-height: 0; }
+    .srv-block__img,
+    .srv-block--even .srv-block__img {
+      order: -1;
+      aspect-ratio: 16 / 10;
+      border: 0; border-bottom: 1px solid var(--srv-line);
+      min-height: 0;
+    }
+    .srv-block--even .srv-block__text { order: 0; }
+    .srv-block__text { padding: clamp(40px, 8vw, 64px) var(--srv-edge); }
   }
 </style>
 

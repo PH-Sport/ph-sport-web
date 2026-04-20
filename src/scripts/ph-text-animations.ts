@@ -11,14 +11,40 @@ export const reducedMotion = (): boolean =>
 
 /**
  * Wraps each word in an overflow:hidden clip container (.ph-clip / .ph-clip-inner)
- * so GSAP can slide each word up independently (curtain-reveal effect).
+ * so GSAP can slide each word up independently (curtain-reveal effect). Walks
+ * child nodes so existing inline elements (e.g. `<span class="abt-gold">`) are
+ * preserved: their inner words get wrapped, but the wrapper element survives.
  */
 export function wrapWords(el: HTMLElement): HTMLElement[] {
-  const text = el.textContent?.trim() ?? '';
-  el.innerHTML = text
-    .split(/\s+/)
-    .map((w) => `<span class="ph-clip"><span class="ph-clip-inner">${w}</span></span>`)
-    .join(' ');
+  const makeClip = (word: string): HTMLSpanElement => {
+    const clip = document.createElement('span');
+    clip.className = 'ph-clip';
+    const inner = document.createElement('span');
+    inner.className = 'ph-clip-inner';
+    inner.textContent = word;
+    clip.appendChild(inner);
+    return clip;
+  };
+
+  const transformTextNode = (node: Text): Node[] =>
+    (node.textContent ?? '')
+      .split(/(\s+)/)
+      .filter((p) => p.length > 0)
+      .map((p) => (/^\s+$/.test(p) ? document.createTextNode(p) : makeClip(p)));
+
+  const transform = (parent: Element) => {
+    Array.from(parent.childNodes).forEach((child) => {
+      if (child.nodeType === Node.TEXT_NODE) {
+        const replacements = transformTextNode(child as Text);
+        replacements.forEach((r) => parent.insertBefore(r, child));
+        parent.removeChild(child);
+      } else if (child.nodeType === Node.ELEMENT_NODE) {
+        transform(child as Element);
+      }
+    });
+  };
+
+  transform(el);
   return Array.from(el.querySelectorAll<HTMLElement>('.ph-clip-inner'));
 }
 

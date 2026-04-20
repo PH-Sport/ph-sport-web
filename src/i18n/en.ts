@@ -150,9 +150,7 @@ const en: Record<TranslationKey, string> = {
   'about.manifesto.quotePost': ' that maximize their performance, stability, and long-term projection."',
   'about.manifesto.sig': '— PHSPORT · 360° SUPPORT',
 
-  // --- Equipo (página) ---
-  'team.title': 'PHSPORT team',
-  'team.subtitle': 'The people behind every career and every project.',
+  // --- Equipo (integrantes) ---
   'team.defaultLocation': 'SPAIN',
   'team.countries.arabia': 'PH Arabia',
   'team.countries.uk': 'PH UK',

@@ -148,9 +148,7 @@ const es = {
   'about.manifesto.quotePost': ' que maximizan su rendimiento, estabilidad y proyección a largo plazo."',
   'about.manifesto.sig': '— PHSPORT · ACOMPAÑAMIENTO 360º',
 
-  // --- Equipo (página) ---
-  'team.title': 'Equipo PHSPORT',
-  'team.subtitle': 'Las personas que impulsan cada carrera y cada proyecto.',
+  // --- Equipo (integrantes) ---
   'team.defaultLocation': 'ESPAÑA',
   'team.countries.arabia': 'PH Arabia',
   'team.countries.uk': 'PH UK',

@@ -228,3 +228,61 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
     initHeroVideo();
   });
 </script>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { reducedMotion, wrapWords } from '@/scripts/ph-text-animations';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initHeroAnimations(): void {
+    const hero = document.querySelector<HTMLElement>('.hero--home');
+    if (!hero) return;
+    if (reducedMotion()) return;
+
+    const lead = hero.querySelector<HTMLElement>('.hero-claim__lead');
+    const accent = hero.querySelector<HTMLElement>('.hero-claim__accent');
+    const claim = hero.querySelector<HTMLElement>('.hero-claim');
+    const scroll = hero.querySelector<HTMLElement>('.hero-scroll');
+
+    if (lead) {
+      const words = wrapWords(lead);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 1.0,
+        ease: 'power4.out',
+        stagger: 0.08,
+        delay: 0.2,
+      });
+    }
+    if (accent) {
+      const words = wrapWords(accent);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 1.0,
+        ease: 'power4.out',
+        stagger: 0.08,
+        delay: 0.4,
+      });
+    }
+    if (scroll) {
+      gsap.from(scroll, { opacity: 0, y: 12, duration: 0.8, ease: 'power2.out', delay: 0.9 });
+    }
+    if (claim) {
+      ScrollTrigger.create({
+        trigger: hero,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 0.8,
+        onUpdate: (self) => {
+          gsap.set(claim, { yPercent: self.progress * 20 });
+        },
+      });
+    }
+
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+  }
+
+  document.addEventListener('astro:page-load', initHeroAnimations);
+</script>

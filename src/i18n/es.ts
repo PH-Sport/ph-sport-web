@@ -55,7 +55,7 @@ const es = {
   'home.about.stats.team.label': 'Integrantes',
   'home.about.stats.countries.value': '6',
   'home.about.stats.countries.label': 'Países',
-  'home.about.stats.service.value': '360º',
+  'home.about.stats.service.value': '360°',
   'home.about.stats.service.label': 'Acompañamiento',
   'home.about.values.aria': 'Valores PHSPORT',
   'home.about.values.v1': 'Excelencia',

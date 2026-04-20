@@ -57,7 +57,7 @@ const en: Record<TranslationKey, string> = {
   'home.about.stats.team.label': 'Team members',
   'home.about.stats.countries.value': '6',
   'home.about.stats.countries.label': 'Countries',
-  'home.about.stats.service.value': '360º',
+  'home.about.stats.service.value': '360°',
   'home.about.stats.service.label': 'Support',
   'home.about.values.aria': 'PHSPORT values',
   'home.about.values.v1': 'Excellence',

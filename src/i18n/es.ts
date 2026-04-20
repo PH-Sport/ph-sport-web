@@ -113,28 +113,25 @@ const es = {
 
   // --- Servicios (página) ---
   'services.title': 'Servicios 360',
-  'services.subtitle':
-    'Cinco pilares para acompañar la carrera del futbolista: representación, planificación, asesoría, imagen y proyección internacional.',
-  'services.items.representation.title': 'Representación e intermediación',
-  'services.items.representation.body':
-    'Diseñamos un plan a corto, medio y largo plazo que se adapta al perfil, los objetivos y el momento profesional de cada futbolista.',
-  'services.items.representation.short': 'Plan alineado con tu perfil y tus objetivos',
-  'services.items.career.title': 'Planificación de carrera deportiva',
-  'services.items.career.body':
-    'Evaluamos oportunidades, fijamos hitos y acompañamos cada decisión con criterio, visión y compromiso.',
-  'services.items.career.short': 'Decisiones con visión en cada etapa',
-  'services.items.legal.title': 'Asesoramiento legal y financiero',
-  'services.items.legal.body':
-    'Apoyo jurídico en contratos, transferencias y derechos de imagen, junto a orientación financiera para una gestión responsable.',
-  'services.items.legal.short': 'Contratos, imagen y finanzas con rigor',
-  'services.items.image.title': 'Imagen, comunicación y marketing',
-  'services.items.image.body':
-    'Potenciamos la marca personal del jugador en redes y medios, y articulamos colaboraciones estratégicas con patrocinadores.',
-  'services.items.image.short': 'Marca personal, redes y partners',
-  'services.items.scouting.title': 'Red de scouting y clubes',
-  'services.items.scouting.body':
-    'Conectamos a nuestros jugadores con redes de scouting y clubes nacionales e internacionales para ampliar su proyección profesional.',
-  'services.items.scouting.short': 'Oportunidades más allá de las fronteras',
+  'services.subtitle': 'Seis pilares para acompañar la carrera del futbolista: prensa, rendimiento, media, family office, psicología y plan de acción.',
+  'services.items.press.title': 'Prensa',
+  'services.items.press.body': 'Imagen pública, relación con medios y posicionamiento estratégico del jugador en cada etapa.',
+  'services.items.press.short': 'Imagen, medios y posicionamiento',
+  'services.items.performance.title': 'Rendimiento',
+  'services.items.performance.body': 'Análisis físico, seguimiento continuo y optimización del rendimiento deportivo.',
+  'services.items.performance.short': 'Análisis y optimización física',
+  'services.items.media.title': 'Media',
+  'services.items.media.body': 'Estrategia digital, creación de contenido y gestión de redes sociales para construir la marca personal.',
+  'services.items.media.short': 'Contenido, redes y marca personal',
+  'services.items.familyOffice.title': 'Family Office',
+  'services.items.familyOffice.body': 'Gestión patrimonial, planificación fiscal y estructura financiera para el jugador y su familia.',
+  'services.items.familyOffice.short': 'Patrimonio, fiscalidad y estructura',
+  'services.items.psychology.title': 'Psicólogo',
+  'services.items.psychology.body': 'Preparación mental, gestión de la presión y acompañamiento competitivo durante toda la temporada.',
+  'services.items.psychology.short': 'Preparación mental y gestión de presión',
+  'services.items.actionPlan.title': 'Plan de Acción',
+  'services.items.actionPlan.body': 'Plan de carrera a corto, medio y largo plazo, con hitos claros y decisiones tomadas con criterio.',
+  'services.items.actionPlan.short': 'Carrera con hitos y criterio',
   'services.blocksAriaLabel': 'Áreas de servicio',
   'services.orbitInstructions':
     'Carrusel de servicios en tres dimensiones. Arrastra para girar o abre una tarjeta para ver el detalle.',

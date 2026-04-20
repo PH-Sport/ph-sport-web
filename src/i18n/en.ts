@@ -115,28 +115,25 @@ const en: Record<TranslationKey, string> = {
 
   // --- Servicios (página) ---
   'services.title': '360 services',
-  'services.subtitle':
-    'Five pillars to support a player\u2019s career: representation, planning, advisory, brand, and international reach.',
-  'services.items.representation.title': 'Representation and intermediation',
-  'services.items.representation.body':
-    'We build short-, mid-, and long-term plans tailored to each player\u2019s profile, goals, and stage of their career.',
-  'services.items.representation.short': 'A plan aligned with your profile and ambitions',
-  'services.items.career.title': 'Career planning',
-  'services.items.career.body':
-    'We assess opportunities, set milestones, and support every decision with judgement, vision, and commitment.',
-  'services.items.career.short': 'Clear direction at every step',
-  'services.items.legal.title': 'Legal and financial advisory',
-  'services.items.legal.body':
-    'Support on contracts, transfers, and image rights, plus financial guidance for responsible management.',
-  'services.items.legal.short': 'Contracts, image rights, and sound finances',
-  'services.items.image.title': 'Image, communications, and marketing',
-  'services.items.image.body':
-    'We grow the player\u2019s personal brand across social and traditional media, and shape strategic sponsor partnerships.',
-  'services.items.image.short': 'Brand, channels, and sponsors',
-  'services.items.scouting.title': 'Scouting and club network',
-  'services.items.scouting.body':
-    'We connect players with scouting networks and clubs at home and abroad to broaden their professional horizon.',
-  'services.items.scouting.short': 'Opportunities beyond borders',
+  'services.subtitle': 'Six pillars backing the footballer\u2019s career: press, performance, media, family office, psychology and action plan.',
+  'services.items.press.title': 'Press',
+  'services.items.press.body': 'Public image, media relations and strategic positioning of the player at every stage.',
+  'services.items.press.short': 'Image, media and positioning',
+  'services.items.performance.title': 'Performance',
+  'services.items.performance.body': 'Physical analysis, continuous monitoring and optimisation of athletic performance.',
+  'services.items.performance.short': 'Physical analysis and optimisation',
+  'services.items.media.title': 'Media',
+  'services.items.media.body': 'Digital strategy, content creation and social media management to build the personal brand.',
+  'services.items.media.short': 'Content, socials and personal brand',
+  'services.items.familyOffice.title': 'Family Office',
+  'services.items.familyOffice.body': 'Wealth management, tax planning and financial structure for the player and their family.',
+  'services.items.familyOffice.short': 'Wealth, tax and structure',
+  'services.items.psychology.title': 'Sport Psychology',
+  'services.items.psychology.body': 'Mental preparation, pressure management and competitive support throughout the season.',
+  'services.items.psychology.short': 'Mental prep and pressure management',
+  'services.items.actionPlan.title': 'Action Plan',
+  'services.items.actionPlan.body': 'Short, medium and long-term career plan with clear milestones and decisions taken with judgment.',
+  'services.items.actionPlan.short': 'Career milestones, with judgment',
   'services.blocksAriaLabel': 'Service areas',
   'services.orbitInstructions':
     'Three-dimensional service carousel. Drag to rotate or open a card for details.',

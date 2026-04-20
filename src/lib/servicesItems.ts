@@ -8,40 +8,46 @@ export type ServiceItem = {
 };
 
 /**
- * Lista única de servicios (órbita 3D y preview en home).
+ * Lista única de servicios (acordeón home y página de servicios).
  */
 export function getServicesItems(lang: Lang): ServiceItem[] {
   const t = useTranslations(lang);
   return [
     {
-      icon: 'users',
-      title: t('services.items.representation.title'),
-      body: t('services.items.representation.body'),
-      short: t('services.items.representation.short'),
+      icon: 'megaphone',
+      title: t('services.items.press.title'),
+      body: t('services.items.press.body'),
+      short: t('services.items.press.short'),
     },
     {
       icon: 'route',
-      title: t('services.items.career.title'),
-      body: t('services.items.career.body'),
-      short: t('services.items.career.short'),
-    },
-    {
-      icon: 'scale',
-      title: t('services.items.legal.title'),
-      body: t('services.items.legal.body'),
-      short: t('services.items.legal.short'),
-    },
-    {
-      icon: 'megaphone',
-      title: t('services.items.image.title'),
-      body: t('services.items.image.body'),
-      short: t('services.items.image.short'),
+      title: t('services.items.performance.title'),
+      body: t('services.items.performance.body'),
+      short: t('services.items.performance.short'),
     },
     {
       icon: 'globe',
-      title: t('services.items.scouting.title'),
-      body: t('services.items.scouting.body'),
-      short: t('services.items.scouting.short'),
+      title: t('services.items.media.title'),
+      body: t('services.items.media.body'),
+      short: t('services.items.media.short'),
+    },
+    {
+      icon: 'scale',
+      title: t('services.items.familyOffice.title'),
+      body: t('services.items.familyOffice.body'),
+      short: t('services.items.familyOffice.short'),
+    },
+    {
+      icon: 'users',
+      title: t('services.items.psychology.title'),
+      body: t('services.items.psychology.body'),
+      short: t('services.items.psychology.short'),
+    },
+    {
+      icon: 'route',
+      title: t('services.items.actionPlan.title'),
+      body: t('services.items.actionPlan.body'),
+      short: t('services.items.actionPlan.short'),
     },
   ];
 }

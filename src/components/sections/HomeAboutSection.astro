@@ -1,5 +1,4 @@
 ---
-import Button from '@/components/ui/Button.astro';
 import { useTranslations, type Lang } from '@/i18n/utils';
 
 interface Props {
@@ -8,162 +7,189 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-const isEn = lang === 'en';
-const aboutHref = isEn ? '/en/about' : '/sobre-nosotros';
+
+const aboutHref = lang === 'en' ? '/en/about/' : '/sobre-nosotros/';
 ---
 
-<section
-  id="sobre-nosotros"
-  class="home-about-section"
-  aria-labelledby="home-about-heading"
-  data-home-about
->
-  <div class="ph-section home-about-grid">
-    <div class="home-about-left" data-about-left>
-      <p class="home-about-eyebrow">{t('nav.about')}</p>
-      <div class="ph-divider home-about-divider"></div>
-      <h2 id="home-about-heading" class="home-about-statement">
-        {t('home.about.statement')}
-      </h2>
-    </div>
+<section class="home-about" id="sobre-nosotros" aria-labelledby="home-about-title">
+  <div class="home-about__inner">
+    <span class="home-about__eyebrow">{t('home.about.eyebrow')}</span>
+    <h2 class="home-about__title" id="home-about-title">
+      <span>{t('home.about.title')}</span>
+      <em>{t('home.about.titleAccent')}</em>
+    </h2>
+    <p class="home-about__body">{t('home.about.body')}</p>
+    <a class="home-about__cta" href={aboutHref}>
+      {t('home.about.cta')}
+      <span class="home-about__arrow" aria-hidden="true">→</span>
+    </a>
 
-    <div class="home-about-right" data-about-right>
-      <p class="home-about-body">{t('home.about.body')}</p>
-      <div class="home-about-cta">
-        <Button href={aboutHref} variant="secondary">
-          {t('home.about.cta')}
-        </Button>
+    <dl class="home-about__stats" aria-label={t('home.about.stats.aria')}>
+      <div class="home-about__stat">
+        <dt class="home-about__stat-value">{t('home.about.stats.team.value')}</dt>
+        <dd class="home-about__stat-label">{t('home.about.stats.team.label')}</dd>
       </div>
-    </div>
+      <div class="home-about__stat">
+        <dt class="home-about__stat-value">{t('home.about.stats.countries.value')}</dt>
+        <dd class="home-about__stat-label">{t('home.about.stats.countries.label')}</dd>
+      </div>
+      <div class="home-about__stat">
+        <dt class="home-about__stat-value">{t('home.about.stats.service.value')}</dt>
+        <dd class="home-about__stat-label">{t('home.about.stats.service.label')}</dd>
+      </div>
+    </dl>
+
+    <ul class="home-about__values" aria-label={t('home.about.values.aria')} role="list">
+      <li>{t('home.about.values.v1')}</li>
+      <li aria-hidden="true" class="home-about__values-sep">·</li>
+      <li>{t('home.about.values.v2')}</li>
+      <li aria-hidden="true" class="home-about__values-sep">·</li>
+      <li>{t('home.about.values.v3')}</li>
+    </ul>
   </div>
 </section>
 
 <style>
-  .home-about-section {
-    position: relative;
-    padding-block: 4rem 4.5rem;
-    background: var(--ph-section-bg);
-    border-top: 1px solid var(--color-ph-white-10);
+  .home-about {
+    padding: clamp(80px, 12vw, 160px) var(--ph-section-px, clamp(20px, 4vw, 48px));
+    background: var(--color-ph-black, #0d0f12);
+    color: var(--color-ph-white, #ffffff);
+    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
   }
 
-  @media (min-width: 1024px) {
-    .home-about-section {
-      padding-block: 6rem 7rem;
-    }
+  .home-about__inner {
+    max-width: 880px;
+    margin: 0 auto;
+    text-align: center;
   }
 
-  /* ── Split grid ──────────────────────────────────────────────────────────── */
-
-  .home-about-grid {
-    display: grid;
-    gap: 3rem;
-    grid-template-columns: 1fr;
+  .home-about__eyebrow {
+    display: inline-flex;
     align-items: center;
-  }
-
-  @media (min-width: 768px) {
-    .home-about-grid {
-      grid-template-columns: 3fr 2fr;
-      gap: 4rem;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .home-about-grid {
-      grid-template-columns: 3fr 2fr;
-      gap: 6rem;
-    }
-  }
-
-  /* ── Left: statement ─────────────────────────────────────────────────────── */
-
-  .home-about-left {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .home-about-eyebrow {
-    font-family: var(--font-body);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
+    gap: 10px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--color-ph-gold);
-    margin: 0;
+    color: var(--color-ph-gold, #d6b25e);
+  }
+  .home-about__eyebrow::before,
+  .home-about__eyebrow::after {
+    content: "";
+    width: 28px;
+    height: 1px;
+    background: var(--color-ph-gold, #d6b25e);
   }
 
-  .home-about-divider {
-    max-width: 10rem;
+  .home-about__title {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(32px, 5.5vw, 72px);
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    margin: 18px 0 0;
+    text-wrap: balance;
+  }
+  .home-about__title span { display: block; }
+  .home-about__title em {
+    display: block;
+    color: var(--color-ph-gold, #d6b25e);
+    font-style: italic;
+    font-weight: 400;
   }
 
-  .home-about-statement {
-    font-family: var(--font-display);
-    font-size: clamp(1.75rem, 4vw, 2.75rem);
-    font-weight: 900;
-    color: var(--color-ph-white);
-    letter-spacing: -0.025em;
-    line-height: 1.2;
-    margin: 0;
-  }
-
-  /* ── Right: text + CTA ───────────────────────────────────────────────────── */
-
-  .home-about-right {
-    display: flex;
-    flex-direction: column;
-    gap: 1.75rem;
-  }
-
-  .home-about-body {
-    margin: 0;
-    font-size: 1.0625rem;
+  .home-about__body {
+    margin: 24px auto 0;
+    max-width: 640px;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+    font-size: 16px;
     line-height: 1.65;
-    color: var(--color-ph-white-60);
   }
 
-  .home-about-cta {
+  .home-about__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: clamp(24px, 4vw, 40px);
+    padding: 14px 22px;
+    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
+    border-radius: 100px;
+    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
+    font-size: 13px;
+    color: var(--color-ph-white, #ffffff);
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .home-about__cta:hover {
+    border-color: var(--color-ph-gold, #d6b25e);
+    color: var(--color-ph-gold, #d6b25e);
+  }
+  .home-about__cta:hover .home-about__arrow { transform: translateX(4px); }
+  .home-about__arrow { transition: transform 0.2s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-about__cta,
+    .home-about__arrow { transition: none; }
+  }
+
+  .home-about__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin: clamp(56px, 8vw, 96px) 0 0;
+    padding: 0;
+    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+  }
+
+  .home-about__stat {
+    margin: 0;
+    padding: clamp(24px, 3vw, 40px) 8px;
+    border-right: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+  }
+  .home-about__stat:last-child { border-right: none; }
+
+  .home-about__stat-value {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(36px, 5vw, 64px);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--color-ph-gold, #d6b25e);
+    margin: 0;
+  }
+  .home-about__stat-label {
+    margin: 8px 0 0;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+  }
+
+  .home-about__values {
+    list-style: none;
+    padding: 0;
+    margin: clamp(32px, 5vw, 48px) 0 0;
     display: flex;
-    justify-content: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+  }
+  .home-about__values li { margin: 0; }
+  .home-about__values-sep { color: var(--color-ph-gold, #d6b25e); }
+
+  @media (max-width: 560px) {
+    .home-about__stats { grid-template-columns: 1fr; }
+    .home-about__stat {
+      border-right: none;
+      border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    }
+    .home-about__stat:last-child { border-bottom: none; }
   }
 </style>
-
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import { reducedMotion, wrapWords } from '@/scripts/ph-text-animations';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  document.addEventListener('astro:page-load', () => {
-    const section = document.querySelector<HTMLElement>('[data-home-about]');
-    if (!section || reducedMotion()) return;
-
-    const left  = section.querySelector<HTMLElement>('[data-about-left]');
-    const right = section.querySelector<HTMLElement>('[data-about-right]');
-
-    const tl = gsap.timeline({
-      scrollTrigger: { trigger: section, start: 'top 75%', once: true },
-    });
-
-    if (left) {
-      const statement = left.querySelector<HTMLElement>('.home-about-statement');
-      if (statement) {
-        const words = wrapWords(statement);
-        gsap.set(statement, { opacity: 1 });
-        tl.from(words, { yPercent: 115, duration: 0.85, stagger: 0.05, ease: 'power4.out' }, 0);
-      }
-      const eyebrow = left.querySelector<HTMLElement>('.home-about-eyebrow');
-      const divider = left.querySelector<HTMLElement>('.home-about-divider');
-      if (eyebrow) tl.from(eyebrow, { opacity: 0, y: 8, duration: 0.5, ease: 'power3.out' }, 0);
-      if (divider) {
-        gsap.set(divider, { opacity: 1 });
-        tl.from(divider, { scaleX: 0, transformOrigin: 'left center', duration: 0.6, ease: 'expo.out' }, 0.1);
-      }
-    }
-
-    if (right) {
-      tl.from(right, { opacity: 0, y: 20, duration: 0.7, ease: 'power3.out' }, 0.25);
-    }
-  });
-</script>

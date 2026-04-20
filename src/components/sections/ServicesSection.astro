@@ -272,6 +272,11 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     line-height: 0.98;
     margin: 0;
     color: var(--srv-ink);
+    visibility: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .srv-hero__title { visibility: visible; }
   }
   .srv-hero__title em {
     font-style: italic;
@@ -284,6 +289,11 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     color: var(--srv-ink-soft);
     max-width: 420px;
     margin: 0;
+    visibility: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .srv-hero__lead { visibility: visible; }
   }
 
   @media (max-width: 900px) {
@@ -706,4 +716,136 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
   }
 
   document.addEventListener('astro:page-load', initSrvAccordion);
+</script>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import {
+    reducedMotion, wrapWords, trackingReveal,
+    clipPathReveal, magneticHover,
+  } from '@/scripts/ph-text-animations';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initServicesAnimations(): void {
+    const section = document.querySelector<HTMLElement>('.srv');
+    if (!section) return;
+    if (reducedMotion()) return;
+
+    // ── Hero block ───────────────────────────────────────
+    const heroTitle = section.querySelector<HTMLElement>('.srv-hero__title');
+    const heroLead = section.querySelector<HTMLElement>('.srv-hero__lead');
+    const heroRule = section.querySelector<HTMLElement>('.srv-rule');
+
+    if (heroTitle) {
+      // Reveal from FOUC guard so GSAP owns the first visible frame.
+      heroTitle.style.visibility = 'visible';
+      const words = wrapWords(heroTitle);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 1.0,
+        ease: 'power4.out',
+        stagger: 0.08,
+        delay: 0.1,
+      });
+    }
+    if (heroLead) {
+      heroLead.style.visibility = 'visible';
+      gsap.from(heroLead, {
+        opacity: 0,
+        y: 18,
+        duration: 0.9,
+        ease: 'power3.out',
+        delay: 0.45,
+      });
+    }
+    if (heroRule) {
+      gsap.from(heroRule, {
+        scaleX: 0,
+        transformOrigin: 'left center',
+        duration: 1.0,
+        ease: 'expo.out',
+        delay: 0.6,
+      });
+    }
+
+    // ── Areas head ───────────────────────────────────────
+    const areasHead = section.querySelector<HTMLElement>('.srv-areas__head');
+    const areasEyebrow = section.querySelector<HTMLElement>('.srv-areas__eyebrow .srv-mono');
+    const areasTitle = section.querySelector<HTMLElement>('.srv-areas__title');
+    if (areasEyebrow && areasHead) {
+      trackingReveal(areasEyebrow, { trigger: areasHead, start: 'top 80%', once: true });
+    }
+    if (areasTitle && areasHead) {
+      const words = wrapWords(areasTitle);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.9,
+        ease: 'power4.out',
+        stagger: 0.08,
+        scrollTrigger: { trigger: areasHead, start: 'top 80%', once: true },
+      });
+    }
+
+    // ── 6 pillar blocks ──────────────────────────────────
+    const pillars = section.querySelectorAll<HTMLElement>('.srv-block');
+    pillars.forEach((block, idx) => {
+      const img = block.querySelector<HTMLElement>('.srv-block__img');
+      if (img) {
+        const dir = idx % 2 === 0 ? 'left' : 'right';
+        clipPathReveal(img, dir, { trigger: block, start: 'top 75%', once: true });
+      }
+      const blockTitle = block.querySelector<HTMLElement>('.srv-block__title');
+      if (blockTitle) {
+        const words = wrapWords(blockTitle);
+        gsap.from(words, {
+          yPercent: 115,
+          duration: 0.9,
+          ease: 'power4.out',
+          stagger: 0.08,
+          scrollTrigger: { trigger: block, start: 'top 75%', once: true },
+        });
+      }
+      const blockBody = block.querySelector<HTMLElement>('.srv-block__body');
+      if (blockBody) {
+        gsap.from(blockBody, {
+          opacity: 0,
+          y: 18,
+          duration: 0.8,
+          ease: 'power3.out',
+          delay: 0.15,
+          scrollTrigger: { trigger: block, start: 'top 75%', once: true },
+        });
+      }
+    });
+
+    // ── Manifest ─────────────────────────────────────────
+    // Note: no .srv-manifest__accent element exists in markup; the accent is
+    // an <em> inside .srv-manifest__body. scrambleReveal is skipped.
+    // wrapWords is applied to the full body paragraph instead.
+    const manifest = section.querySelector<HTMLElement>('.srv-manifest');
+    const manifestBody = section.querySelector<HTMLElement>('.srv-manifest__body');
+    if (manifestBody && manifest) {
+      const words = wrapWords(manifestBody);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.9,
+        ease: 'power4.out',
+        stagger: 0.05,
+        scrollTrigger: { trigger: manifest, start: 'top 80%', once: true },
+      });
+    }
+
+    // ── Final CTA ────────────────────────────────────────
+    // magneticHover targets the actual anchor button, not the container div.
+    const ctaBtn = section.querySelector<HTMLElement>('.srv-cta__btn');
+    if (ctaBtn) {
+      magneticHover(ctaBtn, 0.3);
+    }
+
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+  }
+
+  document.addEventListener('astro:page-load', initServicesAnimations);
 </script>

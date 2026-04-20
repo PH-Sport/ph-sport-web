@@ -84,18 +84,25 @@ const en: Record<TranslationKey, string> = {
   'players.title': 'Talent we represent',
   'players.subtitle':
     'Elite players and coaches united by the same professional vision.',
-  'players.subsection.players': 'Players',
-  'players.subsection.coaches': 'Coaches',
-  'players.tabs.aria': 'Choose between players and coaches',
   'players.club.none': 'No club',
-  'players.sort.label': 'Order',
-  'players.sort.aria': 'Choose list order',
-  'players.sort.option.default': 'Default',
-  'players.sort.option.az': 'A-Z',
-  'players.sort.option.za': 'Z-A',
   'players.back': 'Back to players',
   'players.empty': 'No players available.',
   'players.detail.bioEmpty': 'More about this profile coming soon.',
+
+  // --- Talents (page V3) ---
+  'talents.eyebrow': '— Talents',
+  'talents.title': 'The ',
+  'talents.titleAccent': 'roster',
+  'talents.lead': 'Elite footballers with international projection. Each career, a distinct project.',
+  'talents.search.placeholder': 'Search by name…',
+  'talents.search.label': 'Search players',
+  'talents.search.clear': 'Clear search',
+  'talents.sort.label': 'Sort',
+  'talents.sort.default': 'Default',
+  'talents.sort.az': 'A-Z',
+  'talents.sort.za': 'Z-A',
+  'talents.empty.filter': 'No results for your search.',
+  'talents.reset': 'Clear filters',
 
   // --- Sobre nosotros ---
   'about.title': 'About PHSPORT',

@@ -82,18 +82,25 @@ const es = {
   'players.title': 'Talento que representamos',
   'players.subtitle':
     'Jugadores y entrenadores de élite, unidos por una misma visión profesional.',
-  'players.subsection.players': 'Jugadores',
-  'players.subsection.coaches': 'Entrenadores',
-  'players.tabs.aria': 'Elegir entre jugadores y entrenadores',
   'players.club.none': 'Sin club',
-  'players.sort.label': 'Orden',
-  'players.sort.aria': 'Elegir orden de la lista',
-  'players.sort.option.default': 'Predeterminado',
-  'players.sort.option.az': 'A-Z',
-  'players.sort.option.za': 'Z-A',
   'players.back': 'Volver a jugadores',
   'players.empty': 'No hay jugadores disponibles.',
   'players.detail.bioEmpty': 'Próximamente más información sobre este perfil.',
+
+  // --- Talentos (página V3) ---
+  'talents.eyebrow': '— Talentos',
+  'talents.title': 'El ',
+  'talents.titleAccent': 'roster',
+  'talents.lead': 'Futbolistas profesionales con proyección internacional. Cada carrera, un proyecto distinto.',
+  'talents.search.placeholder': 'Buscar por nombre…',
+  'talents.search.label': 'Buscar jugadores',
+  'talents.search.clear': 'Limpiar búsqueda',
+  'talents.sort.label': 'Orden',
+  'talents.sort.default': 'Predeterminado',
+  'talents.sort.az': 'A-Z',
+  'talents.sort.za': 'Z-A',
+  'talents.empty.filter': 'No hay resultados para tu búsqueda.',
+  'talents.reset': 'Limpiar filtros',
 
   // --- Sobre nosotros ---
   'about.title': 'Sobre PHSPORT',

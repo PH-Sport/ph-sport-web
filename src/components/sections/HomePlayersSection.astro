@@ -30,7 +30,7 @@ const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
       <ul class="home-players__grid" role="list">
         {topThree.map((player, idx) => (
           <li class={`home-players__item home-players__item--${idx + 1}`}>
-            <a class="home-players__card" href={player.paths[lang]}>
+            <div class="home-players__card">
               <div class="home-players__photo">
                 <img src={player.photoSrc} alt={player.name} loading="lazy" decoding="async" />
               </div>
@@ -41,7 +41,7 @@ const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
                 <span class="home-players__club">{player.subtitle}</span>
               </div>
               <span class="home-players__underline" aria-hidden="true"></span>
-            </a>
+            </div>
           </li>
         ))}
       </ul>
@@ -205,10 +205,6 @@ const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
   .home-players__card:hover .home-players__corner { opacity: 1; }
   .home-players__card:hover .home-players__underline { transform: scaleX(1); }
 
-  .home-players__card:focus-visible {
-    outline: 2px solid var(--color-ph-gold, #d6b25e);
-    outline-offset: 2px;
-  }
 
   @media (prefers-reduced-motion: reduce) {
     .home-players__card,

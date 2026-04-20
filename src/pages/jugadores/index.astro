@@ -1,11 +1,16 @@
 ---
 import BaseLayout from '@/components/layout/BaseLayout.astro';
-import PlayersGrid from '@/components/sections/PlayersGrid.astro';
+import TalentsSection from '@/components/sections/TalentsSection.astro';
 import { useTranslations, type Lang } from '@/i18n/utils';
 import { SITE_URL } from '@/lib/constants';
+import { buildPlayerDetailPayloadsForLang, getAllRosterEntries } from '@/lib/playerDetail';
 
 const lang: Lang = 'es';
 const t = useTranslations(lang);
+
+const rosterPlayers = getAllRosterEntries().filter((e) => e.role === 'player');
+const payloads = await buildPlayerDetailPayloadsForLang(lang);
+const players = rosterPlayers.map((e) => payloads[e.slug]).filter(Boolean);
 ---
 
 <BaseLayout
@@ -14,5 +19,5 @@ const t = useTranslations(lang);
   lang={lang}
   canonical={`${SITE_URL}/jugadores/`}
 >
-  <PlayersGrid lang={lang} />
+  <TalentsSection lang={lang} players={players} />
 </BaseLayout>

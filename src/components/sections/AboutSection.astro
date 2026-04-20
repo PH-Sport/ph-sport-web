@@ -581,3 +581,178 @@ const FLAGS = {
     text-transform: uppercase;
   }
 </style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import {
+    reducedMotion,
+    wrapWords,
+    splitWords,
+    trackingReveal,
+  } from '@/scripts/ph-text-animations';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initAboutAnimations(): void {
+    const section = document.querySelector<HTMLElement>('.about-section');
+    if (!section) return;
+
+    if (reducedMotion()) {
+      // Ensure all content is visible without animating.
+      section.querySelectorAll<HTMLElement>('.abt-team-row').forEach((r) => {
+        r.style.opacity = '1';
+        r.style.transform = 'none';
+      });
+      return;
+    }
+
+    // ── Hero ──
+    const heroEyebrow = section.querySelector<HTMLElement>('.abt-hero .abt-eyebrow');
+    if (heroEyebrow) trackingReveal(heroEyebrow, { trigger: heroEyebrow, start: 'top 88%', once: true });
+
+    const heroTitle = section.querySelector<HTMLElement>('.abt-hero__title');
+    if (heroTitle) {
+      const words = wrapWords(heroTitle);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.85,
+        stagger: 0.07,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: heroTitle, start: 'top 82%', once: true },
+      });
+    }
+
+    section.querySelectorAll<HTMLElement>('.abt-hero__body').forEach((body) => {
+      const spans = splitWords(body);
+      gsap.from(spans, {
+        opacity: 0,
+        filter: 'blur(6px)',
+        y: 6,
+        duration: 0.6,
+        stagger: 0.025,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: body, start: 'top 88%', once: true },
+      });
+    });
+
+    const heroCtas = section.querySelectorAll<HTMLElement>('.abt-hero__cta .abt-btn');
+    if (heroCtas.length) {
+      gsap.from(heroCtas, {
+        opacity: 0,
+        y: 12,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: heroCtas[0], start: 'top 92%', once: true },
+      });
+    }
+
+    const heroValues = section.querySelector<HTMLElement>('.abt-hero__values');
+    if (heroValues) trackingReveal(heroValues, { trigger: heroValues, start: 'top 92%', once: true });
+
+    // ── Historia ──
+    const historiaTitle = section.querySelector<HTMLElement>('.abt-historia__title');
+    if (historiaTitle) {
+      const words = wrapWords(historiaTitle);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.8,
+        stagger: 0.06,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: historiaTitle, start: 'top 82%', once: true },
+      });
+    }
+    section.querySelectorAll<HTMLElement>('.abt-historia__body p').forEach((p) => {
+      const spans = splitWords(p);
+      gsap.from(spans, {
+        opacity: 0,
+        filter: 'blur(6px)',
+        y: 5,
+        duration: 0.55,
+        stagger: 0.02,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: p, start: 'top 88%', once: true },
+      });
+    });
+
+    // ── Equipo ──
+    const teamEyebrow = section.querySelector<HTMLElement>('.abt-team .abt-eyebrow');
+    if (teamEyebrow) trackingReveal(teamEyebrow, { trigger: teamEyebrow, start: 'top 88%', once: true });
+
+    const teamTitle = section.querySelector<HTMLElement>('.abt-team__title');
+    if (teamTitle) {
+      const words = wrapWords(teamTitle);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.8,
+        stagger: 0.06,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: teamTitle, start: 'top 82%', once: true },
+      });
+    }
+
+    const teamMeta = section.querySelector<HTMLElement>('.abt-team__meta');
+    if (teamMeta) trackingReveal(teamMeta, { trigger: teamMeta, start: 'top 92%', once: true });
+
+    const teamTable = section.querySelector<HTMLElement>('.abt-team-table');
+    const teamRows = section.querySelectorAll<HTMLElement>('.abt-team-row');
+    if (teamTable && teamRows.length) {
+      gsap.set(teamRows, { opacity: 0, y: 14 });
+      gsap.to(teamRows, {
+        opacity: 1,
+        y: 0,
+        duration: 0.45,
+        stagger: { each: 0.04, from: 'start' },
+        ease: 'power3.out',
+        scrollTrigger: { trigger: teamTable, start: 'top 88%', once: true },
+        onComplete: () => {
+          gsap.set(teamRows, { clearProps: 'opacity,transform' });
+        },
+      });
+      // Safety net — ensure rows are visible even if ScrollTrigger misfires.
+      window.setTimeout(() => {
+        teamRows.forEach((r) => {
+          r.style.opacity = '1';
+          r.style.transform = 'none';
+        });
+      }, 2200);
+    }
+
+    // ── Presencia ──
+    const presenciaEyebrow = section.querySelector<HTMLElement>('.abt-presencia .abt-eyebrow');
+    if (presenciaEyebrow) trackingReveal(presenciaEyebrow, { trigger: presenciaEyebrow, start: 'top 92%', once: true });
+
+    const presenciaLeft = section.querySelector<HTMLElement>('.abt-presencia__left');
+    const presenciaRight = section.querySelector<HTMLElement>('.abt-presencia__right');
+    if (presenciaLeft && presenciaRight) {
+      gsap.from([presenciaLeft, presenciaRight], {
+        opacity: 0,
+        y: 20,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: presenciaLeft, start: 'top 88%', once: true },
+      });
+    }
+
+    // ── Cierre ──
+    const closingQuote = section.querySelector<HTMLElement>('.abt-closing__quote');
+    if (closingQuote) {
+      const words = wrapWords(closingQuote);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.85,
+        stagger: 0.05,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: closingQuote, start: 'top 82%', once: true },
+      });
+    }
+    const closingSig = section.querySelector<HTMLElement>('.abt-closing__sig');
+    if (closingSig) trackingReveal(closingSig, { trigger: closingSig, start: 'top 92%', once: true });
+
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+  }
+
+  document.addEventListener('astro:page-load', initAboutAnimations);
+</script>

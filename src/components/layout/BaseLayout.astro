@@ -1,6 +1,6 @@
 ---
 import '@/styles/global.css';
-import { ViewTransitions, fade } from 'astro:transitions';
+import { ClientRouter, fade } from 'astro:transitions';
 import Header from './Header.astro';
 import Footer from './Footer.astro';
 import { useTranslations, getAlternateLangUrl, type Lang } from '@/i18n/utils';
@@ -46,7 +46,7 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
     <link rel="preload" href="/fonts/sohne/sohne-dreiviertelfett.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/sohne/sohne-extrafett.woff2" as="font" type="font/woff2" crossorigin />
 
-    <ViewTransitions />
+    <ClientRouter />
   </head>
   <body>
     <div class="bg-logo-parallax" aria-hidden="true" role="presentation">

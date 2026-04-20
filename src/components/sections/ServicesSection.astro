@@ -731,8 +731,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, wrapWords, trackingReveal,
-    clipPathReveal, magneticHover,
+    reducedMotion, wrapWords, trackingReveal, clipPathReveal,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -844,13 +843,6 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
         stagger: 0.05,
         scrollTrigger: { trigger: manifest, start: 'top 80%', once: true },
       });
-    }
-
-    // ── Final CTA ────────────────────────────────────────
-    // magneticHover targets the actual anchor button, not the container div.
-    const ctaBtn = section.querySelector<HTMLElement>('.srv-cta__btn');
-    if (ctaBtn) {
-      magneticHover(ctaBtn, 0.3);
     }
 
     requestAnimationFrame(() => ScrollTrigger.refresh());

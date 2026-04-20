@@ -227,7 +227,7 @@ const aboutHref = lang === 'en' ? '/en/about/' : '/sobre-nosotros/';
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, wrapWords, trackingReveal, counterReveal, magneticHover,
+    reducedMotion, wrapWords, trackingReveal, counterReveal,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -243,7 +243,6 @@ const aboutHref = lang === 'en' ? '/en/about/' : '/sobre-nosotros/';
     const head = section.querySelector<HTMLElement>('.home-about__head');
     const stats = section.querySelector<HTMLElement>('.home-about__stats');
     const statValues = section.querySelectorAll<HTMLElement>('.home-about__stat-value[data-counter]');
-    const cta = section.querySelector<HTMLElement>('.home-about__cta');
 
     if (eyebrow && head) {
       trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
@@ -273,9 +272,6 @@ const aboutHref = lang === 'en' ? '/en/about/' : '/sobre-nosotros/';
         const target = Number(el.dataset.counter ?? el.textContent ?? '0');
         counterReveal(el, target, { trigger: stats, start: 'top 82%', once: true });
       });
-    }
-    if (cta) {
-      magneticHover(cta, 0.3);
     }
 
     requestAnimationFrame(() => ScrollTrigger.refresh());

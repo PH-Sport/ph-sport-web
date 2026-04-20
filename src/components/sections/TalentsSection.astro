@@ -50,7 +50,7 @@ const t = useTranslations(lang);
 
     <label class="talents__sort">
       <span class="talents__sort-label">{t('talents.sort.label')}</span>
-      <select class="talents__sort-select" data-talents-sort>
+      <select class="talents__sort-select" data-talents-sort aria-label={t('talents.sort.label')}>
         <option value="default">{t('talents.sort.default')}</option>
         <option value="az">{t('talents.sort.az')}</option>
         <option value="za">{t('talents.sort.za')}</option>
@@ -84,7 +84,7 @@ const t = useTranslations(lang);
     ))}
   </ul>
 
-  <p class="talents__empty" data-talents-empty hidden>
+  <p class="talents__empty" data-talents-empty role="status" hidden>
     {t('talents.empty.filter')}
     <button type="button" class="talents__reset" data-talents-reset>
       {t('talents.reset')}

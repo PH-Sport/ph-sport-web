@@ -13,7 +13,6 @@ const en: Record<TranslationKey, string> = {
   // --- Navegación ---
   'nav.home': 'Home',
   'nav.players': 'Players',
-  'nav.team': 'Team',
   'nav.services': 'Services',
   'nav.about': 'About',
   'nav.aria.main': 'Main navigation',

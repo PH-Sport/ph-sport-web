@@ -11,7 +11,6 @@ const es = {
   // --- Navegación ---
   'nav.home': 'Inicio',
   'nav.players': 'Jugadores',
-  'nav.team': 'Equipo',
   'nav.services': 'Servicios',
   'nav.about': 'Sobre nosotros',
   'nav.aria.main': 'Navegación principal',

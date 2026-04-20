@@ -51,7 +51,6 @@ const STATIC_ROUTES: Array<{ es: string; en: string }> = [
   { es: '/',               en: '/en/' },
   { es: '/sobre-nosotros', en: '/en/about' },
   { es: '/jugadores/',     en: '/en/players/' },
-  { es: '/equipo',         en: '/en/team' },
   { es: '/servicios',      en: '/en/services' },
 ];
 

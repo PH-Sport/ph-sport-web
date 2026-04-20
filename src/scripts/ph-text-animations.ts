@@ -185,8 +185,8 @@ export function magneticHover(el: HTMLElement, strength = 0.3): () => void {
 // ── Clip-path reveal ──────────────────────────────────────────────────────────
 /**
  * Animates `clipPath: inset(…)` from fully clipped (from a side) to fully open.
- * No-ops under reduced motion (caller is expected to gate too, but this is a
- * safety net for when reduced-motion check is external).
+ * Caller is responsible for gating on `reducedMotion()` — follows the same
+ * pattern as `trackingReveal` and `counterReveal` in this module.
  */
 export function clipPathReveal(
   el: HTMLElement,

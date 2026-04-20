@@ -3,6 +3,7 @@ type BaseProps = {
   href?: string;
   variant?: 'primary' | 'secondary';
   class?: string;
+  type?: 'button' | 'submit' | 'reset';
 };
 
 type Props = BaseProps &
@@ -15,6 +16,7 @@ const {
   href,
   variant = 'primary',
   class: className = '',
+  type = 'button',
   ...rest
 } = Astro.props;
 ---
@@ -24,7 +26,7 @@ const {
     <span class="btn-label"><slot /></span>
   </a>
 ) : (
-  <button class:list={['btn', `btn--${variant}`, className]} {...rest}>
+  <button type={type} class:list={['btn', `btn--${variant}`, className]} {...rest}>
     <span class="btn-label"><slot /></span>
   </button>
 )}

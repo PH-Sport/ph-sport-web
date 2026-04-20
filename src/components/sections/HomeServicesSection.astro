@@ -262,5 +262,86 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
     requestAnimationFrame(() => ScrollTrigger.refresh());
   }
 
-  document.addEventListener('astro:page-load', initHomeServicesAnimations);
+  function initHomeServicesAccordion(): void {
+    if (reducedMotion()) return;
+    const details = document.querySelectorAll<HTMLDetailsElement>('.home-services__row');
+    if (!details.length) return;
+
+    const DURATION_OPEN = 0.45;
+    const DURATION_CLOSE = 0.4;
+    const EASE = 'power3.out';
+    const active = new WeakMap<HTMLElement, gsap.core.Tween>();
+
+    const animateClose = (d: HTMLDetailsElement): void => {
+      const body = d.querySelector<HTMLElement>('.home-services__body');
+      if (!body) { d.removeAttribute('open'); return; }
+      active.get(body)?.kill();
+      const current = body.offsetHeight;
+      body.style.overflow = 'hidden';
+      body.style.display = 'block';
+      body.style.height = current + 'px';
+      d.removeAttribute('open');
+      const tween = gsap.to(body, {
+        height: 0,
+        duration: DURATION_CLOSE,
+        ease: EASE,
+        onComplete: () => {
+          body.style.height = '';
+          body.style.overflow = '';
+          body.style.display = '';
+          active.delete(body);
+        },
+      });
+      active.set(body, tween);
+    };
+
+    const animateOpen = (d: HTMLDetailsElement): void => {
+      const body = d.querySelector<HTMLElement>('.home-services__body');
+      if (!body) { d.setAttribute('open', ''); return; }
+      active.get(body)?.kill();
+      body.style.overflow = 'hidden';
+      body.style.display = 'block';
+      body.style.height = '0px';
+      d.setAttribute('open', '');
+      const target = body.scrollHeight;
+      const tween = gsap.to(body, {
+        height: target,
+        duration: DURATION_OPEN,
+        ease: EASE,
+        onComplete: () => {
+          body.style.height = '';
+          body.style.overflow = '';
+          body.style.display = '';
+          active.delete(body);
+        },
+      });
+      active.set(body, tween);
+    };
+
+    details.forEach((d) => {
+      const summary = d.querySelector<HTMLElement>('summary');
+      if (!summary) return;
+      summary.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (d.hasAttribute('open')) {
+          animateClose(d);
+          return;
+        }
+        const name = d.getAttribute('name');
+        if (name) {
+          document.querySelectorAll<HTMLDetailsElement>(
+            `details[name="${name}"][open]`,
+          ).forEach((other) => {
+            if (other !== d) animateClose(other);
+          });
+        }
+        animateOpen(d);
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    initHomeServicesAnimations();
+    initHomeServicesAccordion();
+  });
 </script>

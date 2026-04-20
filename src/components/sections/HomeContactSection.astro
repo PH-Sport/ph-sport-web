@@ -1,0 +1,215 @@
+---
+import { useTranslations, type Lang } from '@/i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section class="home-contact" id="contacto" aria-labelledby="home-contact-title">
+  <div class="home-contact__grid">
+    <header class="home-contact__head">
+      <span class="home-contact__eyebrow">{t('home.contact.eyebrow')}</span>
+      <h2 class="home-contact__title" id="home-contact-title">{t('home.contact.title')}</h2>
+      <p class="home-contact__lead">{t('home.contact.lead')}</p>
+      <div class="home-contact__email">
+        <span class="home-contact__email-label">{t('home.contact.emailLabel')}</span>
+        <a href={`mailto:${t('home.contact.email')}`}>{t('home.contact.email')}</a>
+      </div>
+    </header>
+
+    <form class="home-contact__form" action="#" onsubmit="event.preventDefault();">
+      <label class="home-contact__field">
+        <span>{t('home.contact.form.name')}</span>
+        <input type="text" name="name" autocomplete="name" required />
+      </label>
+      <label class="home-contact__field">
+        <span>{t('home.contact.form.email')}</span>
+        <input type="email" name="email" autocomplete="email" required />
+      </label>
+      <label class="home-contact__field">
+        <span>{t('home.contact.form.role')}</span>
+        <select name="role" required>
+          <option value="">—</option>
+          <option value="player">{t('home.contact.form.role.player')}</option>
+          <option value="club">{t('home.contact.form.role.club')}</option>
+          <option value="brand">{t('home.contact.form.role.brand')}</option>
+          <option value="other">{t('home.contact.form.role.other')}</option>
+        </select>
+      </label>
+      <label class="home-contact__field home-contact__field--full">
+        <span>{t('home.contact.form.message')}</span>
+        <textarea name="message" rows="4" required></textarea>
+      </label>
+      <button type="submit" class="home-contact__submit">
+        {t('home.contact.form.submit')}
+        <span aria-hidden="true">→</span>
+      </button>
+    </form>
+  </div>
+</section>
+
+<style>
+  .home-contact {
+    padding: clamp(80px, 10vw, 140px) var(--ph-section-px, clamp(20px, 4vw, 48px));
+    background: var(--color-ph-bg-2, #15171b);
+    color: var(--color-ph-white, #ffffff);
+    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+  }
+
+  .home-contact__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(40px, 6vw, 96px);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .home-contact__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .home-contact__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ph-gold, #d6b25e);
+  }
+  .home-contact__eyebrow::before {
+    content: "";
+    width: 28px;
+    height: 1px;
+    background: var(--color-ph-gold, #d6b25e);
+  }
+
+  .home-contact__title {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(36px, 6vw, 72px);
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    margin: 14px 0 0;
+  }
+
+  .home-contact__lead {
+    margin: 18px 0 0;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+    font-size: 15px;
+    line-height: 1.65;
+    max-width: 440px;
+  }
+
+  .home-contact__email {
+    margin-top: clamp(24px, 4vw, 40px);
+    padding-top: 24px;
+    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-self: stretch;
+  }
+  .home-contact__email-label {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+  }
+  .home-contact__email a {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-size: clamp(20px, 2.4vw, 28px);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--color-ph-white, #ffffff);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .home-contact__email a:hover { color: var(--color-ph-gold, #d6b25e); }
+
+  .home-contact__form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-content: start;
+  }
+
+  .home-contact__field { display: flex; flex-direction: column; gap: 8px; }
+  .home-contact__field--full { grid-column: 1 / -1; }
+
+  .home-contact__field > span {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+  }
+
+  .home-contact__field input,
+  .home-contact__field select,
+  .home-contact__field textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
+    color: var(--color-ph-white, #ffffff);
+    font: inherit;
+    font-size: 15px;
+    padding: 10px 0;
+    outline: none;
+    transition: border-color 0.2s;
+    border-radius: 0;
+  }
+  .home-contact__field textarea { resize: vertical; font-family: inherit; }
+  .home-contact__field select { appearance: none; cursor: pointer; }
+  .home-contact__field select option { color: var(--color-ph-black, #0d0f12); }
+
+  .home-contact__field input:focus,
+  .home-contact__field select:focus,
+  .home-contact__field textarea:focus {
+    border-color: var(--color-ph-gold, #d6b25e);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-contact__field input,
+    .home-contact__field select,
+    .home-contact__field textarea,
+    .home-contact__email a,
+    .home-contact__submit { transition: none; }
+  }
+
+  .home-contact__submit {
+    grid-column: 1 / -1;
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 22px;
+    background: var(--color-ph-gold, #d6b25e);
+    color: var(--color-ph-black, #0d0f12);
+    border: none;
+    border-radius: 100px;
+    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .home-contact__submit:hover { background: var(--color-ph-gold-soft, #e6c682); }
+
+  @media (max-width: 900px) {
+    .home-contact__grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .home-contact__form { grid-template-columns: 1fr; }
+  }
+</style>

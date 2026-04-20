@@ -107,12 +107,6 @@ const en: Record<TranslationKey, string> = {
   // --- Sobre nosotros ---
   'about.title': 'About PHSPORT',
   'about.subtitle': 'A representation agency built on three principles: present, future and legacy.',
-  'about.block1.title': 'Now.',
-  'about.block1.body': 'We manage the day-to-day for every player with personalised attention. Contracts, image, performance.',
-  'about.block2.title': 'Next.',
-  'about.block2.body': 'We plan careers over the mid and long term. Every transfer is a strategic step, not an isolated opportunity.',
-  'about.block3.title': 'Forever Football.',
-  'about.block3.body': 'Football is our passion and our commitment. We stand by our players beyond their professional careers.',
   // Hero split
   'about.hero.eyebrow': '04 · About us',
   'about.hero.titlePre': 'Representing with ',
@@ -159,8 +153,6 @@ const en: Record<TranslationKey, string> = {
   // --- Equipo (página) ---
   'team.title': 'PHSPORT team',
   'team.subtitle': 'The people behind every career and every project.',
-  'team.placeholderName': 'TBC',
-  'team.placeholderRole': 'Role',
   'team.defaultLocation': 'SPAIN',
   'team.countries.arabia': 'PH Arabia',
   'team.countries.uk': 'PH UK',

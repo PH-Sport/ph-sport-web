@@ -105,12 +105,6 @@ const es = {
   // --- Sobre nosotros ---
   'about.title': 'Sobre PHSPORT',
   'about.subtitle': 'Agencia de representación fundada sobre tres principios: presente, futuro y legado.',
-  'about.block1.title': 'Now.',
-  'about.block1.body': 'Gestionamos el día a día de cada jugador con atención personalizada. Contratos, imagen, rendimiento.',
-  'about.block2.title': 'Next.',
-  'about.block2.body': 'Planificamos la carrera a medio y largo plazo. Cada fichaje es un paso estratégico, no una oportunidad aislada.',
-  'about.block3.title': 'Forever Football.',
-  'about.block3.body': 'El fútbol es nuestra pasión y nuestro compromiso. Acompañamos a los jugadores más allá de su etapa profesional.',
   // Hero split
   'about.hero.eyebrow': '04 · Sobre nosotros',
   'about.hero.titlePre': 'Representar con ',
@@ -157,8 +151,6 @@ const es = {
   // --- Equipo (página) ---
   'team.title': 'Equipo PHSPORT',
   'team.subtitle': 'Las personas que impulsan cada carrera y cada proyecto.',
-  'team.placeholderName': 'Por definir',
-  'team.placeholderRole': 'Rol',
   'team.defaultLocation': 'ESPAÑA',
   'team.countries.arabia': 'PH Arabia',
   'team.countries.uk': 'PH UK',

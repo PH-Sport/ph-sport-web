@@ -107,13 +107,39 @@ const FLAGS = {
   </div>
 
   <!-- 04 PRESENCIA -->
-  <div class="abt-presencia" id="presencia">
-    <div>[presencia placeholder — Task 10]</div>
+  <div class="abt-presencia" id="presencia" aria-labelledby="about-presencia-title">
+    <div class="abt-presencia__eyebrow-row">
+      <div class="abt-eyebrow">{t('about.presencia.eyebrow')}</div>
+    </div>
+    <div class="abt-presencia__grid">
+      <div class="abt-presencia__left">
+        <h3 id="about-presencia-title" class="abt-presencia__madrid">
+          {t('about.presencia.madridTitle')}
+        </h3>
+        <div class="abt-presencia__madrid-label">{t('about.presencia.madridLabel')}</div>
+      </div>
+      <div class="abt-presencia__right">
+        <div class="abt-presencia__intl-label">{t('about.presencia.internationalLabel')}</div>
+        <div class="abt-presencia__countries">
+          {internationalCountries.map((c) => (
+            <div class="abt-presencia__country">
+              <span>{t(`about.presencia.country.${c.key}` as const)}</span>
+              <span class="abt-presencia__iso">{c.iso}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- 05 CIERRE -->
+  <!-- 05 CIERRE MANIFESTO -->
   <div class="abt-closing">
-    <div>[manifesto placeholder — Task 10]</div>
+    <h2 class="abt-closing__quote">
+      {t('about.manifesto.quotePre')}
+      <br />
+      <span class="abt-gold">{t('about.manifesto.quoteAccent')}</span>{t('about.manifesto.quotePost')}
+    </h2>
+    <div class="abt-closing__sig">{t('about.manifesto.sig')}</div>
   </div>
 </section>
 
@@ -457,13 +483,101 @@ const FLAGS = {
     }
   }
 
-  /* Placeholder sections (replaced in later tasks). */
-  .abt-presencia,
-  .abt-closing {
-    padding: clamp(72px, 10vw, 140px) var(--edge);
+  /* ── 04 PRESENCIA ── */
+  .abt-presencia {
+    padding: clamp(60px, 9vw, 100px) var(--edge);
     border-bottom: 1px solid var(--abt-line);
   }
+  .abt-presencia__eyebrow-row {
+    margin-bottom: 32px;
+  }
+  .abt-presencia__grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: end;
+    border-top: 1px solid var(--abt-line);
+    padding-top: clamp(32px, 4vw, 48px);
+  }
+  .abt-presencia__madrid {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(36px, 5vw, 56px);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 0;
+  }
+  .abt-presencia__madrid-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--abt-ink-faint);
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+  .abt-presencia__intl-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--abt-ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .abt-presencia__countries {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .abt-presencia__country {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--abt-ink);
+    border-bottom: 1px solid var(--abt-line);
+    padding-bottom: 6px;
+  }
+  .abt-presencia__iso {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-gold);
+    letter-spacing: 0.15em;
+  }
+
+  @media (max-width: 900px) {
+    .abt-presencia__grid {
+      grid-template-columns: 1fr;
+      align-items: stretch;
+      gap: 32px;
+    }
+    .abt-presencia__madrid {
+      font-size: 40px;
+    }
+  }
+
+  /* ── 05 CIERRE MANIFESTO ── */
   .abt-closing {
-    border-bottom: none;
+    padding: clamp(80px, 12vw, 160px) var(--edge);
+    text-align: center;
+    background: var(--abt-bg-2);
+  }
+  .abt-closing__quote {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(36px, 6vw, 72px);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 0 auto;
+    max-width: 900px;
+    color: var(--abt-ink);
+  }
+  .abt-closing__sig {
+    margin-top: 28px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-ink-faint);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
   }
 </style>

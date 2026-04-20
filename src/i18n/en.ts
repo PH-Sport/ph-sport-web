@@ -49,7 +49,7 @@ const en: Record<TranslationKey, string> = {
   // --- Home: About (editorial block) ---
   'home.about.eyebrow': '04 · About PHSPORT',
   'home.about.title': 'Brands add up,',
-  'home.about.titleAccent': 'but people make the difference.',
+  'home.about.titleAccent': 'but people make the mark.',
   'home.about.body': 'We are a football-only representation agency. We manage the present, future and legacy of every player with closeness, rigour and excellence.',
   'home.about.cta': 'Get to know us',
   'home.about.stats.aria': 'PHSPORT figures',

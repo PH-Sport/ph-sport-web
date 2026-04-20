@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '@/components/layout/BaseLayout.astro';
-import ServicesOrbit3D from '@/components/sections/ServicesOrbit3D.astro';
+import ServicesSection from '@/components/sections/ServicesSection.astro';
 import { useTranslations, type Lang } from '@/i18n/utils';
 import { SITE_URL } from '@/lib/constants';
 
@@ -14,5 +14,5 @@ const t = useTranslations(lang);
   lang={lang}
   canonical={`${SITE_URL}/servicios`}
 >
-  <ServicesOrbit3D lang={lang} />
+  <ServicesSection lang={lang} />
 </BaseLayout>

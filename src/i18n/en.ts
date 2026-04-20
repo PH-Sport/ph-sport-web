@@ -69,15 +69,6 @@ const en: Record<TranslationKey, string> = {
   'home.contact.lead': 'Whether you represent a player, a club, or a brand, drop us a line. We reply within 48 hours.',
   'home.contact.email': 'info@phsport.es',
   'home.contact.emailLabel': 'Direct email',
-  'home.contact.form.name': 'Name',
-  'home.contact.form.email': 'Email',
-  'home.contact.form.role': 'Role',
-  'home.contact.form.role.player': 'Player',
-  'home.contact.form.role.club': 'Club',
-  'home.contact.form.role.brand': 'Brand / Sponsor',
-  'home.contact.form.role.other': 'Other',
-  'home.contact.form.message': 'Message',
-  'home.contact.form.submit': 'Send',
 
   // --- Jugadores ---
   'players.title': 'Talent we represent',

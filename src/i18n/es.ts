@@ -67,15 +67,6 @@ const es = {
   'home.contact.lead': 'Si representas a un jugador, a un club o a una marca, escríbenos. Respondemos en menos de 48 horas.',
   'home.contact.email': 'info@phsport.es',
   'home.contact.emailLabel': 'Email directo',
-  'home.contact.form.name': 'Nombre',
-  'home.contact.form.email': 'Email',
-  'home.contact.form.role': 'Rol',
-  'home.contact.form.role.player': 'Jugador',
-  'home.contact.form.role.club': 'Club',
-  'home.contact.form.role.brand': 'Marca / Patrocinador',
-  'home.contact.form.role.other': 'Otro',
-  'home.contact.form.message': 'Mensaje',
-  'home.contact.form.submit': 'Enviar',
 
   // --- Jugadores ---
   'players.title': 'Talento que representamos',

@@ -55,3 +55,6 @@ Desktop.ini
 # Local generated assets
 logo-reveal-test.png
 .worktrees/
+
+# Superpowers brainstorming companion sessions
+.superpowers/

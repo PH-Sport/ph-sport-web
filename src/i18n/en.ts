@@ -303,6 +303,7 @@ const en: Record<TranslationKey, string> = {
   'footer.email': 'info@phsport.es',
   'footer.nav.label': 'Footer navigation',
   'footer.social.label': 'Social media',
+  'footer.social.heading': 'Follow us',
   'footer.social.instagram': 'Instagram',
   'footer.social.linkedin': 'LinkedIn',
   'footer.social.x': 'X',

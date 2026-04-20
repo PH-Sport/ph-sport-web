@@ -301,6 +301,7 @@ const es = {
   'footer.email': 'info@phsport.es',
   'footer.nav.label': 'Navegación de pie de página',
   'footer.social.label': 'Redes sociales',
+  'footer.social.heading': 'Síguenos',
   'footer.social.instagram': 'Instagram',
   'footer.social.linkedin': 'LinkedIn',
   'footer.social.x': 'X',

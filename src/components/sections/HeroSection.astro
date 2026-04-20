@@ -202,6 +202,16 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
   @media (max-width: 720px) {
     .hero-content { bottom: clamp(96px, 18vh, 160px); }
   }
+
+  .hero-claim__lead,
+  .hero-claim__accent {
+    visibility: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-claim__lead,
+    .hero-claim__accent { visibility: visible; }
+  }
 </style>
 
 <script>
@@ -245,6 +255,10 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
     const accent = hero.querySelector<HTMLElement>('.hero-claim__accent');
     const claim = hero.querySelector<HTMLElement>('.hero-claim');
     const scroll = hero.querySelector<HTMLElement>('.hero-scroll');
+
+    // Reveal now so GSAP controls the first visible frame.
+    if (lead) lead.style.visibility = 'visible';
+    if (accent) accent.style.visibility = 'visible';
 
     if (lead) {
       const words = wrapWords(lead);

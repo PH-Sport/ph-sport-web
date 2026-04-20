@@ -1,0 +1,709 @@
+---
+import { getServicesItems } from '@/lib/servicesItems';
+import { useTranslations, type Lang } from '@/i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const items = getServicesItems(lang);
+
+const areas = [
+  {
+    key: 'management',
+    title: t('services.areas.items.management.title'),
+    lead: t('services.areas.items.management.lead'),
+    bullets: [
+      t('services.areas.items.management.bullet1'),
+      t('services.areas.items.management.bullet2'),
+      t('services.areas.items.management.bullet3'),
+      t('services.areas.items.management.bullet4'),
+    ],
+  },
+  {
+    key: 'career',
+    title: t('services.areas.items.career.title'),
+    lead: t('services.areas.items.career.lead'),
+    bullets: [
+      t('services.areas.items.career.bullet1'),
+      t('services.areas.items.career.bullet2'),
+      t('services.areas.items.career.bullet3'),
+      t('services.areas.items.career.bullet4'),
+    ],
+  },
+  {
+    key: 'international',
+    title: t('services.areas.items.international.title'),
+    lead: t('services.areas.items.international.lead'),
+    bullets: [
+      t('services.areas.items.international.bullet1'),
+      t('services.areas.items.international.bullet2'),
+      t('services.areas.items.international.bullet3'),
+      t('services.areas.items.international.bullet4'),
+    ],
+  },
+  {
+    key: 'comms',
+    title: t('services.areas.items.comms.title'),
+    lead: t('services.areas.items.comms.lead'),
+    bullets: [
+      t('services.areas.items.comms.bullet1'),
+      t('services.areas.items.comms.bullet2'),
+      t('services.areas.items.comms.bullet3'),
+      t('services.areas.items.comms.bullet4'),
+    ],
+  },
+  {
+    key: 'legal',
+    title: t('services.areas.items.legal.title'),
+    lead: t('services.areas.items.legal.lead'),
+    bullets: [
+      t('services.areas.items.legal.bullet1'),
+      t('services.areas.items.legal.bullet2'),
+      t('services.areas.items.legal.bullet3'),
+      t('services.areas.items.legal.bullet4'),
+    ],
+  },
+];
+
+const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
+---
+
+<section class="srv" aria-labelledby="srv-hero-title">
+  {/* 01 — Hero */}
+  <div class="srv-hero">
+    <div class="srv-hero__eyebrow">
+      <span class="srv-mono">{t('services.hero.eyebrow')}</span>
+    </div>
+    <div class="srv-hero__grid">
+      <h1 class="srv-hero__title" id="srv-hero-title">
+        {t('services.hero.titleLead')}<br />
+        {t('services.hero.titleRest')}<em>{t('services.hero.titleAccent')}</em>.
+      </h1>
+      <p class="srv-hero__lead">{t('services.hero.lead')}</p>
+    </div>
+    <hr class="srv-rule" />
+  </div>
+
+  {/* 02 — Áreas de gestión (accordion) */}
+  <div class="srv-areas">
+    <header class="srv-areas__head">
+      <div class="srv-areas__eyebrow">
+        <span class="srv-mono">{t('services.areas.eyebrow')}</span>
+        <span class="srv-areas__kicker srv-mono">{t('services.areas.kicker')}</span>
+      </div>
+      <h2 class="srv-areas__title">
+        {t('services.areas.titleLead')}<em>{t('services.areas.titleAccent1')}</em>{t('services.areas.titleMid')}<em>{t('services.areas.titleAccent2')}</em>{t('services.areas.titleTrail')}
+      </h2>
+    </header>
+
+    <ol class="srv-areas__list" role="list">
+      {areas.map((area, idx) => {
+        const open = idx === 0;
+        const panelId = `srv-area-panel-${area.key}`;
+        const buttonId = `srv-area-button-${area.key}`;
+        return (
+          <li class:list={['srv-area-row', { 'is-open': open }]}>
+            <button
+              type="button"
+              class="srv-area-row__summary"
+              id={buttonId}
+              aria-expanded={open ? 'true' : 'false'}
+              aria-controls={panelId}
+              data-srv-area-toggle
+            >
+              <span class="srv-area-row__num srv-mono">{String(idx + 1).padStart(2, '0')}</span>
+              <span class="srv-area-row__title">{area.title}</span>
+              <span class="srv-area-row__toggle" aria-hidden="true">
+                <span></span><span></span>
+              </span>
+            </button>
+            <div
+              class="srv-area-row__panel"
+              id={panelId}
+              role="region"
+              aria-labelledby={buttonId}
+            >
+              <div class="srv-area-row__body">
+                <div class="srv-area-row__lead">
+                  <span class="srv-mono srv-area-row__leadLabel">{t('services.areas.leadLabel')}</span>
+                  <p>{area.lead}</p>
+                </div>
+                <ul class="srv-area-row__bullets" role="list">
+                  {area.bullets.map((b) => (
+                    <li><span class="srv-bullet-dash" aria-hidden="true"></span>{b}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+
+    <div class="srv-areas__foot srv-mono">{t('services.areas.foot')}</div>
+  </div>
+
+  {/* 03 — Model intro */}
+  <div class="srv-model">
+    <div class="srv-model__stem" aria-hidden="true"></div>
+    <div class="srv-model__inner">
+      <div class="srv-model__eyebrow">
+        <span class="srv-mono">{t('services.model.eyebrow')}</span>
+      </div>
+      <h2 class="srv-model__title">
+        {t('services.model.titleLead')}<em>{t('services.model.titleAccent')}</em>{t('services.model.titleTrail')}
+      </h2>
+      <p class="srv-model__lead">{t('services.model.lead')}</p>
+    </div>
+  </div>
+
+  {/* 04 — Six pillar blocks */}
+  <div class="srv-pillars">
+    {items.map((item, idx) => {
+      const roman = ['I', 'II', 'III', 'IV', 'V', 'VI'][idx];
+      const even = idx % 2 === 1;
+      return (
+        <article class:list={['srv-block', { 'srv-block--even': even }]}>
+          <div class="srv-block__text">
+            <div class="srv-block__roman">{roman}</div>
+            <h3 class="srv-block__title">{item.title}</h3>
+            <p class="srv-block__body">{item.body}</p>
+            <div class="srv-block__tags">
+              {item.tags.map((tag) => (
+                <span class="srv-tag srv-mono">{tag}</span>
+              ))}
+            </div>
+          </div>
+          <div class="srv-block__img" aria-hidden="true">
+            <span class="srv-block__imgTag srv-mono">{roman} / VI</span>
+          </div>
+        </article>
+      );
+    })}
+  </div>
+
+  {/* 05 — Manifest */}
+  <div class="srv-manifest">
+    <div class="srv-manifest__eyebrow">
+      <span class="srv-mono">{t('services.manifest.eyebrow')}</span>
+    </div>
+    <p class="srv-manifest__body">
+      {t('services.manifest.bodyLead')}<br />
+      <em>{t('services.manifest.bodyAccent')}</em>{t('services.manifest.bodyTrail')}
+    </p>
+  </div>
+
+  {/* 06 — Final CTA */}
+  <div class="srv-cta">
+    <div class="srv-cta__eyebrow">
+      <span class="srv-mono">{t('services.cta.eyebrow')}</span>
+    </div>
+    <h2 class="srv-cta__title">
+      {t('services.cta.titleLead')}<br />
+      <em>{t('services.cta.titleAccent')}</em>{t('services.cta.titleTrail')}
+    </h2>
+    <p class="srv-cta__lead">{t('services.cta.lead')}</p>
+    <a class="srv-cta__btn" href={contactHref}>
+      {t('services.cta.button')}
+      <span class="srv-cta__arrow" aria-hidden="true">→</span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .srv {
+    --srv-bg: var(--color-ph-black, #0d0f12);
+    --srv-bg-2: var(--color-ph-bg-2, #15171b);
+    --srv-bg-3: var(--color-ph-bg-3, #1d2025);
+    --srv-ink: var(--color-ph-white, #ffffff);
+    --srv-ink-soft: var(--color-ph-ink-soft, #b5b7bb);
+    --srv-ink-faint: var(--color-ph-ink-faint, #6f7278);
+    --srv-line: var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    --srv-line-strong: var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
+    --srv-gold: var(--color-ph-gold, #d6b25e);
+    --srv-gold-soft: var(--color-ph-gold-soft, #e6c682);
+    --srv-on-gold: var(--color-ph-black, #0d0f12);
+    --srv-edge: var(--ph-section-px, clamp(20px, 4vw, 48px));
+    --srv-display: var(--font-display, 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif);
+    --srv-mono: var(--font-mono, 'JetBrains Mono', ui-monospace, monospace);
+    --srv-sans: var(--font-body, 'Helvetica Neue', Helvetica, Arial, sans-serif);
+
+    background: var(--srv-bg);
+    color: var(--srv-ink);
+    font-family: var(--srv-sans);
+  }
+
+  .srv-mono {
+    font-family: var(--srv-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--srv-ink-faint);
+  }
+
+  .srv-rule { border: 0; border-top: 1px solid var(--srv-line); margin: 0; }
+
+  /* ── 01 Hero ──────────────────────────────────────────── */
+  .srv-hero {
+    padding: clamp(96px, 14vw, 180px) var(--srv-edge) clamp(40px, 6vw, 72px);
+  }
+  .srv-hero__eyebrow {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: clamp(24px, 4vw, 40px);
+  }
+  .srv-hero__eyebrow::before {
+    content: ""; width: 28px; height: 1px; background: var(--srv-gold);
+  }
+  .srv-hero__eyebrow .srv-mono { color: var(--srv-gold); }
+  .srv-hero__grid {
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(32px, 5vw, 80px);
+    align-items: end;
+    margin-bottom: clamp(40px, 6vw, 80px);
+  }
+  .srv-hero__title {
+    font-family: var(--srv-display);
+    font-weight: 500;
+    font-size: clamp(48px, 8vw, 108px);
+    letter-spacing: -0.03em;
+    line-height: 0.98;
+    margin: 0;
+    color: var(--srv-ink);
+  }
+  .srv-hero__title em {
+    font-style: italic;
+    color: var(--srv-gold);
+    font-weight: 400;
+  }
+  .srv-hero__lead {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--srv-ink-soft);
+    max-width: 420px;
+    margin: 0;
+  }
+
+  @media (max-width: 900px) {
+    .srv-hero__grid { grid-template-columns: 1fr; gap: 32px; }
+  }
+
+  /* ── 02 Áreas accordion ──────────────────────────────── */
+  .srv-areas {
+    padding: clamp(56px, 8vw, 120px) var(--srv-edge);
+    border-top: 1px solid var(--srv-line);
+  }
+  .srv-areas__head {
+    display: grid; grid-template-columns: 1fr 1.6fr; gap: clamp(24px, 4vw, 64px);
+    align-items: start;
+    margin-bottom: clamp(48px, 7vw, 88px);
+  }
+  @media (max-width: 900px) {
+    .srv-areas__head { grid-template-columns: 1fr; gap: 20px; }
+  }
+  .srv-areas__eyebrow {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .srv-areas__eyebrow .srv-mono:first-child { color: var(--srv-gold); }
+  .srv-areas__eyebrow .srv-mono:first-child::before {
+    content: ""; display: inline-block; width: 28px; height: 1px;
+    background: var(--srv-gold); vertical-align: middle; margin-right: 10px;
+  }
+  .srv-areas__kicker { color: var(--srv-ink-faint); }
+  .srv-areas__title {
+    font-family: var(--srv-display);
+    font-weight: 500;
+    font-size: clamp(32px, 5vw, 64px);
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    margin: 0;
+    color: var(--srv-ink);
+  }
+  .srv-areas__title em { font-style: italic; color: var(--srv-gold); font-weight: 400; }
+
+  .srv-areas__list {
+    list-style: none; margin: 0; padding: 0;
+    border-top: 1px solid var(--srv-line);
+  }
+  .srv-area-row { border-bottom: 1px solid var(--srv-line); }
+
+  .srv-area-row__summary {
+    all: unset;
+    display: grid; grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: clamp(16px, 2.5vw, 32px);
+    width: 100%;
+    padding: clamp(22px, 3vw, 32px) 0;
+    cursor: pointer;
+    color: var(--srv-ink);
+    transition: color 0.3s;
+  }
+  .srv-area-row__summary:hover,
+  .srv-area-row.is-open .srv-area-row__summary { color: var(--srv-gold); }
+  .srv-area-row__summary:focus-visible {
+    outline: 2px solid var(--srv-gold);
+    outline-offset: 4px;
+  }
+
+  .srv-area-row__num {
+    color: var(--srv-gold);
+    font-family: var(--srv-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+  }
+  .srv-area-row__title {
+    font-family: var(--srv-display);
+    font-weight: 500;
+    font-size: clamp(24px, 3.2vw, 40px);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .srv-area-row__toggle {
+    position: relative;
+    width: 40px; height: 40px;
+    border: 1px solid var(--srv-line-strong);
+    border-radius: 999px;
+    flex-shrink: 0;
+    transition: transform 0.4s cubic-bezier(.7, 0, .2, 1), border-color 0.3s;
+  }
+  .srv-area-row__toggle span {
+    position: absolute; top: 50%; left: 50%;
+    width: 14px; height: 1px;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+  }
+  .srv-area-row__toggle span:last-child {
+    transform: translate(-50%, -50%) rotate(90deg);
+    transition: transform 0.4s cubic-bezier(.7, 0, .2, 1);
+  }
+  .srv-area-row.is-open .srv-area-row__toggle {
+    transform: rotate(45deg);
+    border-color: var(--srv-gold);
+  }
+  .srv-area-row.is-open .srv-area-row__toggle span:last-child {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
+  .srv-area-row__panel {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.55s cubic-bezier(.7, 0, .2, 1), opacity 0.3s;
+  }
+  .srv-area-row.is-open .srv-area-row__panel {
+    max-height: 1500px;
+    opacity: 1;
+  }
+  .srv-area-row__body {
+    display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 64px);
+    padding: 0 0 clamp(28px, 4vw, 40px);
+  }
+  @media (max-width: 900px) {
+    .srv-area-row__body { grid-template-columns: 1fr; gap: 24px; }
+  }
+  .srv-area-row__leadLabel {
+    display: block; color: var(--srv-gold);
+    margin-bottom: 10px;
+  }
+  .srv-area-row__lead p {
+    margin: 0;
+    color: var(--srv-ink-soft);
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 520px;
+  }
+  .srv-area-row__bullets {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .srv-area-row__bullets li {
+    display: flex; align-items: baseline; gap: 14px;
+    color: var(--srv-ink-soft);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .srv-bullet-dash {
+    display: inline-block; width: 10px; height: 1px;
+    background: var(--srv-gold);
+    flex-shrink: 0;
+    transform: translateY(-4px);
+  }
+
+  .srv-areas__foot {
+    margin-top: clamp(32px, 4vw, 48px);
+    color: var(--srv-ink-faint);
+    text-align: right;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .srv-area-row__summary,
+    .srv-area-row__toggle,
+    .srv-area-row__toggle span,
+    .srv-area-row__panel { transition: none !important; }
+  }
+
+  /* ── 03 Model intro ──────────────────────────────────── */
+  .srv-model {
+    border-top: 1px solid var(--srv-line);
+    padding: clamp(48px, 7vw, 96px) var(--srv-edge) clamp(56px, 8vw, 96px);
+    text-align: center;
+    position: relative;
+  }
+  .srv-model__stem {
+    width: 1px;
+    height: clamp(40px, 6vw, 72px);
+    background: var(--srv-line-strong);
+    margin: 0 auto clamp(24px, 3vw, 40px);
+  }
+  .srv-model__inner { max-width: 900px; margin: 0 auto; }
+  .srv-model__eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-bottom: clamp(16px, 2vw, 24px);
+  }
+  .srv-model__eyebrow::before,
+  .srv-model__eyebrow::after {
+    content: ""; width: 28px; height: 1px; background: var(--srv-gold);
+  }
+  .srv-model__eyebrow .srv-mono { color: var(--srv-gold); }
+  .srv-model__title {
+    font-family: var(--srv-display);
+    font-weight: 500;
+    font-size: clamp(28px, 4vw, 52px);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 0 0 clamp(18px, 2.5vw, 28px);
+    color: var(--srv-ink);
+  }
+  .srv-model__title em { font-style: italic; color: var(--srv-gold); font-weight: 400; }
+  .srv-model__lead {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--srv-ink-soft);
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* ── 04 Pillar blocks ────────────────────────────────── */
+  .srv-pillars { display: flex; flex-direction: column; }
+
+  .srv-block {
+    display: grid; grid-template-columns: 1fr 1fr;
+    min-height: clamp(420px, 58vw, 640px);
+    border-top: 1px solid var(--srv-line);
+  }
+  .srv-block--even { background: var(--srv-bg-2); }
+
+  .srv-block__text {
+    padding: clamp(48px, 7vw, 96px) var(--srv-edge);
+    display: flex; flex-direction: column; justify-content: center;
+    gap: clamp(16px, 2vw, 24px);
+  }
+  .srv-block__roman {
+    font-family: var(--srv-display);
+    font-style: italic;
+    font-weight: 500;
+    color: var(--srv-gold);
+    font-size: clamp(56px, 9vw, 120px);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .srv-block__title {
+    font-family: var(--srv-display);
+    font-weight: 500;
+    font-size: clamp(36px, 5.5vw, 72px);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0;
+    color: var(--srv-ink);
+  }
+  .srv-block__body {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--srv-ink-soft);
+    max-width: 480px;
+    margin: 0;
+  }
+  .srv-block__tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 4px;
+  }
+  .srv-tag {
+    display: inline-flex; align-items: center;
+    padding: 6px 12px;
+    border: 1px solid var(--srv-line-strong);
+    border-radius: 999px;
+    color: var(--srv-ink-soft);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    background: transparent;
+  }
+
+  .srv-block__img {
+    position: relative;
+    background:
+      repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 10px),
+      var(--srv-bg-2);
+    border-left: 1px solid var(--srv-line);
+    min-height: clamp(240px, 50vw, 520px);
+  }
+  .srv-block--even .srv-block__img {
+    order: -1;
+    border-left: 0;
+    border-right: 1px solid var(--srv-line);
+    background:
+      repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 10px),
+      var(--srv-bg-3);
+  }
+  .srv-block--even .srv-block__text { order: 0; }
+  .srv-block__imgTag {
+    position: absolute; top: 16px; left: 16px;
+    background: rgba(14, 14, 14, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    color: var(--srv-ink);
+    padding: 6px 10px;
+    border: 1px solid var(--srv-line);
+    border-radius: 4px;
+  }
+
+  @media (max-width: 900px) {
+    .srv-block { grid-template-columns: 1fr; min-height: 0; }
+    .srv-block__img,
+    .srv-block--even .srv-block__img {
+      order: -1;
+      aspect-ratio: 16 / 10;
+      border: 0; border-bottom: 1px solid var(--srv-line);
+      min-height: 0;
+    }
+    .srv-block--even .srv-block__text { order: 0; }
+    .srv-block__text { padding: clamp(40px, 8vw, 64px) var(--srv-edge); }
+  }
+
+  /* ── 05 Manifest ─────────────────────────────────────── */
+  .srv-manifest {
+    border-top: 1px solid var(--srv-line);
+    padding: clamp(72px, 11vw, 144px) var(--srv-edge);
+    text-align: center;
+  }
+  .srv-manifest__eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-bottom: clamp(24px, 4vw, 40px);
+    color: var(--srv-gold);
+  }
+  .srv-manifest__eyebrow::before,
+  .srv-manifest__eyebrow::after {
+    content: ""; width: 28px; height: 1px; background: var(--srv-gold);
+  }
+  .srv-manifest__eyebrow .srv-mono { color: var(--srv-gold); }
+  .srv-manifest__body {
+    font-family: var(--srv-display);
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(28px, 4.5vw, 56px);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--srv-ink);
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .srv-manifest__body em {
+    font-style: italic;
+    color: var(--srv-gold);
+    font-weight: 400;
+  }
+
+  /* ── 06 Final CTA ────────────────────────────────────── */
+  .srv-cta {
+    background: var(--srv-bg-3);
+    border-top: 1px solid var(--srv-line);
+    padding: clamp(72px, 11vw, 144px) var(--srv-edge);
+    text-align: center;
+  }
+  .srv-cta__eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-bottom: clamp(16px, 2vw, 24px);
+  }
+  .srv-cta__eyebrow::before,
+  .srv-cta__eyebrow::after {
+    content: ""; width: 28px; height: 1px; background: var(--srv-gold);
+  }
+  .srv-cta__eyebrow .srv-mono { color: var(--srv-gold); }
+  .srv-cta__title {
+    font-family: var(--srv-display);
+    font-weight: 500;
+    font-size: clamp(32px, 5vw, 64px);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 0 0 clamp(18px, 2.5vw, 28px);
+    color: var(--srv-ink);
+  }
+  .srv-cta__title em { font-style: italic; color: var(--srv-gold); font-weight: 400; }
+  .srv-cta__lead {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--srv-ink-soft);
+    max-width: 560px;
+    margin: 0 auto clamp(28px, 4vw, 44px);
+  }
+  .srv-cta__btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 22px;
+    background: var(--srv-gold);
+    color: var(--srv-on-gold);
+    border-radius: 100px;
+    font-family: var(--srv-sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    border: 1px solid var(--srv-gold);
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .srv-cta__btn:hover {
+    background: var(--srv-gold-soft);
+    border-color: var(--srv-gold-soft);
+  }
+  .srv-cta__btn:hover .srv-cta__arrow { transform: translateX(4px); }
+  .srv-cta__arrow { transition: transform 0.2s; }
+  .srv-cta__btn:focus-visible {
+    outline: 2px solid var(--srv-gold);
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .srv-cta__btn,
+    .srv-cta__arrow { transition: none !important; }
+  }
+</style>
+
+<script>
+  function initSrvAccordion() {
+    const buttons = document.querySelectorAll<HTMLButtonElement>('[data-srv-area-toggle]');
+    if (!buttons.length) return;
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const row = btn.closest('.srv-area-row');
+        if (!row) return;
+        const scope = btn.closest('.srv-areas');
+        if (!scope) return;
+        const wasOpen = row.classList.contains('is-open');
+
+        scope.querySelectorAll('.srv-area-row').forEach((r) => {
+          r.classList.remove('is-open');
+          const b = r.querySelector<HTMLButtonElement>('[data-srv-area-toggle]');
+          if (b) b.setAttribute('aria-expanded', 'false');
+        });
+
+        if (!wasOpen) {
+          row.classList.add('is-open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initSrvAccordion);
+</script>

@@ -6,6 +6,7 @@ import en from './en';
 
 const translations = { es, en } as const;
 export type Lang = keyof typeof translations;
+export type { TranslationKey };
 
 export const defaultLang: Lang = 'es';
 export const supportedLangs: Lang[] = ['es', 'en'];

@@ -1,6 +1,6 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
-import SectionHeader from '@/components/ui/SectionHeader.astro';
+import { getTeamMembers } from '@/lib/teamMembers';
 
 interface Props {
   lang: Lang;
@@ -9,241 +9,749 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const blocks = [
-  { number: '01', title: t('about.block1.title'), body: t('about.block1.body') },
-  { number: '02', title: t('about.block2.title'), body: t('about.block2.body') },
-  { number: '03', title: t('about.block3.title'), body: t('about.block3.body') },
+const servicesHref = lang === 'es' ? '/servicios' : '/en/services';
+const contactHref = lang === 'es' ? '/#contacto' : '/en/#contacto';
+
+const teamMembers = getTeamMembers(lang);
+
+const internationalCountries = [
+  { key: 'portugal' as const, iso: 'PT' },
+  { key: 'uk' as const,       iso: 'UK' },
+  { key: 'alemania' as const, iso: 'DE' },
+  { key: 'arabia' as const,   iso: 'KSA' },
+  { key: 'uruguay' as const,  iso: 'UY' },
 ];
+
+const FLAGS = {
+  ES: '<svg viewBox="0 0 3 2" aria-hidden="true" focusable="false"><rect width="3" height="2" fill="#c60b1e"/><rect y="0.5" width="3" height="1" fill="#ffc400"/></svg>',
+  PT: '<svg viewBox="0 0 6 4" aria-hidden="true" focusable="false"><rect width="6" height="4" fill="#da291c"/><rect width="2.4" height="4" fill="#006233"/><circle cx="2.4" cy="2" r="0.6" fill="#ffcb00" stroke="#000" stroke-width="0.04"/></svg>',
+} as const;
 ---
 
-<section class="about-section">
-  <div class="ph-section">
-    <SectionHeader
-      label={t('nav.about')}
-      title={t('about.title')}
-      subtitle={t('about.subtitle')}
-      noBorder
-    />
+<section class="about-section" aria-labelledby="about-hero-title">
+  <!-- 01 HERO SPLIT -->
+  <div class="abt-hero">
+    <div class="abt-hero__left">
+      <div>
+        <div class="abt-eyebrow">{t('about.hero.eyebrow')}</div>
+        <h1 id="about-hero-title" class="abt-hero__title">
+          {t('about.hero.titlePre')}<span class="abt-gold">{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
+        </h1>
+        <p class="abt-hero__body">{t('about.hero.body1')}</p>
+        <p class="abt-hero__body">{t('about.hero.body2')}</p>
+        <div class="abt-hero__cta">
+          <a class="abt-btn abt-btn--primary" href={servicesHref}>
+            {t('about.hero.ctaServices')} <span class="abt-btn__arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="abt-btn" href={contactHref}>{t('about.hero.ctaContact')}</a>
+        </div>
+      </div>
+      <div class="abt-hero__values">{t('about.hero.values')}</div>
+    </div>
+    <div class="abt-hero__right">
+      <div class="abt-hero__placeholder" aria-hidden="true"></div>
+      <div class="abt-hero__caption">{t('about.hero.caption')}</div>
+    </div>
+  </div>
 
-    <div class="about-blocks">
-      {blocks.map((block) => (
-        <article class="about-block">
-          <div class="about-block-left">
-            <span class="about-num" aria-hidden="true">{block.number}</span>
-            <h2 class="about-block-title">{block.title}</h2>
+  <!-- 02 HISTORIA -->
+  <div class="abt-historia" id="historia">
+    <h2 class="abt-historia__title">
+      {t('about.historia.titlePre')}<span class="abt-gold">{t('about.historia.titleAccent1')}</span>{t('about.historia.titleMid')}<span class="abt-gold">{t('about.historia.titleAccent2')}</span>{t('about.historia.titlePost')}
+    </h2>
+    <div class="abt-historia__body">
+      <p>{t('about.historia.p1')}</p>
+      <p>{t('about.historia.p2')}</p>
+      <p>{t('about.historia.p3')}</p>
+      <p>{t('about.historia.p4')}</p>
+    </div>
+  </div>
+
+  <!-- 03 EQUIPO -->
+  <div class="abt-team" id="equipo" aria-labelledby="about-team-title">
+    <div class="abt-team__head">
+      <div>
+        <div class="abt-eyebrow">{t('about.team.eyebrow')}</div>
+        <h2 id="about-team-title" class="abt-team__title">
+          {t('about.team.titlePre')}<span class="abt-gold">{t('about.team.titleAccent')}</span>{t('about.team.titlePost')}
+        </h2>
+      </div>
+      <div class="abt-team__meta">{t('about.team.meta')}</div>
+    </div>
+
+    <div class="abt-team-table" role="list">
+      {teamMembers.map((m) => (
+        <div class="abt-team-row" role="listitem" data-id={m.id}>
+          <span class="abt-team-row__idx">{m.index}</span>
+          <div class="abt-team-row__name">
+            <span class="abt-team-row__name-text">{m.name}</span>
+            <span class="abt-team-row__mobile-extras">
+              <span>{m.role}</span>
+              {m.country && <span>· {m.country}</span>}
+            </span>
           </div>
-          <div class="about-block-right">
-            <div class="about-block-accent" aria-hidden="true"></div>
-            <p class="about-block-body">{block.body}</p>
-          </div>
-        </article>
+          <span class="abt-team-row__role">{m.role}</span>
+          <span class="abt-team-row__flag">
+            {m.nationality ? (
+              <Fragment>
+                <span class="abt-team-row__flag-svg" set:html={FLAGS[m.nationality]} />
+                <span>{m.country?.toUpperCase()}</span>
+              </Fragment>
+            ) : (
+              <span class="abt-team-row__flag-muted">{m.defaultLocation}</span>
+            )}
+          </span>
+        </div>
       ))}
     </div>
+  </div>
+
+  <!-- 04 PRESENCIA -->
+  <div class="abt-presencia" id="presencia" aria-labelledby="about-presencia-title">
+    <div class="abt-presencia__eyebrow-row">
+      <div class="abt-eyebrow">{t('about.presencia.eyebrow')}</div>
+    </div>
+    <div class="abt-presencia__grid">
+      <div class="abt-presencia__left">
+        <h3 id="about-presencia-title" class="abt-presencia__madrid">
+          {t('about.presencia.madridTitle')}
+        </h3>
+        <div class="abt-presencia__madrid-label">{t('about.presencia.madridLabel')}</div>
+      </div>
+      <div class="abt-presencia__right">
+        <div class="abt-presencia__intl-label">{t('about.presencia.internationalLabel')}</div>
+        <div class="abt-presencia__countries">
+          {internationalCountries.map((c) => (
+            <div class="abt-presencia__country">
+              <span>{t(`about.presencia.country.${c.key}` as const)}</span>
+              <span class="abt-presencia__iso">{c.iso}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 CIERRE MANIFESTO -->
+  <div class="abt-closing">
+    <h2 class="abt-closing__quote">
+      {t('about.manifesto.quotePre')}
+      <br />
+      <span class="abt-gold">{t('about.manifesto.quoteAccent')}</span>{t('about.manifesto.quotePost')}
+    </h2>
+    <div class="abt-closing__sig">{t('about.manifesto.sig')}</div>
   </div>
 </section>
 
 <style>
   .about-section {
+    --abt-gold: var(--color-ph-gold);
+    --abt-ink: var(--color-ph-white);
+    --abt-ink-soft: var(--color-ph-white-80);
+    --abt-ink-faint: var(--color-ph-white-60);
+    --abt-line: var(--color-ph-white-10);
+    --abt-line-strong: var(--color-ph-white-20);
+    --abt-bg: transparent;
+    --abt-bg-2: rgba(255, 255, 255, 0.02);
+    --edge: var(--ph-section-px);
+
     position: relative;
-    background:
-      radial-gradient(ellipse at 20% 80%, rgba(214, 178, 94, 0.025) 0%, transparent 50%),
-      var(--ph-section-bg);
+    background: var(--abt-bg);
+    color: var(--abt-ink);
   }
 
-
-  .about-blocks {
-    border-top: 1px solid var(--color-ph-white-10);
+  /* Gold accent — color+weight only, never italic. */
+  .about-section .abt-gold {
+    color: var(--abt-gold);
+    font-weight: 700;
+    font-style: normal;
   }
 
-  .about-block {
+  /* Shared eyebrow pattern (mono). */
+  .about-section .abt-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--abt-gold);
+  }
+
+  /* ── 01 HERO SPLIT ── */
+  .abt-hero {
     display: grid;
-    gap: 1.5rem;
-    padding-block: 3.5rem;
-    border-bottom: 1px solid var(--color-ph-white-10);
+    grid-template-columns: 1.1fr 1fr;
+    min-height: 80vh;
+    border-bottom: 1px solid var(--abt-line);
+    padding-top: calc(var(--nav-h, 72px) + clamp(60px, 10vw, 120px));
   }
-
-  @media (min-width: 1024px) {
-    .about-block {
-      grid-template-columns: 1fr 2fr;
-      gap: 4rem;
-      align-items: baseline;
-      padding-block: 4.5rem;
-    }
+  .abt-hero__left {
+    padding: clamp(20px, 3vw, 40px) var(--edge) clamp(60px, 8vw, 100px);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    justify-content: space-between;
   }
-
-  .about-block-left {
-    position: relative;
-  }
-
-  .about-num {
-    position: absolute;
-    top: -0.5rem;
-    left: 0;
+  .abt-hero__title {
     font-family: var(--font-display);
-    font-size: 3.5rem;
-    font-weight: 900;
-    letter-spacing: -0.04em;
-    line-height: 1;
-    color: var(--color-ph-gold);
-    opacity: 0.12;
+    font-weight: 500;
+    font-size: clamp(40px, 6vw, 84px);
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+    margin: 18px 0 24px;
+  }
+  .abt-hero__body {
+    color: var(--abt-ink-soft);
+    font-size: 16px;
+    line-height: 1.7;
+    max-width: 480px;
+    margin: 0 0 14px;
+  }
+  .abt-hero__cta {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .abt-hero__values {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-ink-faint);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+  .abt-hero__right {
+    position: relative;
+    overflow: hidden;
+    border-left: 1px solid var(--abt-line);
+  }
+  .abt-hero__placeholder {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 70% 30%, rgba(214, 178, 94, 0.08) 0%, transparent 60%),
+      linear-gradient(180deg, #0e0e0e 0%, #181818 100%);
+  }
+  .abt-hero__placeholder::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: overlay;
     pointer-events: none;
   }
+  .abt-hero__caption {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--abt-ink);
+    letter-spacing: 0.2em;
+    background: rgba(14, 14, 14, 0.65);
+    padding: 6px 10px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
 
-  @media (min-width: 1024px) {
-    .about-num {
-      font-size: 4.5rem;
-      top: -0.75rem;
+  /* Minimal button styles — will be refined or aliased to ph-ui-buttons.css. */
+  .abt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: 1px solid var(--abt-line-strong);
+    color: var(--abt-ink);
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    transition: background 200ms var(--ease-ph, ease), color 200ms var(--ease-ph, ease);
+  }
+  .abt-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .abt-btn--primary {
+    background: var(--abt-gold);
+    color: var(--color-ph-black, #0d0f12);
+    border-color: var(--abt-gold);
+  }
+  .abt-btn--primary:hover {
+    background: #e2c374;
+    border-color: #e2c374;
+  }
+  .abt-btn__arrow {
+    transition: transform 200ms var(--ease-ph, ease);
+  }
+  .abt-btn:hover .abt-btn__arrow {
+    transform: translateX(3px);
+  }
+
+  @media (max-width: 900px) {
+    .abt-hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+    .abt-hero__right {
+      aspect-ratio: 4 / 5;
+      border-left: none;
+      border-bottom: 1px solid var(--abt-line);
+      order: -1;
+    }
+    .abt-hero__left {
+      padding-top: 40px;
     }
   }
 
-  .about-block-title {
-    position: relative;
-    margin-top: 1.5rem;
+  /* ── 02 HISTORIA ── */
+  .abt-historia {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: clamp(32px, 6vw, 80px);
+    padding: clamp(72px, 10vw, 140px) var(--edge);
+    border-bottom: 1px solid var(--abt-line);
+  }
+  .abt-historia__title {
     font-family: var(--font-display);
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
-    font-weight: 900;
-    letter-spacing: -0.04em;
-    line-height: 1;
-    color: var(--color-ph-white);
+    font-weight: 500;
+    font-size: clamp(32px, 4.5vw, 52px);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin: 12px 0 0;
   }
-
-  @media (min-width: 1024px) {
-    .about-block-title {
-      margin-top: 2rem;
-    }
+  .abt-historia__body {
+    column-count: 2;
+    column-gap: 40px;
   }
-
-  .about-block-right {
-    display: flex;
-    gap: 1.5rem;
-  }
-
-  .about-block-accent {
-    flex-shrink: 0;
-    width: 2px;
-    min-height: 100%;
-    background: linear-gradient(
-      to bottom,
-      var(--color-ph-gold) 0%,
-      var(--color-ph-gold-muted) 100%
-    );
-    opacity: 0.3;
-    border-radius: 1px;
-  }
-
-  .about-block-body {
-    font-size: 1.0625rem;
+  .abt-historia__body p {
+    margin: 0 0 14px;
+    color: var(--abt-ink-soft);
     line-height: 1.7;
-    color: var(--color-ph-white-60);
-    max-width: none;
+    font-size: 15px;
+  }
+  .abt-historia__body p:first-child::first-letter {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-style: normal;
+    float: left;
+    font-size: 72px;
+    line-height: 0.85;
+    padding: 6px 12px 0 0;
+    color: var(--abt-gold);
   }
 
-  @media (min-width: 1024px) {
-    .about-block-body {
-      font-size: 1.125rem;
-      padding-top: 0.25rem;
+  @media (max-width: 900px) {
+    .abt-historia {
+      grid-template-columns: 1fr;
     }
+    .abt-historia__body {
+      column-count: 1;
+    }
+  }
+
+  /* ── 03 EQUIPO ── */
+  .abt-team {
+    padding: clamp(72px, 10vw, 140px) var(--edge);
+    border-bottom: 1px solid var(--abt-line);
+  }
+  .abt-team__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: clamp(32px, 5vw, 64px);
+  }
+  .abt-team__title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(36px, 5vw, 64px);
+    letter-spacing: -0.02em;
+    margin: 10px 0 0;
+    line-height: 1;
+  }
+  .abt-team__meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-ink-faint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .abt-team-table {
+    border-top: 1px solid var(--abt-line-strong);
+  }
+  .abt-team-row {
+    display: grid;
+    grid-template-columns: 60px 1.4fr 1.2fr;
+    gap: 24px;
+    align-items: center;
+    padding-block: clamp(18px, 2.5vw, 28px);
+    border-bottom: 1px solid var(--abt-line);
+    transition: padding 300ms var(--ease-ph, ease), background 300ms var(--ease-ph, ease);
+  }
+  @media (hover: hover) {
+    .abt-team-row:hover {
+      padding-inline: 18px;
+      background: rgba(201, 164, 90, 0.04);
+    }
+    .abt-team-row:hover .abt-team-row__name-text {
+      color: var(--abt-gold);
+    }
+  }
+  .abt-team-row__idx {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-ink-faint);
+    letter-spacing: 0.15em;
+  }
+  .abt-team-row__name-text {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(22px, 2.4vw, 34px);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    transition: color 300ms var(--ease-ph, ease);
+  }
+  .abt-team-row__role {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-ink-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .abt-team-row__flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-ink-soft);
+    letter-spacing: 0.1em;
+  }
+  .abt-team-row__flag-svg {
+    display: inline-block;
+    width: 22px;
+    height: 14px;
+  }
+  .abt-team-row__flag-svg svg {
+    width: 100%;
+    height: 100%;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px var(--abt-line-strong);
+    display: block;
+  }
+  .abt-team-row__flag-muted {
+    color: var(--abt-ink-faint);
+    opacity: 0.5;
+  }
+  .abt-team-row__mobile-extras {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .abt-team-row {
+      grid-template-columns: 40px 1fr;
+      gap: 10px;
+      padding-block: 18px;
+    }
+    .abt-team-row__role,
+    .abt-team-row__flag {
+      display: none;
+    }
+    .abt-team-row__name {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .abt-team-row__mobile-extras {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--abt-ink-soft);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-style: normal;
+    }
+  }
+
+  /* ── 04 PRESENCIA ── */
+  .abt-presencia {
+    padding: clamp(60px, 9vw, 100px) var(--edge);
+    border-bottom: 1px solid var(--abt-line);
+  }
+  .abt-presencia__eyebrow-row {
+    margin-bottom: 32px;
+  }
+  .abt-presencia__grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: end;
+    border-top: 1px solid var(--abt-line);
+    padding-top: clamp(32px, 4vw, 48px);
+  }
+  .abt-presencia__madrid {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(36px, 5vw, 56px);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 0;
+  }
+  .abt-presencia__madrid-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--abt-ink-faint);
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+  .abt-presencia__intl-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--abt-ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .abt-presencia__countries {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .abt-presencia__country {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--abt-ink);
+    border-bottom: 1px solid var(--abt-line);
+    padding-bottom: 6px;
+  }
+  .abt-presencia__iso {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-gold);
+    letter-spacing: 0.15em;
+  }
+
+  @media (max-width: 900px) {
+    .abt-presencia__grid {
+      grid-template-columns: 1fr;
+      align-items: stretch;
+      gap: 32px;
+    }
+    .abt-presencia__madrid {
+      font-size: 40px;
+    }
+  }
+
+  /* ── 05 CIERRE MANIFESTO ── */
+  .abt-closing {
+    padding: clamp(80px, 12vw, 160px) var(--edge);
+    text-align: center;
+    background: var(--abt-bg-2);
+  }
+  .abt-closing__quote {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(36px, 6vw, 72px);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 0 auto;
+    max-width: 900px;
+    color: var(--abt-ink);
+  }
+  .abt-closing__sig {
+    margin-top: 28px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-ink-faint);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
   }
 </style>
 
 <script>
   import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
     reducedMotion,
     wrapWords,
     splitWords,
     trackingReveal,
-    counterReveal,
   } from '@/scripts/ph-text-animations';
+
+  gsap.registerPlugin(ScrollTrigger);
 
   function initAboutAnimations(): void {
     const section = document.querySelector<HTMLElement>('.about-section');
-    if (!section || reducedMotion()) return;
+    if (!section) return;
 
-    // ── Cabecera ────────────────────────────────────────────────────────────
-    const label = section.querySelector<HTMLElement>('.ph-label');
-    if (label) {
-      trackingReveal(label, { trigger: label, start: 'top 88%', once: true });
+    if (reducedMotion()) {
+      // Ensure all content is visible without animating.
+      section.querySelectorAll<HTMLElement>('.abt-team-row').forEach((r) => {
+        r.style.opacity = '1';
+        r.style.transform = 'none';
+      });
+      return;
     }
 
-    const title = section.querySelector<HTMLElement>('.section-header-title');
-    if (title) {
-      const words = wrapWords(title);
+    // ── Hero ──
+    const heroEyebrow = section.querySelector<HTMLElement>('.abt-hero .abt-eyebrow');
+    if (heroEyebrow) trackingReveal(heroEyebrow, { trigger: heroEyebrow, start: 'top 88%', once: true });
+
+    const heroTitle = section.querySelector<HTMLElement>('.abt-hero__title');
+    if (heroTitle) {
+      const words = wrapWords(heroTitle);
       gsap.from(words, {
         yPercent: 115,
         duration: 0.85,
         stagger: 0.07,
         ease: 'power4.out',
-        scrollTrigger: { trigger: title, start: 'top 82%', once: true },
+        scrollTrigger: { trigger: heroTitle, start: 'top 82%', once: true },
       });
     }
 
-    const subtitle = section.querySelector<HTMLElement>('.section-header-subtitle');
-    if (subtitle) {
-      const spans = splitWords(subtitle);
+    section.querySelectorAll<HTMLElement>('.abt-hero__body').forEach((body) => {
+      const spans = splitWords(body);
       gsap.from(spans, {
         opacity: 0,
         filter: 'blur(6px)',
         y: 6,
         duration: 0.6,
-        stagger: 0.03,
+        stagger: 0.025,
         ease: 'power2.out',
-        scrollTrigger: { trigger: subtitle, start: 'top 88%', once: true },
+        scrollTrigger: { trigger: body, start: 'top 88%', once: true },
+      });
+    });
+
+    const heroCtas = section.querySelectorAll<HTMLElement>('.abt-hero__cta .abt-btn');
+    if (heroCtas.length) {
+      gsap.from(heroCtas, {
+        opacity: 0,
+        y: 12,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: heroCtas[0], start: 'top 92%', once: true },
       });
     }
 
-    // ── Bloques ─────────────────────────────────────────────────────────────
-    section.querySelectorAll<HTMLElement>('.about-block').forEach((block, i) => {
-      // Número decorativo: contador cinético
-      const numEl = block.querySelector<HTMLElement>('.about-num');
-      if (numEl) {
-        counterReveal(numEl, i + 1, {
-          trigger: block,
-          start: 'top 82%',
-          once: true,
-        });
-      }
+    const heroValues = section.querySelector<HTMLElement>('.abt-hero__values');
+    if (heroValues) trackingReveal(heroValues, { trigger: heroValues, start: 'top 92%', once: true });
 
-      // Título del bloque: cortina por palabras
-      const blockTitle = block.querySelector<HTMLElement>('.about-block-title');
-      if (blockTitle) {
-        const words = wrapWords(blockTitle);
-        gsap.from(words, {
-          yPercent: 115,
-          duration: 0.8,
-          stagger: 0.05,
-          ease: 'power4.out',
-          scrollTrigger: { trigger: blockTitle, start: 'top 82%', once: true },
-        });
-      }
-
-      // Barra de acento: crece verticalmente
-      const accent = block.querySelector<HTMLElement>('.about-block-accent');
-      if (accent) {
-        gsap.from(accent, {
-          scaleY: 0,
-          transformOrigin: 'top center',
-          duration: 0.8,
-          ease: 'expo.out',
-          scrollTrigger: { trigger: block, start: 'top 78%', once: true },
-        });
-      }
-
-      // Cuerpo del bloque: palabras con desenfoque
-      const body = block.querySelector<HTMLElement>('.about-block-body');
-      if (body) {
-        const spans = splitWords(body);
-        gsap.from(spans, {
-          opacity: 0,
-          filter: 'blur(6px)',
-          y: 5,
-          duration: 0.6,
-          stagger: 0.025,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: body, start: 'top 88%', once: true },
-        });
-      }
+    // ── Historia ──
+    const historiaTitle = section.querySelector<HTMLElement>('.abt-historia__title');
+    if (historiaTitle) {
+      const words = wrapWords(historiaTitle);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.8,
+        stagger: 0.06,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: historiaTitle, start: 'top 82%', once: true },
+      });
+    }
+    section.querySelectorAll<HTMLElement>('.abt-historia__body p').forEach((p) => {
+      const spans = splitWords(p);
+      gsap.from(spans, {
+        opacity: 0,
+        filter: 'blur(6px)',
+        y: 5,
+        duration: 0.55,
+        stagger: 0.02,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: p, start: 'top 88%', once: true },
+      });
     });
+
+    // ── Equipo ──
+    const teamEyebrow = section.querySelector<HTMLElement>('.abt-team .abt-eyebrow');
+    if (teamEyebrow) trackingReveal(teamEyebrow, { trigger: teamEyebrow, start: 'top 88%', once: true });
+
+    const teamTitle = section.querySelector<HTMLElement>('.abt-team__title');
+    if (teamTitle) {
+      const words = wrapWords(teamTitle);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.8,
+        stagger: 0.06,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: teamTitle, start: 'top 82%', once: true },
+      });
+    }
+
+    const teamMeta = section.querySelector<HTMLElement>('.abt-team__meta');
+    if (teamMeta) trackingReveal(teamMeta, { trigger: teamMeta, start: 'top 92%', once: true });
+
+    const teamTable = section.querySelector<HTMLElement>('.abt-team-table');
+    const teamRows = section.querySelectorAll<HTMLElement>('.abt-team-row');
+    if (teamTable && teamRows.length) {
+      gsap.set(teamRows, { opacity: 0, y: 14 });
+      gsap.to(teamRows, {
+        opacity: 1,
+        y: 0,
+        duration: 0.45,
+        stagger: { each: 0.04, from: 'start' },
+        ease: 'power3.out',
+        scrollTrigger: { trigger: teamTable, start: 'top 88%', once: true },
+        onComplete: () => {
+          gsap.set(teamRows, { clearProps: 'opacity,transform' });
+        },
+      });
+      // Safety net — ensure rows are visible even if ScrollTrigger misfires.
+      window.setTimeout(() => {
+        teamRows.forEach((r) => {
+          r.style.opacity = '1';
+          r.style.transform = 'none';
+        });
+      }, 2200);
+    }
+
+    // ── Presencia ──
+    const presenciaEyebrow = section.querySelector<HTMLElement>('.abt-presencia .abt-eyebrow');
+    if (presenciaEyebrow) trackingReveal(presenciaEyebrow, { trigger: presenciaEyebrow, start: 'top 92%', once: true });
+
+    const presenciaLeft = section.querySelector<HTMLElement>('.abt-presencia__left');
+    const presenciaRight = section.querySelector<HTMLElement>('.abt-presencia__right');
+    if (presenciaLeft && presenciaRight) {
+      gsap.from([presenciaLeft, presenciaRight], {
+        opacity: 0,
+        y: 20,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: presenciaLeft, start: 'top 88%', once: true },
+      });
+    }
+
+    // ── Cierre ──
+    const closingQuote = section.querySelector<HTMLElement>('.abt-closing__quote');
+    if (closingQuote) {
+      const words = wrapWords(closingQuote);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.85,
+        stagger: 0.05,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: closingQuote, start: 'top 82%', once: true },
+      });
+    }
+    const closingSig = section.querySelector<HTMLElement>('.abt-closing__sig');
+    if (closingSig) trackingReveal(closingSig, { trigger: closingSig, start: 'top 92%', once: true });
+
+    requestAnimationFrame(() => ScrollTrigger.refresh());
   }
 
   document.addEventListener('astro:page-load', initAboutAnimations);

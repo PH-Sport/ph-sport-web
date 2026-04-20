@@ -13,28 +13,32 @@ const aboutHref = lang === 'en' ? '/en/about/' : '/sobre-nosotros/';
 
 <section class="home-about" id="sobre-nosotros" aria-labelledby="home-about-title">
   <div class="home-about__inner">
-    <span class="home-about__eyebrow">{t('home.about.eyebrow')}</span>
-    <h2 class="home-about__title" id="home-about-title">
-      <span>{t('home.about.title')}</span>
-      <em>{t('home.about.titleAccent')}</em>
-    </h2>
-    <p class="home-about__body">{t('home.about.body')}</p>
-    <a class="home-about__cta" href={aboutHref}>
-      {t('home.about.cta')}
-      <span class="home-about__arrow" aria-hidden="true">→</span>
-    </a>
+    <div class="home-about__head">
+      <span class="home-about__eyebrow">{t('home.about.eyebrow')}</span>
+      <h2 class="home-about__title" id="home-about-title">
+        <span>{t('home.about.title')}</span>
+        <em>{t('home.about.titleAccent')}</em>
+      </h2>
+      <p class="home-about__body">{t('home.about.body')}</p>
+      <a class="home-about__cta" href={aboutHref}>
+        {t('home.about.cta')}
+        <span class="home-about__arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
 
     <dl class="home-about__stats" aria-label={t('home.about.stats.aria')}>
       <div class="home-about__stat">
-        <dt class="home-about__stat-value">{t('home.about.stats.team.value')}</dt>
+        <dt class="home-about__stat-value" data-counter={21}>21</dt>
         <dd class="home-about__stat-label">{t('home.about.stats.team.label')}</dd>
       </div>
       <div class="home-about__stat">
-        <dt class="home-about__stat-value">{t('home.about.stats.countries.value')}</dt>
+        <dt class="home-about__stat-value" data-counter={6}>6</dt>
         <dd class="home-about__stat-label">{t('home.about.stats.countries.label')}</dd>
       </div>
       <div class="home-about__stat">
-        <dt class="home-about__stat-value">{t('home.about.stats.service.value')}</dt>
+        <dt class="home-about__stat-value--service">
+          <span class="home-about__stat-value" data-counter={360}>360</span><span class="home-about__stat-unit" aria-hidden="true">°</span>
+        </dt>
         <dd class="home-about__stat-label">{t('home.about.stats.service.label')}</dd>
       </div>
     </dl>
@@ -61,6 +65,10 @@ const aboutHref = lang === 'en' ? '/en/about/' : '/sobre-nosotros/';
     max-width: 880px;
     margin: 0 auto;
     text-align: center;
+  }
+
+  .home-about__head {
+    display: block;
   }
 
   .home-about__eyebrow {
@@ -158,6 +166,27 @@ const aboutHref = lang === 'en' ? '/en/about/' : '/sobre-nosotros/';
     color: var(--color-ph-gold, #d6b25e);
     margin: 0;
   }
+
+  .home-about__stat-value--service {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0;
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(36px, 5vw, 64px);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--color-ph-gold, #d6b25e);
+    margin: 0;
+  }
+  .home-about__stat-unit {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(22px, 3vw, 40px);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--color-ph-gold, #d6b25e);
+  }
   .home-about__stat-label {
     margin: 8px 0 0;
     font-family: var(--font-mono, 'JetBrains Mono', monospace);
@@ -193,3 +222,64 @@ const aboutHref = lang === 'en' ? '/en/about/' : '/sobre-nosotros/';
     .home-about__stat:last-child { border-bottom: none; }
   }
 </style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import {
+    reducedMotion, wrapWords, trackingReveal, counterReveal, magneticHover,
+  } from '@/scripts/ph-text-animations';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initHomeAboutAnimations(): void {
+    const section = document.querySelector<HTMLElement>('.home-about');
+    if (!section) return;
+    if (reducedMotion()) return;
+
+    const eyebrow = section.querySelector<HTMLElement>('.home-about__eyebrow');
+    const title = section.querySelector<HTMLElement>('.home-about__title');
+    const body = section.querySelector<HTMLElement>('.home-about__body');
+    const head = section.querySelector<HTMLElement>('.home-about__head');
+    const stats = section.querySelector<HTMLElement>('.home-about__stats');
+    const statValues = section.querySelectorAll<HTMLElement>('.home-about__stat-value[data-counter]');
+    const cta = section.querySelector<HTMLElement>('.home-about__cta');
+
+    if (eyebrow && head) {
+      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
+    }
+    if (title && head) {
+      const words = wrapWords(title);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.9,
+        ease: 'power4.out',
+        stagger: 0.08,
+        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
+      });
+    }
+    if (body && head) {
+      gsap.from(body, {
+        opacity: 0,
+        y: 18,
+        duration: 0.8,
+        ease: 'power3.out',
+        delay: 0.2,
+        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
+      });
+    }
+    if (statValues.length && stats) {
+      statValues.forEach((el) => {
+        const target = Number(el.dataset.counter ?? el.textContent ?? '0');
+        counterReveal(el, target, { trigger: stats, start: 'top 82%', once: true });
+      });
+    }
+    if (cta) {
+      magneticHover(cta, 0.3);
+    }
+
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+  }
+
+  document.addEventListener('astro:page-load', initHomeAboutAnimations);
+</script>

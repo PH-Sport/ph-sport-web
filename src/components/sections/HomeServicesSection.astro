@@ -205,3 +205,62 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
     .home-services__name { font-size: 20px; }
   }
 </style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { reducedMotion, wrapWords, trackingReveal } from '@/scripts/ph-text-animations';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initHomeServicesAnimations(): void {
+    const section = document.querySelector<HTMLElement>('.home-services');
+    if (!section) return;
+    if (reducedMotion()) return;
+
+    const eyebrow = section.querySelector<HTMLElement>('.home-services__eyebrow');
+    const title = section.querySelector<HTMLElement>('.home-services__title');
+    const lead = section.querySelector<HTMLElement>('.home-services__lead');
+    const head = section.querySelector<HTMLElement>('.home-services__head');
+    const list = section.querySelector<HTMLElement>('.home-services__list');
+    const rows = section.querySelectorAll<HTMLElement>('.home-services__row');
+
+    if (eyebrow && head) {
+      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
+    }
+    if (title && head) {
+      const words = wrapWords(title);
+      gsap.from(words, {
+        yPercent: 115,
+        duration: 0.9,
+        ease: 'power4.out',
+        stagger: 0.08,
+        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
+      });
+    }
+    if (lead && head) {
+      gsap.from(lead, {
+        opacity: 0,
+        y: 18,
+        duration: 0.8,
+        ease: 'power3.out',
+        delay: 0.2,
+        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
+      });
+    }
+    if (rows.length && list) {
+      gsap.from(rows, {
+        opacity: 0,
+        y: 12,
+        duration: 0.7,
+        ease: 'power3.out',
+        stagger: 0.06,
+        scrollTrigger: { trigger: list, start: 'top 82%', once: true },
+      });
+    }
+
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+  }
+
+  document.addEventListener('astro:page-load', initHomeServicesAnimations);
+</script>

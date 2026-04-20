@@ -1,141 +1,59 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
-import Button from '@/components/ui/Button.astro';
 import { HERO_STATIC_IMAGE, HERO_VIDEO_POSTER, HERO_VIDEO_SOURCES } from '@/lib/heroMedia';
 
 interface Props {
   lang: Lang;
-  /** Home: vídeo de fondo, sin CTAs ni párrafo largo */
-  variant?: 'default' | 'home';
-  /** Ancla opcional (p. ej. inicio en la home) */
+  /** @deprecated retained only for caller compat; component only renders the home hero */
+  variant?: 'home';
   sectionId?: string;
 }
 
-const { lang, variant = 'default', sectionId } = Astro.props;
+const { lang, sectionId } = Astro.props;
 const t = useTranslations(lang);
-const isEn = lang === 'en';
-const isHome = variant === 'home';
 const staticBackdrop = HERO_STATIC_IMAGE.trim().length > 0 ? HERO_STATIC_IMAGE : null;
 const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : undefined;
 ---
 
 <section
   id={sectionId}
-  class:list={[
-    'hero',
-    'relative',
-    'min-h-screen',
-    'overflow-hidden',
-    isHome ? 'hero--home' : 'flex items-center',
-  ]}
+  class="hero hero--home"
 >
-  {
-    isHome && (
-      <div class="hero-media" aria-hidden="true">
-        <div class="hero-video-fallback" />
-        {
-          staticBackdrop && (
-            <img
-              class="hero-static-image"
-              src={staticBackdrop}
-              alt=""
-              width="1920"
-              height="1080"
-              loading="eager"
-              fetchpriority="high"
-              decoding="async"
-            />
-          )
-        }
-        <video
-          class="hero-video"
-          data-hero-video
-          muted
-          loop
-          playsinline
-          autoplay
-          preload="auto"
-          poster={videoPoster}
-        >
-          {HERO_VIDEO_SOURCES.map((s) => (
-            <source src={s.src} type={s.type} />
-          ))}
-        </video>
-      </div>
-    )
-  }
-  <!-- Content -->
-  <div
-    class:list={[
-      'hero-content',
-      'relative',
-      'z-10',
-      'w-full',
-      isHome ? 'hero-content--home' : 'ph-section',
-    ]}
-  >
-    <div
-      class:list={[
-        'hero-copy-stack flex flex-col text-left',
-        isHome ? 'hero-copy-stack--home max-w-md gap-4 sm:gap-5' : 'max-w-2xl gap-6 sm:gap-10 md:gap-12 lg:gap-14',
-      ]}
-    >
-      {
-        isHome ? (
-          <div class="hero-lead hero-lead--home flex flex-col gap-3 sm:gap-4">
-            <h1 class="hero-tagline font-display text-base font-semibold uppercase tracking-widest text-ph-gold sm:text-lg lg:text-xl">
-              {t('hero.tagline')}
-            </h1>
-            <div class="ph-divider ph-divider--hero-home"></div>
-          </div>
-        ) : (
-          <div class="hero-lead flex flex-col gap-2 sm:gap-3">
-            <div class="flex flex-col gap-3 sm:gap-4">
-              <p class="hero-tagline font-display text-xs font-semibold uppercase tracking-widest text-ph-gold sm:text-sm">
-                {t('hero.tagline')}
-              </p>
-              <div class="ph-divider"></div>
-            </div>
-
-            <h1 class="hero-heading font-display text-4xl font-black tracking-tightest sm:text-5xl lg:text-7xl">
-              {t('hero.claim')}
-            </h1>
-          </div>
-        )
-      }
-
-      {
-        !isHome && (
-          <>
-            <p class="hero-description max-w-2xl text-base leading-relaxed text-ph-white-60 lg:text-lg">
-              {t('site.description')}
-            </p>
-
-            <div class="hero-ctas flex flex-wrap gap-3 sm:gap-5">
-              <Button href={isEn ? '/en/players/' : '/jugadores/'} variant="primary">
-                {t('hero.cta.primary')}
-              </Button>
-              <Button href={isEn ? '/en/about' : '/sobre-nosotros'} variant="secondary">
-                {t('hero.cta.secondary')}
-              </Button>
-            </div>
-          </>
-        )
-      }
-    </div>
+  <div class="hero-media" aria-hidden="true">
+    <div class="hero-video-fallback" />
+    {staticBackdrop && (
+      <img class="hero-static-image" src={staticBackdrop} alt="" width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async" />
+    )}
+    <video class="hero-video" data-hero-video muted loop playsinline autoplay preload="auto" poster={videoPoster}>
+      {HERO_VIDEO_SOURCES.map((s) => (
+        <source src={s.src} type={s.type} />
+      ))}
+    </video>
   </div>
 
-  <!-- Scroll indicator -->
-  <div class="scroll-indicator" data-hero-scroll-indicator aria-hidden="true">
-    <div class="chevron"></div>
-    <div class="chevron"></div>
-    <div class="chevron"></div>
+  <div class="hero-overlay" aria-hidden="true"></div>
+
+  <div class="hero-content">
+    <h1 class="hero-claim">
+      <span class="hero-claim__lead">{t('hero.claim.lead')}</span>
+      <span class="hero-claim__accent">{t('hero.claim.accent')}</span>
+    </h1>
   </div>
+
+  <a class="hero-scroll" href="#talentos" data-hero-scroll-indicator aria-label={t('hero.scroll.label')}>
+    <span class="hero-scroll__label">{t('hero.scroll.label')}</span>
+    <span class="hero-scroll__line" aria-hidden="true"></span>
+  </a>
 </section>
 
 <style>
-  .hero {
-    background: transparent;
+  .hero--home {
+    position: relative;
+    width: 100%;
+    min-height: 100svh;
+    overflow: hidden;
+    background: var(--color-ph-black, #0d0f12);
+    color: var(--color-ph-white, #ffffff);
   }
 
   .hero-media {
@@ -151,9 +69,9 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
     z-index: 0;
     background:
       radial-gradient(ellipse at 70% 80%, rgba(214, 178, 94, 0.06) 0%, transparent 42%),
-      radial-gradient(ellipse at 30% 20%, rgba(214, 178, 94, 0.1) 0%, transparent 48%),
+      radial-gradient(ellipse at 30% 20%, rgba(214, 178, 94, 0.10) 0%, transparent 48%),
       radial-gradient(ellipse at 50% 100%, rgba(13, 15, 18, 0.9) 0%, transparent 55%),
-      var(--ph-section-bg);
+      var(--ph-section-bg, #0d0f12);
   }
 
   .hero-static-image {
@@ -176,315 +94,139 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .hero--home .hero-video {
-      display: none;
-    }
+    .hero--home .hero-video { display: none; }
   }
+  .hero--home.hero--video-error .hero-video { display: none; }
 
-  .hero--home.hero--video-error .hero-video {
-    display: none;
-  }
-
-  /*
-   * Home: esquina inferior izquierda del viewport (sin .ph-section: evita max-width + margin auto).
-   */
-  .hero-content--home {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    right: auto;
-    top: auto;
-    width: auto;
-    max-width: min(22rem, calc(100vw - var(--ph-section-px) * 2));
-    margin: 0;
-    padding-left: var(--ph-section-px);
-    padding-right: 1rem;
-    padding-bottom: max(4.5rem, env(safe-area-inset-bottom, 0px));
-    padding-top: 0;
-  }
-
-  @media (min-width: 640px) {
-    .hero-content--home {
-      max-width: min(28rem, calc(100vw - var(--ph-section-px) * 2));
-      padding-bottom: max(5.25rem, env(safe-area-inset-bottom));
-    }
-  }
-
-  .hero-copy-stack--home {
-    align-items: flex-start;
-  }
-
-  .ph-divider--hero-home {
-    max-width: 12rem;
-  }
-
-  /* Home: viñeta inferior + refuerzo izquierda para leer sobre el vídeo */
-  .hero--home::before {
-    background:
-      linear-gradient(
-        15deg,
-        rgba(13, 15, 18, 0.97) 0%,
-        rgba(13, 15, 18, 0.55) 38%,
-        transparent 62%
-      ),
-      linear-gradient(
-        to top,
-        rgba(13, 15, 18, 0.88) 0%,
-        rgba(13, 15, 18, 0.25) 45%,
-        transparent 72%
-      );
-    z-index: 3;
-  }
-
-  @media (min-width: 1024px) {
-    .hero--home::before {
-      background:
-        linear-gradient(
-          12deg,
-          rgba(13, 15, 18, 0.94) 0%,
-          rgba(13, 15, 18, 0.35) 42%,
-          transparent 68%
-        ),
-        linear-gradient(
-          to top,
-          rgba(13, 15, 18, 0.75) 0%,
-          transparent 58%
-        );
-    }
-  }
-
-  .hero--home .hero-tagline {
-    line-height: 1.35;
-    text-shadow: 0 1px 24px rgba(13, 15, 18, 0.85);
-  }
-
-  .hero::before {
-    content: '';
+  /* Dark gradient overlay for legibility of the claim over the video */
+  .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      to right,
-      rgba(13, 15, 18, 0.85) 0%,
-      rgba(13, 15, 18, 0.4) 60%,
-      transparent 100%
-    );
-    z-index: 1;
+    z-index: 3;
     pointer-events: none;
+    background:
+      linear-gradient(180deg,
+        rgba(13,15,18,0.55) 0%,
+        rgba(13,15,18,0) 30%,
+        rgba(13,15,18,0) 55%,
+        rgba(13,15,18,0.85) 100%),
+      linear-gradient(90deg,
+        rgba(13,15,18,0.35) 0%,
+        rgba(13,15,18,0) 55%);
   }
 
-  @media (min-width: 1024px) {
-    .hero::before {
-      background: linear-gradient(
-        to right,
-        rgba(13, 15, 18, 0.7) 0%,
-        rgba(13, 15, 18, 0.2) 50%,
-        transparent 100%
-      );
-    }
-  }
-
-  /* Más aire entre líneas del titular cuando GSAP envuelve palabras en .ph-clip */
-  .hero-heading {
-    line-height: 1.38;
-  }
-  @media (min-width: 640px) {
-    .hero-heading {
-      line-height: 1.32;
-    }
-  }
-  @media (min-width: 1024px) {
-    .hero-heading {
-      line-height: 1.2;
-    }
-  }
-
-  /* Ocultar desde el inicio — GSAP restaura opacity antes de animar */
-  .hero-tagline,
-  .hero-content .ph-divider,
-  .hero-content h1,
-  .hero-content .hero-description,
-  .hero-content .hero-ctas {
-    opacity: 0;
-  }
-
-  .scroll-indicator {
+  .hero-content {
     position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%) translateZ(0);
+    left: var(--ph-section-px, clamp(20px, 4vw, 48px));
+    right: var(--ph-section-px, clamp(20px, 4vw, 48px));
+    bottom: clamp(72px, 10vw, 140px);
+    z-index: 4;
+    max-width: 980px;
+  }
+
+  .hero-claim {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(44px, 8.5vw, 132px);
+    letter-spacing: -0.03em;
+    line-height: 0.96;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .hero-claim__lead {
+    display: block;
+    color: var(--color-ph-white, #ffffff);
+  }
+  .hero-claim__accent {
+    display: block;
+    color: var(--color-ph-gold, #d6b25e);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  /* Vertical scroll cue — bottom-right */
+  .hero-scroll {
+    position: absolute;
+    right: var(--ph-section-px, clamp(20px, 4vw, 48px));
+    bottom: clamp(24px, 4vw, 48px);
+    z-index: 4;
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: opacity var(--ph-duration) var(--ease-ph);
-    z-index: 10;
-    backface-visibility: hidden;
-    isolation: isolate;
+    gap: 12px;
+    color: var(--color-ph-white, #ffffff);
+    opacity: 0.7;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    text-decoration: none;
+  }
+  .hero-scroll:hover {
+    opacity: 1;
+    color: var(--color-ph-gold, #d6b25e);
+  }
+  .hero-scroll__label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .hero-scroll__line {
+    position: relative;
+    width: 1px;
+    height: 56px;
+    background: currentColor;
+    overflow: hidden;
+  }
+  .hero-scroll__line::after {
+    content: "";
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 1px;
+    height: 60%;
+    background: var(--color-ph-gold, #d6b25e);
+    animation: heroScrollCue 2.4s cubic-bezier(.7,0,.2,1) infinite;
+  }
+  @keyframes heroScrollCue {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(260%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-scroll__line::after { animation: none; }
   }
 
-  .scroll-indicator.is-hidden {
+  .hero-scroll.is-hidden {
     opacity: 0;
+    pointer-events: none;
   }
 
-  .chevron {
-    width: 14px;
-    height: 14px;
-    border-right: 1.5px solid var(--color-ph-gold);
-    border-bottom: 1.5px solid var(--color-ph-gold);
-    transform: rotate(45deg) translateZ(0);
-    animation: scroll-chevron 2s infinite;
-    opacity: 0;
-    margin-top: -6px;
-    backface-visibility: hidden;
-  }
-
-  .chevron:nth-child(1) { animation-delay: 0s; }
-  .chevron:nth-child(2) { animation-delay: 0.15s; }
-  .chevron:nth-child(3) { animation-delay: 0.3s; }
-
-  @keyframes scroll-chevron {
-    0% {
-      opacity: 0;
-      transform: rotate(45deg) translate(-4px, -4px) translateZ(0);
-    }
-    50% {
-      opacity: 1;
-      transform: rotate(45deg) translate(0, 0) translateZ(0);
-    }
-    100% {
-      opacity: 0;
-      transform: rotate(45deg) translate(4px, 4px) translateZ(0);
-    }
+  @media (max-width: 720px) {
+    .hero-content { bottom: clamp(96px, 18vh, 160px); }
   }
 </style>
 
 <script>
-  // ── Scroll indicator ──────────────────────────────────────────────────────
-  const indicator = document.querySelector<HTMLElement>('[data-hero-scroll-indicator]');
-  if (indicator) {
-    const toggleIndicator = () => {
-      indicator.classList.toggle('is-hidden', window.scrollY > 48);
-    };
-    toggleIndicator();
-    document.addEventListener('scroll', toggleIndicator, { passive: true });
+  function initHeroScrollCue(): void {
+    const cue = document.querySelector<HTMLElement>('[data-hero-scroll-indicator]');
+    if (!cue) return;
+    const toggle = () => cue.classList.toggle('is-hidden', window.scrollY > 48);
+    toggle();
+    document.addEventListener('scroll', toggle, { passive: true });
   }
 
-  // ── Hero vídeo (home): fallback si falla carga o autoplay ─────────────────
   function initHeroVideo(): void {
     const hero = document.querySelector<HTMLElement>('.hero--home');
     const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
     if (!hero || !video) return;
-
     const markStatic = () => hero.classList.add('hero--video-error');
-
     video.addEventListener('error', markStatic);
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    void video.play().catch(() => {
-      markStatic();
-    });
+    void video.play().catch(() => markStatic());
   }
 
-  document.addEventListener('astro:page-load', initHeroVideo);
-</script>
-
-<script>
-  import { gsap } from 'gsap';
-  import {
-    reducedMotion,
-    scrambleReveal,
-    wrapWords,
-    splitWords,
-  } from '@/scripts/ph-text-animations';
-  import { isDocumentReload } from '@/lib/is-document-reload';
-
-  const LOGO_SESSION_KEY = 'ph-logo-revealed';
-
-  function initHeroAnimations(): void {
-    const section = document.querySelector<HTMLElement>('.hero');
-    if (!section || reducedMotion()) return;
-
-    const tagline  = section.querySelector<HTMLElement>('.hero-tagline');
-    const divider  = section.querySelector<HTMLElement>('.ph-divider');
-    const h1       = section.querySelector<HTMLElement>('h1.hero-heading');
-    const desc     = section.querySelector<HTMLElement>('.hero-description');
-    const btns     = section.querySelector<HTMLElement>('.hero-ctas');
-
-    const tl = gsap.timeline();
-
-    // Tagline: scramble de caracteres (gestiona su propio opacity internamente)
-    if (tagline) scrambleReveal(tagline, 0);
-
-    // Divisor dorado: restore opacity → crece desde la izquierda
-    if (divider) {
-      gsap.set(divider, { opacity: 1 });
-      tl.from(divider, {
-        scaleX: 0,
-        transformOrigin: 'left center',
-        duration: 0.7,
-        ease: 'expo.out',
-      }, 0.25);
-    }
-
-    // H1: restore opacity → palabras emergen desde debajo (cortina)
-    if (h1) {
-      const words = wrapWords(h1);
-      gsap.set(h1, { opacity: 1 }); // el h1 es visible, pero las palabras están detrás del clip
-      tl.from(words, {
-        yPercent: 115,
-        duration: 0.85,
-        stagger: 0.065,
-        ease: 'power4.out',
-      }, 0.5);
-    }
-
-    // Descripción: restore opacity → palabras cristalizan con desenfoque
-    if (desc) {
-      gsap.set(desc, { opacity: 1 });
-      const spans = splitWords(desc);
-      tl.from(spans, {
-        opacity: 0,
-        filter: 'blur(7px)',
-        y: 8,
-        duration: 0.65,
-        stagger: 0.035,
-        ease: 'power2.out',
-      }, 0.95);
-    }
-
-    // CTAs: restore opacity → aparecen con deslizamiento suave
-    if (btns) {
-      gsap.set(btns, { opacity: 1 });
-      tl.from(Array.from(btns.children), {
-        opacity: 0,
-        y: 18,
-        duration: 0.55,
-        stagger: 0.1,
-        ease: 'power3.out',
-      }, 1.15);
-    }
-  }
-
-  // ── Decide cuándo disparar ────────────────────────────────────────────────
   document.addEventListener('astro:page-load', () => {
-    const section = document.querySelector('.hero');
-    if (!section) return;
-
-    const path = window.location.pathname.replace(/\/$/, '') || '/';
-    const isHome = path === '/' || path === '/en';
-    const isFirstVisit = !sessionStorage.getItem(LOGO_SESSION_KEY);
-    const isReload = isDocumentReload();
-
-    // Si el logo va a reproducirse, esperamos su evento antes de animar
-    if (isHome && (isFirstVisit || isReload)) {
-      let fired = false;
-      const onRevealed = () => {
-        if (!fired) { fired = true; initHeroAnimations(); }
-      };
-      document.addEventListener('ph:logo-revealed', onRevealed, { once: true });
-      // Fallback por si el evento no llega (refs SVG / GSAP / Strict Mode)
-      setTimeout(onRevealed, 4000);
-    } else {
-      initHeroAnimations();
-    }
+    initHeroScrollCue();
+    initHeroVideo();
   });
 </script>

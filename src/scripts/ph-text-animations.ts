@@ -64,6 +64,9 @@ export function splitWords(el: HTMLElement): HTMLElement[] {
 const SCRAMBLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 const activeScrambles: Array<(time: number, deltaTime: number) => void> = [];
 
+// ── Magnetic hover disposers ──────────────────────────────────────────────────
+const magneticDisposers: Array<() => void> = [];
+
 /**
  * Animates el.textContent through random chars before resolving to the real text.
  * Uses GSAP ticker for reliable frame-rate synchronization.
@@ -145,9 +148,69 @@ export function counterReveal(
   });
 }
 
+// ── Magnetic hover ────────────────────────────────────────────────────────────
+/**
+ * Attaches pointer-follow "magnetic" hover to el. Only active on devices with
+ * real hover + fine pointer (skipped on touch). Returns a cleanup function; the
+ * cleanup is also registered module-globally so `astro:before-swap` reverts it.
+ */
+export function magneticHover(el: HTMLElement, strength = 0.3): () => void {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    return () => {};
+  }
+
+  const onMove = (e: PointerEvent) => {
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left - rect.width / 2) * strength;
+    const y = (e.clientY - rect.top - rect.height / 2) * strength;
+    gsap.to(el, { x, y, duration: 0.4, ease: 'power2.out' });
+  };
+
+  const onLeave = () => {
+    gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: 'power3.out' });
+  };
+
+  el.addEventListener('pointermove', onMove);
+  el.addEventListener('pointerleave', onLeave);
+
+  const dispose = () => {
+    el.removeEventListener('pointermove', onMove);
+    el.removeEventListener('pointerleave', onLeave);
+    gsap.set(el, { x: 0, y: 0, clearProps: 'transform' });
+  };
+  magneticDisposers.push(dispose);
+  return dispose;
+}
+
+// ── Clip-path reveal ──────────────────────────────────────────────────────────
+/**
+ * Animates `clipPath: inset(…)` from fully clipped (from a side) to fully open.
+ * No-ops under reduced motion (caller is expected to gate too, but this is a
+ * safety net for when reduced-motion check is external).
+ */
+export function clipPathReveal(
+  el: HTMLElement,
+  direction: 'left' | 'right' = 'left',
+  scrollTrigger?: ScrollTrigger.Vars,
+): gsap.core.Tween {
+  const from = direction === 'left' ? 'inset(0 100% 0 0)' : 'inset(0 0 0 100%)';
+  return gsap.fromTo(
+    el,
+    { clipPath: from },
+    {
+      clipPath: 'inset(0 0 0 0)',
+      duration: 1.2,
+      ease: 'expo.out',
+      scrollTrigger,
+    },
+  );
+}
+
 // ── Cleanup on View Transitions swap ─────────────────────────────────────────
 document.addEventListener('astro:before-swap', () => {
   activeScrambles.forEach((t) => gsap.ticker.remove(t));
   activeScrambles.length = 0;
+  magneticDisposers.forEach((d) => d());
+  magneticDisposers.length = 0;
   ScrollTrigger.getAll().forEach((t) => t.kill());
 });

@@ -102,16 +102,15 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
 
     <ol class="srv-areas__list" role="list">
       {areas.map((area, idx) => {
-        const open = idx === 0;
         const panelId = `srv-area-panel-${area.key}`;
         const buttonId = `srv-area-button-${area.key}`;
         return (
-          <li class:list={['srv-area-row', { 'is-open': open }]}>
+          <li class="srv-area-row">
             <button
               type="button"
               class="srv-area-row__summary"
               id={buttonId}
-              aria-expanded={open ? 'true' : 'false'}
+              aria-expanded="false"
               aria-controls={panelId}
               data-srv-area-toggle
             >
@@ -405,14 +404,16 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     transform: translate(-50%, -50%) rotate(90deg);
   }
 
+  /* Panel visibility is driven by JS: inline `height` controls the expand/
+     collapse tween, and these CSS rules handle the final resting state once
+     the tween clears the inline style (closed → height: 0, open → auto). */
   .srv-area-row__panel {
     overflow: hidden;
-    max-height: 0;
+    height: 0;
     opacity: 0;
-    transition: max-height 0.55s cubic-bezier(.7, 0, .2, 1), opacity 0.3s;
   }
   .srv-area-row.is-open .srv-area-row__panel {
-    max-height: 1500px;
+    height: auto;
     opacity: 1;
   }
   .srv-area-row__body {
@@ -698,7 +699,75 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
 </style>
 
 <script>
-  function initSrvAccordion() {
+  import { gsap } from 'gsap';
+
+  const SRV_DURATION = 0.5;
+  const SRV_EASE = 'power3.out';
+  const srvActive = new WeakMap<HTMLElement, gsap.core.Tween>();
+
+  function srvReducedMotion(): boolean {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function srvClosePanel(row: Element): void {
+    const panel = row.querySelector<HTMLElement>('.srv-area-row__panel');
+    const btn = row.querySelector<HTMLButtonElement>('[data-srv-area-toggle]');
+    if (!panel || !btn) return;
+    srvActive.get(panel)?.kill();
+    const current = panel.offsetHeight;
+    row.classList.remove('is-open');
+    btn.setAttribute('aria-expanded', 'false');
+    if (srvReducedMotion()) {
+      panel.style.height = '';
+      panel.style.opacity = '';
+      return;
+    }
+    panel.style.height = current + 'px';
+    panel.style.opacity = '1';
+    const tween = gsap.to(panel, {
+      height: 0,
+      opacity: 0,
+      duration: SRV_DURATION,
+      ease: SRV_EASE,
+      onComplete: () => {
+        panel.style.height = '';
+        panel.style.opacity = '';
+        srvActive.delete(panel);
+      },
+    });
+    srvActive.set(panel, tween);
+  }
+
+  function srvOpenPanel(row: Element): void {
+    const panel = row.querySelector<HTMLElement>('.srv-area-row__panel');
+    const btn = row.querySelector<HTMLButtonElement>('[data-srv-area-toggle]');
+    if (!panel || !btn) return;
+    srvActive.get(panel)?.kill();
+    row.classList.add('is-open');
+    btn.setAttribute('aria-expanded', 'true');
+    if (srvReducedMotion()) {
+      panel.style.height = '';
+      panel.style.opacity = '';
+      return;
+    }
+    panel.style.height = '0px';
+    panel.style.opacity = '0';
+    const target = panel.scrollHeight;
+    const tween = gsap.to(panel, {
+      height: target,
+      opacity: 1,
+      duration: SRV_DURATION,
+      ease: SRV_EASE,
+      onComplete: () => {
+        panel.style.height = '';
+        panel.style.opacity = '';
+        srvActive.delete(panel);
+      },
+    });
+    srvActive.set(panel, tween);
+  }
+
+  function initSrvAccordion(): void {
     const buttons = document.querySelectorAll<HTMLButtonElement>('[data-srv-area-toggle]');
     if (!buttons.length) return;
 
@@ -710,15 +779,14 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
         if (!scope) return;
         const wasOpen = row.classList.contains('is-open');
 
-        scope.querySelectorAll('.srv-area-row').forEach((r) => {
-          r.classList.remove('is-open');
-          const b = r.querySelector<HTMLButtonElement>('[data-srv-area-toggle]');
-          if (b) b.setAttribute('aria-expanded', 'false');
+        scope.querySelectorAll('.srv-area-row.is-open').forEach((r) => {
+          if (r !== row) srvClosePanel(r);
         });
 
-        if (!wasOpen) {
-          row.classList.add('is-open');
-          btn.setAttribute('aria-expanded', 'true');
+        if (wasOpen) {
+          srvClosePanel(row);
+        } else {
+          srvOpenPanel(row);
         }
       });
     });

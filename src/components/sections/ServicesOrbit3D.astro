@@ -73,7 +73,7 @@ const items = getServicesItems(lang);
 
 <style>
   .services-orbit-3d {
-    --orbit-bg: var(--color-ph-black);
+    --orbit-bg: var(--ph-section-bg);
     --orbit-accent: var(--color-ph-gold);
     --orbit-text: var(--color-ph-white);
     --orbit-muted: var(--color-ph-white-60);
@@ -148,8 +148,8 @@ const items = getServicesItems(lang);
     --r: 0deg;
     transform: translate(-50%, -50%) rotateY(var(--r)) translateZ(450px);
     background: var(--orbit-glass-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: var(--ph-glass-backdrop);
+    -webkit-backdrop-filter: var(--ph-glass-backdrop);
     border: 1px solid var(--orbit-glass-border);
     box-shadow:
       0 30px 60px rgba(0, 0, 0, 0.6),
@@ -266,8 +266,8 @@ const items = getServicesItems(lang);
     pointer-events: none;
     opacity: 0;
     background: rgba(13, 15, 18, 0.65);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: var(--ph-glass-backdrop-overlay);
+    -webkit-backdrop-filter: var(--ph-glass-backdrop-overlay);
     transition: opacity 0.4s ease;
   }
 
@@ -289,8 +289,8 @@ const items = getServicesItems(lang);
     background:
       linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 30%),
       var(--orbit-glass-bg);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: var(--ph-glass-backdrop-modal);
+    -webkit-backdrop-filter: var(--ph-glass-backdrop-modal);
     border: 1px solid rgba(214, 178, 94, 0.4);
     box-shadow:
       0 30px 60px rgba(0, 0, 0, 0.8),

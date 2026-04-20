@@ -134,7 +134,7 @@ const isActive = (href: string): boolean => {
 <style>
   /* ── Cápsula flotante (glass / sólido / hide-on-scroll en BaseLayout global) ── */
   .header-shell {
-    width: min(1280px, calc(100% - 2 * var(--ph-section-px)));
+    width: calc(100% - 2 * var(--ph-section-px));
     margin-inline: auto;
     margin-top: 0.875rem;
     border-radius: var(--radius-lg);
@@ -163,7 +163,7 @@ const isActive = (href: string): boolean => {
 
   @media (max-width: 767px) {
     .header-inner {
-      padding-block: 0.875rem;
+      padding-block: 0.625rem;
     }
   }
 
@@ -176,6 +176,12 @@ const isActive = (href: string): boolean => {
   .header-logo svg {
     height: 1.75rem;
     width: auto;
+  }
+
+  @media (max-width: 767px) {
+    .header-logo svg {
+      height: 1.5rem;
+    }
   }
 
   .header-logo:hover {
@@ -438,8 +444,8 @@ const isActive = (href: string): boolean => {
       linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 32%),
       rgba(255, 255, 255, 0.03),
       var(--color-ph-black);
-    backdrop-filter: blur(16px) saturate(1.08);
-    -webkit-backdrop-filter: blur(16px) saturate(1.08);
+    backdrop-filter: var(--ph-glass-backdrop);
+    -webkit-backdrop-filter: var(--ph-glass-backdrop);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.08),
       0 24px 80px rgba(0, 0, 0, 0.45);
@@ -447,8 +453,8 @@ const isActive = (href: string): boolean => {
     visibility: hidden;
     pointer-events: none;
     transition:
-      opacity var(--menu-anim-duration) var(--ease-ph),
-      visibility 0s linear var(--menu-anim-duration);
+      opacity 280ms var(--ease-ph),
+      visibility 0s linear 280ms;
   }
 
   @supports not (backdrop-filter: blur(1px)) {
@@ -481,7 +487,8 @@ const isActive = (href: string): boolean => {
     position: relative;
     z-index: 1;
     pointer-events: none;
-    max-width: 1280px;
+    max-width: none;
+    width: 100%;
     min-height: 100vh;
     min-height: 100dvh;
     margin-inline: auto;
@@ -565,6 +572,7 @@ const isActive = (href: string): boolean => {
   .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li {
     opacity: 0;
     transform: translateX(-0.75rem);
+    transition-duration: 0.2s;
   }
 
   .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li:nth-child(5) {
@@ -590,13 +598,15 @@ const isActive = (href: string): boolean => {
   .mobile-menu.is-open.mobile-menu--closing .ph-divider {
     opacity: 0;
     transform: translateY(0.35rem);
-    transition-delay: 0.22s;
+    transition-delay: 0.14s;
+    transition-duration: 0.2s;
   }
 
   .mobile-menu.is-open.mobile-menu--closing .lang-switch--mobile {
     opacity: 0;
     transform: translateY(0.35rem);
-    transition-delay: 0.26s;
+    transition-delay: 0.18s;
+    transition-duration: 0.2s;
   }
 
   .mobile-menu.mobile-menu--closing .mobile-menu-backdrop {
@@ -883,8 +893,8 @@ const isActive = (href: string): boolean => {
     }
   }
 
-  /** (n-1)*40ms + 380ms por ítem; divider/lang hasta ~640ms + margen */
-  const MENU_CLOSE_TOTAL_MS = 700;
+  /** (n-1)*40ms + 200ms por ítem; divider/lang hasta ~380ms + margen */
+  const MENU_CLOSE_TOTAL_MS = 420;
 
   let mobileMenuCloseTimer: ReturnType<typeof setTimeout> | null = null;
 

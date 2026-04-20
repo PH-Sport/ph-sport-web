@@ -1,6 +1,4 @@
 ---
-import SectionHeader from '@/components/ui/SectionHeader.astro';
-import Button from '@/components/ui/Button.astro';
 import { getServicesItems } from '@/lib/servicesItems';
 import { useTranslations, type Lang } from '@/i18n/utils';
 
@@ -10,177 +8,200 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-const isEn = lang === 'en';
+
 const items = getServicesItems(lang);
-const servicesHref = isEn ? '/en/services' : '/servicios';
+const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
 ---
 
-<section
-  id="servicios"
-  class="home-services-section"
-  aria-labelledby="home-services-heading"
-  data-home-services
->
-  <div class="ph-section">
-    <SectionHeader
-      label={t('nav.services')}
-      title={t('home.services.title')}
-      subtitle={t('home.services.subtitle')}
-      id="home-services-heading"
-      tag="h2"
-      noBorder
-    />
+<section class="home-services" id="servicios" aria-labelledby="home-services-title">
+  <header class="home-services__head">
+    <span class="home-services__eyebrow">{t('home.services.eyebrow')}</span>
+    <h2 class="home-services__title" id="home-services-title">
+      {t('home.services.title')}
+    </h2>
+    <p class="home-services__lead">{t('home.services.lead')}</p>
+  </header>
 
-    <ol class="services-list" aria-label={t('nav.services')}>
-      {
-        items.map((item, i) => (
-          <li class="services-list-item" data-service-item>
-            <span class="services-list-num" aria-hidden="true">
-              {String(i + 1).padStart(2, '0')}
+  <ol class="home-services__list" role="list">
+    {items.map((item, idx) => (
+      <li class="home-services__item">
+        <details class="home-services__row" name="home-services">
+          <summary class="home-services__summary">
+            <span class="home-services__num">{String(idx + 1).padStart(2, '0')}</span>
+            <span class="home-services__name">{item.title}</span>
+            <span class="home-services__plus" aria-hidden="true">
+              <span></span><span></span>
             </span>
-            <div class="services-list-body">
-              <h3 class="services-list-title">{item.title}</h3>
-              <p class="services-list-short">{item.short}</p>
-            </div>
-          </li>
-        ))
-      }
-    </ol>
+          </summary>
+          <div class="home-services__body">
+            <p>{item.body}</p>
+          </div>
+        </details>
+      </li>
+    ))}
+  </ol>
 
-    <div class="home-section-cta">
-      <Button href={servicesHref} variant="secondary">
-        {t('home.services.cta')}
-      </Button>
-    </div>
+  <div class="home-services__cta-wrap">
+    <a class="home-services__cta" href={servicesHref}>
+      {t('home.services.cta')}
+      <span class="home-services__arrow" aria-hidden="true">→</span>
+    </a>
   </div>
 </section>
 
 <style>
-  .home-services-section {
-    position: relative;
-    padding-block: 4rem 4.5rem;
-    background:
-      radial-gradient(ellipse at 80% 30%, rgba(214, 178, 94, 0.04) 0%, transparent 50%),
-      var(--ph-section-bg);
-    border-top: 1px solid var(--color-ph-white-10);
+  .home-services {
+    padding: clamp(56px, 8vw, 120px) var(--ph-section-px, clamp(20px, 4vw, 48px));
+    background: var(--color-ph-bg-2, #15171b);
+    color: var(--color-ph-white, #ffffff);
   }
 
-  @media (min-width: 1024px) {
-    .home-services-section {
-      padding-block: 5rem 5.5rem;
-    }
+  .home-services__head { max-width: 720px; margin-bottom: clamp(32px, 5vw, 56px); }
+
+  .home-services__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ph-gold, #d6b25e);
+  }
+  .home-services__eyebrow::before {
+    content: "";
+    width: 28px;
+    height: 1px;
+    background: var(--color-ph-gold, #d6b25e);
   }
 
-  /* ── Lista editorial ─────────────────────────────────────────────────────── */
+  .home-services__title {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(32px, 5vw, 60px);
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    margin: 14px 0 0;
+  }
 
-  .services-list {
+  .home-services__lead {
+    margin: 18px 0 0;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 520px;
+  }
+
+  .home-services__list {
     list-style: none;
-    margin: 0;
     padding: 0;
+    margin: clamp(32px, 5vw, 56px) 0 0;
+    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
   }
 
-  .services-list-item {
-    display: flex;
-    align-items: baseline;
-    gap: 2rem;
-    padding-block: 1.75rem;
-    border-bottom: 1px solid var(--color-ph-white-10);
-    transition: border-color var(--ph-duration) var(--ease-ph);
+  .home-services__item { border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12)); }
+
+  .home-services__row { width: 100%; }
+  .home-services__row > summary { list-style: none; cursor: pointer; }
+  .home-services__row > summary::-webkit-details-marker { display: none; }
+
+  .home-services__summary {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: clamp(16px, 2.5vw, 32px);
+    padding: clamp(20px, 3vw, 32px) 0;
+    transition: color 0.3s;
+    color: var(--color-ph-white, #ffffff);
+  }
+  .home-services__row:hover .home-services__summary { color: var(--color-ph-gold, #d6b25e); }
+  .home-services__row[open] .home-services__summary { color: var(--color-ph-gold, #d6b25e); }
+
+  .home-services__row > summary:focus-visible {
+    outline: 2px solid var(--color-ph-gold, #d6b25e);
+    outline-offset: 4px;
   }
 
-  .services-list-item:first-child {
-    border-top: 1px solid var(--color-ph-white-10);
+  .home-services__num {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--color-ph-gold, #d6b25e);
   }
 
-  .services-list-item:hover {
-    border-bottom-color: rgba(214, 178, 94, 0.3);
-  }
-
-  .services-list-num {
-    font-family: var(--font-display);
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 900;
-    color: rgba(214, 178, 94, 0.18);
-    letter-spacing: -0.04em;
-    line-height: 1;
-    flex-shrink: 0;
-    width: 3.5rem;
-    text-align: right;
-    transition: color var(--ph-duration) var(--ease-ph);
-    user-select: none;
-  }
-
-  .services-list-item:hover .services-list-num {
-    color: rgba(214, 178, 94, 0.45);
-  }
-
-  .services-list-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  @media (min-width: 768px) {
-    .services-list-body {
-      flex-direction: row;
-      align-items: baseline;
-      gap: 2rem;
-    }
-  }
-
-  .services-list-title {
-    font-family: var(--font-display);
-    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
-    font-weight: 700;
-    color: var(--color-ph-white);
+  .home-services__name {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(22px, 3vw, 36px);
     letter-spacing: -0.02em;
-    line-height: 1.2;
-    margin: 0;
+    line-height: 1.1;
+  }
+
+  .home-services__plus {
+    position: relative;
+    width: 20px;
+    height: 20px;
     flex-shrink: 0;
   }
-
-  @media (min-width: 768px) {
-    .services-list-title {
-      min-width: 16rem;
-    }
+  .home-services__plus span {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 20px;
+    height: 1px;
+    background: currentColor;
+    transform: translateY(-50%);
+    transition: transform 0.3s;
+  }
+  .home-services__plus span:last-child {
+    transform: translateY(-50%) rotate(90deg);
+  }
+  .home-services__row[open] .home-services__plus span:last-child {
+    transform: translateY(-50%) rotate(0deg);
   }
 
-  .services-list-short {
+  @media (prefers-reduced-motion: reduce) {
+    .home-services__summary,
+    .home-services__plus span { transition: none; }
+  }
+
+  .home-services__body {
+    padding: 0 0 clamp(20px, 3vw, 32px);
+    max-width: 640px;
+  }
+  .home-services__body p {
     margin: 0;
-    font-size: 0.9375rem;
-    line-height: 1.5;
-    color: var(--color-ph-white-60);
+    color: var(--color-ph-ink-soft, #b5b7bb);
+    font-size: 15px;
+    line-height: 1.6;
   }
 
-  /* ── CTA ─────────────────────────────────────────────────────────────────── */
-
-  .home-section-cta {
-    margin-top: 2.5rem;
+  .home-services__cta-wrap {
+    margin-top: clamp(32px, 5vw, 56px);
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-end;
+  }
+
+  .home-services__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 22px;
+    background: var(--color-ph-gold, #d6b25e);
+    color: var(--color-ph-black, #0d0f12);
+    border-radius: 100px;
+    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .home-services__cta:hover { background: var(--color-ph-gold-soft, #e6c682); }
+  .home-services__cta:hover .home-services__arrow { transform: translateX(4px); }
+  .home-services__arrow { transition: transform 0.2s; }
+
+  @media (max-width: 720px) {
+    .home-services__summary { gap: 14px; }
+    .home-services__name { font-size: 20px; }
   }
 </style>
-
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import { reducedMotion } from '@/scripts/ph-text-animations';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  document.addEventListener('astro:page-load', () => {
-    const section = document.getElementById('servicios');
-    if (!section || reducedMotion()) return;
-
-    const items = section.querySelectorAll<HTMLElement>('[data-service-item]');
-    gsap.from(items, {
-      opacity: 0,
-      x: -20,
-      duration: 0.7,
-      stagger: 0.08,
-      ease: 'power4.out',
-      scrollTrigger: { trigger: section, start: 'top 75%', once: true },
-    });
-  });
-</script>

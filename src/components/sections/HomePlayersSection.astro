@@ -1,8 +1,4 @@
 ---
-import PortraitCard from '@/components/ui/PortraitCard.astro';
-import SectionHeader from '@/components/ui/SectionHeader.astro';
-import Button from '@/components/ui/Button.astro';
-import { formatNationalTeamAriaLabel } from '@/lib/countryLabels';
 import type { PlayerDetailPayload } from '@/lib/playerDetail';
 import { useTranslations, type Lang } from '@/i18n/utils';
 
@@ -13,90 +9,253 @@ interface Props {
 
 const { lang, players } = Astro.props;
 const t = useTranslations(lang);
-const isEn = lang === 'en';
-const listHref = isEn ? '/en/players/' : '/jugadores/';
+
+const topThree = players.slice(0, 3);
+const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
 ---
 
-<section id="jugadores" class="home-players-section" aria-labelledby="home-players-heading">
-  <div class="ph-section">
-    <SectionHeader
-      label={t('nav.players')}
-      title={t('home.players.title')}
-      subtitle={t('home.players.subtitle')}
-      id="home-players-heading"
-      tag="h2"
-      noBorder
-    />
+<section class="home-players" id="talentos" aria-labelledby="home-players-title">
+  <header class="home-players__head">
+    <span class="home-players__eyebrow">{t('home.players.eyebrow')}</span>
+    <h2 class="home-players__title" id="home-players-title">
+      {lang === 'es' ? 'El ' : 'The '}<em>{t('home.players.titleAccent')}</em>.
+    </h2>
+    <p class="home-players__lead">{t('home.players.lead')}</p>
+  </header>
 
-    {
-      players.length === 0 ? (
-        <p class="home-players-empty">{t('players.empty')}</p>
-      ) : (
-        <>
-          <div class="home-players-grid">
-            {players.map((p) => (
-              <PortraitCard
-                name={p.name}
-                subtitle={p.subtitle}
-                photoUrl={p.photoSrc}
-                href={isEn ? p.paths.en : p.paths.es}
-                dataSlug={p.slug}
-                nationalTeamCodes={p.nationalTeamCodes}
-                nationalTeamAriaLabel={formatNationalTeamAriaLabel(p.nationalTeamCodes, lang)}
-              />
-            ))}
-          </div>
-          <div class="home-section-cta">
-            <Button href={listHref} variant="primary">
-              {t('home.players.cta')}
-            </Button>
-          </div>
-        </>
-      )
-    }
-  </div>
+  {topThree.length === 0 ? (
+    <p class="home-players__empty">{t('players.empty')}</p>
+  ) : (
+    <>
+      <ul class="home-players__grid" role="list">
+        {topThree.map((player, idx) => (
+          <li class={`home-players__item home-players__item--${idx + 1}`}>
+            <a class="home-players__card" href={player.paths[lang]}>
+              <div class="home-players__photo">
+                <img src={player.photoSrc} alt={player.name} loading="lazy" decoding="async" />
+              </div>
+              <span class="home-players__corner" aria-hidden="true"></span>
+              <div class="home-players__meta">
+                <span class="home-players__idx">{String(idx + 1).padStart(2, '0')}</span>
+                <span class="home-players__name">{player.name}</span>
+                <span class="home-players__club">{player.subtitle}</span>
+              </div>
+              <span class="home-players__underline" aria-hidden="true"></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="home-players__cta-wrap">
+        <a class="home-players__cta" href={listHref}>
+          {t('home.players.cta')}
+          <span class="home-players__arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </>
+  )}
 </section>
 
 <style>
-  .home-players-section {
-    position: relative;
-    background: var(--color-ph-black);
-    padding-block: 4rem 4.5rem;
+  .home-players {
+    padding: clamp(56px, 8vw, 120px) var(--ph-section-px, clamp(20px, 4vw, 48px));
+    background: var(--color-ph-black, #0d0f12);
+    color: var(--color-ph-white, #ffffff);
   }
 
-  @media (min-width: 1024px) {
-    .home-players-section {
-      padding-block: 5rem 5.5rem;
-    }
+  .home-players__head { max-width: 720px; margin-bottom: clamp(32px, 5vw, 64px); }
+
+  .home-players__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ph-gold, #d6b25e);
+  }
+  .home-players__eyebrow::before {
+    content: "";
+    width: 28px;
+    height: 1px;
+    background: var(--color-ph-gold, #d6b25e);
   }
 
-  .home-players-grid {
+  .home-players__title {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(36px, 6vw, 72px);
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    margin: 14px 0 0;
+  }
+  .home-players__title em {
+    color: var(--color-ph-gold, #d6b25e);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .home-players__lead {
+    margin: 18px 0 0;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 520px;
+  }
+
+  .home-players__grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: grid;
-    gap: 1.25rem;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(10px, 1.5vw, 20px);
   }
 
-  @media (min-width: 640px) {
-    .home-players-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-    }
+  .home-players__item { margin: 0; }
+
+  .home-players__card {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: var(--color-ph-bg-2, #15171b);
+    border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    transition: transform 0.35s cubic-bezier(.7, 0, .2, 1);
+    text-decoration: none;
+    color: inherit;
   }
 
-  .home-players-empty {
-    color: var(--color-ph-white-60);
-    font-size: 1.0625rem;
+  .home-players__photo { position: relative; aspect-ratio: 3 / 4; }
+  .home-players__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
-  .home-section-cta {
-    margin-top: 2.5rem;
+  .home-players__corner {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 22px;
+    height: 22px;
+    border-top: 1px solid var(--color-ph-gold, #d6b25e);
+    border-right: 1px solid var(--color-ph-gold, #d6b25e);
+    opacity: 0;
+    transition: opacity 0.35s;
+    pointer-events: none;
+  }
+
+  .home-players__meta {
+    position: absolute;
+    inset: 0;
+    padding: 18px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 6px;
+    background: linear-gradient(
+      to top,
+      rgba(13, 15, 18, 0.95) 0%,
+      rgba(13, 15, 18, 0.35) 40%,
+      rgba(13, 15, 18, 0) 65%
+    );
+    pointer-events: none;
   }
 
-  @media (min-width: 768px) {
-    .home-section-cta {
-      justify-content: flex-start;
-    }
+  .home-players__idx {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--color-ph-gold, #d6b25e);
+  }
+  .home-players__name {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(16px, 1.6vw, 22px);
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    color: var(--color-ph-white, #ffffff);
+    transition: color 0.3s;
+  }
+  .home-players__club {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+    text-transform: uppercase;
+  }
+
+  .home-players__underline {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 16px;
+    height: 1px;
+    background: var(--color-ph-gold, #d6b25e);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s cubic-bezier(.7, 0, .2, 1);
+    pointer-events: none;
+  }
+
+  .home-players__card:hover { transform: translateY(-3px); }
+  .home-players__card:hover .home-players__name { color: var(--color-ph-gold, #d6b25e); }
+  .home-players__card:hover .home-players__corner { opacity: 1; }
+  .home-players__card:hover .home-players__underline { transform: scaleX(1); }
+
+  .home-players__card:focus-visible {
+    outline: 2px solid var(--color-ph-gold, #d6b25e);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-players__card,
+    .home-players__name,
+    .home-players__corner,
+    .home-players__underline { transition: none; }
+    .home-players__card:hover { transform: none; }
+  }
+
+  .home-players__cta-wrap {
+    margin-top: clamp(24px, 4vw, 48px);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .home-players__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 22px;
+    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
+    border-radius: 100px;
+    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
+    font-size: 13px;
+    letter-spacing: 0.01em;
+    color: var(--color-ph-white, #ffffff);
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .home-players__cta:hover {
+    border-color: var(--color-ph-gold, #d6b25e);
+    color: var(--color-ph-gold, #d6b25e);
+  }
+  .home-players__cta:hover .home-players__arrow {
+    transform: translateX(4px);
+  }
+  .home-players__arrow { transition: transform 0.2s; }
+
+  .home-players__empty {
+    color: var(--color-ph-ink-soft, #b5b7bb);
+    font-size: 15px;
+  }
+
+  @media (max-width: 720px) {
+    .home-players__grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .home-players__item--3 { display: none; }
+    .home-players__name { font-size: 15px; }
+    .home-players__meta { padding: 14px; }
   }
 </style>

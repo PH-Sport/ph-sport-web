@@ -25,58 +25,60 @@ const en: Record<TranslationKey, string> = {
   // --- Hero ---
   'hero.claim': 'Brands add up, but people make the mark',
   'hero.tagline': 'Now. Next. Forever Football.',
-  'hero.cta.primary': 'Meet our players',
-  'hero.cta.secondary': 'Who we are',
+
+  // --- Hero (redesign V3) ---
+  'hero.claim.lead': 'Now. Next.',
+  'hero.claim.accent': 'Forever Football.',
+  'hero.scroll.label': 'Scroll',
 
   // --- Inicio (secciones) ---
   'home.players.cta': 'View all players',
-  'home.services.title': 'How we support your career',
-  'home.services.subtitle':
-    'Three pillars of our 360 service. See the rest in full detail.',
-  'home.services.cta': 'View all services',
-  'home.about.title': 'PHSPORT in essence',
-  'home.about.subtitle': 'Present, future, and legacy in one vision.',
-  'home.about.lead':
-    'We are a football-focused representation agency: contracts, image, and career planning.',
-  'home.about.body':
-    'On the About page we go deeper into our values and how we work with you every day.',
-  'home.about.cta': 'About us',
-  'home.about.statement': 'We manage your career, your present and your future.',
-  'home.instagram.title': 'Instagram',
-  'home.instagram.postAria': 'Open post on Instagram',
 
-  // --- Home: Stats Strip ---
-  'home.stats.aria': 'PHSPORT figures',
-  'home.stats.players.value': '+100',
-  'home.stats.players.label': 'Players',
-  'home.stats.countries.value': '12',
-  'home.stats.countries.label': 'Countries',
-  'home.stats.service.value': '360°',
-  'home.stats.service.label': 'Support',
+  // --- Home: Talents (mini section) ---
+  'home.players.eyebrow': '02 · Talent',
+  'home.players.title': 'The roster.',
+  'home.players.titleAccent': 'roster',
+  'home.players.lead': 'Professional footballers with international projection. Each career, its own project.',
 
-  // --- Home: Manifesto ---
-  'home.manifesto.eyebrow': 'Representing with purpose',
-  'home.manifesto.statement': 'We build and protect the careers of our players through strategic representation, international vision and a long-term approach.',
-  'home.manifesto.value1': 'Rigour',
-  'home.manifesto.value2': 'Closeness',
-  'home.manifesto.value3': 'Excellence',
-  'home.manifesto.values.aria': 'PHSPORT values',
+  // --- Home: Services (accordion) ---
+  'home.services.eyebrow': '03 · Services',
+  'home.services.title': 'Representation with purpose.',
+  'home.services.lead': 'Six pillars behind every player\u2019s career. Explore each area.',
+  'home.services.cta': 'See all services',
 
-  // --- Home: 360° ---
-  'home.360.label': '360° Support',
-  'home.360.title': 'Beyond representation',
-  'home.360.subtitle': 'We build a comprehensive structure that accompanies the player across every key area of their career.',
-  'home.360.pillar1.title': 'Press',
-  'home.360.pillar1.body': 'Public image, media relations and player positioning.',
-  'home.360.pillar2.title': 'Media',
-  'home.360.pillar2.body': 'Digital strategy, content creation and social media management.',
-  'home.360.pillar3.title': 'Sports psychology',
-  'home.360.pillar3.body': 'Mental preparation, pressure management and competitive support.',
-  'home.360.pillar4.title': 'Performance',
-  'home.360.pillar4.body': 'Physical analysis, ongoing monitoring and performance optimisation.',
-  'home.360.pillar5.title': 'Family Office',
-  'home.360.pillar5.body': 'Wealth management, tax planning and financial structure for the player.',
-  'home.360.aria': 'The five pillars of PHSPORT support',
+  // --- Home: About (editorial block) ---
+  'home.about.eyebrow': '04 · About PHSPORT',
+  'home.about.title': 'Brands add up,',
+  'home.about.titleAccent': 'but people make the mark.',
+  'home.about.body': 'We are a football-only representation agency. We manage the present, future and legacy of every player with closeness, rigour and excellence.',
+  'home.about.cta': 'Get to know us',
+  'home.about.stats.aria': 'PHSPORT figures',
+  'home.about.stats.team.value': '21',
+  'home.about.stats.team.label': 'Team members',
+  'home.about.stats.countries.value': '6',
+  'home.about.stats.countries.label': 'Countries',
+  'home.about.stats.service.value': '360°',
+  'home.about.stats.service.label': 'Support',
+  'home.about.values.aria': 'PHSPORT values',
+  'home.about.values.v1': 'Excellence',
+  'home.about.values.v2': 'Closeness',
+  'home.about.values.v3': 'Rigour',
+
+  // --- Home: Contact ---
+  'home.contact.eyebrow': '05 · Contact',
+  'home.contact.title': 'Let\u2019s talk.',
+  'home.contact.lead': 'Whether you represent a player, a club, or a brand, drop us a line. We reply within 48 hours.',
+  'home.contact.email': 'info@phsport.es',
+  'home.contact.emailLabel': 'Direct email',
+  'home.contact.form.name': 'Name',
+  'home.contact.form.email': 'Email',
+  'home.contact.form.role': 'Role',
+  'home.contact.form.role.player': 'Player',
+  'home.contact.form.role.club': 'Club',
+  'home.contact.form.role.brand': 'Brand / Sponsor',
+  'home.contact.form.role.other': 'Other',
+  'home.contact.form.message': 'Message',
+  'home.contact.form.submit': 'Send',
 
   // --- Jugadores ---
   'players.title': 'Talent we represent',
@@ -113,28 +115,25 @@ const en: Record<TranslationKey, string> = {
 
   // --- Servicios (página) ---
   'services.title': '360 services',
-  'services.subtitle':
-    'Five pillars to support a player’s career: representation, planning, advisory, brand, and international reach.',
-  'services.items.representation.title': 'Representation and intermediation',
-  'services.items.representation.body':
-    'We build short-, mid-, and long-term plans tailored to each player’s profile, goals, and stage of their career.',
-  'services.items.representation.short': 'A plan aligned with your profile and ambitions',
-  'services.items.career.title': 'Career planning',
-  'services.items.career.body':
-    'We assess opportunities, set milestones, and support every decision with judgement, vision, and commitment.',
-  'services.items.career.short': 'Clear direction at every step',
-  'services.items.legal.title': 'Legal and financial advisory',
-  'services.items.legal.body':
-    'Support on contracts, transfers, and image rights, plus financial guidance for responsible management.',
-  'services.items.legal.short': 'Contracts, image rights, and sound finances',
-  'services.items.image.title': 'Image, communications, and marketing',
-  'services.items.image.body':
-    'We grow the player’s personal brand across social and traditional media, and shape strategic sponsor partnerships.',
-  'services.items.image.short': 'Brand, channels, and sponsors',
-  'services.items.scouting.title': 'Scouting and club network',
-  'services.items.scouting.body':
-    'We connect players with scouting networks and clubs at home and abroad to broaden their professional horizon.',
-  'services.items.scouting.short': 'Opportunities beyond borders',
+  'services.subtitle': 'Six pillars backing the footballer\u2019s career: press, performance, media, family office, psychology and action plan.',
+  'services.items.press.title': 'Press',
+  'services.items.press.body': 'Public image, media relations and strategic positioning of the player at every stage.',
+  'services.items.press.short': 'Image, media and positioning',
+  'services.items.performance.title': 'Performance',
+  'services.items.performance.body': 'Physical analysis, continuous monitoring and optimisation of athletic performance.',
+  'services.items.performance.short': 'Physical analysis and optimisation',
+  'services.items.media.title': 'Media',
+  'services.items.media.body': 'Digital strategy, content creation and social media management to build the personal brand.',
+  'services.items.media.short': 'Content, socials and personal brand',
+  'services.items.familyOffice.title': 'Family Office',
+  'services.items.familyOffice.body': 'Wealth management, tax planning and financial structure for the player and their family.',
+  'services.items.familyOffice.short': 'Wealth, tax and structure',
+  'services.items.psychology.title': 'Sport Psychology',
+  'services.items.psychology.body': 'Mental preparation, pressure management and competitive support throughout the season.',
+  'services.items.psychology.short': 'Mental prep and pressure management',
+  'services.items.actionPlan.title': 'Action Plan',
+  'services.items.actionPlan.body': 'Short, medium and long-term career plan with clear milestones and decisions taken with judgment.',
+  'services.items.actionPlan.short': 'Career milestones, with judgment',
   'services.blocksAriaLabel': 'Service areas',
   'services.orbitInstructions':
     'Three-dimensional service carousel. Drag to rotate or open a card for details.',
@@ -144,7 +143,7 @@ const en: Record<TranslationKey, string> = {
   'footer.pages': 'Pages',
   'footer.rights': 'All rights reserved.',
   'footer.contact': 'Contact',
-  'footer.email': 'info@phsport.com',
+  'footer.email': 'info@phsport.es',
   'footer.nav.label': 'Footer navigation',
   'footer.social.label': 'Social media',
   'footer.social.instagram': 'Instagram',

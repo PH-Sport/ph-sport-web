@@ -21,6 +21,8 @@ interface Props {
   nationalTeamCodes?: string[];
   /** Texto para lectores de pantalla (nombres de país localizados) */
   nationalTeamAriaLabel?: string;
+  /** Tira horizontal unificada (p. ej. home móvil): esquinas y bordes compartidos bajo 640px */
+  clusterPosition?: 'first' | 'middle' | 'last';
 }
 
 const {
@@ -33,7 +35,9 @@ const {
   ariaLabel,
   nationalTeamCodes = [],
   nationalTeamAriaLabel,
+  clusterPosition,
 } = Astro.props;
+const clusterClass = clusterPosition ? `card--cluster-${clusterPosition}` : undefined;
 const alt = `${name} — ${subtitle}`;
 const cardTitle = alt;
 const badgeItems = nationalTeamCodes
@@ -48,7 +52,7 @@ const useRemotePhoto = Boolean(photoUrl && photoUrl.length > 0);
 
 {
   href !== undefined ? (
-    <a href={href} class="card" data-slug={dataSlug} title={cardTitle}>
+    <a href={href} class:list={['card', clusterClass]} data-slug={dataSlug} title={cardTitle}>
       {useRemotePhoto ? (
         <img
           src={photoUrl}
@@ -92,7 +96,7 @@ const useRemotePhoto = Boolean(photoUrl && photoUrl.length > 0);
       </div>
     </a>
   ) : (
-    <article class="card" aria-label={ariaLabel ?? cardTitle} title={cardTitle}>
+    <article class:list={['card', clusterClass]} aria-label={ariaLabel ?? cardTitle} title={cardTitle}>
       {useRemotePhoto ? (
         <img
           src={photoUrl}
@@ -147,8 +151,8 @@ const useRemotePhoto = Boolean(photoUrl && photoUrl.length > 0);
     border-radius: var(--radius-md);
     border: 1px solid var(--ph-glass-border);
     background: var(--ph-glass-bg);
-    backdrop-filter: blur(var(--ph-glass-blur));
-    -webkit-backdrop-filter: blur(var(--ph-glass-blur));
+    backdrop-filter: var(--ph-glass-backdrop);
+    -webkit-backdrop-filter: var(--ph-glass-backdrop);
     /* iOS: evita retardo de doble toque para zoom y mejora respuesta del primer tap en enlaces */
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
@@ -270,6 +274,32 @@ const useRemotePhoto = Boolean(photoUrl && photoUrl.length > 0);
   @media (max-width: 767px) {
     .card-subtitle {
       font-size: 0.625rem;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .card--cluster-first .card-overlay,
+    .card--cluster-middle .card-overlay,
+    .card--cluster-last .card-overlay {
+      display: none;
+    }
+
+    .card--cluster-first,
+    .card--cluster-middle,
+    .card--cluster-last {
+      border-radius: 0;
+      border: none;
+    }
+
+    .card--cluster-first,
+    .card--cluster-middle {
+      border-right: 1px solid var(--ph-glass-border);
+    }
+
+    .card--cluster-first::after,
+    .card--cluster-middle::after,
+    .card--cluster-last::after {
+      border-radius: 0;
     }
   }
 </style>

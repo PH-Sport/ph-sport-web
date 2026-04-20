@@ -23,57 +23,60 @@ const es = {
   // --- Hero ---
   'hero.claim': 'Las marcas suman, pero las personas marcan',
   'hero.tagline': 'Now. Next. Forever Football.',
-  'hero.cta.primary': 'Conoce a nuestros jugadores',
-  'hero.cta.secondary': 'Quiénes somos',
+
+  // --- Hero (redesign V3) ---
+  'hero.claim.lead': 'Now. Next.',
+  'hero.claim.accent': 'Forever Football.',
+  'hero.scroll.label': 'Scroll',
 
   // --- Inicio (secciones) ---
   'home.players.cta': 'Ver todos los jugadores',
-  'home.services.title': 'Cómo acompañamos tu carrera',
-  'home.services.subtitle': 'Tres pilares de nuestro servicio 360. Descubre el resto en detalle.',
+
+  // --- Home: Talentos (mini-sección) ---
+  'home.players.eyebrow': '02 · Talentos',
+  'home.players.title': 'El roster.',
+  'home.players.titleAccent': 'roster',
+  'home.players.lead': 'Futbolistas profesionales con proyección internacional. Cada carrera, un proyecto distinto.',
+
+  // --- Home: Servicios (acordeón) ---
+  'home.services.eyebrow': '03 · Servicios',
+  'home.services.title': 'Representamos con propósito.',
+  'home.services.lead': 'Seis pilares que sostienen la carrera del jugador. Explora cada área.',
   'home.services.cta': 'Ver todos los servicios',
-  'home.about.title': 'PHSPORT en esencia',
-  'home.about.subtitle': 'Presente, futuro y legado, en una sola visión.',
-  'home.about.lead':
-    'Somos una agencia de representación especializada en fútbol: contratos, imagen y planificación de carrera.',
-  'home.about.body':
-    'En la página Sobre nosotros profundizamos en nuestros valores y en cómo trabajamos día a día contigo.',
-  'home.about.cta': 'Sobre nosotros',
-  'home.about.statement': 'Gestionamos tu carrera, tu presente y tu futuro.',
-  'home.instagram.title': 'Instagram',
-  'home.instagram.postAria': 'Abrir publicación en Instagram',
 
-  // --- Home: Stats Strip ---
-  'home.stats.aria': 'Cifras PHSPORT',
-  'home.stats.players.value': '+100',
-  'home.stats.players.label': 'Jugadores',
-  'home.stats.countries.value': '12',
-  'home.stats.countries.label': 'Países',
-  'home.stats.service.value': '360°',
-  'home.stats.service.label': 'Acompañamiento',
+  // --- Home: Sobre nosotros (bloque editorial) ---
+  'home.about.eyebrow': '04 · Sobre PHSPORT',
+  'home.about.title': 'Las marcas suman,',
+  'home.about.titleAccent': 'pero las personas marcan.',
+  'home.about.body': 'Somos una agencia de representación especializada en fútbol. Gestionamos presente, futuro y legado de cada jugador con cercanía, rigor y excelencia.',
+  'home.about.cta': 'Conócenos',
+  'home.about.stats.aria': 'Cifras PHSPORT',
+  'home.about.stats.team.value': '21',
+  'home.about.stats.team.label': 'Integrantes',
+  'home.about.stats.countries.value': '6',
+  'home.about.stats.countries.label': 'Países',
+  'home.about.stats.service.value': '360°',
+  'home.about.stats.service.label': 'Acompañamiento',
+  'home.about.values.aria': 'Valores PHSPORT',
+  'home.about.values.v1': 'Excelencia',
+  'home.about.values.v2': 'Cercanía',
+  'home.about.values.v3': 'Rigor',
 
-  // --- Home: Manifesto ---
-  'home.manifesto.eyebrow': 'Representar con propósito',
-  'home.manifesto.statement': 'Construimos y protegemos la carrera de nuestros jugadores con representación estratégica, visión internacional y enfoque a largo plazo.',
-  'home.manifesto.value1': 'Rigor',
-  'home.manifesto.value2': 'Cercanía',
-  'home.manifesto.value3': 'Excelencia',
-  'home.manifesto.values.aria': 'Valores de PHSPORT',
-
-  // --- Home: 360° ---
-  'home.360.label': 'Acompañamiento 360°',
-  'home.360.title': 'Más allá de la representación',
-  'home.360.subtitle': 'Construimos una estructura integral que acompaña al jugador en cada área clave de su carrera.',
-  'home.360.pillar1.title': 'Prensa',
-  'home.360.pillar1.body': 'Imagen pública, relación con medios y posicionamiento del jugador.',
-  'home.360.pillar2.title': 'Media',
-  'home.360.pillar2.body': 'Estrategia digital, creación de contenido y gestión de redes sociales.',
-  'home.360.pillar3.title': 'Psicología deportiva',
-  'home.360.pillar3.body': 'Preparación mental, gestión de la presión y acompañamiento competitivo.',
-  'home.360.pillar4.title': 'Rendimiento',
-  'home.360.pillar4.body': 'Análisis físico, seguimiento continuo y optimización del rendimiento.',
-  'home.360.pillar5.title': 'Family Office',
-  'home.360.pillar5.body': 'Gestión patrimonial, planificación fiscal y estructura financiera del jugador.',
-  'home.360.aria': 'Los cinco pilares del acompañamiento PHSPORT',
+  // --- Home: Contacto ---
+  'home.contact.eyebrow': '05 · Contacto',
+  'home.contact.title': 'Hablemos.',
+  'home.contact.lead': 'Si representas a un jugador, a un club o a una marca, escríbenos. Respondemos en menos de 48 horas.',
+  'home.contact.email': 'info@phsport.es',
+  'home.contact.emailLabel': 'Email directo',
+  'home.contact.form.name': 'Nombre',
+  'home.contact.form.email': 'Email',
+  'home.contact.form.role': 'Rol',
+  'home.contact.form.role.player': 'Jugador',
+  'home.contact.form.role.club': 'Club',
+  'home.contact.form.role.brand': 'Marca / Patrocinador',
+  'home.contact.form.role.other': 'Otro',
+  'home.contact.form.message': 'Mensaje',
+  'home.contact.form.submit': 'Enviar',
 
   // --- Jugadores ---
   'players.title': 'Talento que representamos',
@@ -110,37 +113,35 @@ const es = {
 
   // --- Servicios (página) ---
   'services.title': 'Servicios 360',
-  'services.subtitle':
-    'Cinco pilares para acompañar la carrera del futbolista: representación, planificación, asesoría, imagen y proyección internacional.',
-  'services.items.representation.title': 'Representación e intermediación',
-  'services.items.representation.body':
-    'Diseñamos un plan a corto, medio y largo plazo que se adapta al perfil, los objetivos y el momento profesional de cada futbolista.',
-  'services.items.representation.short': 'Plan alineado con tu perfil y tus objetivos',
-  'services.items.career.title': 'Planificación de carrera deportiva',
-  'services.items.career.body':
-    'Evaluamos oportunidades, fijamos hitos y acompañamos cada decisión con criterio, visión y compromiso.',
-  'services.items.career.short': 'Decisiones con visión en cada etapa',
-  'services.items.legal.title': 'Asesoramiento legal y financiero',
-  'services.items.legal.body':
-    'Apoyo jurídico en contratos, transferencias y derechos de imagen, junto a orientación financiera para una gestión responsable.',
-  'services.items.legal.short': 'Contratos, imagen y finanzas con rigor',
-  'services.items.image.title': 'Imagen, comunicación y marketing',
-  'services.items.image.body':
-    'Potenciamos la marca personal del jugador en redes y medios, y articulamos colaboraciones estratégicas con patrocinadores.',
-  'services.items.image.short': 'Marca personal, redes y partners',
-  'services.items.scouting.title': 'Red de scouting y clubes',
-  'services.items.scouting.body':
-    'Conectamos a nuestros jugadores con redes de scouting y clubes nacionales e internacionales para ampliar su proyección profesional.',
-  'services.items.scouting.short': 'Oportunidades más allá de las fronteras',
+  'services.subtitle': 'Seis pilares para acompañar la carrera del futbolista: prensa, rendimiento, media, family office, psicología y plan de acción.',
+  'services.items.press.title': 'Prensa',
+  'services.items.press.body': 'Imagen pública, relación con medios y posicionamiento estratégico del jugador en cada etapa.',
+  'services.items.press.short': 'Imagen, medios y posicionamiento',
+  'services.items.performance.title': 'Rendimiento',
+  'services.items.performance.body': 'Análisis físico, seguimiento continuo y optimización del rendimiento deportivo.',
+  'services.items.performance.short': 'Análisis y optimización física',
+  'services.items.media.title': 'Media',
+  'services.items.media.body': 'Estrategia digital, creación de contenido y gestión de redes sociales para construir la marca personal.',
+  'services.items.media.short': 'Contenido, redes y marca personal',
+  'services.items.familyOffice.title': 'Family Office',
+  'services.items.familyOffice.body': 'Gestión patrimonial, planificación fiscal y estructura financiera para el jugador y su familia.',
+  'services.items.familyOffice.short': 'Patrimonio, fiscalidad y estructura',
+  'services.items.psychology.title': 'Psicólogo',
+  'services.items.psychology.body': 'Preparación mental, gestión de la presión y acompañamiento competitivo durante toda la temporada.',
+  'services.items.psychology.short': 'Preparación mental y gestión de presión',
+  'services.items.actionPlan.title': 'Plan de Acción',
+  'services.items.actionPlan.body': 'Plan de carrera a corto, medio y largo plazo, con hitos claros y decisiones tomadas con criterio.',
+  'services.items.actionPlan.short': 'Carrera con hitos y criterio',
   'services.blocksAriaLabel': 'Áreas de servicio',
   'services.orbitInstructions':
     'Carrusel de servicios en tres dimensiones. Arrastra para girar o abre una tarjeta para ver el detalle.',
   'services.modalAriaLabel': 'Detalle del servicio',
+
   // --- Footer ---
   'footer.pages': 'Páginas',
   'footer.rights': 'Todos los derechos reservados.',
   'footer.contact': 'Contacto',
-  'footer.email': 'info@phsport.com',
+  'footer.email': 'info@phsport.es',
   'footer.nav.label': 'Navegación de pie de página',
   'footer.social.label': 'Redes sociales',
   'footer.social.instagram': 'Instagram',

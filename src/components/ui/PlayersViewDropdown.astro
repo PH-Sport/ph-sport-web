@@ -173,7 +173,8 @@ const ariaLabel = `${t('players.tabs.aria')}: ${currentLabel}`;
     border-radius: var(--radius-sm);
     background: rgba(13, 15, 18, 0.98);
     box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
+    backdrop-filter: var(--ph-glass-backdrop-ui);
+    -webkit-backdrop-filter: var(--ph-glass-backdrop-ui);
   }
 
   .players-view-panel[hidden] {

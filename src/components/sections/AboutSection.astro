@@ -1,6 +1,6 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
-import SectionHeader from '@/components/ui/SectionHeader.astro';
+import { getTeamMembers } from '@/lib/teamMembers';
 
 interface Props {
   lang: Lang;
@@ -9,242 +9,247 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const blocks = [
-  { number: '01', title: t('about.block1.title'), body: t('about.block1.body') },
-  { number: '02', title: t('about.block2.title'), body: t('about.block2.body') },
-  { number: '03', title: t('about.block3.title'), body: t('about.block3.body') },
+const servicesHref = lang === 'es' ? '/servicios' : '/en/services';
+const contactHref = lang === 'es' ? '/#contacto' : '/en/#contacto';
+
+const teamMembers = getTeamMembers(lang);
+
+const internationalCountries = [
+  { key: 'portugal' as const, iso: 'PT' },
+  { key: 'uk' as const,       iso: 'UK' },
+  { key: 'alemania' as const, iso: 'DE' },
+  { key: 'arabia' as const,   iso: 'KSA' },
+  { key: 'uruguay' as const,  iso: 'UY' },
 ];
+
+const FLAGS = {
+  ES: '<svg viewBox="0 0 3 2" aria-hidden="true" focusable="false"><rect width="3" height="2" fill="#c60b1e"/><rect y="0.5" width="3" height="1" fill="#ffc400"/></svg>',
+  PT: '<svg viewBox="0 0 6 4" aria-hidden="true" focusable="false"><rect width="6" height="4" fill="#da291c"/><rect width="2.4" height="4" fill="#006233"/><circle cx="2.4" cy="2" r="0.6" fill="#ffcb00" stroke="#000" stroke-width="0.04"/></svg>',
+} as const;
 ---
 
-<section class="about-section">
-  <div class="ph-section">
-    <SectionHeader
-      label={t('nav.about')}
-      title={t('about.title')}
-      subtitle={t('about.subtitle')}
-      noBorder
-    />
-
-    <div class="about-blocks">
-      {blocks.map((block) => (
-        <article class="about-block">
-          <div class="about-block-left">
-            <span class="about-num" aria-hidden="true">{block.number}</span>
-            <h2 class="about-block-title">{block.title}</h2>
-          </div>
-          <div class="about-block-right">
-            <div class="about-block-accent" aria-hidden="true"></div>
-            <p class="about-block-body">{block.body}</p>
-          </div>
-        </article>
-      ))}
+<section class="about-section" aria-labelledby="about-hero-title">
+  <!-- 01 HERO SPLIT -->
+  <div class="abt-hero">
+    <div class="abt-hero__left">
+      <div>
+        <div class="abt-eyebrow">{t('about.hero.eyebrow')}</div>
+        <h1 id="about-hero-title" class="abt-hero__title">
+          {t('about.hero.titlePre')}<span class="abt-gold">{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
+        </h1>
+        <p class="abt-hero__body">{t('about.hero.body1')}</p>
+        <p class="abt-hero__body">{t('about.hero.body2')}</p>
+        <div class="abt-hero__cta">
+          <a class="abt-btn abt-btn--primary" href={servicesHref}>
+            {t('about.hero.ctaServices')} <span class="abt-btn__arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="abt-btn" href={contactHref}>{t('about.hero.ctaContact')}</a>
+        </div>
+      </div>
+      <div class="abt-hero__values">{t('about.hero.values')}</div>
     </div>
+    <div class="abt-hero__right">
+      <div class="abt-hero__placeholder" aria-hidden="true"></div>
+      <div class="abt-hero__caption">{t('about.hero.caption')}</div>
+    </div>
+  </div>
+
+  <!-- 02 HISTORIA -->
+  <div class="abt-historia" id="historia">
+    <h2 class="abt-historia__title">[historia placeholder — Task 8]</h2>
+  </div>
+
+  <!-- 03 EQUIPO -->
+  <div class="abt-team" id="equipo">
+    <div class="abt-team__head">[equipo placeholder — Task 9]</div>
+  </div>
+
+  <!-- 04 PRESENCIA -->
+  <div class="abt-presencia" id="presencia">
+    <div>[presencia placeholder — Task 10]</div>
+  </div>
+
+  <!-- 05 CIERRE -->
+  <div class="abt-closing">
+    <div>[manifesto placeholder — Task 10]</div>
   </div>
 </section>
 
 <style>
   .about-section {
+    --abt-gold: var(--color-ph-gold);
+    --abt-ink: var(--color-ph-white);
+    --abt-ink-soft: var(--color-ph-white-80);
+    --abt-ink-faint: var(--color-ph-white-60);
+    --abt-line: var(--color-ph-white-10);
+    --abt-line-strong: var(--color-ph-white-20);
+    --abt-bg: transparent;
+    --abt-bg-2: rgba(255, 255, 255, 0.02);
+    --edge: var(--ph-section-px);
+
     position: relative;
-    background:
-      radial-gradient(ellipse at 20% 80%, rgba(214, 178, 94, 0.025) 0%, transparent 50%),
-      var(--ph-section-bg);
+    background: var(--abt-bg);
+    color: var(--abt-ink);
   }
 
-
-  .about-blocks {
-    border-top: 1px solid var(--color-ph-white-10);
+  /* Gold accent — color+weight only, never italic. */
+  .about-section .abt-gold {
+    color: var(--abt-gold);
+    font-weight: 700;
+    font-style: normal;
   }
 
-  .about-block {
+  /* Shared eyebrow pattern (mono). */
+  .about-section .abt-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--abt-gold);
+  }
+
+  /* ── 01 HERO SPLIT ── */
+  .abt-hero {
     display: grid;
-    gap: 1.5rem;
-    padding-block: 3.5rem;
-    border-bottom: 1px solid var(--color-ph-white-10);
+    grid-template-columns: 1.1fr 1fr;
+    min-height: 80vh;
+    border-bottom: 1px solid var(--abt-line);
+    padding-top: calc(var(--nav-h, 72px) + clamp(60px, 10vw, 120px));
   }
-
-  @media (min-width: 1024px) {
-    .about-block {
-      grid-template-columns: 1fr 2fr;
-      gap: 4rem;
-      align-items: baseline;
-      padding-block: 4.5rem;
-    }
+  .abt-hero__left {
+    padding: clamp(20px, 3vw, 40px) var(--edge) clamp(60px, 8vw, 100px);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    justify-content: space-between;
   }
-
-  .about-block-left {
-    position: relative;
-  }
-
-  .about-num {
-    position: absolute;
-    top: -0.5rem;
-    left: 0;
+  .abt-hero__title {
     font-family: var(--font-display);
-    font-size: 3.5rem;
-    font-weight: 900;
-    letter-spacing: -0.04em;
-    line-height: 1;
-    color: var(--color-ph-gold);
-    opacity: 0.12;
+    font-weight: 500;
+    font-size: clamp(40px, 6vw, 84px);
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+    margin: 18px 0 24px;
+  }
+  .abt-hero__body {
+    color: var(--abt-ink-soft);
+    font-size: 16px;
+    line-height: 1.7;
+    max-width: 480px;
+    margin: 0 0 14px;
+  }
+  .abt-hero__cta {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .abt-hero__values {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-ink-faint);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+  .abt-hero__right {
+    position: relative;
+    overflow: hidden;
+    border-left: 1px solid var(--abt-line);
+  }
+  .abt-hero__placeholder {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 70% 30%, rgba(214, 178, 94, 0.08) 0%, transparent 60%),
+      linear-gradient(180deg, #0e0e0e 0%, #181818 100%);
+  }
+  .abt-hero__placeholder::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: overlay;
     pointer-events: none;
   }
+  .abt-hero__caption {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--abt-ink);
+    letter-spacing: 0.2em;
+    background: rgba(14, 14, 14, 0.65);
+    padding: 6px 10px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
 
-  @media (min-width: 1024px) {
-    .about-num {
-      font-size: 4.5rem;
-      top: -0.75rem;
+  /* Minimal button styles — will be refined or aliased to ph-ui-buttons.css. */
+  .abt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: 1px solid var(--abt-line-strong);
+    color: var(--abt-ink);
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    transition: background 200ms var(--ease-ph, ease), color 200ms var(--ease-ph, ease);
+  }
+  .abt-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .abt-btn--primary {
+    background: var(--abt-gold);
+    color: var(--color-ph-black, #0d0f12);
+    border-color: var(--abt-gold);
+  }
+  .abt-btn--primary:hover {
+    background: #e2c374;
+    border-color: #e2c374;
+  }
+  .abt-btn__arrow {
+    transition: transform 200ms var(--ease-ph, ease);
+  }
+  .abt-btn:hover .abt-btn__arrow {
+    transform: translateX(3px);
+  }
+
+  @media (max-width: 900px) {
+    .abt-hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+    .abt-hero__right {
+      aspect-ratio: 4 / 5;
+      border-left: none;
+      border-bottom: 1px solid var(--abt-line);
+      order: -1;
+    }
+    .abt-hero__left {
+      padding-top: 40px;
     }
   }
 
-  .about-block-title {
-    position: relative;
-    margin-top: 1.5rem;
-    font-family: var(--font-display);
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
-    font-weight: 900;
-    letter-spacing: -0.04em;
-    line-height: 1;
-    color: var(--color-ph-white);
+  /* Placeholder sections (replaced in later tasks). */
+  .abt-historia,
+  .abt-team,
+  .abt-presencia,
+  .abt-closing {
+    padding: clamp(72px, 10vw, 140px) var(--edge);
+    border-bottom: 1px solid var(--abt-line);
   }
-
-  @media (min-width: 1024px) {
-    .about-block-title {
-      margin-top: 2rem;
-    }
-  }
-
-  .about-block-right {
-    display: flex;
-    gap: 1.5rem;
-  }
-
-  .about-block-accent {
-    flex-shrink: 0;
-    width: 2px;
-    min-height: 100%;
-    background: linear-gradient(
-      to bottom,
-      var(--color-ph-gold) 0%,
-      var(--color-ph-gold-muted) 100%
-    );
-    opacity: 0.3;
-    border-radius: 1px;
-  }
-
-  .about-block-body {
-    font-size: 1.0625rem;
-    line-height: 1.7;
-    color: var(--color-ph-white-60);
-    max-width: none;
-  }
-
-  @media (min-width: 1024px) {
-    .about-block-body {
-      font-size: 1.125rem;
-      padding-top: 0.25rem;
-    }
+  .abt-closing {
+    border-bottom: none;
   }
 </style>
-
-<script>
-  import { gsap } from 'gsap';
-  import {
-    reducedMotion,
-    wrapWords,
-    splitWords,
-    trackingReveal,
-    counterReveal,
-  } from '@/scripts/ph-text-animations';
-
-  function initAboutAnimations(): void {
-    const section = document.querySelector<HTMLElement>('.about-section');
-    if (!section || reducedMotion()) return;
-
-    // ── Cabecera ────────────────────────────────────────────────────────────
-    const label = section.querySelector<HTMLElement>('.ph-label');
-    if (label) {
-      trackingReveal(label, { trigger: label, start: 'top 88%', once: true });
-    }
-
-    const title = section.querySelector<HTMLElement>('.section-header-title');
-    if (title) {
-      const words = wrapWords(title);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 0.85,
-        stagger: 0.07,
-        ease: 'power4.out',
-        scrollTrigger: { trigger: title, start: 'top 82%', once: true },
-      });
-    }
-
-    const subtitle = section.querySelector<HTMLElement>('.section-header-subtitle');
-    if (subtitle) {
-      const spans = splitWords(subtitle);
-      gsap.from(spans, {
-        opacity: 0,
-        filter: 'blur(6px)',
-        y: 6,
-        duration: 0.6,
-        stagger: 0.03,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: subtitle, start: 'top 88%', once: true },
-      });
-    }
-
-    // ── Bloques ─────────────────────────────────────────────────────────────
-    section.querySelectorAll<HTMLElement>('.about-block').forEach((block, i) => {
-      // Número decorativo: contador cinético
-      const numEl = block.querySelector<HTMLElement>('.about-num');
-      if (numEl) {
-        counterReveal(numEl, i + 1, {
-          trigger: block,
-          start: 'top 82%',
-          once: true,
-        });
-      }
-
-      // Título del bloque: cortina por palabras
-      const blockTitle = block.querySelector<HTMLElement>('.about-block-title');
-      if (blockTitle) {
-        const words = wrapWords(blockTitle);
-        gsap.from(words, {
-          yPercent: 115,
-          duration: 0.8,
-          stagger: 0.05,
-          ease: 'power4.out',
-          scrollTrigger: { trigger: blockTitle, start: 'top 82%', once: true },
-        });
-      }
-
-      // Barra de acento: crece verticalmente
-      const accent = block.querySelector<HTMLElement>('.about-block-accent');
-      if (accent) {
-        gsap.from(accent, {
-          scaleY: 0,
-          transformOrigin: 'top center',
-          duration: 0.8,
-          ease: 'expo.out',
-          scrollTrigger: { trigger: block, start: 'top 78%', once: true },
-        });
-      }
-
-      // Cuerpo del bloque: palabras con desenfoque
-      const body = block.querySelector<HTMLElement>('.about-block-body');
-      if (body) {
-        const spans = splitWords(body);
-        gsap.from(spans, {
-          opacity: 0,
-          filter: 'blur(6px)',
-          y: 5,
-          duration: 0.6,
-          stagger: 0.025,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: body, start: 'top 88%', once: true },
-        });
-      }
-    });
-  }
-
-  document.addEventListener('astro:page-load', initAboutAnimations);
-</script>

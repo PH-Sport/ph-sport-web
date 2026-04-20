@@ -209,8 +209,10 @@ const socialLabel = (id: SocialId) => {
     transition: color var(--ph-duration) var(--ease-ph);
   }
 
-  .footer-link:hover {
-    color: var(--color-ph-white);
+  @media (hover: hover) {
+    .footer-link:hover {
+      color: var(--color-ph-white);
+    }
   }
 
   .footer-contact {
@@ -224,8 +226,10 @@ const socialLabel = (id: SocialId) => {
     transition: color var(--ph-duration) var(--ease-ph);
   }
 
-  .footer-email:hover {
-    color: var(--color-ph-gold);
+  @media (hover: hover) {
+    .footer-email:hover {
+      color: var(--color-ph-gold);
+    }
   }
 
   .footer-social-list {
@@ -252,15 +256,22 @@ const socialLabel = (id: SocialId) => {
       background var(--ph-duration) var(--ease-ph);
   }
 
-  .footer-social-link:hover {
-    color: var(--color-ph-gold);
-    border-color: var(--color-ph-gold-muted);
-    background: rgba(214, 178, 94, 0.06);
+  @media (hover: hover) {
+    .footer-social-link:hover {
+      color: var(--color-ph-gold);
+      border-color: var(--color-ph-gold-muted);
+      background: rgba(214, 178, 94, 0.06);
+    }
   }
 
   .footer-social-link--disabled {
     opacity: 0.45;
     pointer-events: none;
+  }
+
+  .footer-social-link svg {
+    width: 1.125rem;
+    height: 1.125rem;
   }
 
   /* 04 · Copyright */

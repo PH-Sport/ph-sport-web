@@ -27,27 +27,35 @@ const socialLabel = (id: SocialId) => {
 <footer class="footer">
   <div class="footer-gold-rule" aria-hidden="true"></div>
 
-  <div class="ph-section footer-body">
+  <div class="ph-section">
+    <!-- 02 · Sello editorial -->
+    <p class="footer-sello">
+      {t('hero.claim.lead')} <span class="footer-sello__accent">{t('hero.claim.accent')}</span>
+    </p>
+
+    <!-- 03 · 3-col funcional -->
     <div class="footer-grid">
-      <!-- Brand -->
+      <!-- Col 1: brand -->
       <div class="footer-brand">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 259.8 206.1" fill="currentColor" aria-hidden="true" class="footer-logo">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 259.8 206.1"
+          fill="currentColor"
+          aria-hidden="true"
+          class="footer-logo"
+        >
           <polygon points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" />
           <polygon points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" />
         </svg>
-        <p class="footer-tagline">{t('site.tagline')}</p>
       </div>
 
-      <!-- Nav -->
-      <nav aria-label={t('footer.nav.label')}>
+      <!-- Col 2: páginas -->
+      <nav class="footer-col" aria-label={t('footer.nav.label')}>
         <span class="footer-col-label">{t('footer.pages')}</span>
         <ul class="footer-nav">
           {nav.map((item) => (
             <li>
-              <a
-                href={item.href}
-                class="footer-link"
-              >
+              <a href={item.href} class="footer-link">
                 {item.label}
               </a>
             </li>
@@ -55,49 +63,47 @@ const socialLabel = (id: SocialId) => {
         </ul>
       </nav>
 
-      <!-- Contact -->
-      <div>
+      <!-- Col 3: contacto + social -->
+      <div class="footer-col">
         <span class="footer-col-label">{t('footer.contact')}</span>
         <div class="footer-contact">
           <a href={`mailto:${t('footer.email')}`} class="footer-email">
             {t('footer.email')}
           </a>
         </div>
+
+        <span class="footer-col-label footer-col-label--social">{t('footer.social.heading')}</span>
+        <ul class="footer-social-list" role="list" aria-label={t('footer.social.label')}>
+          {
+            SOCIAL_LINKS.map((s) => (
+              <li>
+                {isSocialPlaceholder(s.href) ? (
+                  <span
+                    class="footer-social-link footer-social-link--disabled"
+                    aria-disabled="true"
+                    title={socialLabel(s.id)}
+                  >
+                    <FooterSocialIcon id={s.id} />
+                  </span>
+                ) : (
+                  <a
+                    href={s.href}
+                    class="footer-social-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={socialLabel(s.id)}
+                  >
+                    <FooterSocialIcon id={s.id} />
+                  </a>
+                )}
+              </li>
+            ))
+          }
+        </ul>
       </div>
     </div>
 
-    <div class="footer-social-block">
-      <span class="footer-col-label">{t('footer.social.label')}</span>
-      <ul class="footer-social-list" role="list">
-        {
-          SOCIAL_LINKS.map((s) => (
-            <li>
-              {isSocialPlaceholder(s.href) ? (
-                <span
-                  class="footer-social-link footer-social-link--disabled"
-                  aria-disabled="true"
-                  title={socialLabel(s.id)}
-                >
-                  <FooterSocialIcon id={s.id} />
-                </span>
-              ) : (
-                <a
-                  href={s.href}
-                  class="footer-social-link"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={socialLabel(s.id)}
-                >
-                  <FooterSocialIcon id={s.id} />
-                </a>
-              )}
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-
-    <!-- Bottom bar -->
+    <!-- 04 · Copyright -->
     <div class="footer-bottom">
       <p>&copy; {year} {t('site.name')}. {t('footer.rights')}</p>
     </div>
@@ -110,6 +116,7 @@ const socialLabel = (id: SocialId) => {
     z-index: 1;
   }
 
+  /* 01 · Gold rule (unchanged from previous version) */
   .footer-gold-rule {
     height: 1px;
     background: linear-gradient(
@@ -123,26 +130,42 @@ const socialLabel = (id: SocialId) => {
     opacity: 0.4;
   }
 
-  .footer-body {
-    padding-block: 3.5rem 2.5rem;
+  /* 02 · Sello editorial */
+  .footer-sello {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+    line-height: 1.15;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-ph-white);
+    margin: 0;
+    padding-block: clamp(2.5rem, 5vw, 3.5rem) clamp(2rem, 4vw, 2.5rem);
   }
 
+  .footer-sello__accent {
+    color: var(--color-ph-gold);
+  }
+
+  /* 03 · 3-col funcional */
   .footer-grid {
     display: grid;
     gap: 2.5rem;
+    padding-block: clamp(2rem, 4vw, 3rem);
+    border-top: 1px solid var(--color-ph-white-10);
   }
 
   @media (min-width: 768px) {
     .footer-grid {
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: 3rem;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: clamp(2rem, 4vw, 3rem);
+      align-items: start;
     }
   }
 
   .footer-brand {
     display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    align-items: flex-start;
   }
 
   .footer-logo {
@@ -151,12 +174,9 @@ const socialLabel = (id: SocialId) => {
     color: var(--color-ph-white);
   }
 
-  .footer-tagline {
-    font-family: var(--font-display);
-    font-size: 0.8125rem;
-    font-weight: 400;
-    letter-spacing: 0.04em;
-    color: var(--color-ph-white-60);
+  .footer-col {
+    display: flex;
+    flex-direction: column;
   }
 
   .footer-col-label {
@@ -168,11 +188,16 @@ const socialLabel = (id: SocialId) => {
     color: var(--color-ph-gold);
   }
 
+  .footer-col-label--social {
+    margin-top: 1.5rem;
+  }
+
   .footer-nav {
     display: flex;
     flex-direction: column;
     gap: 0.625rem;
-    margin-top: 0.875rem;
+    margin: 0.875rem 0 0;
+    padding: 0;
     list-style: none;
   }
 
@@ -201,24 +226,6 @@ const socialLabel = (id: SocialId) => {
 
   .footer-email:hover {
     color: var(--color-ph-gold);
-  }
-
-  .footer-bottom {
-    margin-top: 3rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--color-ph-white-10);
-  }
-
-  .footer-bottom p {
-    font-size: 0.75rem;
-    color: var(--color-ph-white-60);
-    letter-spacing: 0.02em;
-  }
-
-  .footer-social-block {
-    margin-top: 2.5rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--color-ph-white-10);
   }
 
   .footer-social-list {
@@ -256,8 +263,19 @@ const socialLabel = (id: SocialId) => {
     pointer-events: none;
   }
 
-  .footer-social-svg {
-    width: 1.125rem;
-    height: 1.125rem;
+  /* 04 · Copyright */
+  .footer-bottom {
+    margin-top: clamp(2rem, 4vw, 2.5rem);
+    padding-top: 1.25rem;
+    padding-bottom: 1rem;
+    border-top: 1px solid var(--color-ph-white-10);
+  }
+
+  .footer-bottom p {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.05em;
+    color: var(--color-ph-white-60);
+    margin: 0;
   }
 </style>

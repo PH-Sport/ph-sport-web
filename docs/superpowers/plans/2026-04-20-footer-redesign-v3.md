@@ -71,7 +71,7 @@ Result (59 files):
 - [ ] **Step 4: Commit**
 
 ```bash
-git add -A
+git add src/components/sections/HomeInstagramSection.astro src/lib/instagramHomeFeed.ts
 git commit -m "chore(cleanup): delete orphaned HomeInstagramSection + feed
 
 Removes src/components/sections/HomeInstagramSection.astro and
@@ -783,10 +783,10 @@ Expected: build finishes without errors. Warnings about deprecated APIs should b
 
 - [ ] **Step 5: Commit (only if steps 1–4 required any fixes)**
 
-If any of the previous steps surfaced issues that required code changes, commit them now:
+If any of the previous steps surfaced issues that required code changes, commit them now. Stage only the files you actually modified — do NOT use `git add -A` (the repo has untracked artifacts like `.claude/`, `.design-ref/`, and stray PNG screenshots that must stay untracked for this commit):
 
 ```bash
-git add -A
+git add <specific file paths you changed>
 git commit -m "chore(phase-5): address final verification findings
 
 <brief description of what was fixed>

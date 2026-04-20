@@ -162,12 +162,12 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
   </div>
 
   {/* 04 — Six pillar blocks */}
-  <div class="srv-pillars" role="list">
+  <div class="srv-pillars">
     {items.map((item, idx) => {
       const roman = ['I', 'II', 'III', 'IV', 'V', 'VI'][idx];
       const even = idx % 2 === 1;
       return (
-        <article class:list={['srv-block', { 'srv-block--even': even }]} role="listitem">
+        <article class:list={['srv-block', { 'srv-block--even': even }]}>
           <div class="srv-block__text">
             <div class="srv-block__roman">{roman}</div>
             <h3 class="srv-block__title">{item.title}</h3>
@@ -465,7 +465,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     min-height: clamp(420px, 58vw, 640px);
     border-top: 1px solid var(--srv-line);
   }
-  .srv-block:nth-child(even) { background: var(--srv-bg-2); }
+  .srv-block--even { background: var(--srv-bg-2); }
 
   .srv-block__text {
     padding: clamp(48px, 7vw, 96px) var(--srv-edge);
@@ -520,13 +520,15 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     border-left: 1px solid var(--srv-line);
     min-height: clamp(240px, 50vw, 520px);
   }
-  .srv-block--even .srv-block__img { order: -1; border-left: 0; border-right: 1px solid var(--srv-line); }
-  .srv-block--even .srv-block__text { order: 0; }
-  .srv-block:nth-child(even) .srv-block__img {
+  .srv-block--even .srv-block__img {
+    order: -1;
+    border-left: 0;
+    border-right: 1px solid var(--srv-line);
     background:
       repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 10px),
       var(--srv-bg-3);
   }
+  .srv-block--even .srv-block__text { order: 0; }
   .srv-block__imgTag {
     position: absolute; top: 16px; left: 16px;
     background: rgba(14, 14, 14, 0.6);

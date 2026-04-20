@@ -226,6 +226,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     --srv-line-strong: var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
     --srv-gold: var(--color-ph-gold, #d6b25e);
     --srv-gold-soft: var(--color-ph-gold-soft, #e6c682);
+    --srv-on-gold: var(--color-ph-black, #0d0f12);
     --srv-edge: var(--ph-section-px, clamp(20px, 4vw, 48px));
     --srv-display: var(--font-display, 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif);
     --srv-mono: var(--font-mono, 'JetBrains Mono', ui-monospace, monospace);
@@ -585,8 +586,6 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     border-top: 1px solid var(--srv-line);
     padding: clamp(72px, 11vw, 144px) var(--srv-edge);
     text-align: center;
-    max-width: 1120px;
-    margin: 0 auto;
   }
   .srv-manifest__eyebrow {
     display: inline-flex; align-items: center; gap: 10px;
@@ -652,7 +651,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     display: inline-flex; align-items: center; gap: 10px;
     padding: 14px 22px;
     background: var(--srv-gold);
-    color: var(--color-ph-black, #0d0f12);
+    color: var(--srv-on-gold);
     border-radius: 100px;
     font-family: var(--srv-sans);
     font-size: 13px;
@@ -660,7 +659,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     letter-spacing: 0.01em;
     text-decoration: none;
     border: 1px solid var(--srv-gold);
-    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    transition: background 0.2s, border-color 0.2s;
   }
   .srv-cta__btn:hover {
     background: var(--srv-gold-soft);

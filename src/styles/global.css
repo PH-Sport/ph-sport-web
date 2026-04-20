@@ -22,6 +22,7 @@
   /* Tipografia */
   --font-display: 'Sohne', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-body:    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono:    ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
   /* Border-radius (generosos) */
   --radius-sm:  0.5rem;   /*  8px — botones, inputs, badges */

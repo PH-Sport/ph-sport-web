@@ -21,7 +21,7 @@ const t = useTranslations(lang);
       </div>
     </header>
 
-    <form class="home-contact__form" action="#" onsubmit="event.preventDefault();">
+    <form class="home-contact__form" action="#" data-prevent-submit>
       <label class="home-contact__field">
         <span>{t('home.contact.form.name')}</span>
         <input type="text" name="name" autocomplete="name" required />
@@ -213,3 +213,16 @@ const t = useTranslations(lang);
     .home-contact__form { grid-template-columns: 1fr; }
   }
 </style>
+
+<script>
+  const attachPreventSubmit = () => {
+    document
+      .querySelectorAll<HTMLFormElement>('form[data-prevent-submit]')
+      .forEach((form) => {
+        form.addEventListener('submit', (event) => event.preventDefault());
+      });
+  };
+
+  attachPreventSubmit();
+  document.addEventListener('astro:page-load', attachPreventSubmit);
+</script>

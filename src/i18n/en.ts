@@ -125,22 +125,16 @@ const en: Record<TranslationKey, string> = {
   'services.subtitle': 'Six pillars backing the footballer\u2019s career: press, performance, media, family office, psychology and action plan.',
   'services.items.press.title': 'Press',
   'services.items.press.body': 'Image and reputation management, media relations, and public positioning of the player. Every appearance is a decision.',
-  'services.items.press.short': 'Image, media and positioning',
   'services.items.performance.title': 'Performance',
   'services.items.performance.body': 'Physical and performance analysis. Continuous tracking. Sporting performance optimization.',
-  'services.items.performance.short': 'Physical analysis and optimisation',
   'services.items.media.title': 'Media',
   'services.items.media.body': 'Digital communication strategy, content creation, and social media management. We define the voice and visual universe of the player.',
-  'services.items.media.short': 'Content, socials and personal brand',
   'services.items.familyOffice.title': 'Family Office',
   'services.items.familyOffice.body': 'Wealth management, financial and tax planning, and administrative structure for the player. What is built must last longer than a career.',
-  'services.items.familyOffice.short': 'Wealth, tax and structure',
   'services.items.psychology.title': 'Psychology',
   'services.items.psychology.body': 'High-performance mental preparation, pressure management, and habits. Continuous competitive support.',
-  'services.items.psychology.short': 'Mental prep and pressure management',
   'services.items.actionPlan.title': 'Action Plan',
   'services.items.actionPlan.body': 'Contract management and review. Market strategy and international positioning. Integrated support on and off the pitch. Adaptation at every career stage.',
-  'services.items.actionPlan.short': 'Career milestones, with judgment',
 
   // Hero
   'services.hero.eyebrow': '03 · Services',
@@ -243,11 +237,6 @@ const en: Record<TranslationKey, string> = {
   'services.cta.titleTrail': ' to begin.',
   'services.cta.lead': 'Tell us about yourself or your club. We reply within 48 hours.',
   'services.cta.button': 'Contact the agency',
-
-  'services.blocksAriaLabel': 'Service areas',
-  'services.orbitInstructions':
-    'Three-dimensional service carousel. Drag to rotate or open a card for details.',
-  'services.modalAriaLabel': 'Service details',
 
   // --- Footer ---
   'footer.pages': 'Pages',

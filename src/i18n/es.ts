@@ -123,22 +123,16 @@ const es = {
   'services.subtitle': 'Seis pilares para acompañar la carrera del futbolista: prensa, rendimiento, media, family office, psicología y plan de acción.',
   'services.items.press.title': 'Prensa',
   'services.items.press.body': 'Gestión de imagen y reputación, relación con medios y posicionamiento público del jugador. Cada aparición es una decisión.',
-  'services.items.press.short': 'Imagen, medios y posicionamiento',
   'services.items.performance.title': 'Rendimiento',
   'services.items.performance.body': 'Análisis físico y performance. Seguimiento continuo. Optimización del rendimiento deportivo.',
-  'services.items.performance.short': 'Análisis y optimización física',
   'services.items.media.title': 'Media',
   'services.items.media.body': 'Estrategia de comunicación digital, creación de contenido y gestión de redes sociales. Definimos la voz y el universo visual del jugador.',
-  'services.items.media.short': 'Contenido, redes y marca personal',
   'services.items.familyOffice.title': 'Family Office',
   'services.items.familyOffice.body': 'Gestión patrimonial, planificación financiera y fiscal, y estructura administrativa del jugador. Lo que se construye debe durar más que una carrera.',
-  'services.items.familyOffice.short': 'Patrimonio, fiscalidad y estructura',
   'services.items.psychology.title': 'Psicólogo',
   'services.items.psychology.body': 'Preparación mental de alto rendimiento, gestión de presión y hábitos. Acompañamiento competitivo continuo.',
-  'services.items.psychology.short': 'Preparación mental y gestión de presión',
   'services.items.actionPlan.title': 'Plan de Acción',
   'services.items.actionPlan.body': 'Gestión y revisión de contratos. Estrategia de mercado y posicionamiento internacional. Soporte integral dentro y fuera del campo. Adaptación a cada etapa de la carrera.',
-  'services.items.actionPlan.short': 'Carrera con hitos y criterio',
 
   // Hero
   'services.hero.eyebrow': '03 · Servicios',
@@ -241,11 +235,6 @@ const es = {
   'services.cta.titleTrail': ' para empezar.',
   'services.cta.lead': 'Cuéntanos sobre ti o tu club. Respondemos en 48h.',
   'services.cta.button': 'Contactar con la agencia',
-
-  'services.blocksAriaLabel': 'Áreas de servicio',
-  'services.orbitInstructions':
-    'Carrusel de servicios en tres dimensiones. Arrastra para girar o abre una tarjeta para ver el detalle.',
-  'services.modalAriaLabel': 'Detalle del servicio',
 
   // --- Footer ---
   'footer.pages': 'Páginas',

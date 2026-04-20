@@ -312,10 +312,11 @@ strong {
 
 .ph-clip {
   display: inline-block;
-  overflow: hidden;
   vertical-align: bottom;
-  padding-bottom: 0.1em;
-  margin-bottom: -0.1em;
+  /* Clip only the bottom so the curtain reveal (yPercent: 115 → 0) works,
+     while letting ascenders, italic tops, and italic right-overshoot remain
+     visible at tight display line-heights (< 1). */
+  clip-path: inset(-0.25em -0.15em 0 -0.05em);
 }
 
 .ph-clip-inner {

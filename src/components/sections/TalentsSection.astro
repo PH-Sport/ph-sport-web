@@ -1,0 +1,486 @@
+---
+import type { PlayerDetailPayload } from '@/lib/playerDetail';
+import { useTranslations, type Lang } from '@/i18n/utils';
+
+interface Props {
+  lang: Lang;
+  players: PlayerDetailPayload[];
+}
+
+const { lang, players } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section class="talents" aria-labelledby="talents-title">
+  <header class="talents__head">
+    <span class="talents__eyebrow">{t('talents.eyebrow')}</span>
+    <h1 class="talents__title" id="talents-title">
+      {t('talents.title')}<em>{t('talents.titleAccent')}</em>.
+    </h1>
+    <p class="talents__lead">{t('talents.lead')}</p>
+  </header>
+
+  <div class="talents__controls" data-talents-controls>
+    <label class="talents__search">
+      <span class="visually-hidden">{t('talents.search.label')}</span>
+      <svg class="talents__search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m20 20-3.5-3.5"></path>
+      </svg>
+      <input
+        type="search"
+        class="talents__search-input"
+        placeholder={t('talents.search.placeholder')}
+        aria-label={t('talents.search.label')}
+        autocomplete="off"
+        data-talents-search
+      />
+      <button
+        type="button"
+        class="talents__search-clear"
+        aria-label={t('talents.search.clear')}
+        data-talents-clear
+        hidden
+      >
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="m6 6 12 12M18 6 6 18"></path>
+        </svg>
+      </button>
+    </label>
+
+    <label class="talents__sort">
+      <span class="talents__sort-label">{t('talents.sort.label')}</span>
+      <select class="talents__sort-select" data-talents-sort>
+        <option value="default">{t('talents.sort.default')}</option>
+        <option value="az">{t('talents.sort.az')}</option>
+        <option value="za">{t('talents.sort.za')}</option>
+      </select>
+      <svg class="talents__sort-arrow" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="m6 9 6 6 6-6"></path>
+      </svg>
+    </label>
+  </div>
+
+  <ul class="talents__grid" role="list" data-talents-grid>
+    {players.map((player, idx) => (
+      <li
+        class="talents__item"
+        data-talent-card
+        data-name={player.name}
+        data-index={idx}
+      >
+        <div class="talents__card">
+          <div class="talents__photo">
+            <img src={player.photoSrc} alt={player.name} loading="lazy" decoding="async" width="480" height="640" />
+          </div>
+          <span class="talents__corner" aria-hidden="true"></span>
+          <div class="talents__meta">
+            <span class="talents__name">{player.name}</span>
+            <span class="talents__club">{player.subtitle}</span>
+          </div>
+          <span class="talents__underline" aria-hidden="true"></span>
+        </div>
+      </li>
+    ))}
+  </ul>
+
+  <p class="talents__empty" data-talents-empty hidden>
+    {t('talents.empty.filter')}
+    <button type="button" class="talents__reset" data-talents-reset>
+      {t('talents.reset')}
+    </button>
+  </p>
+</section>
+
+<style>
+  .talents {
+    padding: clamp(96px, 14vw, 160px) var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(80px, 12vw, 140px);
+    background: var(--color-ph-black, #0d0f12);
+    color: var(--color-ph-white, #ffffff);
+  }
+
+  /* Hero header */
+  .talents__head { max-width: 840px; margin-bottom: clamp(32px, 5vw, 56px); }
+
+  .talents__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ph-gold, #d6b25e);
+  }
+  .talents__eyebrow::before {
+    content: "";
+    width: 28px;
+    height: 1px;
+    background: var(--color-ph-gold, #d6b25e);
+  }
+
+  .talents__title {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(44px, 8vw, 112px);
+    letter-spacing: -0.03em;
+    line-height: 0.98;
+    margin: 18px 0 0;
+    text-wrap: balance;
+  }
+  .talents__title em {
+    color: var(--color-ph-gold, #d6b25e);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .talents__lead {
+    margin: 22px 0 0;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+    font-size: 16px;
+    line-height: 1.65;
+    max-width: 560px;
+  }
+
+  /* Sticky controls bar */
+  .talents__controls {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 0;
+    margin-bottom: clamp(24px, 4vw, 40px);
+    background: var(--color-ph-black, #0d0f12);
+    border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+  }
+
+  .talents__search {
+    position: relative;
+    flex: 1 1 280px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
+    border-radius: 100px;
+    transition: border-color 0.2s;
+  }
+  .talents__search:focus-within {
+    border-color: var(--color-ph-gold, #d6b25e);
+  }
+  .talents__search-icon {
+    flex: 0 0 auto;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+  }
+  .talents__search-input {
+    flex: 1 1 auto;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--color-ph-white, #ffffff);
+    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
+    font-size: 14px;
+    min-width: 0;
+  }
+  .talents__search-input::placeholder {
+    color: var(--color-ph-ink-soft, #b5b7bb);
+  }
+  /* Hide native clear/search decorations (we render our own) */
+  .talents__search-input::-webkit-search-decoration,
+  .talents__search-input::-webkit-search-cancel-button,
+  .talents__search-input::-webkit-search-results-button,
+  .talents__search-input::-webkit-search-results-decoration {
+    appearance: none;
+  }
+  .talents__search-clear {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+  }
+  .talents__search-clear:hover {
+    color: var(--color-ph-white, #ffffff);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .talents__sort {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 40px 12px 16px;
+    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
+    border-radius: 100px;
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }
+  .talents__sort:focus-within { border-color: var(--color-ph-gold, #d6b25e); }
+  .talents__sort-label {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+  }
+  .talents__sort-select {
+    appearance: none;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--color-ph-white, #ffffff);
+    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
+    font-size: 14px;
+    padding-right: 4px;
+    cursor: pointer;
+  }
+  .talents__sort-select option {
+    background: var(--color-ph-bg-2, #15171b);
+    color: var(--color-ph-white, #ffffff);
+  }
+  .talents__sort-arrow {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+  }
+
+  /* Grid: 2 → 3 → 5 columns */
+  .talents__grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(10px, 1.5vw, 16px);
+  }
+  @media (min-width: 720px) {
+    .talents__grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  }
+  @media (min-width: 1200px) {
+    .talents__grid { grid-template-columns: repeat(5, 1fr); gap: 18px; }
+  }
+
+  .talents__item { margin: 0; }
+  .talents__item[hidden] { display: none; }
+
+  .talents__card {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: var(--color-ph-bg-2, #15171b);
+    border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    transition: transform 0.35s cubic-bezier(.7, 0, .2, 1);
+  }
+  .talents__photo { position: relative; aspect-ratio: 3 / 4; }
+  .talents__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .talents__corner {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 22px;
+    height: 22px;
+    border-top: 1px solid var(--color-ph-gold, #d6b25e);
+    border-right: 1px solid var(--color-ph-gold, #d6b25e);
+    opacity: 0;
+    transition: opacity 0.35s;
+    pointer-events: none;
+  }
+
+  .talents__meta {
+    position: absolute;
+    inset: 0;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 4px;
+    background: linear-gradient(
+      to top,
+      rgba(13, 15, 18, 0.95) 0%,
+      rgba(13, 15, 18, 0.35) 45%,
+      rgba(13, 15, 18, 0) 70%
+    );
+    pointer-events: none;
+  }
+  .talents__name {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(15px, 1.3vw, 18px);
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    color: var(--color-ph-white, #ffffff);
+    transition: color 0.3s;
+  }
+  .talents__club {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+    text-transform: uppercase;
+  }
+
+  .talents__underline {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 14px;
+    height: 1px;
+    background: var(--color-ph-gold, #d6b25e);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s cubic-bezier(.7, 0, .2, 1);
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .talents__card:hover { transform: translateY(-3px); }
+    .talents__card:hover .talents__name { color: var(--color-ph-gold, #d6b25e); }
+    .talents__card:hover .talents__corner { opacity: 1; }
+    .talents__card:hover .talents__underline { transform: scaleX(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .talents__card,
+    .talents__name,
+    .talents__corner,
+    .talents__underline { transition: none; }
+    .talents__card:hover { transform: none; }
+  }
+
+  /* Empty filter state */
+  .talents__empty {
+    margin: clamp(40px, 6vw, 64px) 0 0;
+    padding: 32px 24px;
+    text-align: center;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+    font-size: 15px;
+    line-height: 1.6;
+    border: 1px dashed var(--color-ph-line, rgba(255, 255, 255, 0.12));
+  }
+  .talents__reset {
+    margin-left: 12px;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
+    border-radius: 100px;
+    color: var(--color-ph-white, #ffffff);
+    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
+    font-size: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .talents__reset:hover {
+    border-color: var(--color-ph-gold, #d6b25e);
+    color: var(--color-ph-gold, #d6b25e);
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+
+<script>
+  type SortMode = 'default' | 'az' | 'za';
+
+  function normalize(s: string): string {
+    return s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+  }
+
+  function initTalents(): void {
+    const controls = document.querySelector<HTMLElement>('[data-talents-controls]');
+    const grid = document.querySelector<HTMLUListElement>('[data-talents-grid]');
+    const empty = document.querySelector<HTMLElement>('[data-talents-empty]');
+    if (!controls || !grid || !empty) return;
+
+    const search = controls.querySelector<HTMLInputElement>('[data-talents-search]');
+    const clearBtn = controls.querySelector<HTMLButtonElement>('[data-talents-clear]');
+    const sort = controls.querySelector<HTMLSelectElement>('[data-talents-sort]');
+    const reset = empty.querySelector<HTMLButtonElement>('[data-talents-reset]');
+    if (!search || !clearBtn || !sort || !reset) return;
+
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-talent-card]'));
+
+    function applySort(mode: SortMode): void {
+      const sorted = [...cards].sort((a, b) => {
+        if (mode === 'default') {
+          return Number(a.dataset.index) - Number(b.dataset.index);
+        }
+        const cmp = (a.dataset.name ?? '').localeCompare(b.dataset.name ?? '', undefined, { sensitivity: 'base' });
+        return mode === 'az' ? cmp : -cmp;
+      });
+      for (const card of sorted) grid!.appendChild(card);
+    }
+
+    function applyFilter(query: string): void {
+      const norm = normalize(query.trim());
+      let visible = 0;
+      for (const card of cards) {
+        const name = card.dataset.name ?? '';
+        const match = !norm || normalize(name).includes(norm);
+        card.hidden = !match;
+        if (match) visible++;
+      }
+      empty!.hidden = visible > 0;
+    }
+
+    function syncClearBtn(): void {
+      clearBtn!.hidden = search!.value.length === 0;
+    }
+
+    search.addEventListener('input', () => {
+      syncClearBtn();
+      applyFilter(search.value);
+    });
+
+    clearBtn.addEventListener('click', () => {
+      search.value = '';
+      syncClearBtn();
+      applyFilter('');
+      search.focus();
+    });
+
+    sort.addEventListener('change', () => {
+      const mode = sort.value as SortMode;
+      applySort(mode === 'az' || mode === 'za' ? mode : 'default');
+    });
+
+    reset.addEventListener('click', () => {
+      search.value = '';
+      sort.value = 'default';
+      syncClearBtn();
+      applyFilter('');
+      applySort('default');
+      search.focus();
+    });
+
+    syncClearBtn();
+  }
+
+  document.addEventListener('astro:page-load', initTalents);
+</script>

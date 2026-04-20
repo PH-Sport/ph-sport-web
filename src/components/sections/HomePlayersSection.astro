@@ -307,6 +307,7 @@ const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
         duration: 0.9,
         ease: 'power3.out',
         stagger: 0.12,
+        clearProps: 'transform,opacity',
         scrollTrigger: { trigger: grid, start: 'top 80%', once: true },
       });
     }

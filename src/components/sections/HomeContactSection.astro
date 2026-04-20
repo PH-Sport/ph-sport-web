@@ -29,7 +29,7 @@ const t = useTranslations(lang);
 
 <style>
   .home-contact {
-    padding: clamp(80px, 10vw, 140px) var(--ph-section-px, clamp(20px, 4vw, 48px));
+    --home-contact-edge: var(--ph-section-px, clamp(20px, 4vw, 48px));
     background: var(--color-ph-bg-2, #15171b);
     color: var(--color-ph-white, #ffffff);
     border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
@@ -38,16 +38,16 @@ const t = useTranslations(lang);
   .home-contact__grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: clamp(40px, 6vw, 96px);
-    max-width: 1200px;
-    margin: 0 auto;
     align-items: stretch;
+    min-height: clamp(420px, 58vw, 640px);
   }
 
   .home-contact__head {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    justify-content: center;
+    padding: clamp(48px, 7vw, 96px) var(--home-contact-edge);
   }
 
   .home-contact__eyebrow {
@@ -115,11 +115,10 @@ const t = useTranslations(lang);
 
   .home-contact__image {
     position: relative;
-    min-height: clamp(320px, 42vw, 520px);
     background:
       repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 10px),
       var(--color-ph-bg-3, #1c1f24);
-    border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    border-left: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
   }
 
   .home-contact__image-tag {

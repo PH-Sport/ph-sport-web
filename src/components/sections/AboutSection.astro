@@ -56,7 +56,15 @@ const FLAGS = {
 
   <!-- 02 HISTORIA -->
   <div class="abt-historia" id="historia">
-    <h2 class="abt-historia__title">[historia placeholder — Task 8]</h2>
+    <h2 class="abt-historia__title">
+      {t('about.historia.titlePre')}<span class="abt-gold">{t('about.historia.titleAccent1')}</span>{t('about.historia.titleMid')}<span class="abt-gold">{t('about.historia.titleAccent2')}</span>{t('about.historia.titlePost')}
+    </h2>
+    <div class="abt-historia__body">
+      <p>{t('about.historia.p1')}</p>
+      <p>{t('about.historia.p2')}</p>
+      <p>{t('about.historia.p3')}</p>
+      <p>{t('about.historia.p4')}</p>
+    </div>
   </div>
 
   <!-- 03 EQUIPO -->
@@ -241,8 +249,53 @@ const FLAGS = {
     }
   }
 
+  /* ── 02 HISTORIA ── */
+  .abt-historia {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: clamp(32px, 6vw, 80px);
+    padding: clamp(72px, 10vw, 140px) var(--edge);
+    border-bottom: 1px solid var(--abt-line);
+  }
+  .abt-historia__title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(32px, 4.5vw, 52px);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin: 12px 0 0;
+  }
+  .abt-historia__body {
+    column-count: 2;
+    column-gap: 40px;
+  }
+  .abt-historia__body p {
+    margin: 0 0 14px;
+    color: var(--abt-ink-soft);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+  .abt-historia__body p:first-child::first-letter {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-style: normal;
+    float: left;
+    font-size: 72px;
+    line-height: 0.85;
+    padding: 6px 12px 0 0;
+    color: var(--abt-gold);
+  }
+
+  @media (max-width: 900px) {
+    .abt-historia {
+      grid-template-columns: 1fr;
+    }
+    .abt-historia__body {
+      column-count: 1;
+    }
+  }
+
   /* Placeholder sections (replaced in later tasks). */
-  .abt-historia,
   .abt-team,
   .abt-presencia,
   .abt-closing {

@@ -49,22 +49,6 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
     <ClientRouter />
   </head>
   <body>
-    <div class="bg-logo-parallax" aria-hidden="true" role="presentation">
-      <div class="bg-logo-parallax__inner" data-parallax-inner>
-        <img
-          src="/logo-ph-3d.webp"
-          srcset="/logo-ph-3d-sm.webp 820w, /logo-ph-3d.webp 1640w"
-          sizes="min(92vw, 820px)"
-          alt=""
-          width="1640"
-          height="1321"
-          loading="lazy"
-          decoding="async"
-          fetchpriority="low"
-          class="bg-logo-parallax__img"
-        />
-      </div>
-    </div>
     <a href="#main-content" class="skip-link">{t('a11y.skip')}</a>
     <Header />
     <main
@@ -81,7 +65,6 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
       const HEADER_SCROLL_THRESHOLD = 16;
       const SCROLL_HIDE_MIN_Y = 64;
       const SCROLL_DIRECTION_DELTA = 6;
-      const PARALLAX_FACTOR = 0.1;
 
       let lastScrollY = 0;
 
@@ -95,14 +78,9 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
 
       function updateScrollEffects() {
         const header = document.querySelector('[data-header]');
-        const parallaxInner = document.querySelector('[data-parallax-inner]');
         const y = window.scrollY;
 
         header?.classList.toggle('header--solid', y > HEADER_SCROLL_THRESHOLD);
-        if (parallaxInner) {
-          (parallaxInner as HTMLElement).style.transform =
-            `translate3d(0, ${y * PARALLAX_FACTOR}px, 0)`;
-        }
 
         if (!header) {
           return;
@@ -154,38 +132,6 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
 </html>
 
 <style is:global>
-  /* Fondo logo 3D con parallax (JS mueve __inner más lento que el scroll) */
-  .bg-logo-parallax {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
-
-  .bg-logo-parallax__inner {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 10%;
-    opacity: 0.22;
-    will-change: transform;
-  }
-
-  .bg-logo-parallax__img {
-    width: min(92vw, 820px);
-    height: auto;
-    pointer-events: none;
-    user-select: none;
-  }
-
-  #main-content {
-    position: relative;
-    z-index: 1;
-  }
-
   .main--padded {
     /* 5rem reserva la zona del header; +0.875rem el margen superior de la cápsula flotante */
     padding-top: calc(5rem + 0.875rem);
@@ -269,9 +215,4 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
     }
   }
 
-  /* Página laboratorio logo 3D: ocultar parallax del logo estático de fondo */
-  html:has([data-ph-logo-lab]) .bg-logo-parallax {
-    opacity: 0;
-    visibility: hidden;
-  }
 </style>

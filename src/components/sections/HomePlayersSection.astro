@@ -121,6 +121,7 @@ const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
     overflow: hidden;
     background: var(--color-ph-bg-2, #15171b);
     border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    border-radius: var(--radius-md);
     transition: transform 0.35s cubic-bezier(.7, 0, .2, 1);
     text-decoration: none;
     color: inherit;
@@ -218,16 +219,16 @@ const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
   .home-players__cta-wrap {
     margin-top: clamp(24px, 4vw, 48px);
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
   }
 
   .home-players__cta {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 22px;
+    padding: 9px 20px;
     border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: 100px;
+    border-radius: var(--radius-sm);
     font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
     font-size: 13px;
     letter-spacing: 0.01em;

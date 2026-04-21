@@ -24,10 +24,9 @@
   --font-body:    'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-mono:    ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
-  /* Border-radius (generosos) */
-  --radius-sm:  0.5rem;   /*  8px — botones, inputs, badges */
-  --radius-md:  1rem;      /* 16px — cards, contenedores */
-  --radius-lg:  1.5rem;    /* 24px — modales, piezas hero */
+  /* Border-radius (pico ligeramente suavizado) */
+  --radius-sm: 4px;   /* botones, CTAs, chips, inputs */
+  --radius-md: 6px;   /* cards, paneles, contenedores */
 
   /* Sombras */
   --shadow-ph-sm: 0 2px 8px rgba(13, 15, 18, 0.4);

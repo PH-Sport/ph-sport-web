@@ -27,6 +27,20 @@ const socialLabel = (id: SocialId) => {
 <footer class="footer">
   <div class="footer-gold-rule" aria-hidden="true"></div>
 
+  <div class="footer-logo-bg" aria-hidden="true">
+    <img
+      src="/logo-ph-3d.webp"
+      srcset="/logo-ph-3d-sm.webp 820w, /logo-ph-3d.webp 1640w"
+      sizes="min(92vw, 620px)"
+      alt=""
+      width="1640"
+      height="1321"
+      loading="lazy"
+      decoding="async"
+      fetchpriority="low"
+    />
+  </div>
+
   <div class="ph-section">
     <!-- 02 · Sello editorial -->
     <p class="footer-sello">
@@ -114,6 +128,40 @@ const socialLabel = (id: SocialId) => {
   .footer {
     position: relative;
     z-index: 1;
+    overflow: hidden;
+  }
+
+  .footer-logo-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 6%;
+    opacity: 0.18;
+  }
+
+  .footer-logo-bg img {
+    width: min(70vw, 620px);
+    height: auto;
+    user-select: none;
+  }
+
+  .footer > *:not(.footer-logo-bg) {
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (max-width: 767px) {
+    .footer-logo-bg {
+      padding-right: 0;
+      justify-content: center;
+      opacity: 0.12;
+    }
+    .footer-logo-bg img {
+      width: min(90vw, 480px);
+    }
   }
 
   /* 01 · Gold rule (unchanged from previous version) */

@@ -12,7 +12,7 @@ const en: Record<TranslationKey, string> = {
 
   // --- Navegación ---
   'nav.home': 'Home',
-  'nav.players': 'Players',
+  'nav.players': 'Talents',
   'nav.services': 'Services',
   'nav.about': 'About',
   'nav.aria.main': 'Main navigation',
@@ -31,7 +31,7 @@ const en: Record<TranslationKey, string> = {
   'hero.scroll.label': 'Scroll',
 
   // --- Inicio (secciones) ---
-  'home.players.cta': 'View all players',
+  'home.players.cta': 'Talents',
 
   // --- Home: Talents (mini section) ---
   'home.players.eyebrow': '02 · Talent',
@@ -43,7 +43,7 @@ const en: Record<TranslationKey, string> = {
   'home.services.eyebrow': '03 · Services',
   'home.services.title': 'Representation with purpose.',
   'home.services.lead': 'Six pillars behind every player\u2019s career. Explore each area.',
-  'home.services.cta': 'See all services',
+  'home.services.cta': 'Services',
 
   // --- Home: About (editorial block) ---
   'home.about.eyebrow': '04 · About PHSPORT',
@@ -75,19 +75,26 @@ const en: Record<TranslationKey, string> = {
   'players.subtitle':
     'Elite players and coaches united by the same professional vision.',
   'players.club.none': 'No club',
-  'players.back': 'Back to players',
+  'players.back': 'Back to talents',
   'players.empty': 'No players available.',
   'players.detail.bioEmpty': 'More about this profile coming soon.',
 
   // --- Talents (page V3) ---
-  'talents.eyebrow': '— Talents',
+  'talents.eyebrow': '02 · Talents',
   'talents.title': 'The ',
   'talents.titleAccent': 'roster',
   'talents.lead': 'Elite footballers with international projection. Each career, a distinct project.',
   'talents.search.placeholder': 'Search by name…',
-  'talents.search.label': 'Search players',
+  'talents.search.label': 'Search talents',
   'talents.search.clear': 'Clear search',
+  'talents.search.close': 'Close search',
+  'talents.role.label': 'Role',
+  'talents.role.trigger': 'View',
+  'talents.role.all': 'All',
+  'talents.role.players': 'Players',
+  'talents.role.coaches': 'Coaches',
   'talents.sort.label': 'Sort',
+  'talents.sort.trigger': 'Sort',
   'talents.sort.default': 'Default',
   'talents.sort.az': 'A-Z',
   'talents.sort.za': 'Z-A',
@@ -107,7 +114,8 @@ const en: Record<TranslationKey, string> = {
   'about.hero.ctaServices': 'Our services',
   'about.hero.ctaContact': 'Get in touch',
   'about.hero.values': 'EXCELLENCE · CLOSENESS · RIGOR',
-  'about.hero.caption': 'PHSPORT · MADRID HQ',
+  'about.hero.caption': 'PHSPORT · IDENTITY',
+  'about.hero.imageAlt': 'The PHSPORT team facing the illuminated PH logo',
   // Historia
   'about.historia.titlePre': 'We manage your career. We look after your ',
   'about.historia.titleAccent1': 'present',

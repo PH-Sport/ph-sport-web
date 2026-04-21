@@ -4,7 +4,6 @@
 
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { isDocumentReload } from '@/lib/is-document-reload';
 
 const LOGO_VIEWBOX = '0 0 259.8 206.1';
 const POLYGON_1_POINTS =
@@ -13,6 +12,7 @@ const POLYGON_2_POINTS =
   '122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9';
 
 const SESSION_KEY = 'ph-logo-revealed';
+const REVEAL_REQUEST_KEY = 'ph-logo-reveal-request';
 
 /** Oculta chrome (header) mientras el overlay está activo: el island vive en main (z-index bajo) y el header fijo quedaría encima del overlay.
  *  El header no es interactivo durante el reveal (ver comentario en BaseLayout.astro). */
@@ -154,8 +154,10 @@ export default function LogoReveal() {
         return;
       }
 
-      const isReload = isDocumentReload();
-      if (!isReload && sessionStorage.getItem(SESSION_KEY)) {
+      const hasRequest = sessionStorage.getItem(REVEAL_REQUEST_KEY) === '1';
+      if (hasRequest) sessionStorage.removeItem(REVEAL_REQUEST_KEY);
+
+      if (!hasRequest && sessionStorage.getItem(SESSION_KEY)) {
         dismissOverlay(overlay);
         return;
       }
@@ -189,7 +191,7 @@ export default function LogoReveal() {
         const tl = gsap.timeline({
           onComplete: () => {
             overlay.style.display = 'none';
-            if (!isReload) sessionStorage.setItem(SESSION_KEY, '1');
+            sessionStorage.setItem(SESSION_KEY, '1');
             dispatchRevealOnce();
             revealHeaderAfterIntro();
           },
@@ -264,9 +266,7 @@ export default function LogoReveal() {
         position: 'fixed',
         inset: 0,
         zIndex: 9999,
-        backgroundColor: 'rgba(13, 15, 18, 0.52)',
-        backdropFilter: 'blur(18px)',
-        WebkitBackdropFilter: 'blur(18px)',
+        backgroundColor: '#0d0f12',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

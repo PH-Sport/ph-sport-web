@@ -22,10 +22,6 @@ const internationalCountries = [
   { key: 'uruguay' as const,  iso: 'UY' },
 ];
 
-const FLAGS = {
-  ES: '<svg viewBox="0 0 3 2" aria-hidden="true" focusable="false"><rect width="3" height="2" fill="#c60b1e"/><rect y="0.5" width="3" height="1" fill="#ffc400"/></svg>',
-  PT: '<svg viewBox="0 0 6 4" aria-hidden="true" focusable="false"><rect width="6" height="4" fill="#da291c"/><rect width="2.4" height="4" fill="#006233"/><circle cx="2.4" cy="2" r="0.6" fill="#ffcb00" stroke="#000" stroke-width="0.04"/></svg>',
-} as const;
 ---
 
 <section class="about-section" aria-labelledby="about-hero-title">
@@ -49,7 +45,17 @@ const FLAGS = {
       <div class="abt-hero__values">{t('about.hero.values')}</div>
     </div>
     <div class="abt-hero__right">
-      <div class="abt-hero__placeholder" aria-hidden="true"></div>
+      <img
+        class="abt-hero__image"
+        src="/about-equipo.webp"
+        srcset="/about-equipo-sm.webp 960w, /about-equipo.webp 1920w"
+        sizes="(max-width: 900px) 100vw, 50vw"
+        alt={t('about.hero.imageAlt')}
+        width="1920"
+        height="1080"
+        loading="lazy"
+        decoding="async"
+      />
       <div class="abt-hero__caption">{t('about.hero.caption')}</div>
     </div>
   </div>
@@ -92,11 +98,8 @@ const FLAGS = {
           </div>
           <span class="abt-team-row__role">{m.role}</span>
           <span class="abt-team-row__flag">
-            {m.nationality ? (
-              <Fragment>
-                <span class="abt-team-row__flag-svg" set:html={FLAGS[m.nationality]} />
-                <span>{m.country?.toUpperCase()}</span>
-              </Fragment>
+            {m.country ? (
+              <span>{m.country.toUpperCase()}</span>
             ) : (
               <span class="abt-team-row__flag-muted">{m.defaultLocation}</span>
             )}
@@ -177,20 +180,41 @@ const FLAGS = {
     color: var(--abt-gold);
   }
 
+  /* Page-hero eyebrow: barra dorada 28px como prefijo, alineada con el patrón de Servicios/Talentos. */
+  .about-section .abt-hero__left .abt-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .about-section .abt-hero__left .abt-eyebrow::before {
+    content: "";
+    width: 28px;
+    height: 1px;
+    background: var(--abt-gold);
+  }
+
   /* ── 01 HERO SPLIT ── */
   .abt-hero {
     display: grid;
     grid-template-columns: 1.1fr 1fr;
-    min-height: 80vh;
+    /* Hero a viewport completo como en Home: la página usa `hasHero` → sin `main--padded`,
+       el grid llega al top y el header pill flota encima. `100dvh` evita el salto en mobile
+       cuando se recoge la UI del navegador. */
+    min-height: 100vh;
+    min-height: 100dvh;
     border-bottom: 1px solid var(--abt-line);
-    padding-top: calc(var(--nav-h, 72px) + clamp(60px, 10vw, 120px));
+    position: relative;
   }
   .abt-hero__left {
-    padding: clamp(20px, 3vw, 40px) var(--edge) clamp(60px, 8vw, 100px);
+    /* padding-top replica el inicio de Servicios: clamp(96px, 14vw, 180px) + 93px de main--padded */
+    padding: clamp(189px, calc(14vw + 93px), 273px) var(--edge) clamp(60px, 8vw, 100px);
     display: flex;
     flex-direction: column;
     gap: 28px;
     justify-content: space-between;
+    /* Encima de la imagen extendida: el fade cruza la frontera de columna y el texto se mantiene legible por delante. */
+    position: relative;
+    z-index: 2;
   }
   .abt-hero__title {
     font-family: var(--font-display);
@@ -222,28 +246,25 @@ const FLAGS = {
   }
   .abt-hero__right {
     position: relative;
-    overflow: hidden;
-    border-left: 1px solid var(--abt-line);
+    /* overflow visible para que la imagen se desborde a la columna izquierda.
+       El parallax queda tapado por el `background` sólido del `.abt-hero`. */
+    overflow: visible;
   }
-  .abt-hero__placeholder {
+  .abt-hero__image {
     position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse at 70% 30%, rgba(214, 178, 94, 0.08) 0%, transparent 60%),
-      linear-gradient(180deg, #0e0e0e 0%, #181818 100%);
-  }
-  .abt-hero__placeholder::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: repeating-linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.02) 0px,
-      rgba(255, 255, 255, 0.02) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-    mix-blend-mode: overlay;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    /* Se extiende hacia la izquierda ~120px para que el fade cruce la frontera entre
+       columnas y se funda con el texto (en vez de cortarse en el borde del grid cell). */
+    width: calc(100% + clamp(80px, 10vw, 160px));
+    height: 100%;
+    object-fit: cover;
+    object-position: right center;
+    /* Fundido: el 20% más izquierdo es transparente→opaco. Esa zona cae dentro de la
+       columna de texto, así que el borde de la imagen desaparece visualmente. */
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 20%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 20%);
     pointer-events: none;
   }
   .abt-hero__caption {
@@ -265,8 +286,9 @@ const FLAGS = {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 20px;
+    padding: 9px 20px;
     border: 1px solid var(--abt-line-strong);
+    border-radius: var(--radius-sm);
     color: var(--abt-ink);
     text-decoration: none;
     font-family: var(--font-body);
@@ -296,16 +318,31 @@ const FLAGS = {
   @media (max-width: 900px) {
     .abt-hero {
       grid-template-columns: 1fr;
-      min-height: auto;
+      /* En mobile: imagen (row 1, altura fija por aspect-ratio) + texto (row 2) rellenando
+         el resto del viewport. `grid-template-rows: auto 1fr` garantiza que el texto
+         expanda hasta tocar el bottom del hero de 100dvh. */
+      grid-template-rows: auto 1fr;
     }
     .abt-hero__right {
-      aspect-ratio: 4 / 5;
-      border-left: none;
-      border-bottom: 1px solid var(--abt-line);
+      /* 16/10 preserva casi todo el 16/9 de origen — evita el cropping agresivo del 4/5. */
+      aspect-ratio: 16 / 10;
+      border-bottom: none;
       order: -1;
+      /* Mobile: sin desborde, la imagen vuelve a caber en su columna. */
+      overflow: hidden;
+    }
+    .abt-hero__image {
+      /* Reset del desborde lateral de desktop. */
+      left: 0;
+      right: 0;
+      width: 100%;
+      /* En mobile el fundido pasa a ser vertical: se difumina hacia el texto inferior. */
+      object-position: center center;
+      -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
+      mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
     }
     .abt-hero__left {
-      padding-top: 40px;
+      padding-top: 24px;
     }
   }
 
@@ -434,18 +471,6 @@ const FLAGS = {
     font-size: 11px;
     color: var(--abt-ink-soft);
     letter-spacing: 0.1em;
-  }
-  .abt-team-row__flag-svg {
-    display: inline-block;
-    width: 22px;
-    height: 14px;
-  }
-  .abt-team-row__flag-svg svg {
-    width: 100%;
-    height: 100%;
-    border-radius: 2px;
-    box-shadow: 0 0 0 1px var(--abt-line-strong);
-    display: block;
   }
   .abt-team-row__flag-muted {
     color: var(--abt-ink-faint);

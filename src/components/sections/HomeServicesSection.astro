@@ -34,7 +34,9 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
             </span>
           </summary>
           <div class="home-services__body">
-            <p>{item.body}</p>
+            <div class="home-services__body-inner">
+              <p>{item.body}</p>
+            </div>
           </div>
         </details>
       </li>
@@ -166,11 +168,19 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
   }
 
   .home-services__body {
-    box-sizing: border-box;
+    overflow: hidden;
+    height: 0;
+    opacity: 0;
+  }
+  .home-services__row[open] .home-services__body {
+    height: auto;
+    opacity: 1;
+  }
+  .home-services__body-inner {
     padding: 0 0 clamp(20px, 3vw, 32px);
     max-width: 640px;
   }
-  .home-services__body p {
+  .home-services__body-inner p {
     margin: 0;
     color: var(--color-ph-ink-soft, #b5b7bb);
     font-size: 15px;
@@ -180,17 +190,17 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
   .home-services__cta-wrap {
     margin-top: clamp(32px, 5vw, 56px);
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
   }
 
   .home-services__cta {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 22px;
+    padding: 9px 20px;
     background: var(--color-ph-gold, #d6b25e);
     color: var(--color-ph-black, #0d0f12);
-    border-radius: 100px;
+    border-radius: var(--radius-sm);
     font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
     font-size: 13px;
     font-weight: 500;
@@ -277,20 +287,16 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
       if (!body) { d.removeAttribute('open'); return; }
       active.get(body)?.kill();
       const current = body.offsetHeight;
-      body.style.overflow = 'hidden';
-      body.style.display = 'block';
       body.style.height = current + 'px';
       body.style.opacity = '1';
-      d.removeAttribute('open');
       const tween = gsap.to(body, {
         height: 0,
         opacity: 0,
         duration: DURATION,
         ease: EASE,
         onComplete: () => {
+          d.removeAttribute('open');
           body.style.height = '';
-          body.style.overflow = '';
-          body.style.display = '';
           body.style.opacity = '';
           active.delete(body);
         },
@@ -300,14 +306,13 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
 
     const animateOpen = (d: HTMLDetailsElement): void => {
       const body = d.querySelector<HTMLElement>('.home-services__body');
-      if (!body) { d.setAttribute('open', ''); return; }
+      const inner = body?.querySelector<HTMLElement>('.home-services__body-inner');
+      if (!body || !inner) { d.setAttribute('open', ''); return; }
       active.get(body)?.kill();
-      body.style.overflow = 'hidden';
-      body.style.display = 'block';
+      d.setAttribute('open', '');
       body.style.height = '0px';
       body.style.opacity = '0';
-      d.setAttribute('open', '');
-      const target = body.scrollHeight;
+      const target = inner.offsetHeight;
       const tween = gsap.to(body, {
         height: target,
         opacity: 1,
@@ -315,8 +320,6 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
         ease: EASE,
         onComplete: () => {
           body.style.height = '';
-          body.style.overflow = '';
-          body.style.display = '';
           body.style.opacity = '';
           active.delete(body);
         },

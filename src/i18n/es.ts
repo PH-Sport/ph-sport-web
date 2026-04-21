@@ -10,7 +10,7 @@ const es = {
 
   // --- Navegación ---
   'nav.home': 'Inicio',
-  'nav.players': 'Jugadores',
+  'nav.players': 'Talentos',
   'nav.services': 'Servicios',
   'nav.about': 'Sobre nosotros',
   'nav.aria.main': 'Navegación principal',
@@ -29,7 +29,7 @@ const es = {
   'hero.scroll.label': 'Scroll',
 
   // --- Inicio (secciones) ---
-  'home.players.cta': 'Ver todos los jugadores',
+  'home.players.cta': 'Talentos',
 
   // --- Home: Talentos (mini-sección) ---
   'home.players.eyebrow': '02 · Talentos',
@@ -41,7 +41,7 @@ const es = {
   'home.services.eyebrow': '03 · Servicios',
   'home.services.title': 'Representamos con propósito.',
   'home.services.lead': 'Seis pilares que sostienen la carrera del jugador. Explora cada área.',
-  'home.services.cta': 'Ver todos los servicios',
+  'home.services.cta': 'Servicios',
 
   // --- Home: Sobre nosotros (bloque editorial) ---
   'home.about.eyebrow': '04 · Sobre PHSPORT',
@@ -73,19 +73,26 @@ const es = {
   'players.subtitle':
     'Jugadores y entrenadores de élite, unidos por una misma visión profesional.',
   'players.club.none': 'Sin club',
-  'players.back': 'Volver a jugadores',
+  'players.back': 'Volver a talentos',
   'players.empty': 'No hay jugadores disponibles.',
   'players.detail.bioEmpty': 'Próximamente más información sobre este perfil.',
 
   // --- Talentos (página V3) ---
-  'talents.eyebrow': '— Talentos',
+  'talents.eyebrow': '02 · Talentos',
   'talents.title': 'El ',
   'talents.titleAccent': 'roster',
   'talents.lead': 'Futbolistas profesionales con proyección internacional. Cada carrera, un proyecto distinto.',
   'talents.search.placeholder': 'Buscar por nombre…',
-  'talents.search.label': 'Buscar jugadores',
+  'talents.search.label': 'Buscar talentos',
   'talents.search.clear': 'Limpiar búsqueda',
+  'talents.search.close': 'Cerrar búsqueda',
+  'talents.role.label': 'Rol',
+  'talents.role.trigger': 'Ver',
+  'talents.role.all': 'Todos',
+  'talents.role.players': 'Jugadores',
+  'talents.role.coaches': 'Entrenadores',
   'talents.sort.label': 'Orden',
+  'talents.sort.trigger': 'Orden',
   'talents.sort.default': 'Predeterminado',
   'talents.sort.az': 'A-Z',
   'talents.sort.za': 'Z-A',
@@ -105,7 +112,8 @@ const es = {
   'about.hero.ctaServices': 'Nuestros servicios',
   'about.hero.ctaContact': 'Contactar',
   'about.hero.values': 'EXCELENCIA · CERCANÍA · RIGOR',
-  'about.hero.caption': 'PHSPORT · SEDE MADRID',
+  'about.hero.caption': 'PHSPORT · IDENTIDAD',
+  'about.hero.imageAlt': 'El equipo PHSPORT frente al logo PH iluminado',
   // Historia
   'about.historia.titlePre': 'Gestionamos tu carrera. Cuidamos tu ',
   'about.historia.titleAccent1': 'presente',

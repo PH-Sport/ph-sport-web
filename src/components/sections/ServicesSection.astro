@@ -382,7 +382,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     position: relative;
     width: 40px; height: 40px;
     border: 1px solid var(--srv-line-strong);
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     flex-shrink: 0;
     transition: transform 0.4s cubic-bezier(.7, 0, .2, 1), border-color 0.3s;
   }
@@ -553,7 +553,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     display: inline-flex; align-items: center;
     padding: 6px 12px;
     border: 1px solid var(--srv-line-strong);
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     color: var(--srv-ink-soft);
     font-size: 10px;
     letter-spacing: 0.15em;
@@ -585,7 +585,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     color: var(--srv-ink);
     padding: 6px 10px;
     border: 1px solid var(--srv-line);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
   }
 
   @media (max-width: 900px) {
@@ -669,10 +669,10 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
   }
   .srv-cta__btn {
     display: inline-flex; align-items: center; gap: 10px;
-    padding: 14px 22px;
+    padding: 9px 20px;
     background: var(--srv-gold);
     color: var(--srv-on-gold);
-    border-radius: 100px;
+    border-radius: var(--radius-sm);
     font-family: var(--srv-sans);
     font-size: 13px;
     font-weight: 500;

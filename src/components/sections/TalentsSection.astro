@@ -12,6 +12,19 @@ const t = useTranslations(lang);
 ---
 
 <section class="talents" aria-labelledby="talents-title">
+  <div class="talents__hero-bg" aria-hidden="true">
+    <img
+      src="/talents-hero.webp"
+      srcset="/talents-hero-sm.webp 960w, /talents-hero.webp 1920w"
+      sizes="(max-width: 900px) 100vw, 70vw"
+      alt=""
+      width="1920"
+      height="1080"
+      loading="eager"
+      decoding="async"
+    />
+  </div>
+
   <header class="talents__head">
     <span class="talents__eyebrow">{t('talents.eyebrow')}</span>
     <h1 class="talents__title" id="talents-title">
@@ -21,7 +34,7 @@ const t = useTranslations(lang);
   </header>
 
   <div class="talents__controls" data-talents-controls>
-    <label class="talents__search">
+    <label class="talents__search" data-talents-search-wrap>
       <span class="visually-hidden">{t('talents.search.label')}</span>
       <svg class="talents__search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <circle cx="11" cy="11" r="7"></circle>
@@ -46,19 +59,71 @@ const t = useTranslations(lang);
           <path d="m6 6 12 12M18 6 6 18"></path>
         </svg>
       </button>
+      <button
+        type="button"
+        class="talents__search-close"
+        aria-label={t('talents.search.close')}
+        data-talents-search-close
+      >
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="m6 6 12 12M18 6 6 18"></path>
+        </svg>
+      </button>
     </label>
 
-    <label class="talents__sort">
-      <span class="talents__sort-label">{t('talents.sort.label')}</span>
-      <select class="talents__sort-select" data-talents-sort aria-label={t('talents.sort.label')}>
-        <option value="default">{t('talents.sort.default')}</option>
-        <option value="az">{t('talents.sort.az')}</option>
-        <option value="za">{t('talents.sort.za')}</option>
-      </select>
-      <svg class="talents__sort-arrow" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="m6 9 6 6 6-6"></path>
-      </svg>
-    </label>
+    <div class="talents__combo" data-talents-combo="role">
+      <button
+        type="button"
+        class="talents__combo-button"
+        aria-haspopup="listbox"
+        aria-expanded="false"
+        aria-label={t('talents.role.label')}
+        data-talents-combo-trigger
+      >
+        <span class="talents__combo-trigger-label">{t('talents.role.trigger')}</span>
+        <svg class="talents__select-arrow" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="m6 9 6 6 6-6"></path>
+        </svg>
+      </button>
+      <ul
+        class="talents__combo-panel"
+        role="listbox"
+        aria-label={t('talents.role.label')}
+        data-talents-combo-panel
+        hidden
+      >
+        <li class="talents__combo-option" role="option" aria-selected="true"  data-value="all"    style="--i: 0">{t('talents.role.all')}</li>
+        <li class="talents__combo-option" role="option" aria-selected="false" data-value="player" style="--i: 1">{t('talents.role.players')}</li>
+        <li class="talents__combo-option" role="option" aria-selected="false" data-value="coach"  style="--i: 2">{t('talents.role.coaches')}</li>
+      </ul>
+    </div>
+
+    <div class="talents__combo" data-talents-combo="sort">
+      <button
+        type="button"
+        class="talents__combo-button"
+        aria-haspopup="listbox"
+        aria-expanded="false"
+        aria-label={t('talents.sort.label')}
+        data-talents-combo-trigger
+      >
+        <span class="talents__combo-trigger-label">{t('talents.sort.trigger')}</span>
+        <svg class="talents__select-arrow" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="m6 9 6 6 6-6"></path>
+        </svg>
+      </button>
+      <ul
+        class="talents__combo-panel"
+        role="listbox"
+        aria-label={t('talents.sort.label')}
+        data-talents-combo-panel
+        hidden
+      >
+        <li class="talents__combo-option" role="option" aria-selected="true"  data-value="default" style="--i: 0">{t('talents.sort.default')}</li>
+        <li class="talents__combo-option" role="option" aria-selected="false" data-value="az"      style="--i: 1">{t('talents.sort.az')}</li>
+        <li class="talents__combo-option" role="option" aria-selected="false" data-value="za"      style="--i: 2">{t('talents.sort.za')}</li>
+      </ul>
+    </div>
   </div>
 
   <ul class="talents__grid" role="list" data-talents-grid>
@@ -67,6 +132,7 @@ const t = useTranslations(lang);
         class="talents__item"
         data-talent-card
         data-name={player.name}
+        data-role={player.role}
         data-index={idx}
       >
         <div class="talents__card">
@@ -94,10 +160,44 @@ const t = useTranslations(lang);
 
 <style>
   .talents {
-    padding: clamp(96px, 14vw, 160px) var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(80px, 12vw, 140px);
+    position: relative;
+    /* padding-top replica el inicio de Servicios: clamp(96px, 14vw, 180px) + 93px de main--padded */
+    padding: clamp(189px, calc(14vw + 93px), 273px) var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(80px, 12vw, 140px);
     background: var(--color-ph-black, #0d0f12);
     color: var(--color-ph-white, #ffffff);
   }
+
+  /* Hero background image: desktop = 70vw a la derecha, fundido a la izquierda;
+     mobile = bloque 16/9 a pantalla completa sobre el head. */
+  .talents__hero-bg {
+    position: absolute;
+    top: clamp(140px, calc(8vw + 40px), 220px);
+    right: 0;
+    width: 70vw;
+    height: clamp(520px, 80vh, 860px);
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .talents__hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* `right top` evita que en viewports ultra-anchos (2K+) el recorte vertical
+       de `cover` baje las cabezas al área del fundido superior. */
+    object-position: right top;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 28%),
+                        linear-gradient(to bottom, transparent 0%, #000 10%, #000 88%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 28%),
+                linear-gradient(to bottom, transparent 0%, #000 10%, #000 88%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  .talents__head,
+  .talents__controls,
+  .talents__grid,
+  .talents__empty { position: relative; z-index: 1; }
 
   /* Hero header */
   .talents__head { max-width: 840px; margin-bottom: clamp(32px, 5vw, 56px); }
@@ -144,16 +244,14 @@ const t = useTranslations(lang);
 
   /* Sticky controls bar */
   .talents__controls {
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
     padding: 16px 0;
     margin-bottom: clamp(24px, 4vw, 40px);
-    background: var(--color-ph-black, #0d0f12);
-    border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    background: transparent;
   }
 
   .talents__search {
@@ -163,9 +261,13 @@ const t = useTranslations(lang);
     align-items: center;
     gap: 10px;
     padding: 12px 16px;
+    background: rgba(13, 15, 18, 0.72);
+    backdrop-filter: var(--ph-glass-backdrop-ui);
+    -webkit-backdrop-filter: var(--ph-glass-backdrop-ui);
     border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: 100px;
-    transition: border-color 0.2s;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--ph-glass-highlight);
+    transition: border-color 0.2s, background 0.2s;
   }
   .talents__search:focus-within {
     border-color: var(--color-ph-gold, #d6b25e);
@@ -212,48 +314,333 @@ const t = useTranslations(lang);
     color: var(--color-ph-white, #ffffff);
     background: rgba(255, 255, 255, 0.06);
   }
+  /* Close button: only shown in the mobile expanded-overlay state */
+  .talents__search-close {
+    display: none;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+  }
+  .talents__search-close:hover {
+    color: var(--color-ph-white, #ffffff);
+    background: rgba(255, 255, 255, 0.06);
+  }
 
-  .talents__sort {
+  /* ── Custom combo (role + sort) ──
+     Reemplaza a los <select> nativos para poder animar el popover y sus opciones. */
+  .talents__combo {
+    position: relative;
+    display: inline-flex;
+    flex: 0 0 auto;
+  }
+
+  .talents__combo-button {
     position: relative;
     display: inline-flex;
     align-items: center;
     gap: 10px;
     padding: 12px 40px 12px 16px;
+    background: rgba(13, 15, 18, 0.72);
+    backdrop-filter: var(--ph-glass-backdrop-ui);
+    -webkit-backdrop-filter: var(--ph-glass-backdrop-ui);
     border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: 100px;
-    transition: border-color 0.2s;
-    cursor: pointer;
-  }
-  .talents__sort:focus-within { border-color: var(--color-ph-gold, #d6b25e); }
-  .talents__sort-label {
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-  }
-  .talents__sort-select {
-    appearance: none;
-    background: transparent;
-    border: none;
-    outline: none;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--ph-glass-highlight);
     color: var(--color-ph-white, #ffffff);
     font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
     font-size: 14px;
-    padding-right: 4px;
     cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
   }
-  .talents__sort-select option {
-    background: var(--color-ph-bg-2, #15171b);
+  .talents__combo-button:focus-visible {
+    outline: none;
+    border-color: var(--color-ph-gold, #d6b25e);
+  }
+  .talents__combo[data-open="true"] .talents__combo-button {
+    border-color: var(--color-ph-gold, #d6b25e);
+  }
+
+  .talents__combo-trigger-label {
     color: var(--color-ph-white, #ffffff);
   }
-  .talents__sort-arrow {
+
+  .talents__select-arrow {
     position: absolute;
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
     color: var(--color-ph-ink-soft, #b5b7bb);
+    transition: transform 240ms cubic-bezier(.7, 0, .2, 1);
+  }
+  .talents__combo[data-open="true"] .talents__select-arrow {
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  .talents__combo-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 100%;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    background: var(--color-ph-bg-2, #15171b);
+    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-ph, 0 4px 24px rgba(13, 15, 18, 0.6));
+    z-index: 6;
+    white-space: nowrap;
+    transform-origin: top center;
+  }
+
+  /* Open: el panel "cae" desde el trigger — clip-path revela de arriba abajo. */
+  .talents__combo[data-open="true"] .talents__combo-panel {
+    animation: talentsPanelOpen 300ms cubic-bezier(.7, 0, .2, 1) both;
+  }
+  @keyframes talentsPanelOpen {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      clip-path: inset(0);
+    }
+  }
+
+  /* Close: el panel "se recoge" — clip-path retrae de abajo hacia arriba. */
+  .talents__combo[data-closing="true"] .talents__combo-panel {
+    animation: talentsPanelClose 220ms cubic-bezier(.7, 0, .2, 1) both;
+    pointer-events: none;
+  }
+  @keyframes talentsPanelClose {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+      clip-path: inset(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-4px);
+      clip-path: inset(0 0 100% 0);
+    }
+  }
+
+  .talents__combo-option {
+    position: relative;
+    padding: 10px 14px 10px 26px;
+    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
+    font-size: 14px;
+    color: var(--color-ph-white-80, rgba(255, 255, 255, 0.8));
+    cursor: pointer;
+    border-radius: 2px;
+    user-select: none;
+    transition: background 0.15s, color 0.15s;
+  }
+  /* Chivato: punto dorado a la izquierda sólo en la opción activa.
+     Reservamos el slot en todas para que el texto no se desplace. */
+  .talents__combo-option::before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    margin-top: -3px;
+    border-radius: 50%;
+    background: var(--color-ph-gold, #d6b25e);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .talents__combo-option[aria-selected="true"]::before {
+    opacity: 1;
+  }
+  .talents__combo-option[data-highlighted="true"] {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--color-ph-white, #ffffff);
+  }
+  .talents__combo-option[aria-selected="true"] {
+    color: var(--color-ph-gold, #d6b25e);
+  }
+
+  /* Stagger: cada opción aparece con pequeño retraso, empezando cuando
+     el panel ya ha iniciado su caída. Complementa el clip-path del panel. */
+  .talents__combo[data-open="true"] .talents__combo-option {
+    animation: talentsOptionEnter 240ms cubic-bezier(.7, 0, .2, 1) both;
+    animation-delay: calc(var(--i, 0) * 40ms + 70ms);
+  }
+  @keyframes talentsOptionEnter {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .talents__combo[data-open="true"] .talents__combo-panel,
+    .talents__combo[data-closing="true"] .talents__combo-panel,
+    .talents__combo[data-open="true"] .talents__combo-option {
+      animation: none;
+    }
+    .talents__select-arrow { transition: none; }
+  }
+
+  /* Mobile: hero-bg pasa a ser bloque 16/9 full-bleed sobre el head. */
+  @media (max-width: 900px) {
+    .talents { padding-top: 0; }
+    .talents__hero-bg {
+      position: relative;
+      top: auto;
+      right: auto;
+      width: calc(100% + 2 * var(--ph-section-px, clamp(20px, 4vw, 48px)));
+      height: auto;
+      aspect-ratio: 16 / 9;
+      margin: clamp(56px, 14vw, 96px) calc(-1 * var(--ph-section-px, clamp(20px, 4vw, 48px))) clamp(24px, 6vw, 40px);
+    }
+    .talents__hero-bg img {
+      object-position: center center;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 10%, #000 62%, transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 10%, #000 62%, transparent 100%);
+      -webkit-mask-composite: source-over;
+      mask-composite: add;
+    }
+    .talents__head { padding-top: 8px; }
+  }
+
+  /* ── Mobile: collapse search to icon, reveal overlay on tap ── */
+  @media (max-width: 720px) {
+    .talents__controls {
+      flex-wrap: nowrap;
+      gap: 8px;
+    }
+
+    /* Placeholder del slot del search mientras está en overlay (expand/collapse).
+       Evita que los combos se reajusten al salir el search del flujo flex. */
+    .talents__controls:has(.talents__search.is-expanded)::before,
+    .talents__controls:has(.talents__search.is-collapsing)::before {
+      content: '';
+      flex: 0 0 44px;
+      height: 44px;
+    }
+
+    /* Collapsed search = 44×44 icon-only tap target */
+    .talents__search {
+      flex: 0 0 44px;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      gap: 0;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .talents__search .talents__search-input,
+    .talents__search .talents__search-clear,
+    .talents__search .talents__search-close {
+      display: none;
+    }
+
+    /* Expanded/Collapsing: overlay absoluto que cubre toda la barra.
+       El reveal usa clip-path (de izquierda a derecha), no distorsiona el contenido. */
+    .talents__search.is-expanded,
+    .talents__search.is-collapsing {
+      position: absolute;
+      top: 16px;
+      bottom: 16px;
+      left: var(--ph-section-px, 24px);
+      right: var(--ph-section-px, 24px);
+      width: auto;
+      height: auto;
+      flex: 0 0 auto;
+      padding: 8px 8px 8px 16px;
+      gap: 10px;
+      justify-content: flex-start;
+      background: var(--color-ph-black, #0d0f12);
+      border-color: var(--color-ph-gold, #d6b25e);
+      z-index: 4;
+    }
+    .talents__search.is-expanded {
+      animation: talentsSearchOpen 340ms cubic-bezier(.7, 0, .2, 1) both;
+    }
+    .talents__search.is-collapsing {
+      animation: talentsSearchClose 260ms cubic-bezier(.7, 0, .2, 1) both;
+      pointer-events: none;
+    }
+    .talents__search.is-expanded .talents__search-input,
+    .talents__search.is-collapsing .talents__search-input {
+      display: block;
+      flex: 1 1 auto;
+    }
+    .talents__search.is-expanded .talents__search-clear:not([hidden]),
+    .talents__search.is-collapsing .talents__search-clear:not([hidden]) {
+      display: inline-flex;
+    }
+    .talents__search.is-expanded .talents__search-close,
+    .talents__search.is-collapsing .talents__search-close {
+      display: inline-flex;
+    }
+    /* Contenido interno: pequeño fade tras el reveal del contenedor. */
+    .talents__search.is-expanded .talents__search-input,
+    .talents__search.is-expanded .talents__search-close {
+      animation: talentsSearchContentIn 280ms cubic-bezier(.7, 0, .2, 1) 90ms both;
+    }
+
+    @keyframes talentsSearchOpen {
+      from { clip-path: inset(0 calc(100% - 44px) 0 0); }
+      to   { clip-path: inset(0); }
+    }
+    @keyframes talentsSearchClose {
+      from { clip-path: inset(0); }
+      to   { clip-path: inset(0 calc(100% - 44px) 0 0); }
+    }
+    @keyframes talentsSearchContentIn {
+      from { opacity: 0; transform: translateX(-4px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Combos: comparten el ancho restante; ocultamos el label inline. */
+    .talents__combo {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+    .talents__combo-button {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      justify-content: center;
+      gap: 8px;
+    }
+    .talents__combo-trigger-label {
+      font-size: 13px;
+    }
+    /* En móvil el arrow forma parte del flex flow (junto al label), no absoluto.
+       Así el grupo label+arrow se centra como una unidad y queda simétrico. */
+    .talents__select-arrow {
+      position: static;
+      transform: none;
+      right: auto;
+      top: auto;
+    }
+    .talents__combo[data-open="true"] .talents__select-arrow {
+      transform: rotate(180deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .talents__search.is-expanded,
+    .talents__search.is-collapsing,
+    .talents__search.is-expanded .talents__search-input,
+    .talents__search.is-expanded .talents__search-close {
+      animation: none;
+    }
   }
 
   /* Grid: 2 → 3 → 5 columns */
@@ -281,6 +668,7 @@ const t = useTranslations(lang);
     overflow: hidden;
     background: var(--color-ph-bg-2, #15171b);
     border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    border-radius: var(--radius-md);
     transition: transform 0.35s cubic-bezier(.7, 0, .2, 1);
     transform-origin: center bottom;
   }
@@ -334,8 +722,9 @@ const t = useTranslations(lang);
     font-family: var(--font-mono, 'JetBrains Mono', monospace);
     font-size: 10px;
     letter-spacing: 0.1em;
-    color: var(--color-ph-ink-soft, #b5b7bb);
+    color: var(--color-ph-gold, #d6b25e);
     text-transform: uppercase;
+    transition: color 0.3s;
   }
 
   .talents__underline {
@@ -354,6 +743,7 @@ const t = useTranslations(lang);
   @media (hover: hover) and (pointer: fine) {
     .talents__card:hover { transform: translateY(-3px); }
     .talents__card:hover .talents__name { color: var(--color-ph-gold, #d6b25e); }
+    .talents__card:hover .talents__club { color: var(--color-ph-ink-soft, #b5b7bb); }
     .talents__card:hover .talents__corner { opacity: 1; }
     .talents__card:hover .talents__underline { transform: scaleX(1); }
   }
@@ -381,7 +771,7 @@ const t = useTranslations(lang);
     padding: 8px 16px;
     background: transparent;
     border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: 100px;
+    border-radius: var(--radius-sm);
     color: var(--color-ph-white, #ffffff);
     font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
     font-size: 12px;
@@ -408,9 +798,145 @@ const t = useTranslations(lang);
 
 <script>
   type SortMode = 'default' | 'az' | 'za';
+  type RoleFilter = 'all' | 'player' | 'coach';
 
   function normalize(s: string): string {
     return s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+  }
+
+  function isMobile(): boolean {
+    return window.matchMedia('(max-width: 720px)').matches;
+  }
+
+  interface ComboController {
+    setValue(value: string): void;
+    close(): void;
+  }
+
+  function initCombo(
+    combo: HTMLElement,
+    onChange: (value: string) => void,
+  ): ComboController | null {
+    const trigger = combo.querySelector<HTMLButtonElement>('[data-talents-combo-trigger]');
+    const panel = combo.querySelector<HTMLUListElement>('[data-talents-combo-panel]');
+    if (!trigger || !panel) return null;
+
+    const options = Array.from(panel.querySelectorAll<HTMLLIElement>('.talents__combo-option'));
+    if (options.length === 0) return null;
+
+    let highlightIdx = options.findIndex((o) => o.getAttribute('aria-selected') === 'true');
+    if (highlightIdx < 0) highlightIdx = 0;
+
+    function setHighlight(next: number): void {
+      highlightIdx = (next + options.length) % options.length;
+      for (let i = 0; i < options.length; i++) {
+        if (i === highlightIdx) options[i].setAttribute('data-highlighted', 'true');
+        else options[i].removeAttribute('data-highlighted');
+      }
+    }
+
+    let closeAnimEnd: ((e: AnimationEvent) => void) | null = null;
+
+    function open(): void {
+      if (combo.dataset.open === 'true') return;
+      /* Si estaba cerrándose, interrumpimos la animación y volvemos a abrir. */
+      if (combo.dataset.closing === 'true') {
+        delete combo.dataset.closing;
+        if (closeAnimEnd) {
+          panel!.removeEventListener('animationend', closeAnimEnd);
+          closeAnimEnd = null;
+        }
+      }
+      combo.dataset.open = 'true';
+      trigger!.setAttribute('aria-expanded', 'true');
+      panel!.hidden = false;
+      const selected = options.findIndex((o) => o.getAttribute('aria-selected') === 'true');
+      setHighlight(selected >= 0 ? selected : 0);
+      document.addEventListener('pointerdown', onDocPointerDown, true);
+    }
+
+    function close(): void {
+      if (combo.dataset.open !== 'true') return;
+      delete combo.dataset.open;
+      combo.dataset.closing = 'true';
+      trigger!.setAttribute('aria-expanded', 'false');
+      document.removeEventListener('pointerdown', onDocPointerDown, true);
+      closeAnimEnd = (e: AnimationEvent): void => {
+        if (e.target !== panel) return;
+        delete combo.dataset.closing;
+        panel!.hidden = true;
+        panel!.removeEventListener('animationend', closeAnimEnd!);
+        closeAnimEnd = null;
+      };
+      panel!.addEventListener('animationend', closeAnimEnd);
+    }
+
+    function onDocPointerDown(e: PointerEvent): void {
+      if (!(e.target instanceof Node)) return;
+      if (!combo.contains(e.target)) close();
+    }
+
+    function selectByIndex(i: number): void {
+      const opt = options[i];
+      if (!opt) return;
+      const value = opt.dataset.value ?? '';
+      for (const o of options) o.setAttribute('aria-selected', o === opt ? 'true' : 'false');
+      close();
+      trigger!.focus();
+      onChange(value);
+    }
+
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (combo.dataset.open === 'true') close();
+      else open();
+    });
+
+    trigger.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (combo.dataset.open !== 'true') {
+          open();
+        } else if (e.key === 'ArrowDown') {
+          setHighlight(highlightIdx + 1);
+        } else if (e.key === 'ArrowUp') {
+          setHighlight(highlightIdx - 1);
+        } else {
+          selectByIndex(highlightIdx);
+        }
+      } else if (e.key === 'Escape' && combo.dataset.open === 'true') {
+        e.preventDefault();
+        close();
+      }
+    });
+
+    panel.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); setHighlight(highlightIdx + 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setHighlight(highlightIdx - 1); }
+      else if (e.key === 'Home') { e.preventDefault(); setHighlight(0); }
+      else if (e.key === 'End') { e.preventDefault(); setHighlight(options.length - 1); }
+      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectByIndex(highlightIdx); }
+      else if (e.key === 'Escape') { e.preventDefault(); close(); trigger!.focus(); }
+    });
+
+    options.forEach((opt, i) => {
+      opt.addEventListener('pointerenter', () => setHighlight(i));
+      opt.addEventListener('click', (e) => {
+        e.preventDefault();
+        selectByIndex(i);
+      });
+    });
+
+    return {
+      setValue(value: string): void {
+        const idx = options.findIndex((o) => o.dataset.value === value);
+        if (idx < 0) return;
+        const opt = options[idx];
+        for (const o of options) o.setAttribute('aria-selected', o === opt ? 'true' : 'false');
+        setHighlight(idx);
+      },
+      close,
+    };
   }
 
   function initTalents(): void {
@@ -419,13 +945,17 @@ const t = useTranslations(lang);
     const empty = document.querySelector<HTMLElement>('[data-talents-empty]');
     if (!controls || !grid || !empty) return;
 
+    const searchWrap = controls.querySelector<HTMLLabelElement>('[data-talents-search-wrap]');
     const search = controls.querySelector<HTMLInputElement>('[data-talents-search]');
     const clearBtn = controls.querySelector<HTMLButtonElement>('[data-talents-clear]');
-    const sort = controls.querySelector<HTMLSelectElement>('[data-talents-sort]');
+    const closeBtn = controls.querySelector<HTMLButtonElement>('[data-talents-search-close]');
+    const roleCombo = controls.querySelector<HTMLElement>('[data-talents-combo="role"]');
+    const sortCombo = controls.querySelector<HTMLElement>('[data-talents-combo="sort"]');
     const reset = empty.querySelector<HTMLButtonElement>('[data-talents-reset]');
-    if (!search || !clearBtn || !sort || !reset) return;
+    if (!searchWrap || !search || !clearBtn || !closeBtn || !roleCombo || !sortCombo || !reset) return;
 
     const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-talent-card]'));
+    let currentRole: RoleFilter = 'all';
 
     function applySort(mode: SortMode): void {
       const sorted = [...cards].sort((a, b) => {
@@ -443,7 +973,10 @@ const t = useTranslations(lang);
       let visible = 0;
       for (const card of cards) {
         const name = card.dataset.name ?? '';
-        const match = !norm || normalize(name).includes(norm);
+        const r = card.dataset.role ?? 'player';
+        const nameMatch = !norm || normalize(name).includes(norm);
+        const roleMatch = currentRole === 'all' || currentRole === r;
+        const match = nameMatch && roleMatch;
         card.hidden = !match;
         if (match) visible++;
       }
@@ -454,29 +987,80 @@ const t = useTranslations(lang);
       clearBtn!.hidden = search!.value.length === 0;
     }
 
+    function openSearch(): void {
+      searchWrap!.classList.remove('is-collapsing');
+      searchWrap!.classList.add('is-expanded');
+      requestAnimationFrame(() => search!.focus());
+    }
+
+    function closeSearch(): void {
+      if (!searchWrap!.classList.contains('is-expanded')) return;
+      search!.blur();
+      searchWrap!.classList.remove('is-expanded');
+      searchWrap!.classList.add('is-collapsing');
+      const onEnd = (e: AnimationEvent): void => {
+        if (e.target !== searchWrap) return;
+        searchWrap!.classList.remove('is-collapsing');
+        searchWrap!.removeEventListener('animationend', onEnd);
+      };
+      searchWrap!.addEventListener('animationend', onEnd);
+    }
+
     search.addEventListener('input', () => {
       syncClearBtn();
       applyFilter(search.value);
     });
 
-    clearBtn.addEventListener('click', () => {
+    clearBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       search.value = '';
       syncClearBtn();
       applyFilter('');
       search.focus();
     });
 
-    sort.addEventListener('change', () => {
-      const mode = sort.value as SortMode;
-      applySort(mode === 'az' || mode === 'za' ? mode : 'default');
+    /* Mobile: tapping the collapsed search wrapper expands it */
+    searchWrap.addEventListener('click', (e) => {
+      if (!isMobile()) return;
+      if (searchWrap.classList.contains('is-expanded')) return;
+      e.preventDefault();
+      openSearch();
+    });
+
+    closeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      search.value = '';
+      syncClearBtn();
+      applyFilter('');
+      closeSearch();
+    });
+
+    search.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && searchWrap.classList.contains('is-expanded')) {
+        e.preventDefault();
+        closeSearch();
+      }
+    });
+
+    const roleCtl = initCombo(roleCombo, (value) => {
+      currentRole = value === 'player' || value === 'coach' ? value : 'all';
+      applyFilter(search.value);
+    });
+
+    const sortCtl = initCombo(sortCombo, (value) => {
+      applySort(value === 'az' || value === 'za' ? value : 'default');
     });
 
     reset.addEventListener('click', () => {
       search.value = '';
-      sort.value = 'default';
+      currentRole = 'all';
+      roleCtl?.setValue('all');
+      sortCtl?.setValue('default');
       syncClearBtn();
       applyFilter('');
       applySort('default');
+      closeSearch();
       search.focus();
     });
 

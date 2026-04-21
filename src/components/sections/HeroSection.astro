@@ -184,11 +184,11 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
     width: 1px;
     height: 60%;
     background: var(--color-ph-gold, #d6b25e);
-    animation: heroScrollCue 2.4s cubic-bezier(.7,0,.2,1) infinite;
+    animation: heroScrollCue 2.4s linear infinite;
   }
   @keyframes heroScrollCue {
     0% { transform: translateY(0); }
-    100% { transform: translateY(260%); }
+    100% { transform: translateY(400%); }
   }
   @media (prefers-reduced-motion: reduce) {
     .hero-scroll__line::after { animation: none; }
@@ -200,7 +200,10 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
   }
 
   @media (max-width: 720px) {
-    .hero-content { bottom: clamp(96px, 18vh, 160px); }
+    .hero-content {
+      bottom: clamp(24px, 4vw, 48px);
+      right: 64px;
+    }
   }
 
   .hero-claim__lead,
@@ -254,7 +257,6 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
     const lead = hero.querySelector<HTMLElement>('.hero-claim__lead');
     const accent = hero.querySelector<HTMLElement>('.hero-claim__accent');
     const claim = hero.querySelector<HTMLElement>('.hero-claim');
-    const scroll = hero.querySelector<HTMLElement>('.hero-scroll');
 
     // Reveal now so GSAP controls the first visible frame.
     if (lead) lead.style.visibility = 'visible';
@@ -279,9 +281,6 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
         stagger: 0.08,
         delay: 0.4,
       });
-    }
-    if (scroll) {
-      gsap.from(scroll, { opacity: 0, y: 12, duration: 0.8, ease: 'power2.out', delay: 0.9 });
     }
     if (claim) {
       ScrollTrigger.create({

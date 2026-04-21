@@ -137,7 +137,7 @@ const isActive = (href: string): boolean => {
     width: calc(100% - 2 * var(--ph-section-px));
     margin-inline: auto;
     margin-top: 0.875rem;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     transition:
       transform var(--ph-duration) var(--ease-ph),
       background-color var(--ph-duration) var(--ease-ph),
@@ -1021,6 +1021,13 @@ const isActive = (href: string): boolean => {
 
   document.addEventListener('pointerup', onMobileMenuPointerUp);
   document.addEventListener('click', onMobileMenuClick);
+
+  document.addEventListener('click', (e) => {
+    const target = e.target as Element | null;
+    if (target?.closest('a.header-logo')) {
+      try { sessionStorage.setItem('ph-logo-reveal-request', '1'); } catch {}
+    }
+  });
 
   document.addEventListener('astro:page-load', () => finalizeMobileMenuClose());
 

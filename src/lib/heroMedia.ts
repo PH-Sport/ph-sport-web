@@ -1,13 +1,20 @@
 /**
  * Hero (home): vídeo a pantalla completa con autoplay (muted + loop + playsInline).
  *
- * Vídeo: `public/video-ph-web.mp4`. Opcional: añadir `hero.webm` y más entradas en el array.
- *
- * Opcional: `HERO_VIDEO_POSTER` — ruta a JPG/WebP bajo `public/` para el frame antes de cargar.
+ * Variantes generadas con `scripts/build-hero-variants.mjs`. Mobile primero (con media
+ * query) para que el navegador elija el archivo ligero en pantallas <=768px.
  */
-export const HERO_VIDEO_SOURCES = [{ src: '/video-ph-web.mp4', type: 'video/mp4' }] as const;
+export type HeroVideoSource = {
+  src: string;
+  type: string;
+  media?: string;
+};
 
-/** Vacío = sin atributo poster (evita 404 si no hay imagen). */
-export const HERO_VIDEO_POSTER = '';
+export const HERO_VIDEO_SOURCES: readonly HeroVideoSource[] = [
+  { src: '/video-ph-web-480.mp4', type: 'video/mp4', media: '(max-width: 768px)' },
+  { src: '/video-ph-web-720.mp4', type: 'video/mp4' },
+] as const;
+
+export const HERO_VIDEO_POSTER = '/hero-poster.webp';
 
 export const HERO_STATIC_IMAGE = '';

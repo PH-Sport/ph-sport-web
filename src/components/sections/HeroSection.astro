@@ -22,9 +22,9 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
     {staticBackdrop && (
       <img class="hero-static-image" src={staticBackdrop} alt="" width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async" />
     )}
-    <video class="hero-video" data-hero-video muted loop playsinline autoplay preload="auto" poster={videoPoster}>
+    <video class="hero-video" data-hero-video muted loop playsinline autoplay preload="metadata" poster={videoPoster}>
       {HERO_VIDEO_SOURCES.map((s) => (
-        <source src={s.src} type={s.type} />
+        <source src={s.src} type={s.type} media={s.media} />
       ))}
     </video>
   </div>
@@ -203,6 +203,15 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
     .hero-content {
       bottom: clamp(24px, 4vw, 48px);
       right: 64px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-content {
+      bottom: clamp(40px, 5vw, 72px);
+    }
+    .hero-claim {
+      font-size: clamp(56px, 6.2vw, 96px);
     }
   }
 

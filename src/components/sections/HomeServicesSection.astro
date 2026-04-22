@@ -1,5 +1,4 @@
 ---
-import { getServicesItems } from '@/lib/servicesItems';
 import { useTranslations, type Lang } from '@/i18n/utils';
 
 interface Props {
@@ -9,7 +8,72 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const items = getServicesItems(lang);
+const areas = [
+  {
+    title: t('home.services.area.management.title'),
+    body: t('home.services.area.management.body'),
+  },
+  {
+    title: t('home.services.area.career.title'),
+    body: t('home.services.area.career.body'),
+  },
+  {
+    title: t('home.services.area.international.title'),
+    body: t('home.services.area.international.body'),
+  },
+  {
+    title: t('home.services.area.comms.title'),
+    body: t('home.services.area.comms.body'),
+  },
+  {
+    title: t('home.services.area.legal.title'),
+    body: t('home.services.area.legal.body'),
+  },
+];
+
+const actionPlanSub = [
+  {
+    title: t('home.services.actionPlan.press.title'),
+    bullets: [
+      t('home.services.actionPlan.press.b1'),
+      t('home.services.actionPlan.press.b2'),
+      t('home.services.actionPlan.press.b3'),
+    ],
+  },
+  {
+    title: t('home.services.actionPlan.media.title'),
+    bullets: [
+      t('home.services.actionPlan.media.b1'),
+      t('home.services.actionPlan.media.b2'),
+      t('home.services.actionPlan.media.b3'),
+    ],
+  },
+  {
+    title: t('home.services.actionPlan.psych.title'),
+    bullets: [
+      t('home.services.actionPlan.psych.b1'),
+      t('home.services.actionPlan.psych.b2'),
+      t('home.services.actionPlan.psych.b3'),
+    ],
+  },
+  {
+    title: t('home.services.actionPlan.performance.title'),
+    bullets: [
+      t('home.services.actionPlan.performance.b1'),
+      t('home.services.actionPlan.performance.b2'),
+      t('home.services.actionPlan.performance.b3'),
+    ],
+  },
+  {
+    title: t('home.services.actionPlan.familyOffice.title'),
+    bullets: [
+      t('home.services.actionPlan.familyOffice.b1'),
+      t('home.services.actionPlan.familyOffice.b2'),
+      t('home.services.actionPlan.familyOffice.b3'),
+    ],
+  },
+];
+
 const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
 ---
 
@@ -23,7 +87,7 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
   </header>
 
   <ol class="home-services__list" role="list">
-    {items.map((item, idx) => (
+    {areas.map((item, idx) => (
       <li class="home-services__item">
         <details class="home-services__row" name="home-services">
           <summary class="home-services__summary">
@@ -41,6 +105,37 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
         </details>
       </li>
     ))}
+
+    <li class="home-services__item home-services__item--featured">
+      <details class="home-services__row home-services__row--plan" name="home-services">
+        <summary class="home-services__summary">
+          <span class="home-services__num home-services__num--rombo" aria-hidden="true"></span>
+          <span class="home-services__plan-stack">
+            <span class="home-services__plan-eyebrow">{t('home.services.actionPlan.eyebrow')}</span>
+            <span class="home-services__name">{t('home.services.actionPlan.title')}</span>
+          </span>
+          <span class="home-services__plus" aria-hidden="true">
+            <span></span><span></span>
+          </span>
+        </summary>
+        <div class="home-services__body">
+          <div class="home-services__body-inner home-services__body-inner--plan">
+            <ul class="home-services__plan-grid" role="list">
+              {actionPlanSub.map((card) => (
+                <li class="home-services__plan-card">
+                  <h3 class="home-services__plan-card-title">{card.title}</h3>
+                  <ul class="home-services__plan-card-bullets" role="list">
+                    {card.bullets.map((b) => (
+                      <li>{b}</li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </details>
+    </li>
   </ol>
 
   <div class="home-services__cta-wrap">
@@ -103,13 +198,63 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
 
   .home-services__item { border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12)); }
 
+  /* Plan de Acción como anexo: alineado con los 01-05 pero sin número de
+     secuencia. Un rombo dorado y la micro-eyebrow ("Además de") le dan
+     carácter sin convertirlo en el sexto ítem de la lista. */
+  .home-services__item--featured {
+    margin-top: clamp(12px, 2vw, 24px);
+    border-bottom: none;
+  }
+  /* Rombo hueco dorado como marcador del anexo. La columna del grid en
+     .home-services__summary es fija (20px) para todas las filas, así que el
+     slot tiene el mismo ancho que "01..05" y los títulos alinean. */
+  .home-services__num--rombo {
+    position: relative;
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    font-size: 0;
+  }
+  .home-services__num--rombo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--color-ph-gold, #d6b25e);
+    box-sizing: border-box;
+    transform: rotate(45deg);
+  }
+  .home-services__plan-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+  .home-services__plan-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ph-gold, #d6b25e);
+    white-space: nowrap;
+  }
+  .home-services__plan-eyebrow::before {
+    content: "";
+    width: 20px;
+    height: 1px;
+    background: var(--color-ph-gold, #d6b25e);
+    flex-shrink: 0;
+  }
+
   .home-services__row { width: 100%; }
   .home-services__row > summary { list-style: none; cursor: pointer; }
   .home-services__row > summary::-webkit-details-marker { display: none; }
 
   .home-services__summary {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 20px 1fr auto;
     align-items: center;
     gap: clamp(16px, 2.5vw, 32px);
     padding: clamp(20px, 3vw, 32px) 0;
@@ -187,6 +332,74 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
     line-height: 1.6;
   }
 
+  /* Plan de Acción: el body se extiende a todo el ancho para albergar el grid. */
+  .home-services__body-inner--plan {
+    max-width: none;
+  }
+
+  .home-services__plan-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  @media (min-width: 640px) {
+    .home-services__plan-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+  }
+  @media (min-width: 960px) {
+    .home-services__plan-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+  }
+
+  .home-services__plan-card {
+    padding: 18px 18px 16px;
+    border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    border-radius: var(--radius-sm);
+    background: rgba(13, 15, 18, 0.4);
+  }
+
+  .home-services__plan-card-title {
+    margin: 0 0 10px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ph-gold, #d6b25e);
+  }
+
+  .home-services__plan-card-bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .home-services__plan-card-bullets li {
+    position: relative;
+    padding-left: 14px;
+    color: var(--color-ph-ink-soft, #b5b7bb);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .home-services__plan-card-bullets li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 6px;
+    height: 1px;
+    background: var(--color-ph-gold, #d6b25e);
+  }
+
   .home-services__cta-wrap {
     margin-top: clamp(32px, 5vw, 56px);
     display: flex;
@@ -214,6 +427,8 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
   @media (max-width: 720px) {
     .home-services__summary { gap: 14px; }
     .home-services__name { font-size: 20px; }
+    .home-services__plan-card { padding: 16px 16px 14px; }
+    .home-services__plan-card-bullets li { font-size: 13.5px; }
   }
 </style>
 

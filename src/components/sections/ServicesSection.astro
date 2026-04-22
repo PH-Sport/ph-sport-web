@@ -73,6 +73,19 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
 ---
 
 <section class="srv" aria-labelledby="srv-hero-title">
+  <div class="srv-hero-bg" aria-hidden="true">
+    <img
+      src="/services-hero.webp"
+      srcset="/services-hero-sm.webp 960w, /services-hero.webp 1920w"
+      sizes="(max-width: 900px) 100vw, 70vw"
+      alt=""
+      width="1920"
+      height="1080"
+      loading="eager"
+      decoding="async"
+    />
+  </div>
+
   {/* 01 — Hero */}
   <div class="srv-hero">
     <div class="srv-hero__eyebrow">
@@ -163,7 +176,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
   {/* 04 — Six pillar blocks */}
   <div class="srv-pillars">
     {items.map((item, idx) => {
-      const roman = ['I', 'II', 'III', 'IV', 'V', 'VI'][idx];
+      const roman = ['I', 'II', 'III', 'IV', 'V'][idx];
       const even = idx % 2 === 1;
       return (
         <article class:list={['srv-block', { 'srv-block--even': even }]}>
@@ -178,7 +191,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
             </div>
           </div>
           <div class="srv-block__img" aria-hidden="true">
-            <span class="srv-block__imgTag srv-mono">{roman} / VI</span>
+            <span class="srv-block__imgTag srv-mono">{roman} / V</span>
           </div>
         </article>
       );
@@ -231,10 +244,42 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     --srv-mono: var(--font-mono, 'JetBrains Mono', ui-monospace, monospace);
     --srv-sans: var(--font-body, 'Helvetica Neue', Helvetica, Arial, sans-serif);
 
+    position: relative;
     background: var(--srv-bg);
     color: var(--srv-ink);
     font-family: var(--srv-sans);
   }
+
+  /* Hero background image (patrón compartido con Talents): desktop = 70vw a la
+     derecha, fundido a la izquierda; mobile = bloque 16/9 full-bleed sobre el hero. */
+  .srv-hero-bg {
+    position: absolute;
+    top: clamp(140px, calc(8vw + 40px), 220px);
+    right: 0;
+    width: 70vw;
+    height: clamp(520px, 80vh, 860px);
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .srv-hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: right top;
+    -webkit-mask-image: var(--ph-hero-img-fade-desktop-h), var(--ph-hero-img-fade-desktop-v);
+    mask-image: var(--ph-hero-img-fade-desktop-h), var(--ph-hero-img-fade-desktop-v);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  /* Texto sobre la imagen: z-index > 0 para flotar sobre el fade. */
+  .srv-hero,
+  .srv-areas,
+  .srv-model,
+  .srv-pillars,
+  .srv-manifest,
+  .srv-cta { position: relative; z-index: 1; }
 
   .srv-mono {
     font-family: var(--srv-mono);
@@ -247,8 +292,9 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
   .srv-rule { border: 0; border-top: 1px solid var(--srv-line); margin: 0; }
 
   /* ── 01 Hero ──────────────────────────────────────────── */
+  /* padding-top replica el patrón Talents: clamp(96px, 14vw, 180px) de hero + 93px del header-pill ahora que la página usa hasHero. */
   .srv-hero {
-    padding: clamp(96px, 14vw, 180px) var(--srv-edge) clamp(40px, 6vw, 72px);
+    padding: clamp(189px, calc(14vw + 93px), 273px) var(--srv-edge) clamp(40px, 6vw, 72px);
   }
   .srv-hero__eyebrow {
     display: flex; align-items: center; gap: 10px;
@@ -306,6 +352,30 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
 
   @media (max-width: 900px) {
     .srv-hero__grid { grid-template-columns: 1fr; gap: 32px; }
+
+    /* Mobile: hero-bg full-bleed 16/9 sobre el hero (patrón compartido). */
+    .srv-hero-bg {
+      position: relative;
+      top: auto;
+      right: auto;
+      width: calc(100% + 2 * var(--srv-edge));
+      height: auto;
+      aspect-ratio: var(--ph-hero-img-aspect);
+      margin: var(--ph-hero-img-gap-top)
+              calc(-1 * var(--srv-edge))
+              var(--ph-hero-img-gap-bottom);
+    }
+    .srv-hero-bg img {
+      object-position: center center;
+      -webkit-mask-image: var(--ph-hero-img-fade-mobile);
+      mask-image: var(--ph-hero-img-fade-mobile);
+      -webkit-mask-composite: source-over;
+      mask-composite: add;
+    }
+    /* Reducir padding-top del hero cuando la imagen ya aporta el aire superior. */
+    .srv-hero {
+      padding-top: 0;
+    }
   }
 
   /* ── 02 Áreas accordion ──────────────────────────────── */

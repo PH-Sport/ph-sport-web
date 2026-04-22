@@ -42,7 +42,43 @@ const en: Record<TranslationKey, string> = {
   // --- Home: Services (accordion) ---
   'home.services.eyebrow': '03 · Services',
   'home.services.title': 'Representation with purpose.',
-  'home.services.lead': 'Six pillars behind every player\u2019s career. Explore each area.',
+  'home.services.lead': 'Five management areas and an integrated action plan supporting the player\u2019s career.',
+
+  // Accordion areas (short hints, not full descriptions)
+  'home.services.area.management.title': 'Representation & intermediation',
+  'home.services.area.management.body': 'We negotiate and protect every term of the player\u2013club relationship.',
+  'home.services.area.career.title': 'Career planning',
+  'home.services.area.career.body': 'Context and sporting momentum to shape a coherent, ambitious trajectory.',
+  'home.services.area.international.title': 'International access',
+  'home.services.area.international.body': 'An active network in 12 countries with offices in six key markets.',
+  'home.services.area.comms.title': 'Communication & marketing',
+  'home.services.area.comms.body': 'The player\u2019s personal brand on and off the pitch, built with an editorial approach.',
+  'home.services.area.legal.title': 'Legal & financial advisory',
+  'home.services.area.legal.body': 'Contracts, image, taxation and wealth \u2014 one dedicated structure.',
+
+  // Action plan (featured row + sub-areas grid on expand)
+  'home.services.actionPlan.eyebrow': 'In addition',
+  'home.services.actionPlan.title': 'Action plan',
+  'home.services.actionPlan.press.title': 'Press',
+  'home.services.actionPlan.press.b1': 'Image and reputation management',
+  'home.services.actionPlan.press.b2': 'Media relations',
+  'home.services.actionPlan.press.b3': 'Player positioning',
+  'home.services.actionPlan.media.title': 'Media',
+  'home.services.actionPlan.media.b1': 'Digital communication strategy',
+  'home.services.actionPlan.media.b2': 'Content creation',
+  'home.services.actionPlan.media.b3': 'Social media management',
+  'home.services.actionPlan.psych.title': 'Psychology',
+  'home.services.actionPlan.psych.b1': 'High-performance mental preparation',
+  'home.services.actionPlan.psych.b2': 'Pressure and habits management',
+  'home.services.actionPlan.psych.b3': 'Competitive support',
+  'home.services.actionPlan.performance.title': 'Performance',
+  'home.services.actionPlan.performance.b1': 'Physical and performance analysis',
+  'home.services.actionPlan.performance.b2': 'Continuous monitoring',
+  'home.services.actionPlan.performance.b3': 'Performance optimization',
+  'home.services.actionPlan.familyOffice.title': 'Family Office',
+  'home.services.actionPlan.familyOffice.b1': 'Wealth management',
+  'home.services.actionPlan.familyOffice.b2': 'Financial and tax planning',
+  'home.services.actionPlan.familyOffice.b3': 'Player\u2019s administrative structure',
   'home.services.cta': 'Services',
 
   // --- Home: About (editorial block) ---
@@ -74,7 +110,6 @@ const en: Record<TranslationKey, string> = {
   'players.title': 'Talent we represent',
   'players.subtitle':
     'Elite players and coaches united by the same professional vision.',
-  'players.club.none': 'No club',
   'players.back': 'Back to talents',
   'players.empty': 'No players available.',
   'players.detail.bioEmpty': 'More about this profile coming soon.',

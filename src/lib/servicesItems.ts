@@ -60,14 +60,5 @@ export function getServicesItems(lang: Lang): ServiceItem[] {
         t('services.items.psychology.tag3'),
       ],
     },
-    {
-      title: t('services.items.actionPlan.title'),
-      body: t('services.items.actionPlan.body'),
-      tags: [
-        t('services.items.actionPlan.tag1'),
-        t('services.items.actionPlan.tag2'),
-        t('services.items.actionPlan.tag3'),
-      ],
-    },
   ];
 }

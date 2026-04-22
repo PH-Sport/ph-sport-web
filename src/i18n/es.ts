@@ -40,8 +40,44 @@ const es = {
   // --- Home: Servicios (acordeón) ---
   'home.services.eyebrow': '03 · Servicios',
   'home.services.title': 'Representamos con propósito.',
-  'home.services.lead': 'Seis pilares que sostienen la carrera del jugador. Explora cada área.',
+  'home.services.lead': 'Cinco áreas de gestión y un plan integral que sostienen la carrera del jugador.',
   'home.services.cta': 'Servicios',
+
+  // Áreas del acordeón (hints cortos, no descripción completa)
+  'home.services.area.management.title': 'Representación e intermediación',
+  'home.services.area.management.body': 'Negociamos y protegemos cada término de la relación entre jugador y club.',
+  'home.services.area.career.title': 'Planificación de carrera',
+  'home.services.area.career.body': 'Contexto y momento deportivo para trazar una trayectoria coherente y ambiciosa.',
+  'home.services.area.international.title': 'Acceso internacional',
+  'home.services.area.international.body': 'Red activa en 12 países y oficinas propias en seis mercados clave.',
+  'home.services.area.comms.title': 'Comunicación y marketing',
+  'home.services.area.comms.body': 'Marca personal del jugador dentro y fuera del campo, con enfoque editorial.',
+  'home.services.area.legal.title': 'Asesoramiento legal y financiero',
+  'home.services.area.legal.body': 'Contratos, imagen, fiscalidad y patrimonio con una estructura dedicada.',
+
+  // Plan de Acción (fila destacada + grid de sub-áreas al desplegar)
+  'home.services.actionPlan.eyebrow': 'Además de',
+  'home.services.actionPlan.title': 'Plan de Acción',
+  'home.services.actionPlan.press.title': 'Prensa',
+  'home.services.actionPlan.press.b1': 'Gestión de imagen y reputación',
+  'home.services.actionPlan.press.b2': 'Relación con medios',
+  'home.services.actionPlan.press.b3': 'Posicionamiento del jugador',
+  'home.services.actionPlan.media.title': 'Media',
+  'home.services.actionPlan.media.b1': 'Estrategia de comunicación digital',
+  'home.services.actionPlan.media.b2': 'Creación de contenido',
+  'home.services.actionPlan.media.b3': 'Gestión de redes sociales',
+  'home.services.actionPlan.psych.title': 'Psicólogo',
+  'home.services.actionPlan.psych.b1': 'Preparación mental de alto rendimiento',
+  'home.services.actionPlan.psych.b2': 'Gestión de presión y hábitos',
+  'home.services.actionPlan.psych.b3': 'Acompañamiento competitivo',
+  'home.services.actionPlan.performance.title': 'Rendimiento',
+  'home.services.actionPlan.performance.b1': 'Análisis físico y performance',
+  'home.services.actionPlan.performance.b2': 'Seguimiento continuo',
+  'home.services.actionPlan.performance.b3': 'Optimización del rendimiento',
+  'home.services.actionPlan.familyOffice.title': 'Family Office',
+  'home.services.actionPlan.familyOffice.b1': 'Gestión patrimonial',
+  'home.services.actionPlan.familyOffice.b2': 'Planificación financiera y fiscal',
+  'home.services.actionPlan.familyOffice.b3': 'Estructura administrativa del jugador',
 
   // --- Home: Sobre nosotros (bloque editorial) ---
   'home.about.eyebrow': '04 · Sobre PHSPORT',
@@ -72,7 +108,6 @@ const es = {
   'players.title': 'Talento que representamos',
   'players.subtitle':
     'Jugadores y entrenadores de élite, unidos por una misma visión profesional.',
-  'players.club.none': 'Sin club',
   'players.back': 'Volver a talentos',
   'players.empty': 'No hay jugadores disponibles.',
   'players.detail.bioEmpty': 'Próximamente más información sobre este perfil.',

@@ -5,13 +5,19 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 
+/**
+ * Persistente durante la vida del documento (sobrevive re-mounts por View
+ * Transitions, se resetea solo en F5/cold load). Usado para distinguir la
+ * primera hidratación (cold load entry) de los re-mounts por SPA navigation.
+ */
+let hasMountedThisDoc = false;
+
 const LOGO_VIEWBOX = '0 0 259.8 206.1';
 const POLYGON_1_POINTS =
   '0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7';
 const POLYGON_2_POINTS =
   '122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9';
 
-const SESSION_KEY = 'ph-logo-revealed';
 const REVEAL_REQUEST_KEY = 'ph-logo-reveal-request';
 
 /** Oculta chrome (header) mientras el overlay está activo: el island vive en main (z-index bajo) y el header fijo quedaría encima del overlay.
@@ -88,6 +94,9 @@ export default function LogoReveal() {
   const line2Ref = useRef<SVGPolygonElement>(null);
 
   useEffect(() => {
+    const isFirstMount = !hasMountedThisDoc;
+    hasMountedThisDoc = true;
+
     let cancelled = false;
     let ctx: gsap.Context | null = null;
     let revealDispatched = false;
@@ -157,7 +166,15 @@ export default function LogoReveal() {
       const hasRequest = sessionStorage.getItem(REVEAL_REQUEST_KEY) === '1';
       if (hasRequest) sessionStorage.removeItem(REVEAL_REQUEST_KEY);
 
-      if (!hasRequest && sessionStorage.getItem(SESSION_KEY)) {
+      // Reveal en 3 escenarios:
+      // 1. Primera entrada a home en este documento (cold load desde búsqueda/enlace,
+      //    o SPA-nav a home si entró por otra ruta). Detectado por isFirstMount.
+      // 2. Click en logo del navbar → REVEAL_REQUEST_KEY (sigue funcionando igual).
+      // 3. F5 desde home → cold load con isReload=true; isFirstMount también true.
+      // Cualquier re-mount por SPA navigation queda fuera (isFirstMount=false).
+      const shouldReveal = hasRequest || isFirstMount;
+
+      if (!shouldReveal) {
         dismissOverlay(overlay);
         return;
       }
@@ -191,7 +208,6 @@ export default function LogoReveal() {
         const tl = gsap.timeline({
           onComplete: () => {
             overlay.style.display = 'none';
-            sessionStorage.setItem(SESSION_KEY, '1');
             dispatchRevealOnce();
             revealHeaderAfterIntro();
           },

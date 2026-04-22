@@ -6,6 +6,10 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: process.env.SITE_URL ?? 'https://example.com',
   integrations: [react(), sitemap()],
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'hover',
+  },
   i18n: {
     defaultLocale: 'es',
     locales: ['es', 'en'],

@@ -56,5 +56,15 @@ Desktop.ini
 logo-reveal-test.png
 .worktrees/
 
+# Capturas y artefactos de debugging en la raíz (no en subdirectorios)
+/*.png
+/*.jpeg
+/*.jpg
+
+# Configs de herramientas locales (sesiones, referencias de diseño, plugins)
+.claude/
+.design-ref/
+.impeccable.md
+
 # Superpowers brainstorming companion sessions
 .superpowers/

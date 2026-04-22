@@ -168,7 +168,7 @@ const es = {
   // Presencia
   'about.presencia.eyebrow': '05 · Presencia',
   'about.presencia.madridLabel': 'SEDE CENTRAL · ES',
-  'about.presencia.internationalLabel': 'PRESENCIA INTERNACIONAL',
+  'about.presencia.internationalLabel': 'PRESENCIA INTERNACIONAL CON SEDE EN:',
   'about.presencia.madridTitle': 'Madrid.',
   'about.presencia.country.portugal': 'Portugal',
   'about.presencia.country.uk': 'Reino Unido',

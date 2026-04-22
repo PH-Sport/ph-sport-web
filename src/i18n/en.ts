@@ -170,7 +170,7 @@ const en: Record<TranslationKey, string> = {
   // Presencia
   'about.presencia.eyebrow': '05 · Presence',
   'about.presencia.madridLabel': 'HEADQUARTERS · ES',
-  'about.presencia.internationalLabel': 'INTERNATIONAL PRESENCE',
+  'about.presencia.internationalLabel': 'INTERNATIONAL PRESENCE WITH OFFICES IN:',
   'about.presencia.madridTitle': 'Madrid.',
   'about.presencia.country.portugal': 'Portugal',
   'about.presencia.country.uk': 'United Kingdom',

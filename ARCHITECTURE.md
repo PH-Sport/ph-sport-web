@@ -1,88 +1,8 @@
-# PH Sport - Architecture
-
-Documento vivo de arquitectura y estado real del proyecto.
-
-- Ultima revision: 2026-03-16
-- Estado: activo
-
-## Stack actual
-
-- Framework: Astro 5.x (SSG + Islands)
-- Estilos: Tailwind CSS 4.x + `src/styles/global.css`
-- Animaciones: GSAP (en Islands y scripts de seccion)
-- i18n: ES por defecto + EN con prefijo `/en`
-- Contenido: Astro Content Collections (`src/content/config.ts`)
-- Render de islands TSX: `@astrojs/react`
-
-## Estructura actual (resumen)
-
-```text
-ph-sport-web/
-├── public/
-│   ├── logo.svg
-│   ├── logo-ph-3d.png
-│   ├── favicon.svg
-│   └── icons/
-├── src/
-│   ├── components/
-│   │   ├── islands/LogoReveal.tsx
-│   │   ├── layout/{BaseLayout,Header,Footer}.astro
-│   │   ├── sections/{HeroSection,PlayersGrid,AboutSection}.astro
-│   │   └── ui/{Button,PortraitCard}.astro
-│   ├── content/
-│   │   ├── config.ts
-│   │   └── players/*.md
-│   ├── i18n/{es,en,utils}.ts
-│   ├── pages/
-│   │   ├── index.astro
-│   │   ├── jugadores/{index,[slug]}.astro
-│   │   ├── sobre-nosotros.astro
-│   │   └── en/{index,about,players/{index,[slug]}}.astro
-│   ├── scripts/ph-text-animations.ts
-│   └── styles/global.css
-├── ARCHITECTURE.md
-├── DECISIONS.md
-└── README.md
-```
-
-## Home y roadmap inmediato
-
-- Implementado ahora:
-  - Home con Hero + Logo Reveal
-  - Sin grid completa de jugadores en la home
-- Siguiente fase acordada:
-  - Mantener Hero principal
-  - Anadir bloque de jugadores destacados debajo del Hero (no la grid completa)
-
-## Convenciones clave
-
-- i18n:
-  - ES sin prefijo (`/`)
-  - EN con prefijo (`/en`)
-- Slugs de jugadores:
-  - Se generan desde el archivo Markdown de la coleccion
-  - Para rutas dinamicas se usa `entry.id.replace(/\.md$/, '')`
-- Animacion de entrada:
-  - `LogoReveal.tsx` usa `client:load` como excepcion justificada
-
-## Notas de seguridad/dependencias
-
-- Dependencias de produccion: sin vulnerabilidades reportadas por `npm audit --omit=dev`
-- Persisten avisos en tooling de desarrollo (`npm audit` completo)
-- Se aplican overrides para dependencias transitivas:
-  - `devalue: 5.6.4`
-  - `svgo: 4.0.1`
-
-## Pendientes de arquitectura
-
-- Definir implementacion del bloque de destacados en home
-- Completar paginas de jugador `[slug]` (ahora son stub)
-- Revisar centralizacion de URL canonica por entorno (evitar hardcode duplicado)
 # PH Sport — Architecture Document
 
 > Documento de referencia para el proyecto. Leer antes de cualquier tarea estructural.
-> Última revisión: 2026-03-05
-> Secciones: Stack · Estructura · Content Collections · i18n · **Hero (Logo Reveal)** · Performance · SEO · Sistema de diseño · Decisiones
+> Última revisión: 2026-04-23
+> Secciones: Stack · Estructura · Content Collections · i18n · Hero · Motion · Performance · SEO · Sistema de diseño · Estado del proyecto
 
 ---
 
@@ -92,7 +12,7 @@ ph-sport-web/
 |---|---|---|
 | Framework | Astro (SSG + Islands) | 5.x |
 | Estilos | Tailwind CSS | 4.x |
-| Animaciones | GSAP (solo islands) | 3.x |
+| Animaciones | GSAP (island + scripts de sección) | 3.x |
 | Internacionalización | Astro i18n nativo | — |
 | Contenido | Astro Content Collections + Zod | — |
 | Imágenes | astro:assets | — |
@@ -105,72 +25,104 @@ ph-sport-web/
 ## Estructura de carpetas
 
 ```
-ph-sport/
+ph-sport-web/
 ├── public/
-│   ├── fonts/                  # Fuentes servidas localmente
-│   ├── hero-poster.webp        # Imagen estática del hero (LCP real)
-│   └── hero.mp4                # Vídeo de fondo (carga diferida)
+│   ├── fonts/                       # Söhne (4 pesos) — self-hosted
+│   ├── icons/
+│   ├── national-team-badges/        # Escudos de selecciones nacionales
+│   ├── about-equipo.webp / *-sm.webp
+│   ├── favicon.svg
+│   ├── hero-poster.webp             # Poster estático del vídeo hero (LCP real)
+│   ├── logo-ph-3d.webp / *-sm.webp
+│   ├── logo.svg
+│   ├── services-hero.webp / *-sm.webp
+│   ├── talents-hero.webp / *-sm.webp
+│   └── video-ph-web.mp4 / *-720.mp4 / *-480.mp4   # 3 variantes de calidad
 │
 ├── src/
+│   ├── assets/images/players/       # Fotos de jugadores (procesadas por astro:assets)
+│   │
 │   ├── components/
+│   │   ├── islands/
+│   │   │   └── LogoReveal.tsx       # Única island GSAP — client:load justificado
 │   │   ├── layout/
-│   │   │   ├── BaseLayout.astro       # Layout raíz: meta, fuentes, global CSS
-│   │   │   ├── Header.astro           # Navegación + selector de idioma
-│   │   │   └── Footer.astro
+│   │   │   ├── BaseLayout.astro     # Layout raíz: meta, fuentes, global CSS
+│   │   │   ├── Header.astro         # Flotante, scroll-hide, selector de idioma
+│   │   │   └── Footer.astro         # V3 editorial, social links
+│   │   ├── players/
+│   │   │   └── PlayerDetailView.astro   # Vista de detalle de jugador
 │   │   ├── sections/
-│   │   │   ├── HeroSection.astro      # Hero con vídeo/poster
-│   │   │   ├── PlayersGrid.astro      # Grid de cards de jugadores
-│   │   │   └── AboutSection.astro     # Storytelling de la agencia
-│   │   ├── ui/
-│   │   │   ├── PortraitCard.astro   # Card retrato (jugadores + equipo)
-│   │   │   ├── Button.astro           # Botón reutilizable
-│   │   │   └── ...                    # UI atoms adicionales si se necesitan
-│   │   └── islands/
-│   │       └── HeroAnimation.tsx      # GSAP — client:visible únicamente
+│   │   │   ├── HeroSection.astro        # Vídeo + poster, GSAP curtain reveal
+│   │   │   ├── HomePlayersSection.astro
+│   │   │   ├── HomeServicesSection.astro   # CSS accordion + GSAP
+│   │   │   ├── HomeAboutSection.astro
+│   │   │   ├── HomeContactSection.astro    # Layout 50/50 edge-to-edge
+│   │   │   ├── AboutSection.astro          # V3 — absorbe /equipo
+│   │   │   ├── ServicesSection.astro       # 6 pilares
+│   │   │   └── TalentsSection.astro
+│   │   └── ui/
+│   │       ├── Button.astro
+│   │       ├── FooterSocialIcon.astro
+│   │       ├── LanguageSwitcher.astro
+│   │       ├── PortraitCard.astro          # Con badges de selecciones nacionales
+│   │       └── SectionHeader.astro
 │   │
 │   ├── content/
-│   │   ├── config.ts                  # Schemas Zod de todas las collections
-│   │   └── players/
-│   │       ├── carlos-garcia.md       # Un archivo por jugador
-│   │       └── ...                    # ~60 archivos totales
+│   │   ├── config.ts                # Schemas Zod
+│   │   └── players/*.md             # Un archivo por jugador
 │   │
 │   ├── i18n/
-│   │   ├── es.ts                      # Todas las cadenas en español
-│   │   ├── en.ts                      # Todas las cadenas en inglés
-│   │   └── utils.ts                   # Helper: useTranslations(lang)
+│   │   ├── es.ts
+│   │   ├── en.ts
+│   │   └── utils.ts                 # useTranslations, getLangFromUrl, getAlternateLangUrl
+│   │
+│   ├── lib/                         # Helpers y datos de dominio
+│   │   ├── constants.ts             # SITE_URL y constantes globales
+│   │   ├── countryLabels.ts         # Etiquetas de selecciones nacionales
+│   │   ├── heroMedia.ts             # Fuente de verdad del vídeo hero (variantes mp4)
+│   │   ├── is-document-reload.ts    # Detección de F5 para re-trigger de LogoReveal
+│   │   ├── nationalTeamBadge.ts     # Helper para badges de selecciones
+│   │   ├── navigation.ts            # Items de navegación
+│   │   ├── playerDetail.ts          # Payloads de jugadores para vistas de detalle
+│   │   ├── playerPhotos.ts          # Mapeo de fotos de jugadores
+│   │   ├── servicesItems.ts         # Datos de los 6 pilares de servicios
+│   │   ├── slugify.ts
+│   │   ├── social.ts                # Links de redes sociales
+│   │   ├── sortRoster.ts            # Ordenación del roster
+│   │   └── teamMembers.ts           # Datos de los 21 integrantes del equipo
 │   │
 │   ├── pages/
-│   │   ├── index.astro                # / → Inicio (ES, defecto)
+│   │   ├── index.astro              # / — Home ES
+│   │   ├── sobre-nosotros.astro     # /sobre-nosotros (absorbe /equipo)
+│   │   ├── servicios.astro          # /servicios
 │   │   ├── jugadores/
-│   │   │   ├── index.astro            # /jugadores/
-│   │   │   └── [slug].astro           # /jugadores/carlos-garcia
-│   │   ├── sobre-nosotros.astro       # /sobre-nosotros
+│   │   │   ├── index.astro          # /jugadores/
+│   │   │   └── [slug].astro         # /jugadores/[slug]
 │   │   └── en/
-│   │       ├── index.astro            # /en/
-│   │       ├── players/
-│   │       │   ├── index.astro        # /en/players/
-│   │       │   └── [slug].astro       # /en/players/carlos-garcia
-│   │       └── about.astro            # /en/about
+│   │       ├── index.astro          # /en/
+│   │       ├── about.astro          # /en/about
+│   │       ├── services.astro       # /en/services
+│   │       └── players/
+│   │           ├── index.astro      # /en/players/
+│   │           └── [slug].astro     # /en/players/[slug]
 │   │
-│   ├── assets/
-│   │   └── images/
-│   │       └── players/               # Fotos de jugadores (procesadas por astro:assets)
+│   ├── scripts/                     # Scripts vanilla para interacciones y animaciones
+│   │   ├── dropdown.ts              # Dropdown de filtro/sort en jugadores
+│   │   └── ph-text-animations.ts   # Sistema GSAP de sección (clipPath, stagger, magnético)
 │   │
 │   └── styles/
-│       └── global.css                 # Reset + variables CSS + font-face
+│       ├── global.css               # Reset + variables CSS + font-face
+│       └── ph-ui-buttons.css
 │
-├── .cursor/
-│   └── rules                          # Reglas inyectadas en cada sesión de Cursor
-├── ARCHITECTURE.md                    # Este archivo
-├── DECISIONS.md                       # Log de decisiones no obvias
-├── astro.config.mjs
-├── tailwind.config.mjs
-└── tsconfig.json
+├── data/
+├── ARCHITECTURE.md
+├── DECISIONS.md
+└── astro.config.mjs
 ```
 
 ---
 
-## Content Collections — Schemas Zod
+## Content Collections — Schema Zod
 
 ### `src/content/config.ts`
 
@@ -181,21 +133,13 @@ const players = defineCollection({
   type: 'content',
   schema: ({ image }) =>
     z.object({
-      // Datos principales (siempre requeridos)
       name: z.string(),
-
-      // NOTA: slug es un campo reservado de Astro Content Collections.
-      // Se genera automáticamente del nombre del archivo .md.
-      // carlos-garcia.md → slug: "carlos-garcia"
-      // No declarar en el schema ni en el frontmatter.
-
+      // slug: campo reservado de Astro — se genera del nombre del archivo .md
       club: z.object({
         name: z.string(),
         country: z.string().optional(),
-      }),
-      photo: image(),     // Procesada por astro:assets — requiere ({ image })
-
-      // Opcionales — reservados para crecimiento futuro
+      }).optional(),
+      photo: image(),
       featured: z.boolean().default(false),
       nationalTeamCodes: z.array(z.string().length(2)).max(2).optional(),
       age: z.number().int().positive().optional(),
@@ -209,47 +153,16 @@ const players = defineCollection({
 export const collections = { players };
 ```
 
-### Ejemplo de archivo de jugador
-
-```markdown
----
-# src/content/players/carlos-garcia.md
-# El nombre del archivo ES el slug. No añadir campo slug en el frontmatter.
-
-name: "Carlos García"
-club:
-  name: "RC Deportivo"
-  country: "España"
-photo: "../../assets/images/players/carlos-garcia.jpg"
-featured: true
-nationalTeamCodes:
-  - "ES"
-age: 24
-social:
-  instagram: "https://instagram.com/carlosgarcia"
----
-```
-
 ### Acceso al slug en páginas
 
 ```typescript
-// El slug se obtiene de entry.id, no de entry.slug ni del frontmatter
-// IMPORTANTE: en Astro 5, entry.id incluye la extensión .md
-// Usar siempre replace para obtener URLs limpias
-const players = await getCollection('players');
-
-export async function getStaticPaths() {
-  const players = await getCollection('players');
-  return players.map(player => ({
-    params: { slug: player.id.replace(/\.md$/, '') },  // → "carlos-garcia"
-    props: { player },
-  }));
-}
-
-// player.id → "carlos-garcia.md"
-// player.id.replace(/\.md$/, '') → "carlos-garcia"  ← URL correcta
-// player.data.name → "Carlos García"
+// En Astro 5, entry.id incluye la extensión .md — usar siempre replace
+const slug = player.id.replace(/\.md$/, '');  // "carlos-garcia.md" → "carlos-garcia"
 ```
+
+### Payloads de jugadores
+
+Los datos enriquecidos de jugadores (foto optimizada, paths i18n, metadata) se construyen en `src/lib/playerDetail.ts` y se pasan como props a `PlayerDetailView` y a las secciones del home. No acceder a Content Collections directamente desde páginas o secciones de home.
 
 ---
 
@@ -257,106 +170,68 @@ export async function getStaticPaths() {
 
 ### Estrategia de rutas
 
-- **Español** = idioma por defecto → sin prefijo de ruta (`prefixDefaultLocale: false`)
+- **Español** = idioma por defecto → sin prefijo (`prefixDefaultLocale: false`)
 - **Inglés** = prefijo `/en/`
-- El slug del jugador es el **mismo en ambas rutas** (nombre propio, idioma-neutral)
+- El slug del jugador es el **mismo en ambas rutas**
 
 | Página | ES (defecto) | EN |
 |---|---|---|
 | Inicio | `/` | `/en/` |
 | Jugadores | `/jugadores/` | `/en/players/` |
-| Jugador | `/jugadores/carlos-garcia` | `/en/players/carlos-garcia` |
+| Jugador | `/jugadores/pedro-lima` | `/en/players/pedro-lima` |
+| Servicios | `/servicios` | `/en/services` |
 | Sobre nosotros | `/sobre-nosotros` | `/en/about` |
 
-### `astro.config.mjs`
+Las rutas `/equipo` y `/en/team` redirigen a `/sobre-nosotros#equipo` y `/en/about#equipo` respectivamente (la sección de equipo fue absorbida por About en V3).
 
-```javascript
-import { defineConfig } from 'astro/config';
+### Mapeo de rutas
 
-export default defineConfig({
-  i18n: {
-    defaultLocale: 'es',
-    locales: ['es', 'en'],
-    routing: {
-      prefixDefaultLocale: false,
-    },
-  },
-});
-```
-
-### Helper de traducciones (`src/i18n/utils.ts`)
-
-```typescript
-import es, { type TranslationKey } from './es';
-import en from './en';
-
-const translations = { es, en } as const;
-export type Lang = keyof typeof translations;
-
-export const defaultLang: Lang = 'es';
-
-export function useTranslations(lang: Lang) {
-  return function t(key: TranslationKey): string {
-    return translations[lang][key] ?? translations['es'][key] ?? key;
-  };
-}
-
-export function getLangFromUrl(url: URL): Lang {
-  const [, first] = url.pathname.split('/');
-  if (['es', 'en'].includes(first)) return first as Lang;
-  return defaultLang;
-}
-```
-
-### Uso en páginas
-
-```astro
----
-import { useTranslations, getLangFromUrl } from '@/i18n/utils';
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
----
-<h1>{t('players.title')}</h1>
-```
+`getAlternateLangUrl()` en `src/i18n/utils.ts` usa `STATIC_ROUTES` y `DYNAMIC_ROUTES` como fuente única de verdad para los alternates. Al añadir una página nueva, declararla en esas listas.
 
 ---
 
-## Estrategia de hero — Logo Reveal
+## Hero — Vídeo + Logo Reveal
 
-El hero usa una animación de entrada tipo **logo reveal** en lugar de vídeo.
-Decisión tomada por ausencia de vídeo en esta fase y alineación con el tono "túnel antes del partido" de la estrategia de marca.
+### Vídeo
 
-### Flujo de animación
+El hero usa un vídeo de fondo con tres variantes de calidad servidas localmente:
 
-1. Overlay `fixed` de pantalla completa con fondo `#0d0f12` y `z-index: 9999`
-2. Logo aparece centrado con fade in (0 → 1, 0.4s)
-3. Logo escala de `1` a `8` con fade out simultáneo (1 → 0, 0.6s), `ease: power2.in`
-4. Overlay hace fade out (0.3s) y se elimina del DOM
-5. Duración total: máximo 2 segundos
-
-### Archivos implicados
-
-| Archivo | Tipo | Rol |
+| Archivo | Resolución | Uso |
 |---|---|---|
-| `src/components/islands/LogoReveal.tsx` | Island GSAP | Animación de entrada — único caso de `client:load` |
-| `src/components/sections/HeroSection.astro` | Componente | Contenido del hero visible tras el reveal |
+| `video-ph-web-480.mp4` | 480p | Móvil |
+| `video-ph-web-720.mp4` | 720p | Tablet |
+| `video-ph-web.mp4` | Full | Desktop |
 
-### Por qué `client:load` en este caso
+`src/lib/heroMedia.ts` es la fuente de verdad de las rutas y configuración del vídeo. `preload="metadata"` — no precarga el vídeo completo.
 
-`client:load` es la única excepción permitida a la regla de `client:visible`.
-El reveal debe ejecutarse antes de que el usuario vea cualquier contenido — si se difiere, el usuario ve el contenido sin animación y el efecto se rompe.
-Esta excepción está comentada explícitamente en el código.
+El poster `hero-poster.webp` se muestra mientras el vídeo carga y actúa como LCP real.
 
-### Nota sobre vídeo
+### Logo Reveal
 
-El vídeo de fondo queda como mejora futura. Cuando esté disponible, se integrará como capa detrás del hero sin afectar al reveal. Los archivos `hero-poster.webp` y `hero.mp4` en `public/` son placeholders reservados para ese momento.
+`LogoReveal.tsx` ejecuta una animación de entrada de pantalla completa antes de mostrar el contenido:
 
-### Contenido del HeroSection
+1. Overlay `fixed` con fondo `#0d0f12` y `z-index: 9999`
+2. Logo: fade in → escala de `1` a `8` con fade out simultáneo
+3. Overlay: fade out y eliminación del DOM
+4. Duración total: máximo 2 segundos
 
-- Fondo `ph-black`, altura mínima `100vh`
-- Logo o nombre centrado (hasta tener assets reales)
-- Tagline con `t('hero.tagline')` y clase `ph-accent`
-- Dos CTAs: `t('hero.cta.primary')` y `t('hero.cta.secondary')`
+`client:load` es la única excepción permitida a la regla de `client:visible`. El reveal debe ejecutarse antes de que el usuario vea cualquier contenido.
+
+**Re-trigger en F5**: `src/lib/is-document-reload.ts` detecta recargas de página para que el reveal se re-ejecute en F5 desde la home. En navegación interna (View Transitions) no se vuelve a ejecutar.
+
+---
+
+## Sistema de animaciones (Motion)
+
+Las animaciones de sección están en `src/scripts/ph-text-animations.ts`. El sistema usa GSAP con `ScrollTrigger` y expone helpers reutilizables:
+
+- **`clipPathReveal`**: entrada de elementos con clip-path desde abajo — el efecto principal de cabeceras y claims.
+- **`magneticHover`**: efecto magnético en CTAs y elementos interactivos.
+- Stagger de cards y grids.
+- Parallax en el hero.
+- Respeta `prefers-reduced-motion` — todos los efectos se desactivan si el usuario lo ha configurado.
+
+**Regla**: GSAP en componentes `.astro` va siempre en un `<script>` inline que importa de `ph-text-animations.ts`. Las Islands (`.tsx`) son solo para `LogoReveal.tsx`. No importar GSAP directamente en el markup de un `.astro`.
 
 ---
 
@@ -365,11 +240,14 @@ El vídeo de fondo queda como mejora futura. Cuando esté disponible, se integra
 | Regla | Motivo |
 |---|---|
 | Todas las imágenes con `<Image>` de `astro:assets` | WebP automático + width/height → cero CLS |
-| `client:visible` para GSAP, nunca `client:load` | GSAP no se inicializa hasta entrar en viewport |
-| Named imports en todo: `import { X } from 'lib'` | Tree-shaking efectivo |
-| Fuentes servidas localmente desde `/public/fonts/` | Elimina round-trips externos |
-| `font-display: swap` en `@font-face` | Sin FOIT (flash of invisible text) |
-| `<Image loading="eager" fetchpriority="high">` solo en el primer fold | El resto: lazy |
+| `client:visible` para GSAP, nunca `client:load` | GSAP no inicializa hasta viewport |
+| Excepción única: `LogoReveal.tsx` con `client:load` | Documentada y justificada |
+| Named imports: `import { X } from 'lib'` | Tree-shaking efectivo |
+| Fuentes self-hosted desde `/public/fonts/` | Elimina round-trips externos |
+| `font-display: swap` en `@font-face` | Sin FOIT |
+| `<Image loading="eager" fetchpriority="high">` solo en primer fold | El resto: lazy |
+| Vídeo hero con `preload="metadata"` | No precarga el archivo completo |
+| Hover prefetch en links de navegación | Precarga la siguiente página en hover |
 
 ---
 
@@ -385,9 +263,7 @@ El vídeo de fondo queda como mejora futura. Cuando esté disponible, se integra
 
 ## Sistema de diseño
 
-> Fuente de verdad visual del proyecto. Definido en `tailwind.config.mjs` y `src/styles/global.css`.
-> Última revisión: 2026-03-03
-> Secciones: Stack · Estructura · Content Collections · i18n · **Hero (Logo Reveal)** · Performance · SEO · Sistema de diseño · Decisiones
+> Fuente de verdad visual del proyecto. Variables en `src/styles/global.css`.
 
 ### Paleta de colores
 
@@ -413,39 +289,27 @@ El vídeo de fondo queda como mejora futura. Cuando esté disponible, se integra
 | Body | Helvetica Neue | 400, 500 | Cuerpo, navegación, UI |
 
 **Söhne**: fuente de pago — licencia en https://klim.co.nz/retail-fonts/sohne/
-Archivos `.woff2` en `/public/fonts/sohne/`:
-- `sohne-buch.woff2` (weight 400)
-- `sohne-halbfett.woff2` (weight 600)
-- `sohne-dreiviertelfett.woff2` (weight 700)
-- `sohne-extrafett.woff2` (weight 900)
+Archivos `.woff2` en `/public/fonts/sohne/`. Nombre de familia en código: `Sohne` (sin umlaut).
 
-**Hasta tener Söhne**: Helvetica Neue actúa como fallback completo. El sistema funciona.
+### Escala tipográfica
 
-### Escala tipográfica recomendada por elemento
-
-| Elemento | Clase Tailwind | Font |
-|---|---|---|
-| Hero claim principal | `text-7xl font-black tracking-tightest` | display |
-| Título de sección | `text-4xl lg:text-5xl font-bold tracking-tighter` | display |
-| Subtítulo | `text-xl font-semibold` | display |
-| Cuerpo | `text-base` | body |
-| Label en mayúsculas | clase `.ph-label` | body |
-| Navegación | `text-sm font-medium tracking-wide` | body |
+| Elemento | Font |
+|---|---|
+| Hero claim principal | display, `font-black tracking-tightest` |
+| Título de sección | display, `font-bold tracking-tighter` |
+| Body | body |
+| Label en mayúsculas | clase `.ph-label` |
 
 ### Espaciado de secciones
 
-Usar siempre la clase `.ph-section` o las variables CSS para padding de secciones:
-
 ```css
---ph-section-py: clamp(4rem, 8vw, 8rem);   /* Vertical — responsivo */
---ph-section-px: clamp(1.5rem, 5vw, 6rem); /* Horizontal — responsivo */
+--ph-section-py: clamp(4rem, 8vw, 8rem);
+--ph-section-px: clamp(1.5rem, 5vw, 6rem);
 ```
 
-Esto garantiza consistencia vertical en toda la web sin hardcodear valores.
+Usar siempre `.ph-section` o las variables CSS. No hardcodear valores de sección.
 
-### Utilidades globales disponibles
-
-Estas clases están definidas en `global.css` y disponibles en cualquier componente sin importar nada:
+### Utilidades globales
 
 | Clase | Descripción |
 |---|---|
@@ -455,140 +319,97 @@ Estas clases están definidas en `global.css` y disponibles en cualquier compone
 | `.ph-section` | Contenedor de sección con padding responsivo y max-width |
 | `.skip-link` | Enlace de accesibilidad "saltar al contenido" |
 
-### Estilo visual — principios de aplicación
-
-Extraídos de la estrategia de marca y el brandboard:
-
-- **Clima**: túnel antes del partido, no palco VIP. Energía contenida.
-- **Fondo**: siempre `ph-black` como base. Sin blancos de fondo.
-- **Espaciado**: generoso. El espacio en blanco (negro) es parte del diseño.
-- **Bordes**: ligeramente redondeados con radio consistente (`--ph-radius: 6px` para UI, `--ph-radius-card: 8px` para cards). No usar radios grandes (≥ 12px) — la marca no es redondeada.
-- **Animaciones**: lentas y controladas. Nada de rebotes ni efectos llamativos.
-- **Fotografía**: high-contrast sobre fondo oscuro. Ratio portrait `3:4` para jugadores.
-- **Degradados**: acento puntual, nunca protagonistas. Máximo uno por sección.
-
-### Sombras disponibles
-
-| Token Tailwind | Uso |
-|---|---|
-| `shadow-ph-sm` | Cards y elementos flotantes sutiles |
-| `shadow-ph` | Modales y elementos destacados |
-| `shadow-ph-lg` | Hero y secciones de impacto |
-| `shadow-gold` | Halo dorado para highlights y elementos seleccionados |
-
 ### Radios de borde
 
 | Token CSS | Valor | Uso |
 |---|---|---|
-| `--ph-radius` | `0.375rem` (6px) | Botones, inputs, menu-toggle y elementos UI |
-| `--ph-radius-card` | `0.5rem` (8px) | Cards de jugadores y contenedores |
+| `--ph-radius` | `0.375rem` (6px) | Botones, inputs, UI |
+| `--ph-radius-card` | `0.5rem` (8px) | Cards y contenedores |
 
-**Regla**: usar siempre `var(--ph-radius)` o `var(--ph-radius-card)` en lugar de valores hardcodeados. No superar `0.75rem` — radio contenido, nunca pill ni completamente circular.
+No superar `0.75rem`. La marca no es redondeada.
 
+### Principios visuales
 
----
-
-## Decisiones de diseño clave
-
-Ver `DECISIONS.md` para el histórico completo. Resumen:
-
-- **Slug automático**: Astro genera el slug del nombre del archivo. No se declara en frontmatter ni en el schema.
-- **entry.id con .md**: en Astro 5, usar `player.id.replace(/\.md$/, '')` para URLs limpias.
-- **Slug único para jugadores**: misma cadena en ES y EN para evitar desincronización con 60 jugadores.
-- **Content Collections sobre CMS headless**: solo hay un editor técnico. Migración a Sanity posible cuando se necesite.
-- **`prefixDefaultLocale: false`**: URLs más limpias en español (idioma principal de la agencia).
-- **GSAP solo en `islands/`**: ningún componente `.astro` importa GSAP directamente.
-- **`client:load` solo en `LogoReveal.tsx`**: única excepción justificada y documentada.
-- **@astrojs/react**: necesario para hidratar Islands `.tsx` en el cliente.
-- **Hero minimalista**: solo logo y eslogan. Sin CTAs. Silencio elegante alineado con la estrategia de marca.
+- **Clima**: túnel antes del partido. Energía contenida, no palco VIP.
+- **Fondo**: siempre `ph-black`. Sin blancos de fondo.
+- **Espaciado**: generoso. El negro es parte del diseño.
+- **Animaciones**: lentas y controladas. Sin rebotes ni efectos llamativos.
+- **Fotografía**: high-contrast sobre fondo oscuro. Ratio portrait `3:4` para jugadores.
 
 ---
 
 ## Estado del proyecto
 
-> Actualizar esta sección tras cada sesión de trabajo.
-> Última actualización: 2026-03-05
+> Última actualización: 2026-04-23
 
 ### Componentes
 
 | Componente | Estado | Notas |
 |---|---|---|
-| `BaseLayout.astro` | ✅ Completo | SEO, hreflang, preload fuentes, scroll header |
-| `Header.astro` | ✅ Completo | i18n, estado activo, blur en scroll, menú mobile accesible (toggle + overlay) |
-| `Footer.astro` | ✅ Completo | Logo SVG, design system, i18n, nav, email, copyright |
-| `LogoReveal.tsx` | ✅ Completo | Island GSAP, logo reveal en entrada |
-| `HeroSection.astro` | ✅ Completo | Fondo radial, halo de logo, scroll indicator, fade in con `--ph-ease` |
-| `PlayersGrid.astro` | ✅ Completo | Grid 2/3/4 col, header consistente + separador visual, Content Collections |
-| `PortraitCard.astro` | ✅ Completo | Nombre + subtítulo (club o cargo); jugadores con enlace stub `href="#"`; equipo sin enlace |
-| `AboutSection.astro` | ✅ Completo | Storytelling Now / Next / Forever, números watermark, layout editorial 1:2 |
-| `Button.astro` | ✅ Completo | Primary (gold border) / secondary (ghost), angular, `<a>` o `<button>` |
-| `LanguageSwitcher.astro` | — | Integrado en `Header.astro` (no existe como archivo separado) |
+| `BaseLayout.astro` | ✅ Completo | SEO, hreflang, preload fuentes, ClientRouter |
+| `Header.astro` | ✅ Completo | Flotante, scroll-hide, i18n, mobile accesible |
+| `Footer.astro` | ✅ Completo | V3 editorial, social links, i18n |
+| `LogoReveal.tsx` | ✅ Completo | GSAP island, re-trigger en F5 |
+| `HeroSection.astro` | ✅ Completo | Vídeo (3 variantes) + poster, curtain reveal GSAP |
+| `HomePlayersSection.astro` | ✅ Completo | Stagger + scale GSAP |
+| `HomeServicesSection.astro` | ✅ Completo | CSS accordion + GSAP |
+| `HomeAboutSection.astro` | ✅ Completo | Head + counters GSAP |
+| `HomeContactSection.astro` | ✅ Completo | Layout 50/50 edge-to-edge, GSAP |
+| `AboutSection.astro` | ✅ Completo | V3 — historia, equipo (21 integrantes), manifesto, cierre |
+| `ServicesSection.astro` | ✅ Completo | 6 pilares + hero |
+| `TalentsSection.astro` | ✅ Completo | V3, portraits 3:4, GSAP stagger |
+| `PlayerDetailView.astro` | ✅ Completo | Vista de detalle individual |
+| `PortraitCard.astro` | ✅ Completo | Badges de selecciones nacionales |
+| `Button.astro` | ✅ Completo | Primary / secondary, `<a>` o `<button>` |
+| `SectionHeader.astro` | ✅ Completo | |
+| `LanguageSwitcher.astro` | ✅ Completo | Integrado en Header |
+| `FooterSocialIcon.astro` | ✅ Completo | |
 
 ### Páginas
 
 | Página | Estado | Notas |
 |---|---|---|
-| `/` | ✅ Funcional | Hero con reveal + grid de jugadores |
-| `/jugadores/` | ✅ Funcional | Grid completo |
-| `/jugadores/[slug]` | ⏳ Stub | `getStaticPaths()` implementado, sin contenido |
-| `/sobre-nosotros` | ✅ Funcional | AboutSection con i18n |
-| `/en/` | ✅ Funcional | Hero con reveal (mirror de ES) |
-| `/en/players/` | ✅ Funcional | Grid completo (paridad con ES) |
-| `/en/players/[slug]` | ⏳ Stub | `getStaticPaths()` implementado, sin contenido |
-| `/en/about` | ✅ Funcional | AboutSection con i18n |
+| `/` | ✅ Funcional | V3: Hero → Players → Services → About → Contact |
+| `/sobre-nosotros` | ✅ Funcional | V3 — absorbe /equipo (sección #equipo) |
+| `/jugadores/` | ✅ Funcional | Sort, filtro por selección, portraits, badges |
+| `/jugadores/[slug]` | ✅ Funcional | PlayerDetailView con foto y datos |
+| `/servicios` | ✅ Funcional | 6 pilares + hero |
+| `/en/` | ✅ Funcional | Mirror de ES |
+| `/en/about` | ✅ Funcional | Mirror de ES |
+| `/en/players/` | ✅ Funcional | Mirror de ES |
+| `/en/players/[slug]` | ✅ Funcional | Mirror de ES |
+| `/en/services` | ✅ Funcional | Mirror de ES |
 
 ### Assets y contenido
 
 | Item | Estado | Notas |
 |---|---|---|
-| Logo SVG | ✅ En `/public/logo.svg` | Aplicado en header y reveal |
-| Fotos jugadores | ⏳ Placeholder | 3 jugadores reales: Pedro Lima, Juan Cruz, Dani Requena |
-| Fuente Söhne | ✅ Integrada | 4 pesos en `/public/fonts/sohne/` — archivos test de Klim |
-| Jugadores reales | ⏳ Parcial | 3 de ~60 en Content Collections |
+| Logo SVG | ✅ En `/public/logo.svg` | |
+| Vídeo hero | ✅ 3 variantes en `/public/` | 480p, 720p, full |
+| Fotos jugadores | ⏳ Parcial | 4 jugadores con foto real |
+| Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia |
+| Jugadores en Content Collections | ⏳ Parcial | 4 de ~60 |
+| OG image (1200×630px) | ❌ Pendiente | |
 
----
-
-## Próximos pasos
-
-Orden recomendado:
-
-1. ~~**`AboutSection.astro`** — storytelling con Now / Next / Forever.~~ ✅ Completado 2026-03-05.
-2. ~~**`Footer.astro`** definitivo — contenido real, links, email de contacto.~~ ✅ Completado 2026-03-05.
-3. ~~**Primera pasada de estilos** — refinar Header, Hero, Cards y About con el design system completo.~~ ✅ Completado 2026-03-05.
-4. ~~**`Button.astro`** — componente reutilizable antes de añadir CTAs.~~ ✅ Completado 2026-03-05.
-5. ~~**Söhne** — integrar cuando el equipo pase los archivos `.woff2`.~~ ✅ Integrada 2026-03-05 (archivos test de Klim).
-6. **Fotos reales** de los 60 jugadores + datos completos en Content Collections.
-7. **Páginas de jugador** `[slug].astro` — contenido real con foto, club (datos técnicos vía Transfermarkt u otras fuentes externas).
-8. **Animaciones de refinamiento** — scroll reveal en secciones, transiciones entre páginas.
-
-### Pendientes bloqueados por decisión externa
+### Pendientes
 
 | Pendiente | Bloqueado por |
 |---|---|
-| Dominio definitivo → actualizar `SITE_URL` en `BaseLayout` | Cliente / equipo |
+| Fotos y datos reales de ~60 jugadores | Cliente / contenido |
+| Dominio definitivo → actualizar `SITE_URL` en `lib/constants.ts` | Cliente |
 | OG image 1200×630px | Diseño |
-| GA4 — Measurement ID `G-XXXXXXXXXX` | Decisión de si se integra y cómo |
-| Vídeo hero `.mp4` | Producción de vídeo |
-| Söhne `.woff2` | Equipo pasa la licencia |
-| Página individual por jugador vs. solo grid | Decisión de producto |
-
-### Mejoras y correcciones identificadas (lista de vista)
-
-1. **SITE_URL duplicado** — Definido en 5 páginas; centralizar (p. ej. `Astro.site` o un único módulo).
-2. ~~**getAlternateLangUrl no traduce rutas**~~ ✅ Resuelto 2026-03-05. Ver DECISIONS.md.
-3. **`PortraitCard` con href="#"** — Usar `data-slug` y rutas i18n para enlazar a `/jugadores/[slug]` o `/en/players/[slug]`.
-4. **Home sin grid de jugadores** — ARCHITECTURE dice "Hero + grid"; la home solo tiene Hero; alinear código o doc.
-5. **Preload de 4 fuentes** — Preload solo 700 y 900; 400 y 600 cargar bajo demanda.
+| GA4 — Measurement ID | Decisión de si se integra |
+| Söhne `.woff2` con licencia de producción | Compra de licencia |
 
 ---
 
-## Flujo de trabajo con agentes
+## Convenciones clave
 
-| Tarea | Agente recomendado |
-|---|---|
-| Decisiones de arquitectura, briefings, documentación | Claude.ai (claude.ai) |
-| Componentes complejos, SEO, i18n, revisión crítica | Opus en Cursor |
-| Scaffolding, copiar archivos, ejecutar comandos, stubs | Codex en Cursor |
-| Edits acotados, componentes simples, cambios de estilo | Sonnet / auto en Cursor |
+- **Slugs de jugadores**: se generan del nombre del archivo `.md`. `pedro-lima.md` → slug `pedro-lima`. No declarar `slug` en frontmatter ni schema.
+- **entry.id en Astro 5**: incluye extensión. Usar siempre `entry.id.replace(/\.md$/, '')`.
+- **Slug único en ES y EN**: misma cadena en ambas rutas — nombres propios no se traducen.
+- **GSAP en secciones**: siempre a través de `ph-text-animations.ts`, nunca importado directamente en `.astro`.
+- **`client:load` solo en `LogoReveal.tsx`**: única excepción, documentada y justificada.
+- **Datos de dominio en `lib/`**: los helpers de playerDetail, teamMembers, servicesItems, etc. son la fuente de verdad. Las páginas y secciones los consumen; no acceden directamente a Content Collections salvo en `/jugadores/` y `[slug].astro`.
 
-**Regla**: antes de cualquier componente importante, definir el briefing en Claude.ai. Llegar a Cursor con instrucciones precisas, no con preguntas abiertas.
+Ver `DECISIONS.md` para el histórico completo de decisiones no obvias.

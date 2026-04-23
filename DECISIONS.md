@@ -1,96 +1,181 @@
-# PH Sport - Decision Log
+# PH Sport — Decision Log
 
-Registro de decisiones tecnicas no obvias.
-Formato: fecha · decision · alternativa · motivo.
-Orden: mas reciente primero (cronologico descendente).
+Registro de decisiones de arquitectura no obvias.
+Formato: fecha · decisión · alternativa considerada · motivo.
+Orden: más reciente primero.
 
 ---
 
-## 2026-03-16 · Convencion unica para slugs de Content Collections
+## 2026-04-22 · Hero con vídeo de fondo — 3 variantes mp4 + poster
 
-**Decision**: usar una unica convencion en todo el proyecto:
+**Decisión**: el hero usa vídeo de fondo con tres variantes de calidad servidas localmente (`video-ph-web-480.mp4`, `*-720.mp4`, `*.mp4`) y un poster estático (`hero-poster.webp`) como LCP real.
 
-- Para rutas dinamicas de jugadores, el slug se obtiene con:
-  - `entry.id.replace(/\.md$/, '')`
+**Alternativa considerada**: una sola variante de vídeo.
 
-**Alternativa descartada**: mezclar criterios con `entry.slug` en parte del codigo/documentacion.
+**Motivo**: las tres variantes permiten servir resolución adecuada según dispositivo sin sobrecargar móviles. `preload="metadata"` evita que el browser descargue el vídeo completo en page load.
 
-**Motivo**:
+**Fuente de verdad**: `src/lib/heroMedia.ts` centraliza rutas y configuración del vídeo. Las páginas/secciones no hardcodean rutas directamente.
 
-- Evita contradicciones entre documentos y codigo.
-- Refleja el comportamiento actual que ya usa el proyecto en:
-  - `src/pages/jugadores/[slug].astro`
-  - `src/pages/en/players/[slug].astro`
+**Nota**: el Logo Reveal (`LogoReveal.tsx`) coexiste con el vídeo — ejecuta la animación de entrada sobre el vídeo, no en lugar de él.
 
-**Regla resultante**:
+---
 
-- No documentar ni implementar una segunda via para slugs mientras esta convencion siga activa.
+## 2026-04-22 · LogoReveal re-trigger en F5 via is-document-reload.ts
+
+**Decisión**: detectar recargas de página (F5) con `src/lib/is-document-reload.ts` para re-ejecutar el Logo Reveal en esos casos.
+
+**Problema**: con View Transitions (ClientRouter), el reveal se ejecutaba correctamente en la primera visita pero no en F5 desde la home ni en cold-load, porque el estado del componente React persistía.
+
+**Motivo**: la experiencia de entrada es parte de la marca — el reveal debe verse siempre que el usuario llegue "de cero" a la home.
+
+**Regla resultante**: el helper lee `performance.navigation.type` para distinguir recarga de navegación interna. En navegación interna (SPA transitions) el reveal no se re-ejecuta.
+
+---
+
+## 2026-04-21 · Sistema de animaciones en scripts/ (GSAP fuera de islands)
+
+**Decisión**: ampliar el uso de GSAP a `src/scripts/ph-text-animations.ts`, importado como `<script>` vanilla desde componentes `.astro`. La regla anterior de "GSAP solo en islands" queda actualizada.
+
+**Alternativa considerada**: mantener islands React para cada sección animada.
+
+**Motivo**: crear una island por sección (HomeAbout, HomeServices, Talents…) es overhead innecesario cuando la animación no necesita estado React. Un `<script>` vanilla con `import` de GSAP es suficiente y más ligero.
+
+**Regla actualizada**: GSAP puede vivir en `scripts/ph-text-animations.ts` (importado desde `<script>` en `.astro`) O en islands `.tsx` para casos que requieran estado React. `LogoReveal.tsx` sigue siendo la única island GSAP activa. No importar GSAP directamente en el markup de un `.astro` — siempre a través de `ph-text-animations.ts` o una island.
+
+---
+
+## 2026-04-20 · About V3 — absorción de /equipo en #equipo
+
+**Decisión**: eliminar las páginas `/equipo` y `/en/team` como rutas independientes. El contenido del equipo (21 integrantes) pasa a ser una sección dentro de `/sobre-nosotros` y `/en/about`, con anchor `#equipo`.
+
+**Alternativa considerada**: mantener `/equipo` como página separada.
+
+**Motivo**: el equipo es parte de la identidad de la agencia, no un producto separado. Unificarlo en About refuerza el storytelling y evita que el usuario tenga que navegar a otra página para ver algo que forma parte de "quiénes somos".
+
+**Cambios**:
+- `TeamSection.astro` eliminado.
+- Las rutas `/equipo` y `/en/team` redirigen a `#equipo`.
+- `src/lib/teamMembers.ts` creado como fuente de verdad de los 21 integrantes.
+- Nav: la entrada "Equipo/Team" eliminada.
+
+---
+
+## 2026-04-20 · Datos de dominio centralizados en lib/
+
+**Decisión**: crear `src/lib/` como capa de datos y helpers de dominio. Las páginas y secciones consumen estos módulos; no acceden directamente a Content Collections salvo en las páginas de jugador.
+
+**Módulos creados**:
+- `playerDetail.ts` — payloads enriquecidos de jugadores (foto, paths i18n, metadata)
+- `teamMembers.ts` — 21 integrantes del equipo
+- `servicesItems.ts` — 6 pilares de servicios
+- `heroMedia.ts` — configuración del vídeo hero
+- `navigation.ts` — items de navegación
+- `social.ts`, `countryLabels.ts`, `nationalTeamBadge.ts`, etc.
+
+**Motivo**: evitar que cada página tenga su propia lógica de acceso a datos. Un cambio en la estructura de un jugador o un servicio se hace en un solo lugar.
+
+---
+
+## 2026-04-19 · Páginas de jugador implementadas (PlayerDetailView)
+
+**Decisión**: implementar `/jugadores/[slug]` y `/en/players/[slug]` con `PlayerDetailView.astro`. Los datos se preparan en `playerDetail.ts` y se pasan como props.
+
+**Alternativa considerada**: modal en la grid de jugadores.
+
+**Motivo**: las páginas de detalle tienen URL propia — mejor para SEO, enlaces directos y compartir perfiles. El modal se descartó porque no permite indexación.
+
+**Regla resultante**: `buildPlayerDetailPayloadsForLang(lang)` en `playerDetail.ts` es el punto de entrada para datos de jugador. No reconstruir esa lógica en las páginas.
+
+---
+
+## 2026-04-18 · V3 redesign — estructura del home
+
+**Decisión**: rediseñar el home con una estructura editorial — Hero (vídeo + claim grande) → Players → Services (accordion) → About → Contact. Se eliminan secciones experimentales anteriores (Stats Strip, Manifesto, 360).
+
+**Alternativa considerada**: mantener la estructura del intento anterior en `feat/homepage-redesign-v2` (Stats → Players → Manifesto → Services → 360 → About).
+
+**Motivo**: la estructura de la rama anterior era demasiado densa para una primera visita. La V3 prioriza claridad y jerarquía: primero el producto (jugadores), luego la propuesta (servicios), luego quiénes somos.
+
+---
+
+## 2026-04-17 · /servicios como página independiente con 6 pilares
+
+**Decisión**: crear `/servicios` y `/en/services` como páginas propias con `ServicesSection.astro`. Los 6 pilares del servicio (prensa, rendimiento, media, family office, psicólogo, plan de acción) son la estructura definitiva.
+
+**Alternativa considerada**: mantener servicios solo en el home.
+
+**Motivo**: los servicios son el producto principal de la agencia — merecen URL propia, SEO independiente y espacio para desarrollar cada pilar. El home tiene una versión resumida (accordion) que enlaza a la página completa.
+
+---
+
+## 2026-04-15 · ClientRouter en lugar de ViewTransitions
+
+**Decisión**: usar `<ClientRouter />` de `astro:transitions` en lugar del import anterior de `ViewTransitions`.
+
+**Motivo**: cambio de API en Astro 5 — `ViewTransitions` fue renombrado a `ClientRouter`. El comportamiento es idéntico; es solo una actualización de nombre requerida para evitar warnings de deprecación.
+
+---
+
+## 2026-03-16 · Convención única para slugs de Content Collections
+
+**Decisión**: usar una única convención en todo el proyecto:
+- Para rutas dinámicas de jugadores, el slug se obtiene con `entry.id.replace(/\.md$/, '')`
+
+**Alternativa descartada**: mezclar criterios con `entry.slug` en parte del código/documentación.
+
+**Motivo**: evita contradicciones entre documentos y código. Refleja el comportamiento actual que ya usa el proyecto.
+
+**Regla resultante**: no documentar ni implementar una segunda vía para slugs mientras esta convención siga activa.
 
 ---
 
 ## 2026-03-16 · Overrides de seguridad en dependencias transitivas
 
-**Decision**: fijar versiones parcheadas en `package.json` mediante `overrides`:
-
+**Decisión**: fijar versiones parcheadas en `package.json` mediante `overrides`:
 - `devalue: 5.6.4`
 - `svgo: 4.0.1`
 
 **Alternativa descartada**: esperar a que la cadena transitoria se actualice sola.
 
-**Motivo**:
-
-- Reducir riesgo en dependencias de produccion sin romper compatibilidad del stack actual (Astro 5.x).
-- Eliminar la vulnerabilidad `high` reportada previamente en `svgo`.
+**Motivo**: reducir riesgo en dependencias de producción sin romper compatibilidad del stack actual (Astro 5.x). Eliminar la vulnerabilidad `high` reportada en `svgo`.
 
 ---
 
-## 2026-03-05 · Routing i18n con mapeo explicito ES<->EN
+## 2026-03-05 · Routing i18n con mapeo explícito ES ↔ EN
 
-**Decision**: mapear rutas estaticas y dinamicas en `src/i18n/utils.ts`.
+**Decisión**: mapear rutas estáticas y dinámicas en `src/i18n/utils.ts` con `STATIC_ROUTES` y `DYNAMIC_ROUTES`.
 
-**Motivo**:
+**Motivo**: garantizar `hreflang` correcto y alternates válidos. Evitar enlaces EN inválidos para rutas traducidas (por ejemplo, `/sobre-nosotros` → `/en/about`).
 
-- Garantizar `hreflang` correcto y alternates validos.
-- Evitar enlaces EN invalidos para rutas traducidas (por ejemplo, `/sobre-nosotros` -> `/en/about`).
-
----
-
-## 2026-03-03 · i18n base: ES por defecto sin prefijo
-
-**Decision**:
-
-- Espanol como locale por defecto sin prefijo (`prefixDefaultLocale: false`)
-- Ingles bajo `/en`
-
-**Motivo**:
-
-- URLs mas limpias para el idioma principal del proyecto.
+**Regla resultante**: toda ruta nueva debe añadirse a `STATIC_ROUTES` o `DYNAMIC_ROUTES` en `utils.ts`.
 
 ---
 
-## 2026-03-03 · GSAP restringido a interacciones justificadas
+## 2026-03-05 · Menú mobile en Header con script vanilla (sin island)
 
-**Decision**:
+**Decisión**: implementar el menú mobile en `Header.astro` con HTML/CSS + script vanilla, sin crear una Island React.
 
-- Usar GSAP solo donde aporta valor real de experiencia.
-- Mantener `client:load` unicamente en `LogoReveal.tsx` como excepcion justificada.
+**Alternativa considerada**: `src/components/islands/MobileMenu.tsx` con `client:load`.
 
-**Motivo**:
+**Motivo**: el comportamiento es un toggle simple de UI. Usar React aumentaría JS cliente innecesario.
 
-- Controlar carga de JS cliente y mantener rendimiento.
+**Regla resultante**: para interacciones simples de layout/navigation, preferir script vanilla en `.astro`. Reservar Islands para lógica/animación compleja.
 
-# PH Sport — Decision Log
+---
 
-Registro de decisiones de arquitectura no obvias.
-Formato: fecha · decisión · alternativa considerada · motivo.
+## 2026-03-05 · Normalización de nombre de familia tipográfica (Sohne)
+
+**Decisión**: usar `Sohne` (sin umlaut) como nombre único de `font-family` en `@font-face`, variables CSS y Tailwind.
+
+**Motivo**: el nombre de familia debe coincidir exactamente entre definición y consumo para evitar fallback silencioso a Helvetica.
+
+**Regla resultante**: cualquier referencia a la fuente display en código debe usar `Sohne`.
 
 ---
 
 ## 2026-03-03 · Slug único para jugadores en ambos idiomas
 
-**Decisión**: el slug de cada jugador (`carlos-garcia`) es el mismo en las rutas ES y EN.
-- `/jugadores/carlos-garcia`
-- `/en/players/carlos-garcia`
+**Decisión**: el slug de cada jugador es el mismo en las rutas ES y EN.
 
 **Alternativa considerada**: slugs traducidos (`/en/players/charles-smith`).
 
@@ -102,9 +187,9 @@ Formato: fecha · decisión · alternativa considerada · motivo.
 
 **Decisión**: el español, idioma principal de la agencia, no lleva prefijo de ruta.
 
-**Alternativa considerada**: prefijo `/es/` para todos los idiomas (simetría total).
+**Alternativa considerada**: prefijo `/es/` para todos los idiomas.
 
-**Motivo**: URLs más limpias para el mercado principal. El tráfico orgánico principal será hispanohablante. Los bots de Google también prefieren URLs cortas.
+**Motivo**: URLs más limpias para el mercado principal.
 
 ---
 
@@ -114,144 +199,64 @@ Formato: fecha · decisión · alternativa considerada · motivo.
 
 **Alternativa considerada**: Sanity, Storyblok o Contentful.
 
-**Motivo**: único editor técnico, sin necesidad de interfaz gráfica. Ventajas: sin coste de CMS, sin dependencia externa, tipado automático vía Zod, historial de cambios en Git.
+**Motivo**: único editor técnico, sin necesidad de interfaz gráfica. Sin coste de CMS, tipado automático vía Zod, historial en Git.
 
 **Condición de cambio**: si un editor no técnico necesita actualizar jugadores, migrar a Sanity. La estructura de Collections está diseñada para que esa migración sea directa.
 
 ---
 
-## 2026-03-03 · GSAP restringido a Islands (`client:visible`)
+## 2026-03-03 · GSAP restringido — regla original
 
-**Decisión**: GSAP solo puede existir en `src/components/islands/` con directiva `client:visible`.
+**Decisión original (2026-03-03)**: GSAP solo en `src/components/islands/` con `client:visible`.
 
-**Alternativa considerada**: importar GSAP en componentes `.astro` con `<script>`.
-
-**Motivo**: `client:visible` garantiza que GSAP no inicializa hasta que el elemento entra en viewport, eliminando su peso (~60KB gzip) del critical path. `<script>` en `.astro` no permite tree-shaking efectivo.
+**Actualización (2026-04-21)**: regla ampliada — GSAP también puede usarse en `src/scripts/ph-text-animations.ts` importado como `<script>` vanilla desde `.astro`. Ver decisión de 2026-04-21.
 
 ---
 
 ## 2026-03-03 · Fuentes servidas localmente
 
-**Decisión**: las fuentes se descargan y sirven desde `/public/fonts/` via `@font-face` en `global.css`.
+**Decisión**: fuentes desde `/public/fonts/` via `@font-face` en `global.css`.
 
-**Alternativa considerada**: Google Fonts con `<link>`.
+**Alternativa considerada**: Google Fonts.
 
-**Motivo**: elimina un round-trip externo en cada carga. Cloudflare Pages sirve los assets con headers de caché óptimos. Mejora LCP y elimina riesgo de FOIT.
+**Motivo**: elimina round-trips externos. Cloudflare Pages sirve los assets con headers de caché óptimos. Mejora LCP, elimina FOIT.
 
 ---
 
 ## 2026-03-03 · slug eliminado del schema de Content Collections
 
-**Decisión**: el campo `slug` no se declara en el schema Zod ni en el frontmatter de los jugadores.
+**Decisión**: el campo `slug` no se declara en el schema Zod ni en el frontmatter.
 
-**Alternativa considerada**: declarar `slug: z.string()` en el schema para tener el valor tipado dentro de `entry.data`.
+**Motivo**: `slug` es un campo reservado de Astro Content Collections — declararlo provoca error de validación en el build.
 
-**Motivo**: `slug` es un campo reservado de Astro Content Collections. Se genera automáticamente del nombre del archivo `.md` y se accede via `entry.slug`, no via `entry.data.slug`. Declararlo en el schema provoca un error de validación (`slug: Required`) en el build.
-
-**Regla resultante**: el nombre del archivo es el slug. `carlos-garcia.md` → `entry.slug === "carlos-garcia"`. Nunca añadir `slug` al frontmatter.
+**Regla resultante**: el nombre del archivo es el slug. `carlos-garcia.md` → slug `carlos-garcia`. En Astro 5, `entry.id` incluye la extensión `.md` — usar siempre `entry.id.replace(/\.md$/, '')`.
 
 ---
 
-## 2026-03-03 · Sistema de diseño — paleta, tipografía y tokens
+## 2026-03-03 · Sistema de diseño — paleta y tokens
 
-**Decisión**: tres colores únicos. `#0d0f12` como base, `#ffffff` para texto, `#D6B25E` como único acento. Sin colores secundarios adicionales.
+**Decisión**: tres colores únicos. `#0d0f12` base, `#ffffff` texto, `#D6B25E` acento único.
 
-**Motivo**: el brandboard y la estrategia de marca son explícitos — minimalismo premium, "charcoal authority". Añadir más colores diluiría el estándar visual.
+**Motivo**: brandboard explícito — minimalismo premium, "charcoal authority". Más colores diluirían el estándar visual.
 
-**Regla resultante**: el oro `#D6B25E` se usa con criterio como acento, nunca como color de relleno o fondo.
+**Regla resultante**: el oro se usa como acento, nunca como relleno o fondo.
 
 ---
 
 ## 2026-03-03 · Tipografía — Söhne + Helvetica
 
-**Decisión**: Söhne (Klim Type Foundry) para títulos y claims. Helvetica para cuerpo y UI. Self-hosted en `/public/fonts/sohne/`.
+**Decisión**: Söhne (Klim) para títulos. Helvetica para cuerpo y UI. Self-hosted.
 
-**Corrección**: el brandboard indicaba Canela para títulos. Confirmado por el cliente que la fuente correcta es Söhne.
+**Corrección**: el brandboard indicaba Canela. El cliente confirmó que la fuente correcta es Söhne.
 
-**Nota importante**: Söhne es una fuente de pago. Requiere licencia en https://klim.co.nz/retail-fonts/sohne/ antes de publicar en producción. Los archivos `.woff2` necesarios son: sohne-buch (400), sohne-halbfett (600), sohne-dreiviertelfett (700), sohne-extrafett (900).
-
-**Motivo de self-hosting**: elimina round-trips externos, mejora LCP y permite `font-display: swap` con control total.
+**Nota**: Söhne es de pago. Licencia en https://klim.co.nz/retail-fonts/sohne/ — obligatoria antes de producción. Los archivos actuales son de prueba.
 
 ---
 
-## 2026-03-03 · entry.id incluye extensión .md en Astro 5
+## 2026-03-03 · @astrojs/react en astro.config.mjs
 
-**Decisión**: usar `player.id.replace(/\.md$/, '')` para generar slugs limpios en `getStaticPaths()`.
+**Decisión**: integrar `@astrojs/react` como renderer.
 
-**Problema detectado**: en Astro 5 con Content Collections, `entry.id` devuelve `carlos-garcia.md` en lugar de `carlos-garcia`. Usar `entry.id` directamente genera URLs con extensión (`/jugadores/carlos-garcia.md`).
-
-**Solución**: `player.id.replace(/\.md$/, '')` en ambos archivos de rutas dinámicas:
-- `src/pages/jugadores/[slug].astro`
-- `src/pages/en/players/[slug].astro`
-
-**Detectado por**: Opus durante la implementación de `getStaticPaths()`.
-
----
-
-## 2026-03-03 · Hero — Logo Reveal en lugar de vídeo
-
-**Decisión**: el hero usa una animación de logo reveal (logo crece hasta llenar pantalla y hace fade out) en lugar de vídeo de fondo.
-
-**Motivo**: no hay vídeo disponible en esta fase del proyecto.
-
-**Alineación con marca**: encaja con el tono "túnel antes del partido" de la estrategia de marca — entrada cinematográfica, contenida y premium.
-
-**Implementación**: Island GSAP `LogoReveal.tsx` con `client:load` — única excepción justificada a la regla de `client:visible`. El reveal debe ejecutarse antes de que el usuario vea cualquier contenido.
-
-**Mejora futura**: cuando el vídeo esté disponible, se integrará como capa de fondo en `HeroSection` sin afectar al reveal.
-
----
-
-## 2026-03-03 · @astrojs/react añadido a astro.config.mjs
-
-**Decisión**: integrar `@astrojs/react` como renderer de framework en Astro.
-
-**Motivo**: Astro requiere un renderer explícito para hidratar componentes `.tsx` como Islands. Sin esta integración, `client:load` en `LogoReveal.tsx` no funciona — Astro no sabe cómo procesar React en el cliente.
-
-**Detectado por**: Opus durante la implementación de `LogoReveal.tsx`.
-
-**Cambio en `astro.config.mjs`**: añadida una línea de import y `react()` en el array de integraciones.
+**Motivo**: Astro requiere un renderer explícito para hidratar `.tsx` como Islands. Sin esto, `client:load` en `LogoReveal.tsx` no funciona.
 
 **Implicación**: cualquier Island futura en `.tsx` ya tiene soporte sin configuración adicional.
-
----
-
-## 2026-03-05 · Normalización de nombre de familia tipográfica (Sohne)
-
-**Decisión**: usar `Sohne` (sin umlaut) como nombre único de `font-family` en `@font-face`, variables CSS y `tailwind.config.mjs`.
-
-**Alternativa considerada**: mantener `"Söhne"` en Tailwind y `'Sohne'` en `@font-face`.
-
-**Motivo**: cuando lleguen los `.woff2`, el nombre de familia debe coincidir exactamente entre definición y consumo para evitar fallback silencioso a Helvetica.
-
-**Regla resultante**: cualquier referencia a la fuente display en código debe usar `Sohne`.
-
----
-
-## 2026-03-05 · Menú mobile en Header con script vanilla (sin island)
-
-**Decisión**: implementar el menú mobile en `Header.astro` con HTML/CSS + script vanilla (`data-menu-toggle`, overlay fullscreen, cierre por Escape y click en links), sin crear una Island React.
-
-**Alternativa considerada**: crear `src/components/islands/MobileMenu.tsx` e hidratar con `client:load`.
-
-**Motivo**: el comportamiento es un toggle simple de UI. Usar React para esto aumentaría JS cliente innecesario y rompería la regla práctica de mantener Islands para casos justificados (como `LogoReveal.tsx` con GSAP).
-
-**Regla resultante**: para interacciones simples de layout/navigation, preferir script vanilla en componentes `.astro`; reservar Islands para casos de lógica/animación compleja.
-
----
-
-## 2026-03-05 · Mapeo de rutas ES ↔ EN con fuente única de verdad
-
-**Problema**: `getAlternateLangUrl()` solo añadía/quitaba el prefijo `/en/` sin traducir los segmentos de ruta. Resultado: `/sobre-nosotros` generaba `/en/sobre-nosotros` (no existe) en vez de `/en/about`. Los hreflang de todas las páginas apuntaban a URLs incorrectas.
-
-**Decisión**: definir los pares de rutas ES ↔ EN en dos listas declarativas (`STATIC_ROUTES` y `DYNAMIC_ROUTES`) dentro de `src/i18n/utils.ts`. Los mapas de búsqueda se generan automáticamente desde esas listas. `getAlternateLangUrl()` consulta los mapas para estáticas y recorre `DYNAMIC_ROUTES` para dinámicas (p. ej. `/jugadores/:slug` ↔ `/en/players/:slug`).
-
-**Alternativa considerada**: dos mapas ES→EN y EN→ES escritos a mano (solución intermedia que se descartó por riesgo de desincronización).
-
-**Motivo**: una sola fuente de verdad. Para añadir una página nueva se añade un objeto a una lista; los mapas se derivan solos. Trailing slash normalizado en un solo sitio (la función). Warning en consola en desarrollo si una ruta no está mapeada.
-
-**Cambios realizados**:
-- `src/i18n/utils.ts`: reescrita `getAlternateLangUrl()` con `STATIC_ROUTES`, `DYNAMIC_ROUTES` y mapas derivados.
-- `src/components/layout/Header.astro`: el selector de idioma ahora usa `getAlternateLangUrl(Astro.url)` en lugar de `t('nav.lang.href')`, para que el enlace respete la página actual.
-
-**Regla resultante**: toda ruta nueva debe añadirse a `STATIC_ROUTES` o `DYNAMIC_ROUTES` en `utils.ts`. Si no, en desarrollo aparece un warning en consola.

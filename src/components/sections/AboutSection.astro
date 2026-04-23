@@ -10,7 +10,6 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const servicesHref = lang === 'es' ? '/servicios' : '/en/services';
-const contactHref = lang === 'es' ? '/#contacto' : '/en/#contacto';
 
 const teamMembers = getTeamMembers(lang);
 
@@ -39,7 +38,6 @@ const internationalCountries = [
           <a class="abt-btn abt-btn--primary" href={servicesHref}>
             {t('about.hero.ctaServices')} <span class="abt-btn__arrow" aria-hidden="true">→</span>
           </a>
-          <a class="abt-btn" href={contactHref}>{t('about.hero.ctaContact')}</a>
         </div>
       </div>
       <div class="abt-hero__values">{t('about.hero.values')}</div>
@@ -324,22 +322,22 @@ const internationalCountries = [
       grid-template-rows: auto 1fr;
     }
     .abt-hero__right {
-      /* 16/10 preserva casi todo el 16/9 de origen — evita el cropping agresivo del 4/5. */
-      aspect-ratio: 16 / 10;
+      aspect-ratio: var(--ph-hero-img-aspect);
       border-bottom: none;
       order: -1;
-      /* Mobile: sin desborde, la imagen vuelve a caber en su columna. */
       overflow: hidden;
+      /* Reglas compartidas Talents/About/Services: aire contra el header-pill
+         + fundido arriba y abajo (definidos en global.css). */
+      margin-top: var(--ph-hero-img-gap-top);
     }
     .abt-hero__image {
       /* Reset del desborde lateral de desktop. */
       left: 0;
       right: 0;
       width: 100%;
-      /* En mobile el fundido pasa a ser vertical: se difumina hacia el texto inferior. */
       object-position: center center;
-      -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
-      mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
+      -webkit-mask-image: var(--ph-hero-img-fade-mobile);
+      mask-image: var(--ph-hero-img-fade-mobile);
     }
     .abt-hero__left {
       padding-top: 24px;

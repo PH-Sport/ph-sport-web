@@ -186,10 +186,8 @@ const t = useTranslations(lang);
     /* `right top` evita que en viewports ultra-anchos (2K+) el recorte vertical
        de `cover` baje las cabezas al área del fundido superior. */
     object-position: right top;
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 28%),
-                        linear-gradient(to bottom, transparent 0%, #000 10%, #000 88%, transparent 100%);
-    mask-image: linear-gradient(to right, transparent 0%, #000 28%),
-                linear-gradient(to bottom, transparent 0%, #000 10%, #000 88%, transparent 100%);
+    -webkit-mask-image: var(--ph-hero-img-fade-desktop-h), var(--ph-hero-img-fade-desktop-v);
+    mask-image: var(--ph-hero-img-fade-desktop-h), var(--ph-hero-img-fade-desktop-v);
     -webkit-mask-composite: source-in;
     mask-composite: intersect;
   }
@@ -503,13 +501,15 @@ const t = useTranslations(lang);
       right: auto;
       width: calc(100% + 2 * var(--ph-section-px, clamp(20px, 4vw, 48px)));
       height: auto;
-      aspect-ratio: 16 / 9;
-      margin: clamp(56px, 14vw, 96px) calc(-1 * var(--ph-section-px, clamp(20px, 4vw, 48px))) clamp(24px, 6vw, 40px);
+      aspect-ratio: var(--ph-hero-img-aspect);
+      margin: var(--ph-hero-img-gap-top)
+              calc(-1 * var(--ph-section-px, clamp(20px, 4vw, 48px)))
+              var(--ph-hero-img-gap-bottom);
     }
     .talents__hero-bg img {
       object-position: center center;
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 10%, #000 62%, transparent 100%);
-      mask-image: linear-gradient(to bottom, transparent 0%, #000 10%, #000 62%, transparent 100%);
+      -webkit-mask-image: var(--ph-hero-img-fade-mobile);
+      mask-image: var(--ph-hero-img-fade-mobile);
       -webkit-mask-composite: source-over;
       mask-composite: add;
     }

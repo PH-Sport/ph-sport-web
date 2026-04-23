@@ -73,6 +73,25 @@
 
   /* Secciones página: transparente para ver el fondo (body / logo parallax) a través de main */
   --ph-section-bg: transparent;
+
+  /* Hero image pattern (Talents / About / Services): reglas comunes para que
+     la imagen de entrada siempre quede alineada igual en las 3 secciones. */
+  --ph-hero-img-gap-top:       clamp(56px, 14vw, 96px); /* aire contra el header-pill */
+  --ph-hero-img-gap-bottom:    clamp(24px, 6vw, 40px);
+  --ph-hero-img-aspect:        16 / 9;
+  --ph-hero-img-fade-mobile:   linear-gradient(to bottom,
+                                 transparent 0%,
+                                 #000 18%,
+                                 #000 62%,
+                                 transparent 100%);
+  --ph-hero-img-fade-desktop-h: linear-gradient(to right,
+                                  transparent 0%,
+                                  #000 28%);
+  --ph-hero-img-fade-desktop-v: linear-gradient(to bottom,
+                                  transparent 0%,
+                                  #000 10%,
+                                  #000 88%,
+                                  transparent 100%);
 }
 
 @media (prefers-reduced-transparency: reduce) {

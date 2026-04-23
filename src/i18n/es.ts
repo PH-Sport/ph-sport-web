@@ -49,7 +49,7 @@ const es = {
   'home.services.area.career.title': 'Planificación de carrera',
   'home.services.area.career.body': 'Contexto y momento deportivo para trazar una trayectoria coherente y ambiciosa.',
   'home.services.area.international.title': 'Acceso internacional',
-  'home.services.area.international.body': 'Red activa en 12 países y oficinas propias en seis mercados clave.',
+  'home.services.area.international.body': 'Oficinas propias en seis mercados clave.',
   'home.services.area.comms.title': 'Comunicación y marketing',
   'home.services.area.comms.body': 'Marca personal del jugador dentro y fuera del campo, con enfoque editorial.',
   'home.services.area.legal.title': 'Asesoramiento legal y financiero',
@@ -83,7 +83,7 @@ const es = {
   'home.about.eyebrow': '04 · Sobre PHSPORT',
   'home.about.title': 'Las marcas suman,',
   'home.about.titleAccent': 'pero las personas marcan.',
-  'home.about.body': 'Somos una agencia de representación especializada en fútbol. Gestionamos presente, futuro y legado de cada jugador con cercanía, rigor y excelencia.',
+  'home.about.body': 'Somos una agencia de representación especializada en fútbol. Construimos y protegemos la carrera de cada jugador con cercanía, rigor y excelencia.',
   'home.about.cta': 'Conócenos',
   'home.about.stats.aria': 'Cifras PHSPORT',
   'home.about.stats.team.value': '21',
@@ -100,7 +100,7 @@ const es = {
   // --- Home: Contacto ---
   'home.contact.eyebrow': '05 · Contacto',
   'home.contact.title': 'Hablemos.',
-  'home.contact.lead': 'Si representas a un jugador, a un club o a una marca, escríbenos. Respondemos en menos de 48 horas.',
+  'home.contact.lead': 'Trabajamos con jugadores, clubes y marcas que comparten nuestra visión a largo plazo.',
   'home.contact.email': 'info@phsport.es',
   'home.contact.emailLabel': 'Email directo',
 

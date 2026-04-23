@@ -50,7 +50,7 @@ const en: Record<TranslationKey, string> = {
   'home.services.area.career.title': 'Career planning',
   'home.services.area.career.body': 'Context and sporting momentum to shape a coherent, ambitious trajectory.',
   'home.services.area.international.title': 'International access',
-  'home.services.area.international.body': 'An active network in 12 countries with offices in six key markets.',
+  'home.services.area.international.body': 'Owned offices in six key markets.',
   'home.services.area.comms.title': 'Communication & marketing',
   'home.services.area.comms.body': 'The player\u2019s personal brand on and off the pitch, built with an editorial approach.',
   'home.services.area.legal.title': 'Legal & financial advisory',
@@ -85,7 +85,7 @@ const en: Record<TranslationKey, string> = {
   'home.about.eyebrow': '04 · About PHSPORT',
   'home.about.title': 'Brands add up,',
   'home.about.titleAccent': 'but people make the mark.',
-  'home.about.body': 'We are a football-only representation agency. We manage the present, future and legacy of every player with closeness, rigour and excellence.',
+  'home.about.body': 'We are a football-only representation agency. We build and protect the career of every player with closeness, rigour and excellence.',
   'home.about.cta': 'Get to know us',
   'home.about.stats.aria': 'PHSPORT figures',
   'home.about.stats.team.value': '21',
@@ -102,7 +102,7 @@ const en: Record<TranslationKey, string> = {
   // --- Home: Contact ---
   'home.contact.eyebrow': '05 · Contact',
   'home.contact.title': 'Let\u2019s talk.',
-  'home.contact.lead': 'Whether you represent a player, a club, or a brand, drop us a line. We reply within 48 hours.',
+  'home.contact.lead': 'We work with players, clubs and brands that share our long-term vision.',
   'home.contact.email': 'info@phsport.es',
   'home.contact.emailLabel': 'Direct email',
 

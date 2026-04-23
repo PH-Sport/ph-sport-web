@@ -68,3 +68,9 @@ logo-reveal-test.png
 
 # Superpowers brainstorming companion sessions
 .superpowers/
+
+# Scripts de debugging temporales en la raíz
+/check-*.mjs
+/test-*.mjs
+/test-*.js
+/capture-*.mjs

@@ -100,7 +100,7 @@ const es = {
   // --- Home: Contacto ---
   'home.contact.eyebrow': '05 · Contacto',
   'home.contact.title': 'Hablemos.',
-  'home.contact.lead': 'Trabajamos con jugadores, clubes y marcas que comparten nuestra visión a largo plazo.',
+  'home.contact.lead': 'Trabajamos con jugadores que comparten nuestra visión a largo plazo.',
   'home.contact.email': 'info@phsport.es',
   'home.contact.emailLabel': 'Email directo',
 

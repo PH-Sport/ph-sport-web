@@ -102,7 +102,7 @@ const en: Record<TranslationKey, string> = {
   // --- Home: Contact ---
   'home.contact.eyebrow': '05 · Contact',
   'home.contact.title': 'Let\u2019s talk.',
-  'home.contact.lead': 'We work with players, clubs and brands that share our long-term vision.',
+  'home.contact.lead': 'We work with players who share our long-term vision.',
   'home.contact.email': 'info@phsport.es',
   'home.contact.emailLabel': 'Direct email',
 

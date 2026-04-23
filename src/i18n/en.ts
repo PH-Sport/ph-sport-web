@@ -176,11 +176,6 @@ const en: Record<TranslationKey, string> = {
   'about.presencia.country.alemania': 'Germany',
   'about.presencia.country.arabia': 'Saudi Arabia',
   'about.presencia.country.uruguay': 'Uruguay',
-  // Cierre manifesto
-  'about.manifesto.quotePre': "\"We don't just represent players.",
-  'about.manifesto.quoteAccent': 'We build structures',
-  'about.manifesto.quotePost': ' that maximize their performance, stability, and long-term projection."',
-  'about.manifesto.sig': '— PHSPORT · 360° SUPPORT',
 
   // --- Equipo (integrantes) ---
   'team.defaultLocation': 'SPAIN',
@@ -321,11 +316,6 @@ const en: Record<TranslationKey, string> = {
   'services.manifest.bodyAccent': 'we build structures',
   'services.manifest.bodyTrail': ' that maximize their performance, stability, and long-term projection.',
 
-  // CTA
-  'services.cta.eyebrow': 'NOW · NEXT · FOREVER FOOTBALL',
-  'services.cta.titleLead': 'A team for every decision. ',
-  'services.cta.titleAccent': 'One conversation',
-  'services.cta.titleTrail': ' to begin.',
 
   // --- Footer ---
   'footer.pages': 'Pages',

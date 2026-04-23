@@ -174,11 +174,6 @@ const es = {
   'about.presencia.country.alemania': 'Alemania',
   'about.presencia.country.arabia': 'Arabia Saudí',
   'about.presencia.country.uruguay': 'Uruguay',
-  // Cierre manifesto
-  'about.manifesto.quotePre': '"No solo representamos jugadores.',
-  'about.manifesto.quoteAccent': 'Construimos estructuras',
-  'about.manifesto.quotePost': ' que maximizan su rendimiento, estabilidad y proyección a largo plazo."',
-  'about.manifesto.sig': '— PHSPORT · ACOMPAÑAMIENTO 360º',
 
   // --- Equipo (integrantes) ---
   'team.defaultLocation': 'ESPAÑA',
@@ -319,11 +314,6 @@ const es = {
   'services.manifest.bodyAccent': 'construimos estructuras',
   'services.manifest.bodyTrail': ' que maximizan su rendimiento, estabilidad y proyección a largo plazo.',
 
-  // CTA
-  'services.cta.eyebrow': 'NOW · NEXT · FOREVER FOOTBALL',
-  'services.cta.titleLead': 'Un equipo para cada decisión. ',
-  'services.cta.titleAccent': 'Una conversación',
-  'services.cta.titleTrail': ' para empezar.',
 
   // --- Footer ---
   'footer.pages': 'Páginas',

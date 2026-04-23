@@ -17,6 +17,7 @@ export type RosterJsonRow = {
   name: string;
   club: { name: string } | null;
   nationalTeamCodes?: string[];
+  hidden?: boolean;
 };
 
 export type PlayerRole = 'player' | 'coach';
@@ -49,11 +50,13 @@ export type RosterEntry = {
 };
 
 export function getAllRosterEntries(): RosterEntry[] {
-  const players = jugadoresData.map((row) => ({
-    slug: slugify(row.name),
-    role: 'player' as const,
-    row: row as RosterJsonRow,
-  }));
+  const players = jugadoresData
+    .filter((row) => !row.hidden)
+    .map((row) => ({
+      slug: slugify(row.name),
+      role: 'player' as const,
+      row: row as RosterJsonRow,
+    }));
   const coaches = entrenadoresData.map((row) => ({
     slug: slugify(row.name),
     role: 'coach' as const,

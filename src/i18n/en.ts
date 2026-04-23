@@ -108,8 +108,7 @@ const en: Record<TranslationKey, string> = {
 
   // --- Jugadores ---
   'players.title': 'Talent we represent',
-  'players.subtitle':
-    'Elite players and coaches united by the same professional vision.',
+  'players.subtitle': 'Players and coaches united by the same vision.',
   'players.back': 'Back to talents',
   'players.empty': 'No players available.',
   'players.detail.bioEmpty': 'More about this profile coming soon.',
@@ -327,8 +326,6 @@ const en: Record<TranslationKey, string> = {
   'services.cta.titleLead': 'A team for every decision. ',
   'services.cta.titleAccent': 'One conversation',
   'services.cta.titleTrail': ' to begin.',
-  'services.cta.lead': 'Tell us about yourself or your club. We reply within 48 hours.',
-  'services.cta.button': 'Contact the agency',
 
   // --- Footer ---
   'footer.pages': 'Pages',

@@ -106,8 +106,7 @@ const es = {
 
   // --- Jugadores ---
   'players.title': 'Talento que representamos',
-  'players.subtitle':
-    'Jugadores y entrenadores de élite, unidos por una misma visión profesional.',
+  'players.subtitle': 'Jugadores y entrenadores unidos por una misma visión.',
   'players.back': 'Volver a talentos',
   'players.empty': 'No hay jugadores disponibles.',
   'players.detail.bioEmpty': 'Próximamente más información sobre este perfil.',
@@ -325,8 +324,6 @@ const es = {
   'services.cta.titleLead': 'Un equipo para cada decisión. ',
   'services.cta.titleAccent': 'Una conversación',
   'services.cta.titleTrail': ' para empezar.',
-  'services.cta.lead': 'Cuéntanos sobre ti o tu club. Respondemos en 48h.',
-  'services.cta.button': 'Contactar con la agencia',
 
   // --- Footer ---
   'footer.pages': 'Páginas',

@@ -321,7 +321,7 @@ const es = {
   'services.manifest.bodyTrail': ' que maximizan su rendimiento, estabilidad y proyección a largo plazo.',
 
   // CTA
-  'services.cta.eyebrow': '¿EMPEZAMOS?',
+  'services.cta.eyebrow': 'NOW · NEXT · FOREVER FOOTBALL',
   'services.cta.titleLead': 'Un equipo para cada decisión. ',
   'services.cta.titleAccent': 'Una conversación',
   'services.cta.titleTrail': ' para empezar.',

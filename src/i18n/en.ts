@@ -323,7 +323,7 @@ const en: Record<TranslationKey, string> = {
   'services.manifest.bodyTrail': ' that maximize their performance, stability, and long-term projection.',
 
   // CTA
-  'services.cta.eyebrow': 'SHALL WE BEGIN?',
+  'services.cta.eyebrow': 'NOW · NEXT · FOREVER FOOTBALL',
   'services.cta.titleLead': 'A team for every decision. ',
   'services.cta.titleAccent': 'One conversation',
   'services.cta.titleTrail': ' to begin.',

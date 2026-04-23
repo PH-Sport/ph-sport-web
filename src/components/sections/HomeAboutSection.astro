@@ -138,7 +138,9 @@ const aboutHref = lang === 'en' ? '/en/about/' : '/sobre-nosotros/';
 
   .home-about__stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 640px;
+    margin-inline: auto;
     gap: 0;
     margin: clamp(56px, 8vw, 96px) 0 0;
     padding: 0;

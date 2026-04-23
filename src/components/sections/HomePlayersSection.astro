@@ -1,59 +1,33 @@
 ---
-import type { PlayerDetailPayload } from '@/lib/playerDetail';
 import { useTranslations, type Lang } from '@/i18n/utils';
 
 interface Props {
   lang: Lang;
-  players: PlayerDetailPayload[];
 }
 
-const { lang, players } = Astro.props;
+const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const topThree = players.slice(0, 3);
 const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
 ---
 
 <section class="home-players" id="talentos" aria-labelledby="home-players-title">
-  <header class="home-players__head">
-    <span class="home-players__eyebrow">{t('home.players.eyebrow')}</span>
-    <h2 class="home-players__title" id="home-players-title">
-      {lang === 'es' ? 'El ' : 'The '}<em>{t('home.players.titleAccent')}</em>.
-    </h2>
-    <p class="home-players__lead">{t('home.players.lead')}</p>
-  </header>
+  <div class="home-players__row">
+    <header class="home-players__head">
+      <span class="home-players__eyebrow">{t('home.players.eyebrow')}</span>
+      <h2 class="home-players__title" id="home-players-title">
+        {lang === 'es' ? 'El ' : 'The '}<em>{t('home.players.titleAccent')}</em>.
+      </h2>
+      <p class="home-players__lead">{t('home.players.lead')}</p>
+    </header>
 
-  {topThree.length === 0 ? (
-    <p class="home-players__empty">{t('players.empty')}</p>
-  ) : (
-    <>
-      <ul class="home-players__grid" role="list">
-        {topThree.map((player, idx) => (
-          <li class={`home-players__item home-players__item--${idx + 1}`}>
-            <div class="home-players__card">
-              <div class="home-players__photo">
-                <img src={player.photoSrc} alt={player.name} loading="lazy" decoding="async" />
-              </div>
-              <span class="home-players__corner" aria-hidden="true"></span>
-              <div class="home-players__meta">
-                <span class="home-players__idx">{String(idx + 1).padStart(2, '0')}</span>
-                <span class="home-players__name">{player.name}</span>
-                <span class="home-players__club">{player.subtitle}</span>
-              </div>
-              <span class="home-players__underline" aria-hidden="true"></span>
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      <div class="home-players__cta-wrap">
-        <a class="home-players__cta" href={listHref}>
-          {t('home.players.cta')}
-          <span class="home-players__arrow" aria-hidden="true">→</span>
-        </a>
-      </div>
-    </>
-  )}
+    <div class="home-players__cta-wrap">
+      <a class="home-players__cta" href={listHref}>
+        {t('home.players.cta')}
+        <span class="home-players__arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
 </section>
 
 <style>
@@ -63,7 +37,14 @@ const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
     color: var(--color-ph-white, #ffffff);
   }
 
-  .home-players__head { max-width: 720px; margin-bottom: clamp(32px, 5vw, 64px); }
+  .home-players__row {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(28px, 4vw, 48px);
+    align-items: flex-start;
+  }
+
+  .home-players__head { max-width: 720px; }
 
   .home-players__eyebrow {
     display: inline-flex;
@@ -104,122 +85,21 @@ const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
     max-width: 520px;
   }
 
-  .home-players__grid {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: clamp(10px, 1.5vw, 20px);
-  }
-
-  .home-players__item { margin: 0; }
-
-  .home-players__card {
-    position: relative;
-    display: block;
-    overflow: hidden;
-    background: var(--color-ph-bg-2, #15171b);
-    border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    border-radius: var(--radius-md);
-    transition: transform 0.35s cubic-bezier(.7, 0, .2, 1);
-    text-decoration: none;
-    color: inherit;
-    transform-origin: center bottom;
-  }
-
-  .home-players__photo { position: relative; aspect-ratio: 3 / 4; }
-  .home-players__photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .home-players__corner {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 22px;
-    height: 22px;
-    border-top: 1px solid var(--color-ph-gold, #d6b25e);
-    border-right: 1px solid var(--color-ph-gold, #d6b25e);
-    opacity: 0;
-    transition: opacity 0.35s;
-    pointer-events: none;
-  }
-
-  .home-players__meta {
-    position: absolute;
-    inset: 0;
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    gap: 6px;
-    background: linear-gradient(
-      to top,
-      rgba(13, 15, 18, 0.95) 0%,
-      rgba(13, 15, 18, 0.35) 40%,
-      rgba(13, 15, 18, 0) 65%
-    );
-    pointer-events: none;
-  }
-
-  .home-players__idx {
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-players__name {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(16px, 1.6vw, 22px);
-    letter-spacing: -0.01em;
-    line-height: 1.15;
-    color: var(--color-ph-white, #ffffff);
-    transition: color 0.3s;
-  }
-  .home-players__club {
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    text-transform: uppercase;
-  }
-
-  .home-players__underline {
-    position: absolute;
-    left: 18px;
-    right: 18px;
-    bottom: 16px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.5s cubic-bezier(.7, 0, .2, 1);
-    pointer-events: none;
-  }
-
-  .home-players__card:hover { transform: translateY(-3px); }
-  .home-players__card:hover .home-players__name { color: var(--color-ph-gold, #d6b25e); }
-  .home-players__card:hover .home-players__corner { opacity: 1; }
-  .home-players__card:hover .home-players__underline { transform: scaleX(1); }
-
-
-  @media (prefers-reduced-motion: reduce) {
-    .home-players__card,
-    .home-players__name,
-    .home-players__corner,
-    .home-players__underline { transition: none; }
-    .home-players__card:hover { transform: none; }
-  }
-
   .home-players__cta-wrap {
-    margin-top: clamp(24px, 4vw, 48px);
     display: flex;
-    justify-content: center;
+  }
+
+  @media (min-width: 900px) {
+    .home-players__row {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: clamp(32px, 5vw, 72px);
+    }
+    .home-players__cta-wrap {
+      flex-shrink: 0;
+      padding-bottom: 6px;
+    }
   }
 
   .home-players__cta {
@@ -244,18 +124,6 @@ const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
     transform: translateX(4px);
   }
   .home-players__arrow { transition: transform 0.2s; }
-
-  .home-players__empty {
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 15px;
-  }
-
-  @media (max-width: 720px) {
-    .home-players__grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .home-players__item--3 { display: none; }
-    .home-players__name { font-size: 15px; }
-    .home-players__meta { padding: 14px; }
-  }
 </style>
 
 <script>
@@ -274,8 +142,7 @@ const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
     const title = section.querySelector<HTMLElement>('.home-players__title');
     const lead = section.querySelector<HTMLElement>('.home-players__lead');
     const head = section.querySelector<HTMLElement>('.home-players__head');
-    const grid = section.querySelector<HTMLElement>('.home-players__grid');
-    const cards = section.querySelectorAll<HTMLElement>('.home-players__card');
+    const cta = section.querySelector<HTMLElement>('.home-players__cta-wrap');
 
     if (eyebrow && head) {
       trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
@@ -300,16 +167,14 @@ const listHref = lang === 'en' ? '/en/players/' : '/jugadores/';
         scrollTrigger: { trigger: head, start: 'top 80%', once: true },
       });
     }
-    if (cards.length && grid) {
-      gsap.from(cards, {
+    if (cta) {
+      gsap.from(cta, {
         opacity: 0,
-        scale: 0.96,
-        y: 24,
-        duration: 0.9,
+        y: 14,
+        duration: 0.7,
         ease: 'power3.out',
-        stagger: 0.12,
-        clearProps: 'transform,opacity',
-        scrollTrigger: { trigger: grid, start: 'top 80%', once: true },
+        delay: 0.3,
+        scrollTrigger: { trigger: cta, start: 'top 90%', once: true },
       });
     }
 

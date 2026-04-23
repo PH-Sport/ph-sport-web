@@ -8,15 +8,9 @@ import HomeAboutSection from '@/components/sections/HomeAboutSection.astro';
 import HomeContactSection from '@/components/sections/HomeContactSection.astro';
 import { useTranslations, getLangFromUrl } from '@/i18n/utils';
 import { SITE_URL } from '@/lib/constants';
-import { buildPlayerDetailPayloadsForLang, getAllRosterEntries } from '@/lib/playerDetail';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-
-const rosterPlayers = getAllRosterEntries().filter((e) => e.role === 'player');
-const topSlugs = rosterPlayers.slice(0, 3).map((e) => e.slug);
-const payloads = await buildPlayerDetailPayloadsForLang(lang);
-const homePlayers = topSlugs.map((slug) => payloads[slug]).filter(Boolean);
 ---
 
 <BaseLayout
@@ -28,7 +22,7 @@ const homePlayers = topSlugs.map((slug) => payloads[slug]).filter(Boolean);
 >
   <LogoReveal client:load />
   <HeroSection lang={lang} sectionId="inicio" />
-  <HomePlayersSection lang={lang} players={homePlayers} />
+  <HomePlayersSection lang={lang} />
   <HomeServicesSection lang={lang} />
   <HomeAboutSection lang={lang} />
   <HomeContactSection lang={lang} />

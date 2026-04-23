@@ -10,7 +10,7 @@ import jugadoresData from '../../data/jugadores.json';
 import entrenadoresData from '../../data/entrenadores.json';
 import placeholderSrc from '@/assets/images/players/avatar-placeholder.svg?url';
 import { getPlayerPhotoBySlug } from '@/lib/playerPhotos';
-import { useTranslations, type Lang } from '@/i18n/utils';
+import type { Lang } from '@/i18n/utils';
 import { slugify } from '@/lib/slugify';
 
 export type RosterJsonRow = {
@@ -24,7 +24,7 @@ export type PlayerRole = 'player' | 'coach';
 export type PlayerDetailPayload = {
   slug: string;
   name: string;
-  /** Línea tipo tarjeta (club o "Sin club" / "No club") */
+  /** Línea tipo tarjeta (nombre del club, o cadena vacía si el talento no tiene club). */
   subtitle: string;
   role: PlayerRole;
   nationalTeamCodes: string[];
@@ -92,7 +92,6 @@ async function resolvePhotoSrcForPayload(
 export async function buildPlayerDetailPayloadsForLang(
   lang: Lang,
 ): Promise<Record<string, PlayerDetailPayload>> {
-  const t = useTranslations(lang);
   const bySlug = await getPlayersCollectionBySlug();
   const roster = getAllRosterEntries();
 
@@ -121,7 +120,7 @@ export async function buildPlayerDetailPayloadsForLang(
         contentHtml = '';
       }
 
-      const subtitle = clubName && clubName.length > 0 ? clubName : t('players.club.none');
+      const subtitle = clubName && clubName.length > 0 ? clubName : '';
       const photoSrc = await resolvePhotoSrcForPayload(slug, entry);
 
       const payload: PlayerDetailPayload = {
@@ -145,9 +144,8 @@ export async function buildPlayerDetailPayloadsForLang(
  * Payloads ligeros para el modal inline (solo los campos que necesita el flip card).
  */
 export function buildModalPayloadsForLang(
-  lang: Lang,
+  _lang: Lang,
 ): Record<string, ModalPayload> {
-  const t = useTranslations(lang);
   const roster = getAllRosterEntries();
   const out: Record<string, ModalPayload> = {};
 
@@ -156,7 +154,7 @@ export function buildModalPayloadsForLang(
     out[slug] = {
       slug,
       name: row.name,
-      subtitle: clubName && clubName.length > 0 ? clubName : t('players.club.none'),
+      subtitle: clubName && clubName.length > 0 ? clubName : '',
     };
   }
 

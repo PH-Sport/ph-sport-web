@@ -142,7 +142,7 @@ const t = useTranslations(lang);
           <span class="talents__corner" aria-hidden="true"></span>
           <div class="talents__meta">
             <span class="talents__name">{player.name}</span>
-            <span class="talents__club">{player.subtitle}</span>
+            {player.subtitle && <span class="talents__club">{player.subtitle}</span>}
           </div>
           <span class="talents__underline" aria-hidden="true"></span>
         </div>

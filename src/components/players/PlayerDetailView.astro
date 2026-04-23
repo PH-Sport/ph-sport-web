@@ -34,7 +34,7 @@ const nationalTeamAriaLabel =
   nationalTeamCodes.length > 0 ? formatNationalTeamAriaLabel(nationalTeamCodes, lang) : undefined;
 const showBadges = badgeItems.length > 0 && Boolean(nationalTeamAriaLabel);
 
-const alt = `${name} — ${subtitle}`;
+const alt = subtitle ? `${name} — ${subtitle}` : name;
 const hasBio = contentHtml.trim().length > 0;
 
 const resolvedPhoto: ImageMetadata | undefined =
@@ -91,7 +91,7 @@ const resolvedPhoto: ImageMetadata | undefined =
 
     <div class="player-detail-meta">
       <h1 class="player-detail-name">{name}</h1>
-      <p class="player-detail-subtitle">{subtitle}</p>
+      {subtitle && <p class="player-detail-subtitle">{subtitle}</p>}
     </div>
   </div>
 

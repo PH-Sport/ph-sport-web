@@ -39,7 +39,7 @@ const assetPhoto = getPlayerPhotoBySlug(slug!);
 const photo = assetPhoto ?? undefined;
 
 const title = `${payload.name} — ${t('site.name')}`;
-const description = `${payload.name} · ${payload.subtitle}`;
+const description = payload.subtitle ? `${payload.name} · ${payload.subtitle}` : payload.name;
 ---
 
 <BaseLayout

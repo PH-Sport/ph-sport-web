@@ -38,7 +38,7 @@ const {
   clusterPosition,
 } = Astro.props;
 const clusterClass = clusterPosition ? `card--cluster-${clusterPosition}` : undefined;
-const alt = `${name} — ${subtitle}`;
+const alt = subtitle ? `${name} — ${subtitle}` : name;
 const cardTitle = alt;
 const badgeItems = nationalTeamCodes
   .map((code) => {
@@ -92,7 +92,7 @@ const useRemotePhoto = Boolean(photoUrl && photoUrl.length > 0);
       ) : null}
       <div class="card-overlay">
         <p class="card-name">{name}</p>
-        <p class="card-subtitle">{subtitle}</p>
+        {subtitle && <p class="card-subtitle">{subtitle}</p>}
       </div>
     </a>
   ) : (
@@ -136,7 +136,7 @@ const useRemotePhoto = Boolean(photoUrl && photoUrl.length > 0);
       ) : null}
       <div class="card-overlay">
         <p class="card-name">{name}</p>
-        <p class="card-subtitle">{subtitle}</p>
+        {subtitle && <p class="card-subtitle">{subtitle}</p>}
       </div>
     </article>
   )

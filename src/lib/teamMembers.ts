@@ -14,7 +14,7 @@ export interface TeamMember {
 
 export const TEAM_MEMBERS: readonly TeamMember[] = [
   { id: 'cogollos',   name: 'Ángel Cogollos' },
-  { id: 'castello',   name: 'Santiago Castello' },
+  { id: 'castello',   name: 'Santiago Castelló' },
   { id: 'castell',    name: 'Ángel Castell',     nationality: 'ES', countryKey: 'arabia' },
   { id: 'weggelaar',  name: 'Bibiana Weggelaar', nationality: 'ES', countryKey: 'uk' },
   { id: 'canoa',      name: 'Pedro Canoa',       nationality: 'PT', countryKey: 'portugal' },

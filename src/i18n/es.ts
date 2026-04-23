@@ -86,8 +86,6 @@ const es = {
   'home.about.body': 'Somos una agencia de representación especializada en fútbol. Construimos y protegemos la carrera de cada jugador con cercanía, rigor y excelencia.',
   'home.about.cta': 'Conócenos',
   'home.about.stats.aria': 'Cifras PHSPORT',
-  'home.about.stats.team.value': '21',
-  'home.about.stats.team.label': 'Integrantes',
   'home.about.stats.countries.value': '6',
   'home.about.stats.countries.label': 'Países',
   'home.about.stats.service.value': '360°',

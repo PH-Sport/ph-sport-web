@@ -88,8 +88,6 @@ const en: Record<TranslationKey, string> = {
   'home.about.body': 'We are a football-only representation agency. We build and protect the career of every player with closeness, rigour and excellence.',
   'home.about.cta': 'Get to know us',
   'home.about.stats.aria': 'PHSPORT figures',
-  'home.about.stats.team.value': '21',
-  'home.about.stats.team.label': 'Team members',
   'home.about.stats.countries.value': '6',
   'home.about.stats.countries.label': 'Countries',
   'home.about.stats.service.value': '360°',

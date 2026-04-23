@@ -233,7 +233,7 @@ const en: Record<TranslationKey, string> = {
   'services.hero.titleLead': 'A team',
   'services.hero.titleRest': 'off the ',
   'services.hero.titleAccent': 'pitch',
-  'services.hero.lead': 'Strategic representation, international reach, and long-term focus. Five management areas and six operating pillars — under one roof, aligned with one person: the player.',
+  'services.hero.lead': 'Strategic representation, international reach, and long-term focus. Five management areas and six operating pillars to support the player at every stage of their career.',
 
   // Áreas header
   'services.areas.eyebrow': 'Management areas',
@@ -264,9 +264,9 @@ const en: Record<TranslationKey, string> = {
 
   // Áreas — 03 International access
   'services.areas.items.international.title': 'International access',
-  'services.areas.items.international.lead': 'An active network in 12 countries and owned offices in six key markets. We open real doors and stand by the player through every adaptation.',
+  'services.areas.items.international.lead': 'Owned offices in six key markets. We open real doors and stand by the player through every adaptation.',
   'services.areas.items.international.bullet1': 'Market strategy and positioning',
-  'services.areas.items.international.bullet2': 'Active network in 12 countries',
+  'services.areas.items.international.bullet2': 'Presence across 6 countries',
   'services.areas.items.international.bullet3': 'Offices in ESP, PT, UK, DE, KSA, and UY',
   'services.areas.items.international.bullet4': 'Adaptation at every career stage',
 

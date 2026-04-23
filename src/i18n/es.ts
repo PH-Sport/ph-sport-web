@@ -231,7 +231,7 @@ const es = {
   'services.hero.titleLead': 'Un equipo',
   'services.hero.titleRest': 'fuera del ',
   'services.hero.titleAccent': 'campo',
-  'services.hero.lead': 'Representación estratégica, visión internacional y enfoque a largo plazo. Cinco áreas de gestión y seis pilares del modelo operativo — bajo un mismo techo, alineados con una sola persona: el jugador.',
+  'services.hero.lead': 'Representación estratégica, visión internacional y enfoque a largo plazo. Cinco áreas de gestión y seis pilares del modelo operativo para acompañar al jugador en cada etapa de su carrera.',
 
   // Áreas header
   'services.areas.eyebrow': 'Áreas de gestión',
@@ -262,9 +262,9 @@ const es = {
 
   // Áreas — 03 Acceso internacional
   'services.areas.items.international.title': 'Acceso internacional',
-  'services.areas.items.international.lead': 'Una red activa en 12 países y oficinas propias en seis mercados clave. Abrimos puertas reales y acompañamos al jugador en cada adaptación.',
+  'services.areas.items.international.lead': 'Oficinas propias en seis mercados clave. Abrimos puertas reales y acompañamos al jugador en cada adaptación.',
   'services.areas.items.international.bullet1': 'Estrategia de mercado y posicionamiento',
-  'services.areas.items.international.bullet2': 'Red activa en 12 países',
+  'services.areas.items.international.bullet2': 'Presencia en 6 países',
   'services.areas.items.international.bullet3': 'Oficinas en ESP, PT, UK, DE, KSA y UY',
   'services.areas.items.international.bullet4': 'Adaptación a cada etapa de la carrera',
 

@@ -138,14 +138,14 @@ const en: Record<TranslationKey, string> = {
 
   // --- Sobre nosotros ---
   'about.title': 'About PHSPORT',
-  'about.subtitle': 'A representation agency built on three principles: present, future and legacy.',
+  'about.subtitle': 'Strategic representation, international reach, and long-term focus.',
   // Hero split
   'about.hero.eyebrow': '04 · About us',
   'about.hero.titlePre': 'Representing with ',
   'about.hero.titleAccent': 'purpose',
   'about.hero.titlePost': '.',
   'about.hero.body1': "PHSPORT is a football agency that builds and protects players' careers through strategic representation, international reach, and long-term focus.",
-  'about.hero.body2': "More than representing players, we develop integral structures that support the player across every key area of their career — on and off the pitch.",
+  'about.hero.body2': "Beyond representation, we build an integral working structure that supports the player across every key area of their career.",
   'about.hero.ctaServices': 'Our services',
   'about.hero.ctaContact': 'Get in touch',
   'about.hero.values': 'EXCELLENCE · CLOSENESS · RIGOR',
@@ -160,12 +160,12 @@ const en: Record<TranslationKey, string> = {
   'about.historia.p1': "PHSPORT represents footballers with potential and supports them with integral, strategic, and personalized management to drive their growth on and off the pitch.",
   'about.historia.p2': 'We work across five key areas: representation and intermediation, career planning, access to clubs and international opportunities, communication and marketing, and legal and financial advisory.',
   'about.historia.p3': "Beyond representation, we build an integral working structure — press, media, sports psychology, performance, and family office — to support every stage of the player's career.",
-  'about.historia.p4': '365 Service: continuous availability and follow-up. Adaptation at every career stage. Integral support on and off the pitch.',
+  'about.historia.p4': "At PHSPORT we don't just represent players — we build structures that maximize their performance, stability, and long-term projection.",
   // Equipo (section header within About)
   'about.team.eyebrow': 'THE TEAM',
-  'about.team.titlePre': 'The ',
-  'about.team.titleAccent': 'people',
-  'about.team.titlePost': ' behind it.',
+  'about.team.titlePre': '',
+  'about.team.titleAccent': 'Who',
+  'about.team.titlePost': ' we are.',
   'about.team.meta': '21 MEMBERS · 6 COUNTRIES',
   // Presencia
   'about.presencia.eyebrow': '05 · Presence',

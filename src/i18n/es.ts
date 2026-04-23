@@ -35,7 +35,7 @@ const es = {
   'home.players.eyebrow': '02 · Talentos',
   'home.players.title': 'El roster.',
   'home.players.titleAccent': 'roster',
-  'home.players.lead': 'Futbolistas profesionales con proyección internacional. Cada carrera, un proyecto distinto.',
+  'home.players.lead': 'Futbolistas de todas las categorías. Cada carrera, un proyecto distinto.',
 
   // --- Home: Servicios (acordeón) ---
   'home.services.eyebrow': '03 · Servicios',
@@ -116,7 +116,7 @@ const es = {
   'talents.eyebrow': '02 · Talentos',
   'talents.title': 'El ',
   'talents.titleAccent': 'roster',
-  'talents.lead': 'Futbolistas profesionales con proyección internacional. Cada carrera, un proyecto distinto.',
+  'talents.lead': 'Futbolistas de todas las categorías. Cada carrera, un proyecto distinto.',
   'talents.search.placeholder': 'Buscar por nombre…',
   'talents.search.label': 'Buscar talentos',
   'talents.search.clear': 'Limpiar búsqueda',
@@ -136,14 +136,14 @@ const es = {
 
   // --- Sobre nosotros ---
   'about.title': 'Sobre PHSPORT',
-  'about.subtitle': 'Agencia de representación fundada sobre tres principios: presente, futuro y legado.',
+  'about.subtitle': 'Representación estratégica, visión internacional y enfoque a largo plazo.',
   // Hero split
   'about.hero.eyebrow': '04 · Sobre nosotros',
   'about.hero.titlePre': 'Representar con ',
   'about.hero.titleAccent': 'propósito',
   'about.hero.titlePost': '.',
   'about.hero.body1': 'PHSPORT es una agencia de fútbol que construye y protege la carrera de los futbolistas a través de una representación estratégica, visión internacional y enfoque a largo plazo.',
-  'about.hero.body2': 'Más que representar jugadores, desarrollamos estructuras integrales que acompañan al jugador en todas las áreas clave de su carrera — dentro y fuera del campo.',
+  'about.hero.body2': 'Más allá de la representación, desarrollamos una estructura de trabajo integral que acompaña al jugador en todas las áreas clave de su carrera.',
   'about.hero.ctaServices': 'Nuestros servicios',
   'about.hero.ctaContact': 'Contactar',
   'about.hero.values': 'EXCELENCIA · CERCANÍA · RIGOR',
@@ -158,12 +158,12 @@ const es = {
   'about.historia.p1': 'PHSPORT representa futbolistas con proyección y les acompaña con una gestión integral, estratégica y personalizada para impulsar su crecimiento dentro y fuera del campo.',
   'about.historia.p2': 'Trabajamos sobre cinco áreas clave: representación e intermediación, planificación de carrera, acceso a clubes y oportunidades internacionales, comunicación y marketing, y asesoramiento legal y financiero.',
   'about.historia.p3': 'Más allá de la representación, desarrollamos una estructura de trabajo integral — prensa, media, psicología deportiva, rendimiento y family office — para acompañar cada etapa de la carrera del jugador.',
-  'about.historia.p4': 'Servicio 365: disponibilidad y seguimiento continuo. Adaptación a cada etapa de la carrera. Soporte integral dentro y fuera del campo.',
+  'about.historia.p4': 'En PHSPORT no solo representamos jugadores, construimos estructuras que maximizan su rendimiento, estabilidad y proyección a largo plazo.',
   // Equipo (cabecera del bloque dentro de About)
   'about.team.eyebrow': 'EL EQUIPO',
-  'about.team.titlePre': 'Las ',
-  'about.team.titleAccent': 'personas',
-  'about.team.titlePost': ' detrás.',
+  'about.team.titlePre': '',
+  'about.team.titleAccent': 'Quiénes',
+  'about.team.titlePost': ' somos.',
   'about.team.meta': '21 INTEGRANTES · 6 PAÍSES',
   // Presencia
   'about.presencia.eyebrow': '05 · Presencia',

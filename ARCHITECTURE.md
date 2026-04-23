@@ -115,6 +115,8 @@ ph-sport-web/
 │       └── ph-ui-buttons.css
 │
 ├── data/
+│   ├── jugadores.json               # Roster principal. "hidden": true oculta sin borrar
+│   └── entrenadores.json            # Cuerpo técnico
 ├── ARCHITECTURE.md
 ├── DECISIONS.md
 └── astro.config.mjs
@@ -355,7 +357,7 @@ No superar `0.75rem`. La marca no es redondeada.
 | `HomeServicesSection.astro` | ✅ Completo | CSS accordion + GSAP |
 | `HomeAboutSection.astro` | ✅ Completo | Head + counters GSAP |
 | `HomeContactSection.astro` | ✅ Completo | Layout 50/50 edge-to-edge, GSAP |
-| `AboutSection.astro` | ✅ Completo | V3 — historia, equipo (21 integrantes), manifesto, cierre |
+| `AboutSection.astro` | ✅ Completo | V3 — historia, equipo (21 integrantes) |
 | `ServicesSection.astro` | ✅ Completo | 6 pilares + hero |
 | `TalentsSection.astro` | ✅ Completo | V3, portraits 3:4, GSAP stagger |
 | `PlayerDetailView.astro` | ✅ Completo | Vista de detalle individual |

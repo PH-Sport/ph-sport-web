@@ -6,6 +6,18 @@ Orden: más reciente primero.
 
 ---
 
+## 2026-04-23 · Jugadores ocultos con campo `hidden` en jugadores.json
+
+**Decisión**: los jugadores pendientes de firma se marcan con `"hidden": true` en `data/jugadores.json`. `getAllRosterEntries()` en `playerDetail.ts` los filtra en build time — no llegan al navegador.
+
+**Alternativas consideradas**: eliminarlos temporalmente del JSON, o moverlos a un archivo separado `jugadores_pendientes.json`.
+
+**Motivo**: conservar los datos en el mismo archivo facilita activarlos en el futuro (basta con quitar `"hidden": true`). El filtro en build time es más limpio que hacerlo en cliente y no añade JS al bundle.
+
+**Regla resultante**: para ocultar un jugador temporalmente, añadir `"hidden": true` a su entrada en `jugadores.json`. Para reactivarlo, eliminar el campo.
+
+---
+
 ## 2026-04-22 · Hero con vídeo de fondo — 3 variantes mp4 + poster
 
 **Decisión**: el hero usa vídeo de fondo con tres variantes de calidad servidas localmente (`video-ph-web-480.mp4`, `*-720.mp4`, `*.mp4`) y un poster estático (`hero-poster.webp`) como LCP real.

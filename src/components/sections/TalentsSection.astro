@@ -12,18 +12,7 @@ const t = useTranslations(lang);
 ---
 
 <section class="talents" aria-labelledby="talents-title">
-  <div class="talents__hero-bg" aria-hidden="true">
-    <img
-      src="/talents-hero.webp"
-      srcset="/talents-hero-sm.webp 960w, /talents-hero.webp 1920w"
-      sizes="(max-width: 900px) 100vw, 70vw"
-      alt=""
-      width="1920"
-      height="1080"
-      loading="eager"
-      decoding="async"
-    />
-  </div>
+  <div class="talents__hero-bg" aria-hidden="true"></div>
 
   <header class="talents__head">
     <span class="talents__eyebrow">{t('talents.eyebrow')}</span>
@@ -178,14 +167,9 @@ const t = useTranslations(lang);
     overflow: hidden;
     pointer-events: none;
     z-index: 0;
-  }
-  .talents__hero-bg img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* `right top` evita que en viewports ultra-anchos (2K+) el recorte vertical
-       de `cover` baje las cabezas al área del fundido superior. */
-    object-position: right top;
+    background:
+      repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 10px),
+      var(--color-ph-bg-2, #15171b);
     -webkit-mask-image: var(--ph-hero-img-fade-desktop-h), var(--ph-hero-img-fade-desktop-v);
     mask-image: var(--ph-hero-img-fade-desktop-h), var(--ph-hero-img-fade-desktop-v);
     -webkit-mask-composite: source-in;
@@ -506,8 +490,7 @@ const t = useTranslations(lang);
               calc(-1 * var(--ph-section-px, clamp(20px, 4vw, 48px)))
               var(--ph-hero-img-gap-bottom);
     }
-    .talents__hero-bg img {
-      object-position: center center;
+    .talents__hero-bg {
       -webkit-mask-image: var(--ph-hero-img-fade-mobile);
       mask-image: var(--ph-hero-img-fade-mobile);
       -webkit-mask-composite: source-over;

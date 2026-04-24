@@ -144,7 +144,7 @@ const t = useTranslations(lang);
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, wrapWords, trackingReveal, clipPathReveal,
+    reducedMotion, wrapWords, trackingReveal,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -173,7 +173,16 @@ const t = useTranslations(lang);
       });
     }
     if (image && window.matchMedia('(min-width: 901px)').matches) {
-      clipPathReveal(image, 'left', { trigger: image, start: 'top 80%', once: true });
+      gsap.fromTo(
+        image,
+        { clipPath: 'inset(0 100% 0 0)' },
+        {
+          clipPath: 'inset(0 0 0 0)',
+          duration: 0.7,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: image, start: 'top 90%', once: true },
+        },
+      );
     }
 
     requestAnimationFrame(() => ScrollTrigger.refresh());

@@ -424,18 +424,20 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     letter-spacing: -0.02em;
     line-height: 1.1;
   }
-  /* Toggle: mismo lenguaje que Home (+ → —, sin caja), escalado a 40px para
-     marcar la jerarquía de sección dedicada frente al hint del Home (20px). */
+  /* Toggle: mismo lenguaje que Home (+ → —, sin caja). 24px en Servicios (20%
+     mayor que los 20px del hint de Home) marca la jerarquía de sección dedicada
+     sin competir con el peso tipográfico del título. El tap-target real es todo
+     el <button> de la fila, así que el contenedor solo aporta peso visual. */
   .srv-area-row__toggle {
     position: relative;
-    width: 40px; height: 40px;
+    width: 24px; height: 24px;
     flex-shrink: 0;
   }
   .srv-area-row__toggle span {
     position: absolute;
     top: 50%;
     left: 0;
-    width: 40px;
+    width: 24px;
     height: 1px;
     background: currentColor;
     transform: translateY(-50%);

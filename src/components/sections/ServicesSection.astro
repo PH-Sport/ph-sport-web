@@ -331,12 +331,10 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
       position: relative;
       top: auto;
       right: auto;
-      width: calc(100% + 2 * var(--srv-edge));
+      width: 100%;
       height: auto;
       aspect-ratio: var(--ph-hero-img-aspect);
-      margin: var(--ph-hero-img-gap-top)
-              calc(-1 * var(--srv-edge))
-              var(--ph-hero-img-gap-bottom);
+      margin: var(--ph-hero-img-gap-top) 0 var(--ph-hero-img-gap-bottom);
       background:
         linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)),
         url('/services-hero-sm.webp') center / cover no-repeat,

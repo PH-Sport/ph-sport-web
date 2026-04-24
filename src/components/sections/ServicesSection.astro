@@ -990,13 +990,13 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     pillars.forEach((block, idx) => {
       const img = block.querySelector<HTMLElement>('.srv-block__img');
       if (img) {
-        const from = idx % 2 === 0 ? 'inset(0 100% 0 0)' : 'inset(0 0 0 100%)';
         gsap.fromTo(
           img,
-          { clipPath: from },
+          { autoAlpha: 0, scale: 1.06 },
           {
-            clipPath: 'inset(0 0 0 0)',
-            duration: 0.9,
+            autoAlpha: 1,
+            scale: 1,
+            duration: 1.0,
             ease: 'power3.out',
             scrollTrigger: { trigger: block, start: 'top 80%', once: true },
           },

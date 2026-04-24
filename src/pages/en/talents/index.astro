@@ -1,0 +1,24 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import TalentsSection from '@/components/sections/TalentsSection.astro';
+import { useTranslations, type Lang } from '@/i18n/utils';
+import { SITE_URL } from '@/lib/constants';
+import { buildPlayerDetailPayloadsForLang, getAllRosterEntries } from '@/lib/playerDetail';
+
+const lang: Lang = 'en';
+const t = useTranslations(lang);
+
+const roster = getAllRosterEntries();
+const payloads = await buildPlayerDetailPayloadsForLang(lang);
+const players = roster.map((e) => payloads[e.slug]).filter(Boolean);
+---
+
+<BaseLayout
+  title={`${t('players.title')} — ${t('site.name')}`}
+  description={t('site.description')}
+  lang={lang}
+  canonical={`${SITE_URL}/en/talents/`}
+  hasHero
+>
+  <TalentsSection lang={lang} players={players} />
+</BaseLayout>

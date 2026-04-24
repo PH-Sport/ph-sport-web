@@ -50,12 +50,8 @@ export function getLangFromUrl(url: URL): Lang {
 const STATIC_ROUTES: Array<{ es: string; en: string }> = [
   { es: '/',               en: '/en/' },
   { es: '/sobre-nosotros', en: '/en/about' },
-  { es: '/jugadores/',     en: '/en/players/' },
+  { es: '/talentos/',      en: '/en/talents/' },
   { es: '/servicios',      en: '/en/services' },
-];
-
-const DYNAMIC_ROUTES: Array<{ es: string; en: string }> = [
-  { es: '/jugadores/:slug', en: '/en/players/:slug' },
 ];
 
 function normalize(path: string): string {
@@ -74,39 +70,18 @@ for (const route of STATIC_ROUTES) {
  * Devuelve el pathname equivalente en el otro idioma.
  * Usado por BaseLayout (hreflang) y por el selector de idioma del Header.
  *
- * Rutas estáticas: se buscan en los mapas generados desde STATIC_ROUTES.
- * Rutas dinámicas: se resuelven con DYNAMIC_ROUTES (mismo slug en ambos idiomas).
- *
- * /sobre-nosotros              → /en/about
- * /en/about                    → /sobre-nosotros
- * /jugadores/carlos-garcia     → /en/players/carlos-garcia
- * /en/players/carlos-garcia    → /jugadores/carlos-garcia
+ * /sobre-nosotros  → /en/about
+ * /en/about        → /sobre-nosotros
+ * /talentos/       → /en/talents/
  */
 export function getAlternateLangUrl(url: URL): string {
   const path = normalize(url.pathname);
 
-  // 1. Buscar en rutas estáticas
   if (estoEnMap.has(path)) return estoEnMap.get(path)!;
   if (entoEsMap.has(path)) return entoEsMap.get(path)!;
 
-  // 2. Buscar en rutas dinámicas
-  for (const route of DYNAMIC_ROUTES) {
-    const esPrefix = normalize(route.es.replace(':slug', ''));
-    const enPrefix = normalize(route.en.replace(':slug', ''));
-
-    if (path.startsWith(esPrefix + '/')) {
-      const slug = path.slice(esPrefix.length + 1);
-      return `${enPrefix}/${slug}`;
-    }
-    if (path.startsWith(enPrefix + '/')) {
-      const slug = path.slice(enPrefix.length + 1);
-      return `${esPrefix}/${slug}`;
-    }
-  }
-
-  // 3. Fallback: ruta no mapeada (aviso en desarrollo)
   if (import.meta.env.DEV) {
-    console.warn(`[i18n] Ruta sin mapear: "${url.pathname}". Añádela a STATIC_ROUTES o DYNAMIC_ROUTES en utils.ts.`);
+    console.warn(`[i18n] Ruta sin mapear: "${url.pathname}". Añádela a STATIC_ROUTES en utils.ts.`);
   }
   return '/';
 }

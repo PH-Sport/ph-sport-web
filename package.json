@@ -8,8 +8,6 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "smoke": "node scripts/smoke-interactions.mjs",
-    "badges:png": "node scripts/build-national-badges-png.mjs",
     "astro": "astro"
   },
   "repository": {

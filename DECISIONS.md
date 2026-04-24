@@ -6,6 +6,37 @@ Orden: más reciente primero.
 
 ---
 
+## 2026-04-24 · Eliminar páginas de detalle + renombrar ruta a `/talentos/` + escudos en la card
+
+**Decisión**: retirar `/jugadores/[slug]` y `/en/players/[slug]`. El grid de `/talentos/` (antes `/jugadores/`) es la única vista de roster y las tarjetas no son clicables. Los escudos de selección nacional pasan a renderizarse en la esquina superior-derecha de cada card y la escuadra dorada (antes decorativa en hover) ahora los enmarca al hacer hover como énfasis.
+
+**Alternativa considerada**: mantener la página de detalle sin enlaces desde la grid.
+
+**Motivo**: decisión del cliente — el perfil individual no aporta valor actualmente (sin bio, sin stats, sin social) y abrir una URL para cada jugador pone una superficie de SEO que no queremos indexar. La escuadra ganaba en expresividad si se usaba para destacar información real (el escudo) en lugar de ser pura ornamentación.
+
+**Cambios ejecutados**:
+- Borradas las páginas `[slug].astro` en ambos idiomas.
+- Borrado `components/players/PlayerDetailView.astro` y la carpeta entera.
+- Carpeta `src/content/` eliminada (Content Collection `players` + 4 bios `.md`) — ya no se usaba fuera del detalle.
+- Renombrado `/jugadores/` → `/talentos/` y `/en/players/` → `/en/talents/`. Actualizados `navigation.ts`, `i18n/utils.ts` (sin `DYNAMIC_ROUTES`), `HomePlayersSection.astro`, canonicals y hreflang.
+- `playerDetail.ts` simplificado: sin `contentHtml`, `paths`, `ModalPayload`; solo los campos que consume el card.
+- `TalentsSection.astro`: añadidos `<img class="talents__badge">` por cada `nationalTeamCodes`; `.talents__corner` escalada a 32×32 alrededor de los escudos con `data-badges="0|1|2"` ajustando el ancho.
+- `PortraitCard.astro` y `scripts/smoke-interactions.mjs` (dead code desde V3) eliminados.
+
+**Supersede**: la decisión de 2026-04-19 ("Páginas de jugador implementadas (PlayerDetailView)") queda revertida.
+
+---
+
+## 2026-04-24 · Roster en JSON plano (salida definitiva de Content Collections)
+
+**Decisión**: el roster vive únicamente en `data/jugadores.json` + `data/entrenadores.json`. La Content Collection `players` (bios Markdown) se retira.
+
+**Motivo**: los 4 bios existentes no se usaban en ningún sitio tras eliminar la vista de detalle. Mantener la collection añadía carga cognitiva (dos fuentes de verdad posibles) y requería el schema Zod sin beneficio. JSON + helper en `lib/playerDetail.ts` es más directo.
+
+**Condición de cambio**: si vuelve a haber contenido editorial por jugador (bio, media, timeline) y se reintroduce una vista de detalle, reevaluar Content Collections o una tabla de contenido separada.
+
+---
+
 ## 2026-04-23 · Jugadores ocultos con campo `hidden` en jugadores.json
 
 **Decisión**: los jugadores pendientes de firma se marcan con `"hidden": true` en `data/jugadores.json`. `getAllRosterEntries()` en `playerDetail.ts` los filtra en build time — no llegan al navegador.

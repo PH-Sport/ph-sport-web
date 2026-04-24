@@ -13,12 +13,11 @@ Web de PH Sport construida con Astro 5, i18n ES/EN, vídeo hero y animaciones GS
 
 | Ruta | Contenido |
 |---|---|
-| `/` | Home — Hero, jugadores, servicios, about, contacto |
-| `/jugadores/` | Roster completo con filtro y ordenación |
-| `/jugadores/[slug]` | Perfil individual de jugador |
+| `/` | Home — Hero, talentos, servicios, about, contacto |
+| `/talentos/` | Roster completo con filtro y ordenación (cards no clicables) |
 | `/servicios` | 6 pilares del servicio |
 | `/sobre-nosotros` | Historia, equipo (21 integrantes) y cierre |
-| `/en/*` | Mirror completo en inglés |
+| `/en/*` | Mirror completo en inglés (`/en/talents/`, `/en/services`, `/en/about`) |
 
 ## Stack
 

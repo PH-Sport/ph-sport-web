@@ -1,6 +1,7 @@
 ---
 import type { PlayerDetailPayload } from '@/lib/playerDetail';
 import { useTranslations, type Lang } from '@/i18n/utils';
+import { nationalTeamBadgeSrc } from '@/lib/nationalTeamBadge';
 
 interface Props {
   lang: Lang;
@@ -9,6 +10,16 @@ interface Props {
 
 const { lang, players } = Astro.props;
 const t = useTranslations(lang);
+
+const cards = players.map((player) => {
+  const badges = player.nationalTeamCodes
+    .map((code) => {
+      const src = nationalTeamBadgeSrc(code);
+      return src ? { code, src } : null;
+    })
+    .filter((b): b is { code: string; src: string } => b !== null);
+  return { player, badges };
+});
 ---
 
 <section class="talents" aria-labelledby="talents-title">
@@ -116,7 +127,7 @@ const t = useTranslations(lang);
   </div>
 
   <ul class="talents__grid" role="list" data-talents-grid>
-    {players.map((player, idx) => (
+    {cards.map(({ player, badges }, idx) => (
       <li
         class="talents__item"
         data-talent-card
@@ -124,10 +135,26 @@ const t = useTranslations(lang);
         data-role={player.role}
         data-index={idx}
       >
-        <div class="talents__card">
+        <div class="talents__card" data-badges={badges.length}>
           <div class="talents__photo">
             <img src={player.photoSrc} alt={player.name} loading="lazy" decoding="async" width="480" height="640" />
           </div>
+          {badges.length > 0 && (
+            <div class="talents__badges" aria-hidden="true">
+              {badges.map(({ code, src }) => (
+                <img
+                  src={src}
+                  alt=""
+                  class="talents__badge"
+                  width="22"
+                  height="22"
+                  loading="lazy"
+                  decoding="async"
+                  data-national-code={code}
+                />
+              ))}
+            </div>
+          )}
           <span class="talents__corner" aria-hidden="true"></span>
           <div class="talents__meta">
             <span class="talents__name">{player.name}</span>
@@ -663,17 +690,48 @@ const t = useTranslations(lang);
     display: block;
   }
 
-  .talents__corner {
+  /* Escudos de selección: siempre visibles, arriba-derecha de la foto. */
+  .talents__badges {
     position: absolute;
     top: 12px;
     right: 12px;
+    z-index: 2;
+    display: flex;
+    gap: 4px;
+    pointer-events: none;
+  }
+  .talents__badge {
+    display: block;
     width: 22px;
     height: 22px;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55));
+    transition: transform 0.35s cubic-bezier(.7, 0, .2, 1);
+  }
+
+  /* Escuadra: decorativa sola (cuando no hay escudo) y enmarca los escudos al hacer hover. */
+  .talents__corner {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 32px;
+    height: 32px;
     border-top: 1px solid var(--color-ph-gold, #d6b25e);
     border-right: 1px solid var(--color-ph-gold, #d6b25e);
     opacity: 0;
     transition: opacity 0.35s;
     pointer-events: none;
+  }
+  /* Sin escudo: volvemos al tamaño original (22×22 en 12/12). */
+  .talents__card[data-badges="0"] .talents__corner {
+    top: 12px;
+    right: 12px;
+    width: 22px;
+    height: 22px;
+  }
+  /* Dos escudos: la escuadra se ensancha para abrazarlos (22 + 4 + 22 + 10 padding = 58). */
+  .talents__card[data-badges="2"] .talents__corner {
+    width: 58px;
   }
 
   .talents__meta {
@@ -729,14 +787,17 @@ const t = useTranslations(lang);
     .talents__card:hover .talents__club { color: var(--color-ph-ink-soft, #b5b7bb); }
     .talents__card:hover .talents__corner { opacity: 1; }
     .talents__card:hover .talents__underline { transform: scaleX(1); }
+    .talents__card:hover .talents__badge { transform: scale(1.08); }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .talents__card,
     .talents__name,
     .talents__corner,
-    .talents__underline { transition: none; }
+    .talents__underline,
+    .talents__badge { transition: none; }
     .talents__card:hover { transform: none; }
+    .talents__card:hover .talents__badge { transform: none; }
   }
 
   /* Empty filter state */

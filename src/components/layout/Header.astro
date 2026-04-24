@@ -774,8 +774,6 @@ const isActive = (href: string): boolean => {
       if (p === norm(r.es)) return r.en;
       if (p === norm(r.en)) return r.es;
     }
-    if (p.startsWith('/jugadores/')) return '/en/players/' + p.slice('/jugadores/'.length);
-    if (p.startsWith('/en/players/')) return '/jugadores/' + p.slice('/en/players/'.length);
     return '/';
   }
 

@@ -1,8 +1,8 @@
 # PH Sport — Architecture Document
 
 > Documento de referencia para el proyecto. Leer antes de cualquier tarea estructural.
-> Última revisión: 2026-04-23
-> Secciones: Stack · Estructura · Content Collections · i18n · Hero · Motion · Performance · SEO · Sistema de diseño · Estado del proyecto
+> Última revisión: 2026-04-24
+> Secciones: Stack · Estructura · i18n · Hero · Motion · Performance · SEO · Sistema de diseño · Estado del proyecto
 
 ---
 
@@ -14,7 +14,7 @@
 | Estilos | Tailwind CSS | 4.x |
 | Animaciones | GSAP (island + scripts de sección) | 3.x |
 | Internacionalización | Astro i18n nativo | — |
-| Contenido | Astro Content Collections + Zod | — |
+| Datos | JSON en `data/` + helpers en `lib/` | — |
 | Imágenes | astro:assets | — |
 | SEO | @astrojs/sitemap | — |
 | Hosting | Cloudflare Pages | — |
@@ -49,8 +49,6 @@ ph-sport-web/
 │   │   │   ├── BaseLayout.astro     # Layout raíz: meta, fuentes, global CSS
 │   │   │   ├── Header.astro         # Flotante, scroll-hide, selector de idioma
 │   │   │   └── Footer.astro         # V3 editorial, social links
-│   │   ├── players/
-│   │   │   └── PlayerDetailView.astro   # Vista de detalle de jugador
 │   │   ├── sections/
 │   │   │   ├── HeroSection.astro        # Vídeo + poster, GSAP curtain reveal
 │   │   │   ├── HomePlayersSection.astro
@@ -59,17 +57,12 @@ ph-sport-web/
 │   │   │   ├── HomeContactSection.astro    # Layout 50/50 edge-to-edge
 │   │   │   ├── AboutSection.astro          # V3 — absorbe /equipo
 │   │   │   ├── ServicesSection.astro       # 6 pilares
-│   │   │   └── TalentsSection.astro
+│   │   │   └── TalentsSection.astro        # Grid de talentos con escudos de selección en hover
 │   │   └── ui/
 │   │       ├── Button.astro
 │   │       ├── FooterSocialIcon.astro
 │   │       ├── LanguageSwitcher.astro
-│   │       ├── PortraitCard.astro          # Con badges de selecciones nacionales
 │   │       └── SectionHeader.astro
-│   │
-│   ├── content/
-│   │   ├── config.ts                # Schemas Zod
-│   │   └── players/*.md             # Un archivo por jugador
 │   │
 │   ├── i18n/
 │   │   ├── es.ts
@@ -81,10 +74,10 @@ ph-sport-web/
 │   │   ├── countryLabels.ts         # Etiquetas de selecciones nacionales
 │   │   ├── heroMedia.ts             # Fuente de verdad del vídeo hero (variantes mp4)
 │   │   ├── is-document-reload.ts    # Detección de F5 para re-trigger de LogoReveal
-│   │   ├── nationalTeamBadge.ts     # Helper para badges de selecciones
+│   │   ├── nationalTeamBadge.ts     # Resuelve escudo PNG por código ISO 3166-1 alpha-2
 │   │   ├── navigation.ts            # Items de navegación
-│   │   ├── playerDetail.ts          # Payloads de jugadores para vistas de detalle
-│   │   ├── playerPhotos.ts          # Mapeo de fotos de jugadores
+│   │   ├── playerDetail.ts          # Payloads de talentos para el grid (nombre, club, foto, códigos)
+│   │   ├── playerPhotos.ts          # Mapeo de fotos por slug (import.meta.glob)
 │   │   ├── servicesItems.ts         # Datos de los 6 pilares de servicios
 │   │   ├── slugify.ts
 │   │   ├── social.ts                # Links de redes sociales
@@ -95,19 +88,17 @@ ph-sport-web/
 │   │   ├── index.astro              # / — Home ES
 │   │   ├── sobre-nosotros.astro     # /sobre-nosotros (absorbe /equipo)
 │   │   ├── servicios.astro          # /servicios
-│   │   ├── jugadores/
-│   │   │   ├── index.astro          # /jugadores/
-│   │   │   └── [slug].astro         # /jugadores/[slug]
+│   │   ├── talentos/
+│   │   │   └── index.astro          # /talentos/ (grid no clicable; sin detalle por jugador)
 │   │   └── en/
 │   │       ├── index.astro          # /en/
 │   │       ├── about.astro          # /en/about
 │   │       ├── services.astro       # /en/services
-│   │       └── players/
-│   │           ├── index.astro      # /en/players/
-│   │           └── [slug].astro     # /en/players/[slug]
+│   │       └── talents/
+│   │           └── index.astro      # /en/talents/
 │   │
 │   ├── scripts/                     # Scripts vanilla para interacciones y animaciones
-│   │   ├── dropdown.ts              # Dropdown de filtro/sort en jugadores
+│   │   ├── dropdown.ts              # Dropdown de filtro/sort en talentos
 │   │   └── ph-text-animations.ts   # Sistema GSAP de sección (clipPath, stagger, magnético)
 │   │
 │   └── styles/
@@ -124,47 +115,31 @@ ph-sport-web/
 
 ---
 
-## Content Collections — Schema Zod
+## Datos del roster
 
-### `src/content/config.ts`
+El roster vive en **JSON plano** dentro de `data/`, no en Content Collections:
 
-```typescript
-import { defineCollection, z } from 'astro:content';
+- `data/jugadores.json` — jugadores. Campo opcional `"hidden": true` los oculta sin borrar.
+- `data/entrenadores.json` — cuerpo técnico.
 
-const players = defineCollection({
-  type: 'content',
-  schema: ({ image }) =>
-    z.object({
-      name: z.string(),
-      // slug: campo reservado de Astro — se genera del nombre del archivo .md
-      club: z.object({
-        name: z.string(),
-        country: z.string().optional(),
-      }).optional(),
-      photo: image(),
-      featured: z.boolean().default(false),
-      nationalTeamCodes: z.array(z.string().length(2)).max(2).optional(),
-      age: z.number().int().positive().optional(),
-      social: z.object({
-        instagram: z.string().url().optional(),
-        twitter: z.string().url().optional(),
-      }).optional(),
-    }),
-});
+Ambos comparten esquema: `{ name, club: { name } | null, nationalTeamCodes?: string[] }`.
 
-export const collections = { players };
-```
+### Payloads para el grid
 
-### Acceso al slug en páginas
+`src/lib/playerDetail.ts` merge-a el roster con las fotos (resueltas por slug en `playerPhotos.ts`) y produce los payloads que consume `TalentsSection.astro`:
 
 ```typescript
-// En Astro 5, entry.id incluye la extensión .md — usar siempre replace
-const slug = player.id.replace(/\.md$/, '');  // "carlos-garcia.md" → "carlos-garcia"
+type PlayerDetailPayload = {
+  slug: string;
+  name: string;
+  subtitle: string;             // nombre del club (o cadena vacía)
+  role: 'player' | 'coach';
+  nationalTeamCodes: string[];  // ISO alpha-2 (hasta 2)
+  photoSrc: string;             // URL webp optimizada (astro:assets) o placeholder
+};
 ```
 
-### Payloads de jugadores
-
-Los datos enriquecidos de jugadores (foto optimizada, paths i18n, metadata) se construyen en `src/lib/playerDetail.ts` y se pasan como props a `PlayerDetailView` y a las secciones del home. No acceder a Content Collections directamente desde páginas o secciones de home.
+El slug se genera con `slugify(name)` y es la clave común con la foto en `src/assets/images/players/{slug}.{jpg,jpeg,png,webp}`. No se declara slug en los JSON — se deriva del nombre.
 
 ---
 
@@ -174,21 +149,21 @@ Los datos enriquecidos de jugadores (foto optimizada, paths i18n, metadata) se c
 
 - **Español** = idioma por defecto → sin prefijo (`prefixDefaultLocale: false`)
 - **Inglés** = prefijo `/en/`
-- El slug del jugador es el **mismo en ambas rutas**
 
 | Página | ES (defecto) | EN |
 |---|---|---|
 | Inicio | `/` | `/en/` |
-| Jugadores | `/jugadores/` | `/en/players/` |
-| Jugador | `/jugadores/pedro-lima` | `/en/players/pedro-lima` |
+| Talentos | `/talentos/` | `/en/talents/` |
 | Servicios | `/servicios` | `/en/services` |
 | Sobre nosotros | `/sobre-nosotros` | `/en/about` |
 
 Las rutas `/equipo` y `/en/team` redirigen a `/sobre-nosotros#equipo` y `/en/about#equipo` respectivamente (la sección de equipo fue absorbida por About en V3).
 
+No hay páginas de detalle por jugador: el grid de `/talentos/` es no-clicable por diseño y la vista individual fue retirada.
+
 ### Mapeo de rutas
 
-`getAlternateLangUrl()` en `src/i18n/utils.ts` usa `STATIC_ROUTES` y `DYNAMIC_ROUTES` como fuente única de verdad para los alternates. Al añadir una página nueva, declararla en esas listas.
+`getAlternateLangUrl()` en `src/i18n/utils.ts` usa `STATIC_ROUTES` como fuente única de verdad para los alternates. Al añadir una página nueva, declararla en esa lista.
 
 ---
 
@@ -342,7 +317,7 @@ No superar `0.75rem`. La marca no es redondeada.
 
 ## Estado del proyecto
 
-> Última actualización: 2026-04-23
+> Última actualización: 2026-04-24
 
 ### Componentes
 
@@ -359,9 +334,7 @@ No superar `0.75rem`. La marca no es redondeada.
 | `HomeContactSection.astro` | ✅ Completo | Layout 50/50 edge-to-edge, GSAP |
 | `AboutSection.astro` | ✅ Completo | V3 — historia, equipo (21 integrantes) |
 | `ServicesSection.astro` | ✅ Completo | 6 pilares + hero |
-| `TalentsSection.astro` | ✅ Completo | V3, portraits 3:4, GSAP stagger |
-| `PlayerDetailView.astro` | ✅ Completo | Vista de detalle individual |
-| `PortraitCard.astro` | ✅ Completo | Badges de selecciones nacionales |
+| `TalentsSection.astro` | ✅ Completo | Grid 3:4 no clicable, escudo de selección en hover enmarcado por escuadra dorada |
 | `Button.astro` | ✅ Completo | Primary / secondary, `<a>` o `<button>` |
 | `SectionHeader.astro` | ✅ Completo | |
 | `LanguageSwitcher.astro` | ✅ Completo | Integrado en Header |
@@ -371,15 +344,13 @@ No superar `0.75rem`. La marca no es redondeada.
 
 | Página | Estado | Notas |
 |---|---|---|
-| `/` | ✅ Funcional | V3: Hero → Players → Services → About → Contact |
+| `/` | ✅ Funcional | V3: Hero → Talentos → Servicios → About → Contact |
 | `/sobre-nosotros` | ✅ Funcional | V3 — absorbe /equipo (sección #equipo) |
-| `/jugadores/` | ✅ Funcional | Sort, filtro por selección, portraits, badges |
-| `/jugadores/[slug]` | ✅ Funcional | PlayerDetailView con foto y datos |
+| `/talentos/` | ✅ Funcional | Grid 3:4 no clicable, búsqueda + filtro rol + orden |
 | `/servicios` | ✅ Funcional | 6 pilares + hero |
 | `/en/` | ✅ Funcional | Mirror de ES |
 | `/en/about` | ✅ Funcional | Mirror de ES |
-| `/en/players/` | ✅ Funcional | Mirror de ES |
-| `/en/players/[slug]` | ✅ Funcional | Mirror de ES |
+| `/en/talents/` | ✅ Funcional | Mirror de ES |
 | `/en/services` | ✅ Funcional | Mirror de ES |
 
 ### Assets y contenido
@@ -388,16 +359,16 @@ No superar `0.75rem`. La marca no es redondeada.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ 3 variantes en `/public/` | 480p, 720p, full |
-| Fotos jugadores | ⏳ Parcial | 4 jugadores con foto real |
+| Fotos jugadores | ⏳ 71 de ~114 | Falta lote pendiente del cliente |
+| Escudos de selección | ✅ 9 en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia |
-| Jugadores en Content Collections | ⏳ Parcial | 4 de ~60 |
 | OG image (1200×630px) | ❌ Pendiente | |
 
 ### Pendientes
 
 | Pendiente | Bloqueado por |
 |---|---|
-| Fotos y datos reales de ~60 jugadores | Cliente / contenido |
+| Fotos del resto del roster (~43 jugadores) | Cliente |
 | Dominio definitivo → actualizar `SITE_URL` en `lib/constants.ts` | Cliente |
 | OG image 1200×630px | Diseño |
 | GA4 — Measurement ID | Decisión de si se integra |
@@ -407,11 +378,11 @@ No superar `0.75rem`. La marca no es redondeada.
 
 ## Convenciones clave
 
-- **Slugs de jugadores**: se generan del nombre del archivo `.md`. `pedro-lima.md` → slug `pedro-lima`. No declarar `slug` en frontmatter ni schema.
-- **entry.id en Astro 5**: incluye extensión. Usar siempre `entry.id.replace(/\.md$/, '')`.
-- **Slug único en ES y EN**: misma cadena en ambas rutas — nombres propios no se traducen.
+- **Slug del jugador**: se deriva del nombre con `slugify(name)`. Este mismo slug nombra la foto en `src/assets/images/players/{slug}.{jpg,jpeg,png,webp}`.
+- **Foto por jugador**: cualquier jugador sin foto coincidente recibe el placeholder SVG automáticamente.
+- **Ocultar un talento**: `"hidden": true` en `jugadores.json`. `getAllRosterEntries()` lo filtra en build.
 - **GSAP en secciones**: siempre a través de `ph-text-animations.ts`, nunca importado directamente en `.astro`.
 - **`client:load` solo en `LogoReveal.tsx`**: única excepción, documentada y justificada.
-- **Datos de dominio en `lib/`**: los helpers de playerDetail, teamMembers, servicesItems, etc. son la fuente de verdad. Las páginas y secciones los consumen; no acceden directamente a Content Collections salvo en `/jugadores/` y `[slug].astro`.
+- **Datos de dominio en `lib/`**: `playerDetail`, `teamMembers`, `servicesItems`, etc. son la fuente de verdad. Las páginas y secciones los consumen.
 
 Ver `DECISIONS.md` para el histórico completo de decisiones no obvias.

@@ -424,30 +424,28 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     letter-spacing: -0.02em;
     line-height: 1.1;
   }
+  /* Toggle: mismo lenguaje que Home (+ → —, sin caja), escalado a 40px para
+     marcar la jerarquía de sección dedicada frente al hint del Home (20px). */
   .srv-area-row__toggle {
     position: relative;
     width: 40px; height: 40px;
-    border: 1px solid var(--srv-line-strong);
-    border-radius: var(--radius-sm);
     flex-shrink: 0;
-    transition: transform 0.4s cubic-bezier(.7, 0, .2, 1), border-color 0.3s;
   }
   .srv-area-row__toggle span {
-    position: absolute; top: 50%; left: 50%;
-    width: 14px; height: 1px;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 40px;
+    height: 1px;
     background: currentColor;
-    transform: translate(-50%, -50%);
+    transform: translateY(-50%);
+    transition: transform 0.3s;
   }
   .srv-area-row__toggle span:last-child {
-    transform: translate(-50%, -50%) rotate(90deg);
-    transition: transform 0.4s cubic-bezier(.7, 0, .2, 1);
-  }
-  .srv-area-row.is-open .srv-area-row__toggle {
-    transform: rotate(45deg);
-    border-color: var(--srv-gold);
+    transform: translateY(-50%) rotate(90deg);
   }
   .srv-area-row.is-open .srv-area-row__toggle span:last-child {
-    transform: translate(-50%, -50%) rotate(90deg);
+    transform: translateY(-50%) rotate(0deg);
   }
 
   /* Panel visibility is driven by JS: inline `height` controls the expand/
@@ -996,9 +994,9 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
           { clipPath: from },
           {
             clipPath: 'inset(0 0 0 0)',
-            duration: 0.7,
+            duration: 0.9,
             ease: 'power3.out',
-            scrollTrigger: { trigger: block, start: 'top 90%', once: true },
+            scrollTrigger: { trigger: block, start: 'top 80%', once: true },
           },
         );
       }

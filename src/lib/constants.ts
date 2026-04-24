@@ -1,1 +1,1 @@
-export const SITE_URL = 'https://ph-sport-web.com';
+export const SITE_URL = 'https://phsport.es';

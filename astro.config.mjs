@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  site: process.env.SITE_URL ?? 'https://example.com',
+  site: 'https://phsport.es',
   integrations: [react(), sitemap()],
   prefetch: {
     prefetchAll: true,

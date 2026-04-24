@@ -14,7 +14,6 @@ const t = useTranslations(lang);
     <header class="home-contact__head">
       <span class="home-contact__eyebrow">{t('home.contact.eyebrow')}</span>
       <h2 class="home-contact__title" id="home-contact-title">{t('home.contact.title')}</h2>
-      <p class="home-contact__lead">{t('home.contact.lead')}</p>
       <div class="home-contact__email">
         <span class="home-contact__email-label">{t('home.contact.emailLabel')}</span>
         <a href={`mailto:${t('home.contact.email')}`}>{t('home.contact.email')}</a>
@@ -74,14 +73,6 @@ const t = useTranslations(lang);
     letter-spacing: -0.03em;
     line-height: 1.02;
     margin: 14px 0 0;
-  }
-
-  .home-contact__lead {
-    margin: 18px 0 0;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 15px;
-    line-height: 1.65;
-    max-width: 440px;
   }
 
   .home-contact__email {
@@ -164,7 +155,6 @@ const t = useTranslations(lang);
 
     const eyebrow = section.querySelector<HTMLElement>('.home-contact__eyebrow');
     const title = section.querySelector<HTMLElement>('.home-contact__title');
-    const lead = section.querySelector<HTMLElement>('.home-contact__lead');
     const head = section.querySelector<HTMLElement>('.home-contact__head');
     const image = section.querySelector<HTMLElement>('.home-contact__image');
 
@@ -178,16 +168,6 @@ const t = useTranslations(lang);
         duration: 0.9,
         ease: 'power4.out',
         stagger: 0.08,
-        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
-      });
-    }
-    if (lead && head) {
-      gsap.from(lead, {
-        opacity: 0,
-        y: 18,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.2,
         scrollTrigger: { trigger: head, start: 'top 80%', once: true },
       });
     }

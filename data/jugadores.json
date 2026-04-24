@@ -76,7 +76,7 @@
   { "name": "Byron Mendoza", "club": { "name": "FC Barcelona" }, "nationalTeamCodes": ["ES"] },
   { "name": "Brayan de la Cruz", "club": { "name": "Atlético de Madrid" }, "nationalTeamCodes": [] },
   { "name": "Carlos Núñez", "club": { "name": "Atlético de Madrid" }, "nationalTeamCodes": [] },
-  { "name": "Miguel Serrano", "club": { "name": "Atlético de Madrid" }, "nationalTeamCodes": [], "hidden": true },
+  { "name": "Miguel Serrano", "club": { "name": "Atlético de Madrid" }, "nationalTeamCodes": [] },
   { "name": "Andrés Corcoba", "club": { "name": "Real Madrid CF" }, "nationalTeamCodes": [] },
   { "name": "Pablo Ibáñez", "club": { "name": "Real Madrid CF" }, "nationalTeamCodes": [] },
   { "name": "Babacar Welle", "club": { "name": "Villarreal CF" }, "nationalTeamCodes": [] },

@@ -37,7 +37,7 @@ const en: Record<TranslationKey, string> = {
   'home.players.eyebrow': '02 · Talent',
   'home.players.title': 'The roster.',
   'home.players.titleAccent': 'roster',
-  'home.players.lead': 'Professional footballers with international projection. Each career, its own project.',
+  'home.players.lead': 'Talent in every category. A unique project for every career.',
 
   // --- Home: Services (accordion) ---
   'home.services.eyebrow': '03 · Services',
@@ -50,7 +50,7 @@ const en: Record<TranslationKey, string> = {
   'home.services.area.career.title': 'Career planning',
   'home.services.area.career.body': 'Context and sporting momentum to shape a coherent, ambitious trajectory.',
   'home.services.area.international.title': 'International access',
-  'home.services.area.international.body': 'Owned offices in six key markets.',
+  'home.services.area.international.body': 'Owned offices in six key markets and connections around the world.',
   'home.services.area.comms.title': 'Communication & marketing',
   'home.services.area.comms.body': 'The player\u2019s personal brand on and off the pitch, built with an editorial approach.',
   'home.services.area.legal.title': 'Legal & financial advisory',
@@ -100,7 +100,6 @@ const en: Record<TranslationKey, string> = {
   // --- Home: Contact ---
   'home.contact.eyebrow': '05 · Contact',
   'home.contact.title': 'Let\u2019s talk.',
-  'home.contact.lead': 'We work with players who share our long-term vision.',
   'home.contact.email': 'info@phsport.es',
   'home.contact.emailLabel': 'Direct email',
 
@@ -115,7 +114,7 @@ const en: Record<TranslationKey, string> = {
   'talents.eyebrow': '02 · Talents',
   'talents.title': 'The ',
   'talents.titleAccent': 'roster',
-  'talents.lead': 'Elite footballers with international projection. Each career, a distinct project.',
+  'talents.lead': 'Talent in every category. A unique project for every career.',
   'talents.search.placeholder': 'Search by name…',
   'talents.search.label': 'Search talents',
   'talents.search.clear': 'Clear search',
@@ -310,9 +309,9 @@ const en: Record<TranslationKey, string> = {
 
   // Manifest
   'services.manifest.eyebrow': '360° SUPPORT · 365 SERVICE',
-  'services.manifest.bodyLead': "At PHSPORT we don't just represent players, ",
-  'services.manifest.bodyAccent': 'we build structures',
-  'services.manifest.bodyTrail': ' that maximize their performance, stability, and long-term projection.',
+  'services.manifest.bodyLead': 'At PHSPORT we represent careers',
+  'services.manifest.bodyAccent': 'with vision, judgment, and long-term commitment',
+  'services.manifest.bodyTrail': '.',
 
 
   // --- Footer ---

@@ -35,7 +35,7 @@ const es = {
   'home.players.eyebrow': '02 · Talentos',
   'home.players.title': 'El roster.',
   'home.players.titleAccent': 'roster',
-  'home.players.lead': 'Futbolistas de todas las categorías. Cada carrera, un proyecto distinto.',
+  'home.players.lead': 'Talento en cada categoría. Un proyecto único para cada carrera.',
 
   // --- Home: Servicios (acordeón) ---
   'home.services.eyebrow': '03 · Servicios',
@@ -49,7 +49,7 @@ const es = {
   'home.services.area.career.title': 'Planificación de carrera',
   'home.services.area.career.body': 'Contexto y momento deportivo para trazar una trayectoria coherente y ambiciosa.',
   'home.services.area.international.title': 'Acceso internacional',
-  'home.services.area.international.body': 'Oficinas propias en seis mercados clave.',
+  'home.services.area.international.body': 'Oficinas propias en seis mercados clave y conexiones en todo el mundo.',
   'home.services.area.comms.title': 'Comunicación y marketing',
   'home.services.area.comms.body': 'Marca personal del jugador dentro y fuera del campo, con enfoque editorial.',
   'home.services.area.legal.title': 'Asesoramiento legal y financiero',
@@ -98,7 +98,6 @@ const es = {
   // --- Home: Contacto ---
   'home.contact.eyebrow': '05 · Contacto',
   'home.contact.title': 'Hablemos.',
-  'home.contact.lead': 'Trabajamos con jugadores que comparten nuestra visión a largo plazo.',
   'home.contact.email': 'info@phsport.es',
   'home.contact.emailLabel': 'Email directo',
 
@@ -113,7 +112,7 @@ const es = {
   'talents.eyebrow': '02 · Talentos',
   'talents.title': 'El ',
   'talents.titleAccent': 'roster',
-  'talents.lead': 'Futbolistas de todas las categorías. Cada carrera, un proyecto distinto.',
+  'talents.lead': 'Talento en cada categoría. Un proyecto único para cada carrera.',
   'talents.search.placeholder': 'Buscar por nombre…',
   'talents.search.label': 'Buscar talentos',
   'talents.search.clear': 'Limpiar búsqueda',
@@ -308,9 +307,9 @@ const es = {
 
   // Manifest
   'services.manifest.eyebrow': 'ACOMPAÑAMIENTO 360º · SERVICIO 365',
-  'services.manifest.bodyLead': 'En PHSPORT no solo representamos jugadores, ',
-  'services.manifest.bodyAccent': 'construimos estructuras',
-  'services.manifest.bodyTrail': ' que maximizan su rendimiento, estabilidad y proyección a largo plazo.',
+  'services.manifest.bodyLead': 'En PHSPORT representamos carreras',
+  'services.manifest.bodyAccent': 'con visión, criterio y compromiso',
+  'services.manifest.bodyTrail': ' a largo plazo.',
 
 
   // --- Footer ---

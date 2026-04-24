@@ -236,7 +236,8 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     pointer-events: none;
     z-index: 0;
     background:
-      repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 10px),
+      linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)),
+      url('/services-hero.webp') center / cover no-repeat,
       var(--srv-bg-2, #15171b);
     -webkit-mask-image: var(--ph-hero-img-fade-desktop-h), var(--ph-hero-img-fade-desktop-v);
     mask-image: var(--ph-hero-img-fade-desktop-h), var(--ph-hero-img-fade-desktop-v);
@@ -335,6 +336,10 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
       margin: var(--ph-hero-img-gap-top)
               calc(-1 * var(--srv-edge))
               var(--ph-hero-img-gap-bottom);
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)),
+        url('/services-hero-sm.webp') center / cover no-repeat,
+        var(--srv-bg-2, #15171b);
     }
     .srv-hero-bg {
       -webkit-mask-image: var(--ph-hero-img-fade-mobile);

@@ -242,7 +242,19 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
     const markStatic = () => hero.classList.add('hero--video-error');
     video.addEventListener('error', markStatic);
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    void video.play().catch(() => markStatic());
+
+    const retryOnGesture = () => {
+      window.removeEventListener('pointerdown', retryOnGesture);
+      window.removeEventListener('touchstart', retryOnGesture);
+      window.removeEventListener('scroll', retryOnGesture);
+      void video.play().catch(() => {});
+    };
+
+    void video.play().catch(() => {
+      window.addEventListener('pointerdown', retryOnGesture, { passive: true });
+      window.addEventListener('touchstart', retryOnGesture, { passive: true });
+      window.addEventListener('scroll', retryOnGesture, { passive: true });
+    });
   }
 
   document.addEventListener('astro:page-load', () => {

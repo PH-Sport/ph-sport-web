@@ -17,4 +17,4 @@ export const HERO_VIDEO_SOURCES: readonly HeroVideoSource[] = [
 
 export const HERO_VIDEO_POSTER = '/hero-poster.webp';
 
-export const HERO_STATIC_IMAGE = '';
+export const HERO_STATIC_IMAGE = '/hero-poster.webp';

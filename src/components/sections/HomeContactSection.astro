@@ -107,7 +107,8 @@ const t = useTranslations(lang);
   .home-contact__image {
     position: relative;
     background:
-      repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 10px),
+      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+      url('/contact-image.webp') center / cover no-repeat,
       var(--color-ph-bg-3, #1c1f24);
     border-left: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
   }

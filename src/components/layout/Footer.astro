@@ -14,12 +14,7 @@ const nav = NAV_ITEMS.map((item) => ({
 }));
 
 const socialLabel = (id: SocialId) => {
-  const key =
-    id === 'instagram'
-      ? 'footer.social.instagram'
-      : id === 'linkedin'
-        ? 'footer.social.linkedin'
-        : 'footer.social.x';
+  const key = id === 'instagram' ? 'footer.social.instagram' : 'footer.social.linkedin';
   return t(key);
 };
 ---

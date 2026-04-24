@@ -324,7 +324,6 @@ const en: Record<TranslationKey, string> = {
   'footer.social.heading': 'Follow us',
   'footer.social.instagram': 'Instagram',
   'footer.social.linkedin': 'LinkedIn',
-  'footer.social.x': 'X',
 
   // --- Accesibilidad ---
   'a11y.skip': 'Skip to main content',

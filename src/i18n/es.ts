@@ -322,7 +322,6 @@ const es = {
   'footer.social.heading': 'Síguenos',
   'footer.social.instagram': 'Instagram',
   'footer.social.linkedin': 'LinkedIn',
-  'footer.social.x': 'X',
 
   // --- Accesibilidad ---
   'a11y.skip': 'Ir al contenido principal',

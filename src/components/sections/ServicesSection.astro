@@ -166,9 +166,10 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
   <div class="srv-pillars">
     {items.map((item, idx) => {
       const roman = ['I', 'II', 'III', 'IV', 'V'][idx];
+      const pillarKey = ['press', 'performance', 'media', 'familyOffice', 'psychology'][idx];
       const even = idx % 2 === 1;
       return (
-        <article class:list={['srv-block', { 'srv-block--even': even }]}>
+        <article class:list={['srv-block', `srv-block--${pillarKey}`, { 'srv-block--even': even }]}>
           <div class="srv-block__text">
             <div class="srv-block__roman">{roman}</div>
             <h3 class="srv-block__title">{item.title}</h3>
@@ -622,6 +623,44 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
       var(--srv-bg-3);
   }
   .srv-block--even .srv-block__text { order: 0; }
+
+  /* Imágenes por pilar (desktop) */
+  .srv-block--press .srv-block__img,
+  .srv-block--press.srv-block--even .srv-block__img {
+    background:
+      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+      url('/pillar-press.webp') center / cover no-repeat,
+      var(--srv-bg-2);
+  }
+  .srv-block--performance .srv-block__img,
+  .srv-block--performance.srv-block--even .srv-block__img {
+    background:
+      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+      url('/pillar-performance.webp') center / cover no-repeat,
+      var(--srv-bg-2);
+  }
+  .srv-block--media .srv-block__img,
+  .srv-block--media.srv-block--even .srv-block__img {
+    background:
+      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+      url('/pillar-media.webp') center / cover no-repeat,
+      var(--srv-bg-2);
+  }
+  .srv-block--familyOffice .srv-block__img,
+  .srv-block--familyOffice.srv-block--even .srv-block__img {
+    background:
+      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+      url('/pillar-family-office.webp') center / cover no-repeat,
+      var(--srv-bg-2);
+  }
+  .srv-block--psychology .srv-block__img,
+  .srv-block--psychology.srv-block--even .srv-block__img {
+    background:
+      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+      url('/pillar-psychology.webp') center / cover no-repeat,
+      var(--srv-bg-2);
+  }
+
   .srv-block__imgTag {
     position: absolute; top: 16px; left: 16px;
     background: rgba(14, 14, 14, 0.6);
@@ -644,6 +683,42 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     }
     .srv-block--even .srv-block__text { order: 0; }
     .srv-block__text { padding: clamp(40px, 8vw, 64px) var(--srv-edge); }
+
+    .srv-block--press .srv-block__img,
+    .srv-block--press.srv-block--even .srv-block__img {
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+        url('/pillar-press-sm.webp') center / cover no-repeat,
+        var(--srv-bg-2);
+    }
+    .srv-block--performance .srv-block__img,
+    .srv-block--performance.srv-block--even .srv-block__img {
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+        url('/pillar-performance-sm.webp') center / cover no-repeat,
+        var(--srv-bg-2);
+    }
+    .srv-block--media .srv-block__img,
+    .srv-block--media.srv-block--even .srv-block__img {
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+        url('/pillar-media-sm.webp') center / cover no-repeat,
+        var(--srv-bg-2);
+    }
+    .srv-block--familyOffice .srv-block__img,
+    .srv-block--familyOffice.srv-block--even .srv-block__img {
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+        url('/pillar-family-office-sm.webp') center / cover no-repeat,
+        var(--srv-bg-2);
+    }
+    .srv-block--psychology .srv-block__img,
+    .srv-block--psychology.srv-block--even .srv-block__img {
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+        url('/pillar-psychology-sm.webp') center / cover no-repeat,
+        var(--srv-bg-2);
+    }
   }
 
   /* ── 05 Manifest ─────────────────────────────────────── */

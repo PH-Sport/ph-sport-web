@@ -58,16 +58,24 @@ const internationalCountries = [
     </div>
   </div>
 
-  <!-- 02 HISTORIA -->
-  <div class="abt-historia" id="historia">
-    <h2 class="abt-historia__title">
-      {t('about.historia.titlePre')}<span class="abt-gold">{t('about.historia.titleAccent1')}</span>{t('about.historia.titleMid')}<span class="abt-gold">{t('about.historia.titleAccent2')}</span>{t('about.historia.titlePost')}
-    </h2>
-    <div class="abt-historia__body">
-      <p>{t('about.historia.p1')}</p>
-      <p>{t('about.historia.p2')}</p>
-      <p>{t('about.historia.p3')}</p>
-      <p>{t('about.historia.p4')}</p>
+  <!-- 02 MANIFESTO (Now. Next. Forever Football. — explicado por bloques) -->
+  <div class="abt-manifesto" id="historia">
+    <div class="abt-manifesto__head">
+      <div class="abt-eyebrow">{t('about.manifesto.eyebrow')}</div>
+    </div>
+
+    <div class="abt-manifesto__rows">
+      {[
+        { idx: t('about.manifesto.blocks.now.idx'),     title: t('about.manifesto.blocks.now.title'),     body: t('about.manifesto.blocks.now.body') },
+        { idx: t('about.manifesto.blocks.next.idx'),    title: t('about.manifesto.blocks.next.title'),    body: t('about.manifesto.blocks.next.body') },
+        { idx: t('about.manifesto.blocks.forever.idx'), title: t('about.manifesto.blocks.forever.title'), body: t('about.manifesto.blocks.forever.body') },
+      ].map((row) => (
+        <article class="abt-manifesto__row">
+          <span class="abt-manifesto__idx">{row.idx}</span>
+          <h3 class="abt-manifesto__title">{row.title}</h3>
+          <p class="abt-manifesto__body">{row.body}</p>
+        </article>
+      ))}
     </div>
   </div>
 
@@ -335,49 +343,105 @@ const internationalCountries = [
     }
   }
 
-  /* ── 02 HISTORIA ── */
-  .abt-historia {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: clamp(32px, 6vw, 80px);
+  /* ── 02 MANIFESTO (Now. Next. Forever Football.) ── */
+  .abt-manifesto {
     padding: clamp(72px, 10vw, 140px) var(--edge);
     border-bottom: 1px solid var(--abt-line);
   }
-  .abt-historia__title {
+  .abt-manifesto__head {
+    margin-bottom: clamp(40px, 6vw, 72px);
+  }
+
+  .abt-manifesto__rows {
+    border-top: 1px solid var(--abt-line-strong);
+  }
+  .abt-manifesto__row {
+    display: grid;
+    grid-template-columns: 80px 1.3fr 1.7fr;
+    gap: clamp(20px, 3vw, 40px);
+    align-items: start;
+    padding-block: clamp(36px, 5vw, 64px);
+    border-bottom: 1px solid var(--abt-line);
+    transition: padding 300ms var(--ease-ph, ease), background 300ms var(--ease-ph, ease);
+  }
+  .abt-manifesto__idx {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--abt-ink-faint);
+    letter-spacing: 0.2em;
+    /* Compensar el desplazamiento del baseline tipográfico para que el "01"
+       quede ópticamente alineado con la cap-height del título. */
+    padding-top: 0.6em;
+  }
+  /* Estado base (desktop con puntero): blanco display 500, sin itálica.
+     El lockup de marca (oro + itálico, idéntico a .hero-claim__accent) se
+     "desbloquea" al hacer hover. En mobile / touch (sin hover disponible)
+     se aplica directamente como base — ver media queries más abajo. */
+  .abt-manifesto__title {
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(32px, 4.5vw, 52px);
+    font-size: clamp(40px, 5.5vw, 72px);
     letter-spacing: -0.02em;
-    line-height: 1.05;
-    margin: 12px 0 0;
+    line-height: 1;
+    margin: 0;
+    color: var(--abt-ink);
+    transition: color 300ms var(--ease-ph, ease);
   }
-  .abt-historia__body {
-    column-count: 2;
-    column-gap: 40px;
-  }
-  .abt-historia__body p {
-    margin: 0 0 14px;
-    color: var(--abt-ink-soft);
-    line-height: 1.7;
+  .abt-manifesto__body {
     font-size: 15px;
+    line-height: 1.7;
+    color: var(--abt-ink-soft);
+    margin: 0;
+    max-width: 480px;
+    /* El body alinea ópticamente con el primer descender del título. */
+    padding-top: 0.4em;
   }
-  .abt-historia__body p:first-child::first-letter {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-style: normal;
-    float: left;
-    font-size: 72px;
-    line-height: 0.85;
-    padding: 6px 12px 0 0;
-    color: var(--abt-gold);
+
+  @media (hover: hover) {
+    .abt-manifesto__row:hover {
+      padding-inline: 18px;
+      background: rgba(201, 164, 90, 0.04);
+    }
+    /* Hover desbloquea el lockup de marca: gold + itálico + weight 400
+       (firma del eslogan, idéntica a .hero-claim__accent del home/footer). */
+    .abt-manifesto__row:hover .abt-manifesto__title {
+      color: var(--abt-gold);
+      font-style: italic;
+      font-weight: 400;
+    }
   }
 
   @media (max-width: 900px) {
-    .abt-historia {
-      grid-template-columns: 1fr;
+    .abt-manifesto__head {
+      margin-bottom: 40px;
     }
-    .abt-historia__body {
-      column-count: 1;
+    .abt-manifesto__row {
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding-block: 32px;
+    }
+    /* Sin hover disponible: el lockup gold + itálico aplica como estado base
+       para que la firma de marca sea visible en touch sin necesidad de gesto. */
+    .abt-manifesto__title {
+      color: var(--abt-gold);
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(34px, 9vw, 44px);
+    }
+    .abt-manifesto__body {
+      max-width: none;
+    }
+    .abt-manifesto__idx {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .abt-manifesto__idx::after {
+      content: '';
+      width: 18px;
+      height: 1px;
+      background: var(--abt-gold);
+      opacity: 0.6;
     }
   }
 
@@ -665,29 +729,46 @@ const internationalCountries = [
     const heroValues = section.querySelector<HTMLElement>('.abt-hero__values');
     if (heroValues) trackingReveal(heroValues, { trigger: heroValues, start: 'top 92%', once: true });
 
-    // ── Historia ──
-    const historiaTitle = section.querySelector<HTMLElement>('.abt-historia__title');
-    if (historiaTitle) {
-      const words = wrapWords(historiaTitle);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 0.8,
-        stagger: 0.06,
-        ease: 'power4.out',
-        scrollTrigger: { trigger: historiaTitle, start: 'top 82%', once: true },
-      });
-    }
-    section.querySelectorAll<HTMLElement>('.abt-historia__body p').forEach((p) => {
-      const spans = splitWords(p);
-      gsap.from(spans, {
-        opacity: 0,
-        filter: 'blur(6px)',
-        y: 5,
-        duration: 0.55,
-        stagger: 0.02,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: p, start: 'top 88%', once: true },
-      });
+    // ── Manifesto ──
+    const manifestoEyebrow = section.querySelector<HTMLElement>('.abt-manifesto .abt-eyebrow');
+    if (manifestoEyebrow) trackingReveal(manifestoEyebrow, { trigger: manifestoEyebrow, start: 'top 92%', once: true });
+
+    section.querySelectorAll<HTMLElement>('.abt-manifesto__row').forEach((row) => {
+      const idx = row.querySelector<HTMLElement>('.abt-manifesto__idx');
+      const title = row.querySelector<HTMLElement>('.abt-manifesto__title');
+      const body = row.querySelector<HTMLElement>('.abt-manifesto__body');
+
+      if (idx) {
+        gsap.from(idx, {
+          opacity: 0,
+          y: 8,
+          duration: 0.5,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: row, start: 'top 88%', once: true },
+        });
+      }
+      if (title) {
+        const words = wrapWords(title);
+        gsap.from(words, {
+          yPercent: 115,
+          duration: 0.7,
+          stagger: 0.06,
+          ease: 'power4.out',
+          scrollTrigger: { trigger: row, start: 'top 88%', once: true },
+        });
+      }
+      if (body) {
+        const spans = splitWords(body);
+        gsap.from(spans, {
+          opacity: 0,
+          filter: 'blur(6px)',
+          y: 5,
+          duration: 0.55,
+          stagger: 0.02,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: row, start: 'top 88%', once: true },
+        });
+      }
     });
 
     // ── Equipo ──

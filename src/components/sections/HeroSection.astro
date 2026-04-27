@@ -96,6 +96,11 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
   }
   .hero--home.hero--video-error .hero-video { display: none; }
 
+  /* Una vez el vídeo está reproduciendo, el poster ya no aporta nada visible
+     pero seguía siendo una capa compositada bajo el vídeo en cada frame.
+     Ocultarlo libera al compositor (importante en GPUs viejas tipo Intel HD). */
+  .hero--home.hero--video-playing .hero-static-image { display: none; }
+
   /* Dark gradient overlay for legibility of the claim over the video */
   .hero-overlay {
     position: absolute;
@@ -199,6 +204,13 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
     pointer-events: none;
   }
 
+  /* Mientras el indicador está oculto (usuario ya scrolleó), pausar la
+     animación CSS infinita evita que mantenga el compositor activo
+     gastando ciclos de GPU para algo invisible. */
+  .hero-scroll.is-hidden .hero-scroll__line::after {
+    animation-play-state: paused;
+  }
+
   @media (max-width: 720px) {
     .hero-content {
       bottom: clamp(24px, 4vw, 48px);
@@ -239,8 +251,16 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
     const hero = document.querySelector<HTMLElement>('.hero--home');
     const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
     if (!hero || !video) return;
-    const markStatic = () => hero.classList.add('hero--video-error');
+    const markStatic = () => {
+      hero.classList.add('hero--video-error');
+      hero.classList.remove('hero--video-playing');
+    };
     video.addEventListener('error', markStatic);
+    video.addEventListener(
+      'playing',
+      () => hero.classList.add('hero--video-playing'),
+      { once: true },
+    );
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const retryOnGesture = () => {

@@ -175,10 +175,10 @@ const en: Record<TranslationKey, string> = {
 
   // --- Equipo (integrantes) ---
   'team.defaultLocation': 'SPAIN',
-  'team.countries.arabia': 'PH Arabia',
-  'team.countries.uk': 'PH UK',
-  'team.countries.portugal': 'PH Portugal',
-  'team.countries.alemania': 'PH Germany',
+  'team.countries.arabia': 'Arabia',
+  'team.countries.uk': 'UK',
+  'team.countries.portugal': 'Portugal',
+  'team.countries.alemania': 'Germany',
   'team.countries.uruguay': 'Uruguay',
   'team.members.cogollos.role': 'CEO',
   'team.members.castello.role': 'FIFA Agent · Football Dept. Coordinator',

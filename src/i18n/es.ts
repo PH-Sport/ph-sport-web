@@ -173,10 +173,10 @@ const es = {
 
   // --- Equipo (integrantes) ---
   'team.defaultLocation': 'ESPAÑA',
-  'team.countries.arabia': 'PH Arabia',
-  'team.countries.uk': 'PH UK',
-  'team.countries.portugal': 'PH Portugal',
-  'team.countries.alemania': 'PH Alemania',
+  'team.countries.arabia': 'Arabia',
+  'team.countries.uk': 'UK',
+  'team.countries.portugal': 'Portugal',
+  'team.countries.alemania': 'Alemania',
   'team.countries.uruguay': 'Uruguay',
   'team.members.cogollos.role': 'CEO',
   'team.members.castello.role': 'Agente FIFA · Coordinador Dto. Fútbol',

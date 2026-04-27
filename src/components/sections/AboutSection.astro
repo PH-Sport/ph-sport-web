@@ -98,11 +98,7 @@ const internationalCountries = [
           </div>
           <span class="abt-team-row__role">{m.role}</span>
           <span class="abt-team-row__flag">
-            {m.country ? (
-              <span>{m.country.toUpperCase()}</span>
-            ) : (
-              <span class="abt-team-row__flag-muted">{m.defaultLocation}</span>
-            )}
+            <span>{(m.country ?? m.defaultLocation).toUpperCase()}</span>
           </span>
         </div>
       ))}
@@ -451,7 +447,7 @@ const internationalCountries = [
   .abt-team-row__idx {
     font-family: var(--font-mono);
     font-size: 11px;
-    color: var(--abt-ink-faint);
+    color: var(--abt-gold);
     letter-spacing: 0.15em;
   }
   .abt-team-row__name-text {
@@ -477,10 +473,6 @@ const internationalCountries = [
     font-size: 11px;
     color: var(--abt-ink-soft);
     letter-spacing: 0.1em;
-  }
-  .abt-team-row__flag-muted {
-    color: var(--abt-ink-faint);
-    opacity: 0.5;
   }
   .abt-team-row__mobile-extras {
     display: none;

@@ -27,7 +27,7 @@
 ```
 ph-sport-web/
 ├── public/
-│   ├── fonts/                       # Söhne (4 pesos) — self-hosted
+│   ├── fonts/                       # Söhne (3 pesos: Buch 400, Halbfett 600, Dreiviertelfett 700) — self-hosted
 │   ├── icons/
 │   ├── national-team-badges/        # Escudos de selecciones nacionales
 │   ├── about-equipo.webp / *-sm.webp

@@ -108,7 +108,7 @@
 /* ── FUENTES (self-hosted) ─────────────────────────────────────────────────── */
 /* Sohne: fuente de pago de Klim Type Foundry.
    URL: https://klim.co.nz/retail-fonts/sohne/
-   Pesos: 400 (Buch), 600 (Halbfett), 700 (Dreiviertelfett), 900 (Extrafett) */
+   Pesos: 400 (Buch), 600 (Halbfett), 700 (Dreiviertelfett) */
 
 @font-face {
   font-family: 'Sohne';
@@ -130,14 +130,6 @@
   font-family: 'Sohne';
   src: url('/fonts/sohne/sohne-dreiviertelfett.woff2') format('woff2');
   font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Sohne';
-  src: url('/fonts/sohne/sohne-extrafett.woff2') format('woff2');
-  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }

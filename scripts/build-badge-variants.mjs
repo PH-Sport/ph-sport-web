@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * Convierte las banderas PNG (600×600) de `public/national-team-badges/` a
- * WebP 128×128 q90. Tamaño objetivo: ~5-10 KB por bandera (vs 80-180 KB del PNG).
+ * Convierte las banderas PNG 600×600 (master en `assets/source-media/badges/`)
+ * a WebP 128×128 q90 servidas desde `public/national-team-badges/`.
+ * Tamaño objetivo: ~5-10 KB por bandera (vs 80-180 KB del PNG).
  *
  * Uso: node scripts/build-badge-variants.mjs
  */
@@ -9,19 +10,20 @@ import sharp from 'sharp';
 import { readdir, stat } from 'node:fs/promises';
 import { join, basename, extname } from 'node:path';
 
-const DIR = 'public/national-team-badges';
+const SRC_DIR = 'assets/source-media/badges';
+const OUT_DIR = 'public/national-team-badges';
 const TARGET_WIDTH = 128;
 const QUALITY = 90;
 
-const entries = await readdir(DIR);
+const entries = await readdir(SRC_DIR);
 const pngs = entries.filter((f) => extname(f).toLowerCase() === '.png');
 
 let totalIn = 0;
 let totalOut = 0;
 
 for (const file of pngs) {
-  const inPath = join(DIR, file);
-  const outPath = join(DIR, basename(file, '.png') + '.webp');
+  const inPath = join(SRC_DIR, file);
+  const outPath = join(OUT_DIR, basename(file, '.png') + '.webp');
   const inSize = (await stat(inPath)).size;
 
   await sharp(inPath)

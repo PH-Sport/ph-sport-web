@@ -364,9 +364,9 @@ No superar `0.75rem`. La marca no es redondeada.
 | Item | Estado | Notas |
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
-| Vídeo hero | ✅ 3 variantes en `/public/` | 480p, 720p, full |
+| Vídeo hero | ✅ 2 variantes en `/public/` | 480p (móvil), 720p (tablet/desktop). Master en `/assets/source-media/` |
 | Fotos jugadores | ⏳ 71 de ~114 | Falta lote pendiente del cliente |
-| Escudos de selección | ✅ 9 en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR |
+| Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia |
 | OG image (1200×630px) | ❌ Pendiente | |
 

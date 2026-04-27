@@ -1,6 +1,7 @@
 /**
  * Rutas locales de escudos para `nationalTeamCodes` (ISO 3166-1 alpha-2).
- * WebP 128×128 q90 en /public/national-team-badges/ (regenerar con
+ * WebP 128×128 q90 en /public/national-team-badges/, generadas a partir de
+ * los PNG master en /assets/source-media/badges/ (regenerar con
  * `node scripts/build-badge-variants.mjs` si se añaden PNG fuente nuevos).
  * Objetivo: escudos de selección (p. ej. ES = escudo camiseta), no solo marca de federación.
  */

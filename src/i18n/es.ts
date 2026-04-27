@@ -140,8 +140,6 @@ const es = {
   'about.hero.titlePost': '.',
   'about.hero.body1': 'PHSPORT es una agencia especializada en la gestión integral de futbolistas, creada para acompañar talento con ambición dentro y fuera del campo.',
   'about.hero.body2': 'Nuestro equipo reúne especialistas en representación, scouting, marketing, análisis y desarrollo profesional, ofreciendo al jugador todo lo necesario para competir al máximo nivel.',
-  'about.hero.ctaServices': 'Nuestros servicios',
-  'about.hero.ctaContact': 'Contactar',
   'about.hero.values': 'EXCELENCIA · CERCANÍA · RIGOR',
   'about.hero.caption': 'PHSPORT · IDENTIDAD',
   'about.hero.imageAlt': 'El equipo PHSPORT frente al logo PH iluminado',

@@ -9,8 +9,6 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const servicesHref = lang === 'es' ? '/servicios' : '/en/services';
-
 const teamMembers = getTeamMembers(lang);
 
 const internationalCountries = [
@@ -34,11 +32,6 @@ const internationalCountries = [
         </h1>
         <p class="abt-hero__body">{t('about.hero.body1')}</p>
         <p class="abt-hero__body">{t('about.hero.body2')}</p>
-        <div class="abt-hero__cta">
-          <a class="abt-btn abt-btn--primary" href={servicesHref}>
-            {t('about.hero.ctaServices')} <span class="abt-btn__arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
       </div>
       <div class="abt-hero__values">{t('about.hero.values')}</div>
     </div>
@@ -228,12 +221,6 @@ const internationalCountries = [
     max-width: 480px;
     margin: 0 0 14px;
   }
-  .abt-hero__cta {
-    display: flex;
-    gap: 12px;
-    margin-top: 12px;
-    flex-wrap: wrap;
-  }
   .abt-hero__values {
     font-family: var(--font-mono);
     font-size: 11px;
@@ -276,40 +263,6 @@ const internationalCountries = [
     padding: 6px 10px;
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-  }
-
-  /* Minimal button styles — will be refined or aliased to ph-ui-buttons.css. */
-  .abt-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 20px;
-    border: 1px solid var(--abt-line-strong);
-    border-radius: var(--radius-sm);
-    color: var(--abt-ink);
-    text-decoration: none;
-    font-family: var(--font-body);
-    font-size: 14px;
-    letter-spacing: 0.02em;
-    transition: background 200ms var(--ease-ph, ease), color 200ms var(--ease-ph, ease);
-  }
-  .abt-btn:hover {
-    background: rgba(255, 255, 255, 0.06);
-  }
-  .abt-btn--primary {
-    background: var(--abt-gold);
-    color: var(--color-ph-black, #0d0f12);
-    border-color: var(--abt-gold);
-  }
-  .abt-btn--primary:hover {
-    background: #e2c374;
-    border-color: #e2c374;
-  }
-  .abt-btn__arrow {
-    transition: transform 200ms var(--ease-ph, ease);
-  }
-  .abt-btn:hover .abt-btn__arrow {
-    transform: translateX(3px);
   }
 
   @media (max-width: 900px) {
@@ -713,18 +666,6 @@ const internationalCountries = [
         scrollTrigger: { trigger: body, start: 'top 88%', once: true },
       });
     });
-
-    const heroCtas = section.querySelectorAll<HTMLElement>('.abt-hero__cta .abt-btn');
-    if (heroCtas.length) {
-      gsap.from(heroCtas, {
-        opacity: 0,
-        y: 12,
-        duration: 0.5,
-        stagger: 0.1,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: heroCtas[0], start: 'top 92%', once: true },
-      });
-    }
 
     const heroValues = section.querySelector<HTMLElement>('.abt-hero__values');
     if (heroValues) trackingReveal(heroValues, { trigger: heroValues, start: 'top 92%', once: true });

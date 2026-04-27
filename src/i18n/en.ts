@@ -142,8 +142,6 @@ const en: Record<TranslationKey, string> = {
   'about.hero.titlePost': '.',
   'about.hero.body1': "PHSPORT is an agency specialized in the integral management of footballers, created to support ambitious talent on and off the pitch.",
   'about.hero.body2': "Our team brings together specialists in representation, scouting, marketing, analytics, and professional development — giving the player everything they need to compete at the highest level.",
-  'about.hero.ctaServices': 'Our services',
-  'about.hero.ctaContact': 'Get in touch',
   'about.hero.values': 'EXCELLENCE · CLOSENESS · RIGOR',
   'about.hero.caption': 'PHSPORT · IDENTITY',
   'about.hero.imageAlt': 'The PHSPORT team facing the illuminated PH logo',

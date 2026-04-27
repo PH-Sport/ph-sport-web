@@ -135,9 +135,9 @@ const es = {
   'about.subtitle': 'Representación estratégica, visión internacional y enfoque a largo plazo.',
   // Hero split
   'about.hero.eyebrow': '04 · Sobre nosotros',
-  'about.hero.titlePre': 'Representar con ',
-  'about.hero.titleAccent': 'propósito',
-  'about.hero.titlePost': '.',
+  'about.hero.titlePre': '',
+  'about.hero.titleAccent': 'Representar',
+  'about.hero.titlePost': ' con propósito.',
   'about.hero.body1': 'PHSPORT es una agencia especializada en la gestión integral de futbolistas, creada para acompañar talento con ambición dentro y fuera del campo.',
   'about.hero.body2': 'Nuestro equipo reúne especialistas en representación, scouting, marketing, análisis y desarrollo profesional, ofreciendo al jugador todo lo necesario para competir al máximo nivel.',
   'about.hero.values': 'EXCELENCIA · CERCANÍA · RIGOR',
@@ -156,9 +156,9 @@ const es = {
   'about.manifesto.blocks.forever.body': 'Creemos que el talento necesita dirección, decisiones inteligentes y personas preparadas para acompañarlo en cada etapa.',
   // Equipo (cabecera del bloque dentro de About)
   'about.team.eyebrow': 'EL EQUIPO',
-  'about.team.titlePre': '',
-  'about.team.titleAccent': 'Quiénes',
-  'about.team.titlePost': ' somos.',
+  'about.team.titlePre': 'Quiénes ',
+  'about.team.titleAccent': 'somos',
+  'about.team.titlePost': '.',
   'about.team.meta': '21 INTEGRANTES · 6 PAÍSES',
   // Presencia
   'about.presencia.eyebrow': '05 · Presencia',
@@ -307,7 +307,7 @@ const es = {
   // Manifest
   'services.manifest.eyebrow': 'ACOMPAÑAMIENTO 360º · SERVICIO 365',
   'services.manifest.bodyLead': 'En PHSPORT representamos carreras',
-  'services.manifest.bodyAccent': 'con visión, criterio y compromiso',
+  'services.manifest.bodyAccent': 'con rigor, criterio y compromiso',
   'services.manifest.bodyTrail': ' a largo plazo.',
 
 

@@ -137,9 +137,9 @@ const en: Record<TranslationKey, string> = {
   'about.subtitle': 'Strategic representation, international reach, and long-term focus.',
   // Hero split
   'about.hero.eyebrow': '04 · About us',
-  'about.hero.titlePre': 'Representing with ',
-  'about.hero.titleAccent': 'purpose',
-  'about.hero.titlePost': '.',
+  'about.hero.titlePre': '',
+  'about.hero.titleAccent': 'Representing',
+  'about.hero.titlePost': ' with purpose.',
   'about.hero.body1': "PHSPORT is an agency specialized in the integral management of footballers, created to support ambitious talent on and off the pitch.",
   'about.hero.body2': "Our team brings together specialists in representation, scouting, marketing, analytics, and professional development — giving the player everything they need to compete at the highest level.",
   'about.hero.values': 'EXCELLENCE · CLOSENESS · RIGOR',
@@ -158,9 +158,9 @@ const en: Record<TranslationKey, string> = {
   'about.manifesto.blocks.forever.body': 'We believe talent needs direction, intelligent decisions, and the right people to guide it at every stage.',
   // Equipo (section header within About)
   'about.team.eyebrow': 'THE TEAM',
-  'about.team.titlePre': '',
-  'about.team.titleAccent': 'Who',
-  'about.team.titlePost': ' we are.',
+  'about.team.titlePre': 'Who ',
+  'about.team.titleAccent': 'we are',
+  'about.team.titlePost': '.',
   'about.team.meta': '21 MEMBERS · 6 COUNTRIES',
   // Presencia
   'about.presencia.eyebrow': '05 · Presence',
@@ -309,7 +309,7 @@ const en: Record<TranslationKey, string> = {
   // Manifest
   'services.manifest.eyebrow': '360° SUPPORT · 365 SERVICE',
   'services.manifest.bodyLead': 'At PHSPORT we represent careers',
-  'services.manifest.bodyAccent': 'with vision, judgment, and long-term commitment',
+  'services.manifest.bodyAccent': 'with rigor, judgment, and long-term commitment',
   'services.manifest.bodyTrail': '.',
 
 

@@ -1,6 +1,7 @@
 /**
  * Rutas locales de escudos para `nationalTeamCodes` (ISO 3166-1 alpha-2).
- * PNG uniformes en /public/national-team-badges/ (ver `npm run badges:png`).
+ * WebP 128×128 q90 en /public/national-team-badges/ (regenerar con
+ * `node scripts/build-badge-variants.mjs` si se añaden PNG fuente nuevos).
  * Objetivo: escudos de selección (p. ej. ES = escudo camiseta), no solo marca de federación.
  */
 
@@ -19,5 +20,5 @@ const BADGE_CODES = new Set([
 export function nationalTeamBadgeSrc(isoCode: string): string | null {
   const upper = isoCode.toUpperCase();
   if (!BADGE_CODES.has(upper)) return null;
-  return `/national-team-badges/${upper.toLowerCase()}.png`;
+  return `/national-team-badges/${upper.toLowerCase()}.webp`;
 }

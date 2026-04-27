@@ -14,9 +14,20 @@ interface Props {
   ogImage?: string;
   hasHero?: boolean;
   noIndex?: boolean;
+  /**
+   * Imagen LCP a precargar. Si la imagen tiene variantes responsive,
+   * pasa { mobile, desktop } y se emiten dos preloads media-aware
+   * para evitar descargar las dos.
+   */
+  preloadImage?: string | { mobile: string; desktop: string; mobileMaxWidth?: number };
 }
 
-const { title, description, lang, canonical, ogImage, hasHero = false, noIndex = false } = Astro.props;
+const { title, description, lang, canonical, ogImage, hasHero = false, noIndex = false, preloadImage } = Astro.props;
+const preloadIsResponsive = typeof preloadImage === 'object' && preloadImage !== null;
+const preloadMobile = preloadIsResponsive ? preloadImage.mobile : null;
+const preloadDesktop = preloadIsResponsive ? preloadImage.desktop : null;
+const preloadBreakpoint = preloadIsResponsive ? (preloadImage.mobileMaxWidth ?? 720) : 720;
+const preloadSingle = typeof preloadImage === 'string' ? preloadImage : null;
 const t = useTranslations(lang);
 
 const alternatePath = getAlternateLangUrl(Astro.url);
@@ -45,6 +56,14 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
     <link rel="preload" href="/fonts/sohne/sohne-halbfett.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/sohne/sohne-dreiviertelfett.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/sohne/sohne-extrafett.woff2" as="font" type="font/woff2" crossorigin />
+
+    {preloadSingle && <link rel="preload" as="image" href={preloadSingle} />}
+    {preloadIsResponsive && (
+      <>
+        <link rel="preload" as="image" href={preloadMobile} media={`(max-width: ${preloadBreakpoint}px)`} />
+        <link rel="preload" as="image" href={preloadDesktop} media={`(min-width: ${preloadBreakpoint + 1}px)`} />
+      </>
+    )}
 
     <ClientRouter />
   </head>

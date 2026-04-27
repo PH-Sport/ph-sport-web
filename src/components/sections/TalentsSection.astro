@@ -137,7 +137,16 @@ const cards = players.map((player) => {
       >
         <div class="talents__card" data-badges={badges.length}>
           <div class="talents__photo">
-            <img src={player.photoSrc} alt={player.name} loading="lazy" decoding="async" width="480" height="640" />
+            <img
+              src={player.photoSrc}
+              srcset={player.photoSrcset || undefined}
+              sizes="(max-width: 720px) 50vw, (max-width: 1200px) 33vw, 240px"
+              alt={player.name}
+              loading="lazy"
+              decoding="async"
+              width="480"
+              height="640"
+            />
           </div>
           {badges.length > 0 && (
             <div class="talents__badges" aria-hidden="true">

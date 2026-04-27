@@ -74,3 +74,7 @@ logo-reveal-test.png
 /test-*.mjs
 /test-*.js
 /capture-*.mjs
+
+# Carpetas temporales (Lighthouse runs, comparativas visuales de imágenes)
+tmp/
+public/_perftest/

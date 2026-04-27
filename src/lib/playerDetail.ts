@@ -30,6 +30,8 @@ export type PlayerDetailPayload = {
   nationalTeamCodes: string[];
   /** URL final para `<img>` en la tarjeta (getImage / placeholder). */
   photoSrc: string;
+  /** srcset 320w/480w/720w (vacío si es placeholder SVG). */
+  photoSrcset: string;
 };
 
 export type RosterEntry = {
@@ -54,14 +56,25 @@ export function getAllRosterEntries(): RosterEntry[] {
   return [...players, ...coaches];
 }
 
-async function resolvePhotoSrcForSlug(slug: string): Promise<string> {
+/** Anchos del srcset de tarjeta: cubren DPR 1-3 en grid de 2/3/5 columnas. */
+const PHOTO_WIDTHS = [320, 480, 720] as const;
+const PHOTO_QUALITY = 85;
+
+async function resolvePhotoForSlug(slug: string): Promise<{ src: string; srcset: string }> {
   const src: ImageMetadata | undefined = getPlayerPhotoBySlug(slug);
-  if (!src) return placeholderSrc;
+  if (!src) return { src: placeholderSrc, srcset: '' };
   try {
-    const out = await getImage({ src, width: 640 });
-    return out.src;
+    const variants = await Promise.all(
+      PHOTO_WIDTHS.map((w) =>
+        getImage({ src, width: w, format: 'webp', quality: PHOTO_QUALITY }),
+      ),
+    );
+    const srcset = variants.map((v, i) => `${v.src} ${PHOTO_WIDTHS[i]}w`).join(', ');
+    // Fallback `src`: la variante 480w (la que sirve la mayoría de móviles DPR 2-3).
+    const fallbackIndex = PHOTO_WIDTHS.indexOf(480);
+    return { src: variants[fallbackIndex].src, srcset };
   } catch {
-    return placeholderSrc;
+    return { src: placeholderSrc, srcset: '' };
   }
 }
 
@@ -74,14 +87,15 @@ export async function buildPlayerDetailPayloadsForLang(
     roster.map(async ({ slug, role, row }) => {
       const clubName = row.club?.name ?? null;
       const subtitle = clubName && clubName.length > 0 ? clubName : '';
-      const photoSrc = await resolvePhotoSrcForSlug(slug);
+      const photo = await resolvePhotoForSlug(slug);
       const payload: PlayerDetailPayload = {
         slug,
         name: row.name,
         subtitle,
         role,
         nationalTeamCodes: row.nationalTeamCodes ?? [],
-        photoSrc,
+        photoSrc: photo.src,
+        photoSrcset: photo.srcset,
       };
       return [slug, payload] as const;
     }),

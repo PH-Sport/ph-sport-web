@@ -19,6 +19,7 @@ const players = roster.map((e) => payloads[e.slug]).filter(Boolean);
   lang={lang}
   canonical={`${SITE_URL}/en/talents/`}
   hasHero
+  preloadImage={{ mobile: '/talents-hero-sm.webp', desktop: '/talents-hero.webp', mobileMaxWidth: 720 }}
 >
   <TalentsSection lang={lang} players={players} />
 </BaseLayout>

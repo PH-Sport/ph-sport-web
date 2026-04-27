@@ -33,6 +33,11 @@ const t = useTranslations(lang);
 const alternatePath = getAlternateLangUrl(Astro.url);
 const esUrl = lang === 'es' ? canonical : `${SITE_URL}${alternatePath}`;
 const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
+
+// OG image: el override (`ogImage`) puede llegar relativo o absoluto.
+// Sin override, fallback al asset por defecto. La spec OG exige URL absoluta.
+const ogImageRaw = ogImage ?? '/og-image.jpg';
+const ogImageUrl = ogImageRaw.startsWith('http') ? ogImageRaw : `${SITE_URL}${ogImageRaw}`;
 ---
 
 <!doctype html>
@@ -40,7 +45,14 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    {/* Iconos: SVG primario + PNG fallback + apple-touch (iOS home screen) + mask-icon (Safari pinned tab). */}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/mask-icon.svg" color="#D6B25E" />
+    <meta name="theme-color" content="#0d0f12" />
 
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -50,7 +62,22 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
     <link rel="alternate" hreflang="es" href={esUrl} />
     <link rel="alternate" hreflang="en" href={enUrl} />
 
-    {ogImage && <meta property="og:image" content={ogImage} />}
+    {/* Open Graph: tarjetas ricas en WhatsApp, iMessage, LinkedIn, Slack, Discord, FB. */}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="PHSPORT" />
+    <meta property="og:locale" content={lang === 'es' ? 'es_ES' : 'en_US'} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    {/* Twitter / X: usa su propio namespace; `summary_large_image` muestra hero a ancho completo. */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
 
     <link rel="preload" href="/fonts/sohne/sohne-buch.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/sohne/sohne-halbfett.woff2" as="font" type="font/woff2" crossorigin />

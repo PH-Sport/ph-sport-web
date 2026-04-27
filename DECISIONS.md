@@ -49,13 +49,13 @@ Orden: más reciente primero.
 
 ---
 
-## 2026-04-22 · Hero con vídeo de fondo — 3 variantes mp4 + poster
+## 2026-04-22 · Hero con vídeo de fondo — 2 variantes mp4 + poster
 
-**Decisión**: el hero usa vídeo de fondo con tres variantes de calidad servidas localmente (`video-ph-web-480.mp4`, `*-720.mp4`, `*.mp4`) y un poster estático (`hero-poster.webp`) como LCP real.
+**Decisión**: el hero usa vídeo de fondo con dos variantes de calidad servidas localmente (`video-ph-web-480.mp4` para móvil, `*-720.mp4` para tablet/desktop) y un poster estático (`hero-poster.webp`) como LCP real. El master `video-ph-web.mp4` vive en `assets/source-media/` y solo se usa como input de `scripts/build-hero-variants.mjs`.
 
 **Alternativa considerada**: una sola variante de vídeo.
 
-**Motivo**: las tres variantes permiten servir resolución adecuada según dispositivo sin sobrecargar móviles. `preload="metadata"` evita que el browser descargue el vídeo completo en page load.
+**Motivo**: dos variantes permiten servir resolución adecuada según dispositivo sin sobrecargar móviles. `preload="metadata"` evita que el browser descargue el vídeo completo en page load.
 
 **Fuente de verdad**: `src/lib/heroMedia.ts` centraliza rutas y configuración del vídeo. Las páginas/secciones no hardcodean rutas directamente.
 

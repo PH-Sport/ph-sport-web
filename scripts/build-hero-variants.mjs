@@ -6,7 +6,7 @@ import { dirname, resolve } from 'node:path';
 import ffmpegPath from 'ffmpeg-static';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const SRC = resolve(ROOT, 'public', 'video-ph-web.mp4');
+const SRC = resolve(ROOT, 'assets', 'source-media', 'video-ph-web.mp4');
 
 const OUTPUTS = [
   {

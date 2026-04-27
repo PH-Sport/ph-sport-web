@@ -37,7 +37,12 @@ ph-sport-web/
 │   ├── logo.svg
 │   ├── services-hero.webp / *-sm.webp
 │   ├── talents-hero.webp / *-sm.webp
-│   └── video-ph-web.mp4 / *-720.mp4 / *-480.mp4   # 3 variantes de calidad
+│   └── video-ph-web-720.mp4 / *-480.mp4   # 2 variantes de calidad servidas en runtime
+│
+├── assets/
+│   └── source-media/                  # Fuentes originales para scripts de build (NO se sirven)
+│       ├── badges/                    # PNG 600×600 → WebP 128×128 (build-badge-variants.mjs)
+│       └── video-ph-web.mp4           # Master del hero → mp4 -480/-720 (build-hero-variants.mjs)
 │
 ├── src/
 │   ├── assets/images/players/       # Fotos de jugadores (procesadas por astro:assets)
@@ -171,13 +176,14 @@ No hay páginas de detalle por jugador: el grid de `/talentos/` es no-clicable p
 
 ### Vídeo
 
-El hero usa un vídeo de fondo con tres variantes de calidad servidas localmente:
+El hero usa un vídeo de fondo con dos variantes de calidad servidas localmente:
 
 | Archivo | Resolución | Uso |
 |---|---|---|
-| `video-ph-web-480.mp4` | 480p | Móvil |
-| `video-ph-web-720.mp4` | 720p | Tablet |
-| `video-ph-web.mp4` | Full | Desktop |
+| `video-ph-web-480.mp4` | 480p | Móvil (`max-width: 768px`) |
+| `video-ph-web-720.mp4` | 720p | Tablet/Desktop |
+
+El master `assets/source-media/video-ph-web.mp4` se usa solo como input de `scripts/build-hero-variants.mjs` y NO se sirve.
 
 `src/lib/heroMedia.ts` es la fuente de verdad de las rutas y configuración del vídeo. `preload="metadata"` — no precarga el vídeo completo.
 

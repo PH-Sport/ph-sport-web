@@ -1182,16 +1182,41 @@ const cards = players.map((player) => {
       });
     }
     if (cards.length && grid) {
-      gsap.from(cards, {
-        opacity: 0,
-        scale: 0.96,
-        y: 20,
-        duration: 0.8,
-        ease: 'power3.out',
-        stagger: 0.05,
-        clearProps: 'transform,opacity',
-        scrollTrigger: { trigger: grid, start: 'top 82%', once: true },
-      });
+      // IntersectionObserver per-card en lugar de gsap.from(cards, { stagger }).
+      // Antes: las 116 cards animaban a la vez al entrar el grid (1.4-1.9 s de
+      // scriptEvaluation aunque solo 6-9 fueran visibles). Ahora cada card
+      // anima al entrar al viewport, y el stagger se reinicia entre batches.
+      gsap.set(cards, { opacity: 0, scale: 0.96, y: 20 });
+
+      const STAGGER_S = 0.05;
+      const STAGGER_RESET_GAP_MS = 250;
+      let staggerOffset = 0;
+      let lastFiredAt = 0;
+
+      const cardObserver = new IntersectionObserver(
+        (entries) => {
+          const now = performance.now();
+          if (now - lastFiredAt > STAGGER_RESET_GAP_MS) staggerOffset = 0;
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            gsap.to(entry.target, {
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              duration: 0.8,
+              delay: staggerOffset,
+              ease: 'power3.out',
+              clearProps: 'transform,opacity',
+            });
+            staggerOffset += STAGGER_S;
+            lastFiredAt = now;
+            cardObserver.unobserve(entry.target);
+          }
+        },
+        { rootMargin: '0px 0px -8% 0px' },
+      );
+
+      for (const card of cards) cardObserver.observe(card);
     }
 
     requestAnimationFrame(() => ScrollTrigger.refresh());

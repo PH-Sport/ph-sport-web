@@ -149,6 +149,8 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   scrollbar-gutter: stable;
+  /* iOS Safari: quita el highlight gris al tocar enlaces/botones (queda barato). */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -157,7 +159,10 @@ body {
   font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.6;
+  /* 100vh en iOS Safari incluye la barra que colapsa al scrollear → hueco negro abajo.
+     100dvh sigue la viewport dinámica y se ajusta correctamente. Fallback en navegadores sin dvh. */
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* ── TIPOGRAFIA BASE ───────────────────────────────────────────────────────── */

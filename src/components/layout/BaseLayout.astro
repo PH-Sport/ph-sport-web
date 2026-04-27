@@ -54,6 +54,12 @@ const ogImageUrl = ogImageRaw.startsWith('http') ? ogImageRaw : `${SITE_URL}${og
     <link rel="mask-icon" href="/mask-icon.svg" color="#D6B25E" />
     <meta name="theme-color" content="#0d0f12" />
 
+    {/* iOS: si el usuario añade phsport.es a Home Screen, abre standalone (sin chrome de Safari)
+        con status bar translúcido sobre el hero negro. Title corto bajo el icono. */}
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="PHSPORT" />
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -112,6 +118,7 @@ const ogImageUrl = ogImageRaw.startsWith('http') ? ogImageRaw : `${SITE_URL}${og
       const SCROLL_DIRECTION_DELTA = 6;
 
       let lastScrollY = 0;
+      let scrollFrameScheduled = false;
 
       function prefersReducedMotion(): boolean {
         return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -121,46 +128,46 @@ const ogImageUrl = ogImageRaw.startsWith('http') ? ogImageRaw : `${SITE_URL}${og
         return document.querySelector('[data-mobile-menu]')?.classList.contains('is-open') ?? false;
       }
 
+      // Lecturas primero, escrituras después: evita que un classList.toggle
+      // invalide layout y forme el patrón read-write-read-write que causaba
+      // forced reflow (19-48 ms por scroll en el audit perf).
       function updateScrollEffects() {
         const header = document.querySelector('[data-header]');
+        if (!header) return;
+
+        // PHASE 1 — reads
         const y = window.scrollY;
-
-        header?.classList.toggle('header--solid', y > HEADER_SCROLL_THRESHOLD);
-
-        if (!header) {
-          return;
-        }
-
-        if (prefersReducedMotion()) {
-          header.classList.remove('header--scroll-hidden');
-          lastScrollY = y;
-          return;
-        }
-
-        if (
-          document.documentElement.classList.contains('ph-logo-reveal-active') ||
-          isMobileMenuOpen()
-        ) {
-          header.classList.remove('header--scroll-hidden');
-          lastScrollY = y;
-          return;
-        }
-
-        if (y < SCROLL_HIDE_MIN_Y) {
-          header.classList.remove('header--scroll-hidden');
-          lastScrollY = y;
-          return;
-        }
-
+        const reducedMotion = prefersReducedMotion();
+        const revealActive = document.documentElement.classList.contains('ph-logo-reveal-active');
+        const menuOpen = isMobileMenuOpen();
+        const wasHidden = header.classList.contains('header--scroll-hidden');
         const delta = y - lastScrollY;
-        if (Math.abs(delta) >= SCROLL_DIRECTION_DELTA) {
-          if (delta > 0) {
-            header.classList.add('header--scroll-hidden');
-          } else {
-            header.classList.remove('header--scroll-hidden');
-          }
+
+        // PHASE 2 — compute (sin tocar DOM)
+        const shouldBeSolid = y > HEADER_SCROLL_THRESHOLD;
+        let shouldHide = wasHidden;
+
+        if (reducedMotion || revealActive || menuOpen || y < SCROLL_HIDE_MIN_Y) {
+          shouldHide = false;
+        } else if (Math.abs(delta) >= SCROLL_DIRECTION_DELTA) {
+          shouldHide = delta > 0;
         }
+
+        // PHASE 3 — writes
+        header.classList.toggle('header--solid', shouldBeSolid);
+        header.classList.toggle('header--scroll-hidden', shouldHide);
+
         lastScrollY = y;
+      }
+
+      // rAF-throttle: coalesce múltiples scroll events en un único update por frame.
+      function onScroll() {
+        if (scrollFrameScheduled) return;
+        scrollFrameScheduled = true;
+        requestAnimationFrame(() => {
+          updateScrollEffects();
+          scrollFrameScheduled = false;
+        });
       }
 
       function onPageLoad() {
@@ -170,7 +177,7 @@ const ogImageUrl = ogImageRaw.startsWith('http') ? ogImageRaw : `${SITE_URL}${og
       }
 
       document.addEventListener('astro:page-load', onPageLoad);
-      document.addEventListener('scroll', updateScrollEffects, { passive: true });
+      document.addEventListener('scroll', onScroll, { passive: true });
     </script>
 
   </body>

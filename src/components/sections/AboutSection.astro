@@ -92,8 +92,7 @@ const internationalCountries = [
           <div class="abt-team-row__name">
             <span class="abt-team-row__name-text">{m.name}</span>
             <span class="abt-team-row__mobile-extras">
-              <span>{m.role}</span>
-              {m.country && <span>· {m.country}</span>}
+              {m.role} · {m.country ?? m.defaultLocation}
             </span>
           </div>
           <span class="abt-team-row__role">{m.role}</span>
@@ -494,15 +493,14 @@ const internationalCountries = [
       gap: 6px;
     }
     .abt-team-row__mobile-extras {
-      display: flex;
-      gap: 10px;
-      align-items: center;
+      display: block;
       font-family: var(--font-mono);
       font-size: 10px;
       color: var(--abt-ink-soft);
       letter-spacing: 0.12em;
       text-transform: uppercase;
       font-style: normal;
+      line-height: 1.5;
     }
   }
 

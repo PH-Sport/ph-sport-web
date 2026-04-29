@@ -140,6 +140,7 @@ const es = {
   'about.hero.titlePost': ' con propósito.',
   'about.hero.body1': 'PHSPORT es una agencia especializada en la gestión integral de futbolistas, creada para acompañar talento con ambición dentro y fuera del campo.',
   'about.hero.body2': 'Nuestro equipo reúne especialistas en representación, scouting, marketing, análisis y desarrollo profesional, ofreciendo al jugador todo lo necesario para competir al máximo nivel.',
+  'about.hero.body3': 'Trabajamos con una visión internacional y una mentalidad moderna, conectando talento, oportunidades y estrategia en un entorno cada vez más competitivo. No solo acompañamos carreras deportivas: ayudamos a construir caminos con identidad propia, ambición y propósito.',
   'about.hero.values': 'EXCELENCIA · CERCANÍA · RIGOR',
   'about.hero.caption': 'PHSPORT · IDENTIDAD',
   'about.hero.imageAlt': 'El equipo PHSPORT frente al logo PH iluminado',

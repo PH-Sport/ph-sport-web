@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://phsport.es/sitemap-index.xml

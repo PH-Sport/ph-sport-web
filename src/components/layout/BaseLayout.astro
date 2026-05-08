@@ -5,6 +5,7 @@ import Header from './Header.astro';
 import Footer from './Footer.astro';
 import { useTranslations, getAlternateLangUrl, type Lang } from '@/i18n/utils';
 import { SITE_URL } from '@/lib/constants';
+import { SOCIAL_LINKS, isSocialPlaceholder } from '@/lib/social';
 
 interface Props {
   title: string;
@@ -38,6 +39,26 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
 // Sin override, fallback al asset por defecto. La spec OG exige URL absoluta.
 const ogImageRaw = ogImage ?? '/og-image.jpg';
 const ogImageUrl = ogImageRaw.startsWith('http') ? ogImageRaw : `${SITE_URL}${ogImageRaw}`;
+
+// SportsOrganization: identidad de marca para que Google muestre "PHSPORT" en
+// SERP en lugar de derivar el nombre del dominio en minúsculas. Bloque global;
+// la description sigue el idioma de la página actual.
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SportsOrganization',
+  name: 'PHSPORT',
+  alternateName: 'PHSPORT Management',
+  url: SITE_URL,
+  logo: `${SITE_URL}/logo.svg`,
+  description: t('site.description'),
+  sameAs: SOCIAL_LINKS.filter((s) => !isSocialPlaceholder(s.href)).map((s) => s.href),
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'customer support',
+    email: 'info@phsport.es',
+    availableLanguage: ['Spanish', 'English'],
+  },
+};
 ---
 
 <!doctype html>
@@ -67,6 +88,10 @@ const ogImageUrl = ogImageRaw.startsWith('http') ? ogImageRaw : `${SITE_URL}${og
 
     <link rel="alternate" hreflang="es" href={esUrl} />
     <link rel="alternate" hreflang="en" href={enUrl} />
+    {/* x-default: usuarios fuera de es/en (otras regiones/idiomas) ven la versión española. */}
+    <link rel="alternate" hreflang="x-default" href={esUrl} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(organizationJsonLd)} />
 
     {/* Open Graph: tarjetas ricas en WhatsApp, iMessage, LinkedIn, Slack, Discord, FB. */}
     <meta property="og:type" content="website" />

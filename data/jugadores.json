@@ -120,5 +120,6 @@
   { "name": "Isaías Abuabara", "club": { "name": "RC Celta de Vigo" }, "nationalTeamCodes": ["PA"] },
   { "name": "David Rosado", "club": { "name": "Getafe CF" }, "nationalTeamCodes": [] },
   { "name": "Jesús Jaime", "club": { "name": "UD Almería" }, "nationalTeamCodes": [] },
-  { "name": "Víctor Santiago", "club": { "name": "EF Gavà" }, "nationalTeamCodes": [] }
+  { "name": "Víctor Santiago", "club": { "name": "EF Gavà" }, "nationalTeamCodes": [] },
+  { "name": "Axel Barberá", "club": { "name": "CF Badalona" }, "nationalTeamCodes": [] }
 ]

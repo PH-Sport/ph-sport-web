@@ -40,6 +40,15 @@ const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
 const ogImageRaw = ogImage ?? '/og-image.jpg';
 const ogImageUrl = ogImageRaw.startsWith('http') ? ogImageRaw : `${SITE_URL}${ogImageRaw}`;
 
+// WebSite: esquema que Google usa específicamente para el "site name" en SERP
+// (el nombre junto al logo y la URL). Sin esto, Google lo deriva del dominio en minúsculas.
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'PHSPORT',
+  url: SITE_URL,
+};
+
 // SportsOrganization: identidad de marca para que Google muestre "PHSPORT" en
 // SERP en lugar de derivar el nombre del dominio en minúsculas. Bloque global;
 // la description sigue el idioma de la página actual.
@@ -91,6 +100,7 @@ const organizationJsonLd = {
     {/* x-default: usuarios fuera de es/en (otras regiones/idiomas) ven la versión española. */}
     <link rel="alternate" hreflang="x-default" href={esUrl} />
 
+    <script type="application/ld+json" set:html={JSON.stringify(websiteJsonLd)} />
     <script type="application/ld+json" set:html={JSON.stringify(organizationJsonLd)} />
 
     {/* Open Graph: tarjetas ricas en WhatsApp, iMessage, LinkedIn, Slack, Discord, FB. */}

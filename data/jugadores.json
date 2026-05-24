@@ -7,6 +7,7 @@
   { "name": "Thiago Helguera", "club": { "name": "CD Mirandés" }, "nationalTeamCodes": [] },
   { "name": "Kevin Prieto", "club": { "name": "Casa Pía AC" }, "nationalTeamCodes": [] },
   { "name": "Alessandro Burlamaqui", "club": { "name": "Alianza Lima" }, "nationalTeamCodes": ["PE"] },
+  { "name": "Alberto Del Moral", "club": { "name": "Córdoba CF" }, "nationalTeamCodes": [] },
   { "name": "Carlos Guirao", "club": { "name": "CD Leganés" }, "nationalTeamCodes": [] },
   { "name": "Salim El-Jebari", "club": { "name": "CD Mirandés" }, "nationalTeamCodes": [] },
   { "name": "Víctor García", "club": { "name": "Málaga CF" }, "nationalTeamCodes": [] },
@@ -80,6 +81,7 @@
   { "name": "Miguel Serrano", "club": { "name": "Atlético de Madrid" }, "nationalTeamCodes": [] },
   { "name": "Andrés Corcoba", "club": { "name": "Real Madrid CF" }, "nationalTeamCodes": [] },
   { "name": "Pablo Ibáñez", "club": { "name": "Real Madrid CF" }, "nationalTeamCodes": [] },
+  { "name": "Jesús Palacios", "club": { "name": "Real Madrid CF" }, "nationalTeamCodes": [] },
   { "name": "Babacar Welle", "club": { "name": "Villarreal CF" }, "nationalTeamCodes": [] },
   { "name": "Adrián Vidican", "club": { "name": "Real Betis Balompié" }, "nationalTeamCodes": [] },
   { "name": "Vinicius da Conceição", "club": null, "nationalTeamCodes": [], "hidden": true },
@@ -113,6 +115,7 @@
   { "name": "Fran Rivera", "club": { "name": "CE Sabadell FC" }, "nationalTeamCodes": [] },
   { "name": "Marc Bonilla", "club": { "name": "CF Damm" }, "nationalTeamCodes": [] },
   { "name": "Manasés Moreno", "club": { "name": "CF Trival Valderas" }, "nationalTeamCodes": [] },
+  { "name": "Axel Barberá", "club": { "name": "CF Badalona" }, "nationalTeamCodes": [] },
   { "name": "Unai Ordóñez", "club": { "name": "Real Madrid CF" }, "nationalTeamCodes": [] },
   { "name": "Hugo Fernández", "club": { "name": "Real Madrid CF" }, "nationalTeamCodes": ["ES"] },
   { "name": "Manuel López", "club": { "name": "Sevilla FC" }, "nationalTeamCodes": [] },
@@ -120,6 +123,5 @@
   { "name": "Isaías Abuabara", "club": { "name": "RC Celta de Vigo" }, "nationalTeamCodes": ["PA"] },
   { "name": "David Rosado", "club": { "name": "Getafe CF" }, "nationalTeamCodes": [] },
   { "name": "Jesús Jaime", "club": { "name": "UD Almería" }, "nationalTeamCodes": [] },
-  { "name": "Víctor Santiago", "club": { "name": "EF Gavà" }, "nationalTeamCodes": [] },
-  { "name": "Axel Barberá", "club": { "name": "CF Badalona" }, "nationalTeamCodes": [] }
+  { "name": "Víctor Santiago", "club": { "name": "EF Gavà" }, "nationalTeamCodes": [] }
 ]

@@ -1,0 +1,217 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import { useTranslations, type Lang } from '@/i18n/utils';
+import { SITE_URL } from '@/lib/constants';
+
+const lang: Lang = 'en';
+const t = useTranslations(lang);
+---
+
+<BaseLayout
+  title={`${t('privacy.title')} — ${t('site.name')}`}
+  description={t('privacy.description')}
+  lang={lang}
+  canonical={`${SITE_URL}/en/privacy`}
+  hasHero={false}
+>
+  <div class="ph-section legal-wrap">
+    <header class="legal-header">
+      <span class="legal-kicker">Legal</span>
+      <div class="legal-rule" aria-hidden="true"></div>
+      <h1 class="legal-h1">Privacy Policy</h1>
+      <p class="legal-updated">Last updated: June 2026</p>
+    </header>
+
+    <div class="legal-body">
+
+      <section class="legal-section">
+        <h2>01. Data controller</h2>
+        <dl class="legal-dl">
+          <div class="legal-dl__row">
+            <dt>Identity</dt>
+            <dd>MANAGEMENTPH REPRESENTACIÓN DE DEPORTISTAS, S.L.</dd>
+          </div>
+          <div class="legal-dl__row">
+            <dt>Tax ID (CIF)</dt>
+            <dd>B02645448</dd>
+          </div>
+          <div class="legal-dl__row">
+            <dt>Address</dt>
+            <dd>Calle Picasso n.º 13, 28691 Villanueva de la Cañada, Madrid (Spain)</dd>
+          </div>
+          <div class="legal-dl__row">
+            <dt>Email</dt>
+            <dd><a href="mailto:info@phsport.es" class="legal-link">info@phsport.es</a></dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="legal-section">
+        <h2>02. Data we collect and purpose</h2>
+        <p>If you use the contact form on this website, we collect the data you voluntarily provide —name, email address and message— for the sole purpose of responding to your enquiry or request.</p>
+        <p>We do not collect data through tracking cookies, analytics tools or advertising systems. This website does not set any cookie requiring consent.</p>
+      </section>
+
+      <section class="legal-section">
+        <h2>03. Legal basis for processing</h2>
+        <p>The processing of your data is based on the consent you give by voluntarily providing it to contact us, in accordance with Article 6(1)(a) of Regulation (EU) 2016/679 (GDPR).</p>
+      </section>
+
+      <section class="legal-section">
+        <h2>04. Retention period</h2>
+        <p>We retain your data for as long as necessary to respond to your enquiry and for the legally required retention period. If no contractual relationship is established, data is deleted within a maximum of 12 months from receipt.</p>
+      </section>
+
+      <section class="legal-section">
+        <h2>05. Recipients</h2>
+        <p>We do not share your personal data with third parties unless legally required to do so. We do not carry out international transfers of data to countries outside the European Economic Area.</p>
+      </section>
+
+      <section class="legal-section">
+        <h2>06. Your rights</h2>
+        <p>You may at any time exercise your rights of access, rectification, erasure, portability, objection and restriction of processing by sending an email to <a href="mailto:info@phsport.es" class="legal-link">info@phsport.es</a> with the subject line <em>"Data protection"</em>, indicating the right you wish to exercise. We will respond within the legally established timeframe.</p>
+        <p>You also have the right to lodge a complaint with the Spanish Data Protection Agency (<a href="https://www.aepd.es" target="_blank" rel="noopener noreferrer" class="legal-link">aepd.es</a>) if you consider that the processing of your data does not comply with applicable regulations.</p>
+      </section>
+
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .legal-wrap {
+    max-width: 72rem;
+  }
+
+  .legal-header {
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+    border-bottom: 1px solid var(--color-ph-white-10);
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .legal-kicker {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-ph-gold);
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .legal-rule {
+    width: 2rem;
+    height: 1px;
+    background: var(--color-ph-gold);
+    margin-bottom: 1.25rem;
+  }
+
+  .legal-h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--color-ph-white);
+    margin: 0 0 1rem;
+  }
+
+  .legal-updated {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    color: var(--color-ph-white-20);
+    margin: 0;
+  }
+
+  .legal-body {
+    max-width: 65ch;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 5vw, 3.5rem);
+  }
+
+  .legal-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .legal-section h2 {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ph-white-60);
+    margin: 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-ph-white-10);
+  }
+
+  .legal-section p {
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    color: var(--color-ph-white-60);
+    margin: 0;
+  }
+
+  .legal-section em {
+    font-style: normal;
+    color: var(--color-ph-white-80);
+  }
+
+  .legal-dl {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--color-ph-white-10);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .legal-dl__row {
+    display: grid;
+    grid-template-columns: 10rem 1fr;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--color-ph-white-10);
+  }
+
+  .legal-dl__row:last-child {
+    border-bottom: none;
+  }
+
+  .legal-dl dt {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ph-white-20);
+    padding-top: 0.125rem;
+  }
+
+  .legal-dl dd {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-ph-white-80);
+    margin: 0;
+  }
+
+  .legal-link {
+    color: var(--color-ph-gold);
+    transition: opacity var(--ph-duration) var(--ease-ph);
+  }
+
+  @media (hover: hover) {
+    .legal-link:hover {
+      opacity: 0.75;
+    }
+  }
+
+  @media (max-width: 540px) {
+    .legal-dl__row {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+  }
+</style>

@@ -322,6 +322,17 @@ const es = {
   'footer.social.heading': 'Síguenos',
   'footer.social.instagram': 'Instagram',
   'footer.social.linkedin': 'LinkedIn',
+  'footer.legal.label': 'Legal y privacidad',
+  'footer.legal.notice': 'Aviso Legal',
+  'footer.legal.privacy': 'Privacidad',
+
+  // --- Aviso Legal ---
+  'legal.title': 'Aviso Legal',
+  'legal.description': 'Información legal del titular de phsport.es conforme a la LSSI-CE.',
+
+  // --- Privacidad ---
+  'privacy.title': 'Política de Privacidad',
+  'privacy.description': 'Información sobre el tratamiento de datos personales en phsport.es conforme al RGPD y la LOPDGDD.',
 
   // --- Accesibilidad ---
   'a11y.skip': 'Ir al contenido principal',

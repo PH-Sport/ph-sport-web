@@ -324,6 +324,17 @@ const en: Record<TranslationKey, string> = {
   'footer.social.heading': 'Follow us',
   'footer.social.instagram': 'Instagram',
   'footer.social.linkedin': 'LinkedIn',
+  'footer.legal.label': 'Legal and privacy',
+  'footer.legal.notice': 'Legal Notice',
+  'footer.legal.privacy': 'Privacy',
+
+  // --- Legal Notice ---
+  'legal.title': 'Legal Notice',
+  'legal.description': 'Legal information about the owner of phsport.es under Spanish LSSI-CE law.',
+
+  // --- Privacy ---
+  'privacy.title': 'Privacy Policy',
+  'privacy.description': 'Information about personal data processing at phsport.es under GDPR and LOPDGDD.',
 
   // --- Accesibilidad ---
   'a11y.skip': 'Skip to main content',

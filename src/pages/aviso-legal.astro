@@ -1,0 +1,210 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import { useTranslations, type Lang } from '@/i18n/utils';
+import { SITE_URL } from '@/lib/constants';
+
+const lang: Lang = 'es';
+const t = useTranslations(lang);
+---
+
+<BaseLayout
+  title={`${t('legal.title')} — ${t('site.name')}`}
+  description={t('legal.description')}
+  lang={lang}
+  canonical={`${SITE_URL}/aviso-legal`}
+  hasHero={false}
+>
+  <div class="ph-section legal-wrap">
+    <header class="legal-header">
+      <span class="legal-kicker">Legal</span>
+      <div class="legal-rule" aria-hidden="true"></div>
+      <h1 class="legal-h1">Aviso Legal</h1>
+      <p class="legal-updated">Última actualización: junio de 2026</p>
+    </header>
+
+    <div class="legal-body">
+
+      <section class="legal-section">
+        <h2>01. Titular del sitio web</h2>
+        <p>En cumplimiento del artículo 10 de la Ley 34/2002 de Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSI-CE), se comunican los datos identificativos del titular:</p>
+        <dl class="legal-dl">
+          <div class="legal-dl__row">
+            <dt>Razón social</dt>
+            <dd>MANAGEMENTPH REPRESENTACIÓN DE DEPORTISTAS, S.L.</dd>
+          </div>
+          <div class="legal-dl__row">
+            <dt>CIF</dt>
+            <dd>B02645448</dd>
+          </div>
+          <div class="legal-dl__row">
+            <dt>Domicilio social</dt>
+            <dd>Calle Picasso n.º 13, 28691 Villanueva de la Cañada, Madrid (España)</dd>
+          </div>
+          <div class="legal-dl__row">
+            <dt>Email</dt>
+            <dd><a href="mailto:info@phsport.es" class="legal-link">info@phsport.es</a></dd>
+          </div>
+          <div class="legal-dl__row">
+            <dt>Actividad</dt>
+            <dd>Representación y gestión de futbolistas y entrenadores</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="legal-section">
+        <h2>02. Objeto</h2>
+        <p>Este sitio web tiene por finalidad la presentación de los servicios de representación deportiva de PHSPORT, agencia especializada en la gestión integral de futbolistas y entrenadores.</p>
+      </section>
+
+      <section class="legal-section">
+        <h2>03. Propiedad intelectual e industrial</h2>
+        <p>Los contenidos del sitio web —incluyendo textos, imágenes, diseño gráfico y código fuente— son propiedad de MANAGEMENTPH REPRESENTACIÓN DE DEPORTISTAS, S.L. o de terceros que han autorizado su uso. Queda prohibida su reproducción, distribución, comunicación pública o transformación, total o parcial, sin autorización escrita del titular.</p>
+      </section>
+
+      <section class="legal-section">
+        <h2>04. Limitación de responsabilidad</h2>
+        <p>PHSPORT no garantiza la disponibilidad continua del sitio web ni se responsabiliza de posibles daños derivados de su uso o de la información publicada. Los enlaces a sitios de terceros son responsabilidad exclusiva de sus respectivos titulares.</p>
+      </section>
+
+      <section class="legal-section">
+        <h2>05. Legislación aplicable y jurisdicción</h2>
+        <p>Este aviso legal se rige por la legislación española. Para cualquier controversia derivada del uso del sitio, las partes se someten a los juzgados y tribunales de Madrid, con renuncia expresa a cualquier otro fuero.</p>
+      </section>
+
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .legal-wrap {
+    max-width: 72rem;
+  }
+
+  .legal-header {
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+    border-bottom: 1px solid var(--color-ph-white-10);
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .legal-kicker {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-ph-gold);
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .legal-rule {
+    width: 2rem;
+    height: 1px;
+    background: var(--color-ph-gold);
+    margin-bottom: 1.25rem;
+  }
+
+  .legal-h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--color-ph-white);
+    margin: 0 0 1rem;
+  }
+
+  .legal-updated {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    color: var(--color-ph-white-20);
+    margin: 0;
+  }
+
+  .legal-body {
+    max-width: 65ch;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 5vw, 3.5rem);
+  }
+
+  .legal-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .legal-section h2 {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ph-white-60);
+    margin: 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-ph-white-10);
+  }
+
+  .legal-section p {
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    color: var(--color-ph-white-60);
+    margin: 0;
+  }
+
+  .legal-dl {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--color-ph-white-10);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .legal-dl__row {
+    display: grid;
+    grid-template-columns: 10rem 1fr;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--color-ph-white-10);
+  }
+
+  .legal-dl__row:last-child {
+    border-bottom: none;
+  }
+
+  .legal-dl dt {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ph-white-20);
+    padding-top: 0.125rem;
+  }
+
+  .legal-dl dd {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-ph-white-80);
+    margin: 0;
+  }
+
+  .legal-link {
+    color: var(--color-ph-gold);
+    transition: opacity var(--ph-duration) var(--ease-ph);
+  }
+
+  @media (hover: hover) {
+    .legal-link:hover {
+      opacity: 0.75;
+    }
+  }
+
+  @media (max-width: 540px) {
+    .legal-dl__row {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+  }
+</style>

@@ -112,9 +112,18 @@ const socialLabel = (id: SocialId) => {
       </div>
     </div>
 
-    <!-- 04 · Copyright -->
+    <!-- 04 · Copyright + legal -->
     <div class="footer-bottom">
       <p>&copy; {year} {t('site.name')}. {t('footer.rights')}</p>
+      <nav class="footer-legal" aria-label={t('footer.legal.label')}>
+        <a href={lang === 'en' ? '/en/legal-notice' : '/aviso-legal'} class="footer-legal-link">
+          {t('footer.legal.notice')}
+        </a>
+        <span class="footer-legal-sep" aria-hidden="true">·</span>
+        <a href={lang === 'en' ? '/en/privacy' : '/privacidad'} class="footer-legal-link">
+          {t('footer.legal.privacy')}
+        </a>
+      </nav>
     </div>
   </div>
 </footer>
@@ -325,11 +334,45 @@ const socialLabel = (id: SocialId) => {
     border-top: 1px solid var(--color-ph-white-10);
   }
 
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+
   .footer-bottom p {
     font-family: var(--font-mono);
     font-size: 0.6875rem;
     letter-spacing: 0.05em;
     color: var(--color-ph-white-60);
     margin: 0;
+  }
+
+  .footer-legal {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .footer-legal-link {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.05em;
+    color: var(--color-ph-white-60);
+    transition: color var(--ph-duration) var(--ease-ph);
+  }
+
+  @media (hover: hover) {
+    .footer-legal-link:hover {
+      color: var(--color-ph-white);
+    }
+  }
+
+  .footer-legal-sep {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--color-ph-white-20);
   }
 </style>

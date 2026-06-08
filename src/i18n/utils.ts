@@ -52,6 +52,8 @@ const STATIC_ROUTES: Array<{ es: string; en: string }> = [
   { es: '/sobre-nosotros', en: '/en/about' },
   { es: '/talentos/',      en: '/en/talents/' },
   { es: '/servicios',      en: '/en/services' },
+  { es: '/aviso-legal',    en: '/en/legal-notice' },
+  { es: '/privacidad',     en: '/en/privacy' },
 ];
 
 function normalize(path: string): string {

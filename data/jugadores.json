@@ -124,8 +124,8 @@
   { "name": "David Rosado", "club": { "name": "Getafe CF" }, "nationalTeamCodes": [] },
   { "name": "Jesús Jaime", "club": { "name": "UD Almería" }, "nationalTeamCodes": [] },
   { "name": "Víctor Santiago", "club": { "name": "EF Gavà" }, "nationalTeamCodes": [] },
-  { "name": "Janick Buyla", "club": null, "nationalTeamCodes": [], "hidden": true },
-  { "name": "Hugo Buyla", "club": null, "nationalTeamCodes": [], "hidden": true },
-  { "name": "Eneko", "club": null, "nationalTeamCodes": [], "hidden": true },
-  { "name": "Iker Bachiller", "club": null, "nationalTeamCodes": [], "hidden": true }
+  { "name": "Janick Buyla", "club": null, "nationalTeamCodes": [] },
+  { "name": "Hugo Buyla", "club": null, "nationalTeamCodes": [] },
+  { "name": "Eneko", "club": null, "nationalTeamCodes": [] },
+  { "name": "Iker Bachiller", "club": null, "nationalTeamCodes": [] }
 ]

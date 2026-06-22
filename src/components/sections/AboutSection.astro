@@ -26,15 +26,15 @@ const internationalCountries = [
   <div class="abt-hero">
     <div class="abt-hero__left">
       <div>
-        <div class="abt-eyebrow">{t('about.hero.eyebrow')}</div>
-        <h1 id="about-hero-title" class="abt-hero__title">
+        <div class="abt-eyebrow" data-reveal>{t('about.hero.eyebrow')}</div>
+        <h1 id="about-hero-title" class="abt-hero__title" data-reveal>
           {t('about.hero.titlePre')}<span class="abt-gold">{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
         </h1>
-        <p class="abt-hero__body">{t('about.hero.body1')}</p>
-        <p class="abt-hero__body">{t('about.hero.body2')}</p>
-        <p class="abt-hero__body">{t('about.hero.body3')}</p>
+        <p class="abt-hero__body" data-reveal>{t('about.hero.body1')}</p>
+        <p class="abt-hero__body" data-reveal>{t('about.hero.body2')}</p>
+        <p class="abt-hero__body" data-reveal>{t('about.hero.body3')}</p>
       </div>
-      <div class="abt-hero__values">{t('about.hero.values')}</div>
+      <div class="abt-hero__values" data-reveal>{t('about.hero.values')}</div>
     </div>
     <div class="abt-hero__right">
       <img
@@ -614,6 +614,7 @@ const internationalCountries = [
     trackingReveal,
     scheduleScrollTriggerRefresh,
     afterTransitionPaint,
+    revealReveals,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -780,6 +781,7 @@ const internationalCountries = [
     const closingSig = section.querySelector<HTMLElement>('.abt-closing__sig');
     if (closingSig) trackingReveal(closingSig, { trigger: closingSig, start: 'top 92%', once: true });
 
+    revealReveals(section);
     scheduleScrollTriggerRefresh();
   }
 

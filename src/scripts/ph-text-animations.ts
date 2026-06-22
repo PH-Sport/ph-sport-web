@@ -37,6 +37,26 @@ export function afterTransitionPaint(cb: () => void): void {
   requestAnimationFrame(() => requestAnimationFrame(cb));
 }
 
+// ── FOUC guard (reveal) ───────────────────────────────────────────────────────
+// El contenido con animación de entrada arranca oculto vía CSS
+// (`html.ph-anim [data-reveal] { visibility: hidden }`, fijado antes del primer
+// paint por un script inline en BaseLayout). Sin esto, GSAP aplica el estado
+// "from" DESPUÉS del paint y se ve el contenido en su estado final un instante
+// antes de que arranque la animación (el parpadeo). Cada init llama a
+// `revealReveals(section)` al terminar de montar sus tweens: para entonces los
+// from-states ya están aplicados de forma síncrona, así que quitar el atributo
+// revela los elementos sin parpadeo (siguen ocultos por opacity/transform de GSAP
+// hasta que animan).
+export function revealReveals(root: ParentNode = document): void {
+  root.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => el.removeAttribute('data-reveal'));
+}
+
+// Failsafe: si un init fallara a medias, revelamos cualquier [data-reveal] que
+// quedara oculto para que el contenido nunca se quede invisible permanentemente.
+document.addEventListener('astro:page-load', () => {
+  window.setTimeout(() => revealReveals(document), 1500);
+});
+
 // ── DOM helpers ───────────────────────────────────────────────────────────────
 
 /**
@@ -237,10 +257,20 @@ export function clipPathReveal(
 }
 
 // ── Cleanup on View Transitions swap ─────────────────────────────────────────
-document.addEventListener('astro:before-swap', () => {
+document.addEventListener('astro:before-swap', (e) => {
   activeScrambles.forEach((t) => gsap.ticker.remove(t));
   activeScrambles.length = 0;
   magneticDisposers.forEach((d) => d());
   magneticDisposers.length = 0;
   ScrollTrigger.getAll().forEach((t) => t.kill());
+
+  // El FOUC guard (.ph-anim en <html>) lo añade un script inline en el head, pero
+  // Astro RESETEA los atributos de <html> en cada swap a los del documento
+  // entrante (que no la trae, al ser una clase de runtime). Sin esto, .ph-anim se
+  // pierde en cada navegación SPA y el CSS deja de ocultar [data-reveal] → vuelve
+  // el parpadeo. La copiamos al documento entrante ANTES del swap (y del paint).
+  const newDoc = (e as { newDocument?: Document }).newDocument;
+  if (newDoc && document.documentElement.classList.contains('ph-anim')) {
+    newDoc.documentElement.classList.add('ph-anim');
+  }
 });

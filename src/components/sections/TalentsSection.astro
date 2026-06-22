@@ -26,14 +26,14 @@ const cards = players.map((player) => {
   <div class="talents__hero-bg" aria-hidden="true"></div>
 
   <header class="talents__head">
-    <span class="talents__eyebrow">{t('talents.eyebrow')}</span>
-    <h1 class="talents__title" id="talents-title">
+    <span class="talents__eyebrow" data-reveal>{t('talents.eyebrow')}</span>
+    <h1 class="talents__title" id="talents-title" data-reveal>
       {t('talents.title')}<em>{t('talents.titleAccent')}</em>.
     </h1>
-    <p class="talents__lead">{t('talents.lead')}</p>
+    <p class="talents__lead" data-reveal>{t('talents.lead')}</p>
   </header>
 
-  <div class="talents__controls" data-talents-controls>
+  <div class="talents__controls" data-talents-controls data-reveal>
     <label class="talents__search" data-talents-search-wrap>
       <span class="visually-hidden">{t('talents.search.label')}</span>
       <svg class="talents__search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -135,7 +135,7 @@ const cards = players.map((player) => {
         data-role={player.role}
         data-index={idx}
       >
-        <div class="talents__card" data-badges={badges.length}>
+        <div class="talents__card" data-badges={badges.length} data-reveal>
           <div class="talents__photo">
             <img
               src={player.photoSrc}
@@ -1132,7 +1132,7 @@ const cards = players.map((player) => {
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, wrapWords, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
+    reducedMotion, wrapWords, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint, revealReveals,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -1221,6 +1221,7 @@ const cards = players.map((player) => {
       for (const card of cards) cardObserver.observe(card);
     }
 
+    revealReveals(section);
     scheduleScrollTriggerRefresh();
   }
 

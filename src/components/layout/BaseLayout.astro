@@ -76,6 +76,17 @@ const organizationJsonLd = {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    {/* FOUC guard: corre antes del primer paint. Marca el documento si vamos a
+        animar (no reduced-motion). El CSS oculta [data-reveal] mientras esté la
+        clase; el init de cada sección los revela cuando GSAP toma el control,
+        evitando el parpadeo del contenido entre el pintado y el arranque de la
+        animación. Sin JS o con reduced-motion la clase no se añade → visible. */}
+    <script is:inline>
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('ph-anim');
+      }
+    </script>
+
     {/* Iconos: SVG primario + PNG fallback + apple-touch (iOS home screen) + mask-icon (Safari pinned tab). */}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
@@ -219,6 +230,14 @@ const organizationJsonLd = {
 </html>
 
 <style is:global>
+  /* FOUC guard: el contenido con animación de entrada arranca oculto hasta que
+     GSAP toma el control (ver revealReveals en ph-text-animations.ts). Gateado
+     por .ph-anim (la añade el script inline del head solo si el JS corre y no hay
+     reduced-motion), así sin JS o con reduced-motion el contenido es visible. */
+  html.ph-anim [data-reveal] {
+    visibility: hidden;
+  }
+
   .main--padded {
     /* 5rem reserva la zona del header; +0.875rem el margen superior de la cápsula flotante */
     padding-top: calc(5rem + 0.875rem);

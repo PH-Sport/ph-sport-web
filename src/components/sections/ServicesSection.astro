@@ -919,7 +919,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, wrapWords, trackingReveal,
+    reducedMotion, wrapWords, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -1042,8 +1042,8 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
       });
     }
 
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+    scheduleScrollTriggerRefresh();
   }
 
-  document.addEventListener('astro:page-load', initServicesAnimations);
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initServicesAnimations));
 </script>

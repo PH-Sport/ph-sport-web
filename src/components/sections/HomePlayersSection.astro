@@ -129,7 +129,9 @@ const listHref = lang === 'en' ? '/en/talents/' : '/talentos/';
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import { reducedMotion, wrapWords, trackingReveal } from '@/scripts/ph-text-animations';
+  import {
+    reducedMotion, wrapWords, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
+  } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
 
@@ -178,8 +180,8 @@ const listHref = lang === 'en' ? '/en/talents/' : '/talentos/';
       });
     }
 
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+    scheduleScrollTriggerRefresh();
   }
 
-  document.addEventListener('astro:page-load', initHomePlayersAnimations);
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomePlayersAnimations));
 </script>

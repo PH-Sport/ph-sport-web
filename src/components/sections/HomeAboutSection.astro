@@ -225,6 +225,7 @@ const aboutHref = lang === 'en' ? '/en/about/' : '/sobre-nosotros/';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
     reducedMotion, wrapWords, trackingReveal, counterReveal,
+    scheduleScrollTriggerRefresh, afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -271,8 +272,8 @@ const aboutHref = lang === 'en' ? '/en/about/' : '/sobre-nosotros/';
       });
     }
 
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+    scheduleScrollTriggerRefresh();
   }
 
-  document.addEventListener('astro:page-load', initHomeAboutAnimations);
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeAboutAnimations));
 </script>

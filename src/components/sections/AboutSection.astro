@@ -612,6 +612,8 @@ const internationalCountries = [
     wrapWords,
     splitWords,
     trackingReveal,
+    scheduleScrollTriggerRefresh,
+    afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -778,8 +780,8 @@ const internationalCountries = [
     const closingSig = section.querySelector<HTMLElement>('.abt-closing__sig');
     if (closingSig) trackingReveal(closingSig, { trigger: closingSig, start: 'top 92%', once: true });
 
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+    scheduleScrollTriggerRefresh();
   }
 
-  document.addEventListener('astro:page-load', initAboutAnimations);
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initAboutAnimations));
 </script>

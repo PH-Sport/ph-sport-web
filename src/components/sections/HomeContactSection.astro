@@ -145,7 +145,7 @@ const t = useTranslations(lang);
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, wrapWords, trackingReveal,
+    reducedMotion, wrapWords, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -187,8 +187,8 @@ const t = useTranslations(lang);
       );
     }
 
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+    scheduleScrollTriggerRefresh();
   }
 
-  document.addEventListener('astro:page-load', initHomeContactAnimations);
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeContactAnimations));
 </script>

@@ -435,7 +435,9 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import { reducedMotion, wrapWords, trackingReveal } from '@/scripts/ph-text-animations';
+  import {
+    reducedMotion, wrapWords, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
+  } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
 
@@ -485,7 +487,7 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
       });
     }
 
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+    scheduleScrollTriggerRefresh();
   }
 
   function initHomeServicesAccordion(): void {
@@ -565,7 +567,7 @@ const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
   }
 
   document.addEventListener('astro:page-load', () => {
-    initHomeServicesAnimations();
+    afterTransitionPaint(initHomeServicesAnimations);
     initHomeServicesAccordion();
   });
 </script>

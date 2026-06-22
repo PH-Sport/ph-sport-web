@@ -7,6 +7,36 @@ gsap.registerPlugin(ScrollTrigger);
 export const reducedMotion = (): boolean =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// ── Coalesced ScrollTrigger.refresh ───────────────────────────────────────────
+// Cada sección llamaba a su propio `requestAnimationFrame(() => ScrollTrigger.refresh())`
+// al terminar de montar sus animaciones. En home eso eran 5 refreshes (uno por
+// sección) en el mismo batch de navegación, y cada refresh fuerza un reflow
+// completo recalculando TODOS los triggers. Esta versión los coalesce en un único
+// refresh por frame, sea cual sea el nº de secciones que lo pidan.
+// El flag vive a nivel de módulo: como Vite instancia este módulo una sola vez y
+// lo comparte entre todos los <script> de sección, el coalescing es global.
+let refreshScheduled = false;
+export function scheduleScrollTriggerRefresh(): void {
+  if (refreshScheduled) return;
+  refreshScheduled = true;
+  requestAnimationFrame(() => {
+    refreshScheduled = false;
+    ScrollTrigger.refresh();
+  });
+}
+
+// ── Defer fuera del frame de la View Transition ───────────────────────────────
+// El init de animaciones corría síncrono en `astro:page-load`, justo cuando la
+// página nueva pinta y la transición está en curso → el trabajo pesado (crear
+// ScrollTriggers, wrapWords, gsap.set sobre las cards) competía con ese frame y
+// causaba el "trompicón" en la navegación. Con doble rAF dejamos que el primer
+// paint de la página nueva ocurra antes de arrancar el init.
+// Seguro contra flashes: el hero arranca en visibility:hidden hasta que su init
+// lo revela, y el resto de secciones animan con scrollTrigger (fuera de pantalla).
+export function afterTransitionPaint(cb: () => void): void {
+  requestAnimationFrame(() => requestAnimationFrame(cb));
+}
+
 // ── DOM helpers ───────────────────────────────────────────────────────────────
 
 /**

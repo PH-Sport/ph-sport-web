@@ -286,7 +286,9 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import { reducedMotion, wrapWords } from '@/scripts/ph-text-animations';
+  import {
+    reducedMotion, wrapWords, scheduleScrollTriggerRefresh, afterTransitionPaint,
+  } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
 
@@ -335,8 +337,8 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
       });
     }
 
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+    scheduleScrollTriggerRefresh();
   }
 
-  document.addEventListener('astro:page-load', initHeroAnimations);
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHeroAnimations));
 </script>

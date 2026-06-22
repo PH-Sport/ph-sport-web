@@ -1131,7 +1131,9 @@ const cards = players.map((player) => {
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import { reducedMotion, wrapWords, trackingReveal } from '@/scripts/ph-text-animations';
+  import {
+    reducedMotion, wrapWords, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
+  } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
 
@@ -1219,8 +1221,8 @@ const cards = players.map((player) => {
       for (const card of cards) cardObserver.observe(card);
     }
 
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+    scheduleScrollTriggerRefresh();
   }
 
-  document.addEventListener('astro:page-load', initTalentsAnimations);
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initTalentsAnimations));
 </script>

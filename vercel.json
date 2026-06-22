@@ -2,22 +2,19 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "headers": [
     {
-      "comment": "Assets con hash de contenido en el nombre: inmutables, cache de 1 año. Vercel ya lo hace por defecto; lo fijamos explícito para que la regla de imágenes de abajo no lo degrade.",
       "source": "/_astro/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     },
     {
-      "comment": "Fuentes Söhne: nombre y contenido estables, se reutilizan en todas las páginas. Inmutables 1 año.",
       "source": "/fonts/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     },
     {
-      "comment": "Imágenes y media en /public (heroes, escudos, og, favicons, logo). Excluye /_astro via negative lookahead. SWR: sirve de cache al instante y revalida en segundo plano, así un reemplazo de imagen propaga sin esperar 1 año.",
-      "source": "/((?!_astro/).*\\.(?:webp|avif|png|jpe?g|gif|svg|ico|mp4|webm))",
+      "source": "/((?!_astro).*\\.(?:webp|avif|png|jpe?g|gif|svg|ico|mp4|webm))",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=2592000" }
       ]

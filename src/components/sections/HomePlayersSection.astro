@@ -130,7 +130,7 @@ const listHref = lang === 'en' ? '/en/talents/' : '/talentos/';
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, wrapWords, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
+    reducedMotion, revealOnView, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -149,15 +149,8 @@ const listHref = lang === 'en' ? '/en/talents/' : '/talentos/';
     if (eyebrow && head) {
       trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
     }
-    if (title && head) {
-      const words = wrapWords(title);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 0.9,
-        ease: 'power4.out',
-        stagger: 0.08,
-        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
-      });
+    if (title) {
+      revealOnView(title, { y: 24, duration: 0.9 });
     }
     if (lead && head) {
       gsap.from(lead, {

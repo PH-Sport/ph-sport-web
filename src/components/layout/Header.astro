@@ -37,6 +37,7 @@ const isActive = (href: string): boolean => {
               <li>
                 <a
                   href={item.href}
+                  data-astro-prefetch="load"
                   class:list={['nav-link', isActive(item.href) && 'is-active']}
                 >
                   {item.label}
@@ -98,6 +99,7 @@ const isActive = (href: string): boolean => {
             <a
               href={item.href}
               data-mobile-link
+              data-astro-prefetch="load"
               class:list={[
                 'mobile-link',
                 isActive(item.href) && 'mobile-link--active',

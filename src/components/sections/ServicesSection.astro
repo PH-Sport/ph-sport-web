@@ -93,11 +93,11 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
   {/* 02 — Áreas de gestión (accordion) */}
   <div class="srv-areas">
     <header class="srv-areas__head">
-      <div class="srv-areas__eyebrow">
+      <div class="srv-areas__eyebrow" data-reveal>
         <span class="srv-mono">{t('services.areas.eyebrow')}</span>
         <span class="srv-areas__kicker srv-mono">{t('services.areas.kicker')}</span>
       </div>
-      <h2 class="srv-areas__title">
+      <h2 class="srv-areas__title" data-reveal>
         {t('services.areas.titleLead')}<em>{t('services.areas.titleAccent1')}</em>{t('services.areas.titleMid')}<em>{t('services.areas.titleAccent2')}</em>{t('services.areas.titleTrail')}
       </h2>
     </header>
@@ -919,7 +919,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, wrapWords, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
+    reducedMotion, wrapWords, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint, revealReveals,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -967,11 +967,18 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     }
 
     // ── Areas head ───────────────────────────────────────
+    // En desktop queda below-the-fold (scroll-reveal); en móvil entra en el viewport
+    // inicial. Si ya está en pantalla al cargar, animamos INMEDIATO (un scrollTrigger
+    // `once` cuyo start no se alcanza dejaría el título invisible hasta hacer scroll);
+    // si está por debajo, scroll-reveal normal. El guard data-reveal evita el flash
+    // en ambos casos.
     const areasHead = section.querySelector<HTMLElement>('.srv-areas__head');
     const areasEyebrow = section.querySelector<HTMLElement>('.srv-areas__eyebrow .srv-mono');
     const areasTitle = section.querySelector<HTMLElement>('.srv-areas__title');
+    const areasInView = !!areasHead && areasHead.getBoundingClientRect().top < window.innerHeight;
+    const areasTrigger = areasInView ? undefined : { trigger: areasHead!, start: 'top 80%', once: true };
     if (areasEyebrow && areasHead) {
-      trackingReveal(areasEyebrow, { trigger: areasHead, start: 'top 80%', once: true });
+      trackingReveal(areasEyebrow, areasTrigger);
     }
     if (areasTitle && areasHead) {
       const words = wrapWords(areasTitle);
@@ -980,7 +987,8 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
         duration: 0.9,
         ease: 'power4.out',
         stagger: 0.08,
-        scrollTrigger: { trigger: areasHead, start: 'top 80%', once: true },
+        delay: areasInView ? 0.1 : 0,
+        scrollTrigger: areasTrigger,
       });
     }
 
@@ -1042,6 +1050,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
       });
     }
 
+    revealReveals(section);
     scheduleScrollTriggerRefresh();
   }
 

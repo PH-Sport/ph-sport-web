@@ -633,8 +633,12 @@ const internationalCountries = [
     }
 
     // ── Hero ──
+    // El hero está above-the-fold: lo animamos de forma INMEDIATA (sin scrollTrigger).
+    // Con scrollTrigger `once` para contenido ya visible en la carga, el trigger
+    // fallaba intermitentemente al disparar y los títulos quedaban congelados
+    // (invisibles). Mismo patrón fiable que el hero de la home / Servicios.
     const heroEyebrow = section.querySelector<HTMLElement>('.abt-hero .abt-eyebrow');
-    if (heroEyebrow) trackingReveal(heroEyebrow, { trigger: heroEyebrow, start: 'top 88%', once: true });
+    if (heroEyebrow) trackingReveal(heroEyebrow);
 
     const heroTitle = section.querySelector<HTMLElement>('.abt-hero__title');
     if (heroTitle) {
@@ -644,11 +648,11 @@ const internationalCountries = [
         duration: 0.85,
         stagger: 0.07,
         ease: 'power4.out',
-        scrollTrigger: { trigger: heroTitle, start: 'top 82%', once: true },
+        delay: 0.1,
       });
     }
 
-    section.querySelectorAll<HTMLElement>('.abt-hero__body').forEach((body) => {
+    section.querySelectorAll<HTMLElement>('.abt-hero__body').forEach((body, i) => {
       const spans = splitWords(body);
       gsap.from(spans, {
         opacity: 0,
@@ -657,12 +661,12 @@ const internationalCountries = [
         duration: 0.6,
         stagger: 0.025,
         ease: 'power2.out',
-        scrollTrigger: { trigger: body, start: 'top 88%', once: true },
+        delay: 0.3 + i * 0.1,
       });
     });
 
     const heroValues = section.querySelector<HTMLElement>('.abt-hero__values');
-    if (heroValues) trackingReveal(heroValues, { trigger: heroValues, start: 'top 92%', once: true });
+    if (heroValues) trackingReveal(heroValues);
 
     // ── Manifesto ──
     const manifestoEyebrow = section.querySelector<HTMLElement>('.abt-manifesto .abt-eyebrow');

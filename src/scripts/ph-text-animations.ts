@@ -51,10 +51,25 @@ export function revealReveals(root: ParentNode = document): void {
   root.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => el.removeAttribute('data-reveal'));
 }
 
-// Failsafe: si un init fallara a medias, revelamos cualquier [data-reveal] que
-// quedara oculto para que el contenido nunca se quede invisible permanentemente.
+// Failsafe (defensa en profundidad): pase lo que pase con las animaciones de
+// entrada —un ScrollTrigger que no dispara, el script de sección que carga tarde,
+// el ticker de GSAP pausado en una pestaña throttled— garantizamos que el
+// contenido above-the-fold acaba en su estado final visible. El margen es mayor
+// que la animación más larga (~1.5 s), así que solo actúa sobre lo que se quedó
+// realmente atascado, nunca corta una animación legítima.
+function revealFailsafe(): void {
+  revealReveals(document);
+  // Títulos: si las palabras del clip siguen desplazadas (yPercent:115) y están en
+  // viewport, deberían haber animado ya → forzamos su estado final. Los que están
+  // fuera de pantalla se dejan: siguen esperando su animación de scroll.
+  document.querySelectorAll<HTMLElement>('.ph-clip-inner').forEach((el) => {
+    const r = el.getBoundingClientRect();
+    const inView = r.top < window.innerHeight && r.bottom > 0;
+    if (inView) gsap.set(el, { clearProps: 'transform,opacity' });
+  });
+}
 document.addEventListener('astro:page-load', () => {
-  window.setTimeout(() => revealReveals(document), 1500);
+  window.setTimeout(revealFailsafe, 2000);
 });
 
 // ── DOM helpers ───────────────────────────────────────────────────────────────

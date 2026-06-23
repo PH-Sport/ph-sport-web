@@ -1145,32 +1145,36 @@ const cards = players.map((player) => {
     const eyebrow = section.querySelector<HTMLElement>('.talents__eyebrow');
     const title = section.querySelector<HTMLElement>('.talents__title');
     const lead = section.querySelector<HTMLElement>('.talents__lead');
-    const head = section.querySelector<HTMLElement>('.talents__head');
     const controls = section.querySelector<HTMLElement>('.talents__controls');
     const grid = section.querySelector<HTMLElement>('.talents__grid');
     const cards = section.querySelectorAll<HTMLElement>('.talents__card');
 
-    if (eyebrow && head) {
-      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
+    // La cabecera está SIEMPRE above-the-fold (es el hero de la página). Animarla
+    // con scrollTrigger era frágil: el trigger `once` para un elemento ya visible
+    // en la carga fallaba intermitentemente al disparar (~80% de las recargas) y
+    // el título quedaba congelado en yPercent:115 → invisible. Igual que el hero y
+    // el hero de Servicios, la animamos de forma INMEDIATA (sin scrollTrigger), en
+    // cascada con delays. Las cards siguen con IntersectionObserver (fiable).
+    if (eyebrow) {
+      trackingReveal(eyebrow);
     }
-    if (title && head) {
+    if (title) {
       const words = wrapWords(title);
       gsap.from(words, {
         yPercent: 115,
         duration: 0.9,
         ease: 'power4.out',
         stagger: 0.08,
-        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
+        delay: 0.1,
       });
     }
-    if (lead && head) {
+    if (lead) {
       gsap.from(lead, {
         opacity: 0,
         y: 18,
         duration: 0.8,
         ease: 'power3.out',
-        delay: 0.2,
-        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
+        delay: 0.3,
       });
     }
     if (controls) {
@@ -1179,8 +1183,7 @@ const cards = players.map((player) => {
         y: 14,
         duration: 0.7,
         ease: 'power3.out',
-        delay: 0.3,
-        scrollTrigger: { trigger: controls, start: 'top 85%', once: true },
+        delay: 0.4,
       });
     }
     if (cards.length && grid) {

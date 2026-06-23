@@ -615,6 +615,7 @@ const internationalCountries = [
     scheduleScrollTriggerRefresh,
     afterTransitionPaint,
     revealReveals,
+    revealOnView,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -687,14 +688,7 @@ const internationalCountries = [
         });
       }
       if (title) {
-        const words = wrapWords(title);
-        gsap.from(words, {
-          yPercent: 115,
-          duration: 0.7,
-          stagger: 0.06,
-          ease: 'power4.out',
-          scrollTrigger: { trigger: row, start: 'top 88%', once: true },
-        });
+        revealOnView(title, { y: 18, duration: 0.7 });
       }
       if (body) {
         const spans = splitWords(body);
@@ -716,14 +710,7 @@ const internationalCountries = [
 
     const teamTitle = section.querySelector<HTMLElement>('.abt-team__title');
     if (teamTitle) {
-      const words = wrapWords(teamTitle);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 0.8,
-        stagger: 0.06,
-        ease: 'power4.out',
-        scrollTrigger: { trigger: teamTitle, start: 'top 82%', once: true },
-      });
+      revealOnView(teamTitle, { y: 22, duration: 0.8 });
     }
 
     const teamMeta = section.querySelector<HTMLElement>('.abt-team__meta');

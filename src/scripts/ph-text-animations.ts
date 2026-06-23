@@ -37,6 +37,28 @@ export function afterTransitionPaint(cb: () => void): void {
   requestAnimationFrame(() => requestAnimationFrame(cb));
 }
 
+// ── Reveal Tier 2 (fade + slide) ──────────────────────────────────────────────
+// Reveal simple y robusto para cabeceras secundarias. Reemplaza el patrón
+// wrapWords + gsap.from(yPercent) + scrollTrigger artesanal de cada sección.
+// Si el elemento ya está en viewport al llamarse, anima INMEDIATO: un scrollTrigger
+// `once` cuyo `start` no se alcanza al cargar dejaría el contenido invisible (el bug
+// que arreglamos en Servicios). Si está below-the-fold, scroll-reveal normal.
+export function revealOnView(
+  el: HTMLElement,
+  opts: { y?: number; duration?: number; delay?: number; ease?: string } = {},
+): gsap.core.Tween {
+  const { y = 20, duration = 0.85, delay = 0, ease = 'power3.out' } = opts;
+  const inView = el.getBoundingClientRect().top < window.innerHeight;
+  return gsap.from(el, {
+    opacity: 0,
+    y,
+    duration,
+    ease,
+    delay: inView ? delay : 0,
+    scrollTrigger: inView ? undefined : { trigger: el, start: 'top 85%', once: true },
+  });
+}
+
 // ── FOUC guard (reveal) ───────────────────────────────────────────────────────
 // El contenido con animación de entrada arranca oculto vía CSS
 // (`html.ph-anim [data-reveal] { visibility: hidden }`, fijado antes del primer

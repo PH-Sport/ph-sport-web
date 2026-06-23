@@ -919,7 +919,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, wrapWords, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint, revealReveals,
+    reducedMotion, wrapWords, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint, revealReveals, revealOnView,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -980,16 +980,8 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     if (areasEyebrow && areasHead) {
       trackingReveal(areasEyebrow, areasTrigger);
     }
-    if (areasTitle && areasHead) {
-      const words = wrapWords(areasTitle);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 0.9,
-        ease: 'power4.out',
-        stagger: 0.08,
-        delay: areasInView ? 0.1 : 0,
-        scrollTrigger: areasTrigger,
-      });
+    if (areasTitle) {
+      revealOnView(areasTitle, { y: 24, duration: 0.9, delay: areasInView ? 0.1 : 0 });
     }
 
     // ── 6 pillar blocks ──────────────────────────────────
@@ -1011,14 +1003,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
       }
       const blockTitle = block.querySelector<HTMLElement>('.srv-block__title');
       if (blockTitle) {
-        const words = wrapWords(blockTitle);
-        gsap.from(words, {
-          yPercent: 115,
-          duration: 0.9,
-          ease: 'power4.out',
-          stagger: 0.08,
-          scrollTrigger: { trigger: block, start: 'top 75%', once: true },
-        });
+        revealOnView(blockTitle, { y: 22, duration: 0.85 });
       }
       const blockBody = block.querySelector<HTMLElement>('.srv-block__body');
       if (blockBody) {

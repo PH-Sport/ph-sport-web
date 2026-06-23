@@ -138,6 +138,9 @@ const isActive = (href: string): boolean => {
     margin-inline: auto;
     margin-top: 0.875rem;
     border-radius: var(--radius-md);
+    /* Nombre propio de View Transition: saca la cápsula del snapshot `root` para
+       que no se funda (sale/entra) en cada navegación SPA. Ver bloque is:global. */
+    view-transition-name: ph-header;
     transition:
       transform var(--ph-duration) var(--ease-ph),
       background-color var(--ph-duration) var(--ease-ph),
@@ -235,6 +238,10 @@ const isActive = (href: string): boolean => {
     background: var(--color-ph-gold);
     border-radius: 1px;
     pointer-events: none;
+    /* Nombre propio de View Transition: el navegador morfea su geometría (left/
+       width) de la página vieja a la nueva → ESE morph es el deslizamiento. La
+       geometría nueva se fija en astro:after-swap, antes de capturar el snapshot. */
+    view-transition-name: ph-nav-indicator;
   }
 
   .nav-indicator.is-animated {
@@ -727,6 +734,36 @@ const isActive = (href: string): boolean => {
   }
 </style>
 
+<!-- View Transitions: estos pseudo-elementos cuelgan del documento (no del DOM
+     scopeado del componente), por eso necesitan is:global. -->
+<style is:global>
+  /* Header: matamos su animación de VT para que la cápsula quede estable (no se
+     funde) durante la navegación. Su contenido es idéntico entre páginas, así que
+     no hay nada que animar; el indicador es un grupo aparte (ph-nav-indicator). */
+  ::view-transition-group(ph-header),
+  ::view-transition-old(ph-header),
+  ::view-transition-new(ph-header) {
+    animation: none;
+  }
+
+  /* Indicador: dejamos el morph por defecto (anima geometría vieja→nueva = el
+     deslizamiento) y solo ajustamos duración/curva para igualar el feel previo
+     de .nav-indicator.is-animated. */
+  ::view-transition-group(ph-nav-indicator) {
+    animation-duration: 0.4s;
+    animation-timing-function: cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+
+  /* Sin movimiento: la barrita aparece directamente en su sitio, sin slide. */
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(ph-nav-indicator),
+    ::view-transition-old(ph-nav-indicator),
+    ::view-transition-new(ph-nav-indicator) {
+      animation: none;
+    }
+  }
+</style>
+
 <script>
   // ── Nav indicator deslizante ──────────────────────────────────────────────
   const wrap = document.querySelector<HTMLElement>('.header-nav-list-wrap');
@@ -852,6 +889,22 @@ const isActive = (href: string): boolean => {
         } else {
           indicator.style.width = '0';
         }
+      }
+    });
+
+    // Navegación SPA: corre ANTES de que la View Transition capture el snapshot
+    // nuevo, así la geometría nueva del indicador entra en ese snapshot y el
+    // navegador la morfea desde la vieja → ese morph ES el deslizamiento. En la
+    // carga inicial este evento no se dispara; de eso se encarga astro:page-load.
+    document.addEventListener('astro:after-swap', () => {
+      syncHeaderToCurrentPage();
+      const activeLink = desktopLinks.find((link) =>
+        link.classList.contains('is-active'),
+      );
+      if (activeLink) {
+        setIndicatorToLink(activeLink);
+      } else {
+        indicator.style.width = '0';
       }
     });
 

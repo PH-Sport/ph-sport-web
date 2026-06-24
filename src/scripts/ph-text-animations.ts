@@ -3,6 +3,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// ── Config global de ScrollTrigger ────────────────────────────────────────────
+// ignoreMobileResize: en móvil, mostrar/ocultar la barra de direcciones del
+// navegador cambia la altura del viewport y, por defecto, dispara un
+// ScrollTrigger.refresh() (reflow completo recalculando todos los triggers) en
+// pleno scroll → microcortes. Ese resize es solo chrome del navegador, no un
+// cambio real de layout que justifique recalcular, así que lo ignoramos.
+ScrollTrigger.config({ ignoreMobileResize: true });
+
 // ── Reduced motion ────────────────────────────────────────────────────────────
 export const reducedMotion = (): boolean =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;

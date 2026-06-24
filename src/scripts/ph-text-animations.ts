@@ -25,16 +25,46 @@ export function scheduleScrollTriggerRefresh(): void {
   });
 }
 
-// ── Defer fuera del frame de la View Transition ───────────────────────────────
-// El init de animaciones corría síncrono en `astro:page-load`, justo cuando la
-// página nueva pinta y la transición está en curso → el trabajo pesado (crear
-// ScrollTriggers, wrapWords, gsap.set sobre las cards) competía con ese frame y
-// causaba el "trompicón" en la navegación. Con doble rAF dejamos que el primer
-// paint de la página nueva ocurra antes de arrancar el init.
-// Seguro contra flashes: el hero arranca en visibility:hidden hasta que su init
-// lo revela, y el resto de secciones animan con scrollTrigger (fuera de pantalla).
+// ── Defer fuera de la View Transition ─────────────────────────────────────────
+// El init de animaciones (crear ScrollTriggers, wrapWords, gsap.set sobre las
+// cards + el ScrollTrigger.refresh que fuerza un reflow completo) es el bloque más
+// pesado del hilo principal al navegar. Si cae durante el fade de la transición,
+// compite con ella y causa el "trompicón" (medido en ~600-1300 ms de tareas largas
+// en CPU throttle 4×, dominado por GSAP + recálculo de layout).
+//
+// El doble rAF anterior lo soltaba ~2 frames tras el swap → todavía dentro del
+// fade. Ahora esperamos a que TERMINEN las animaciones de ::view-transition y solo
+// entonces lanzamos el init en tiempo idle (requestIdleCallback), de modo que la
+// transición se reproduce limpia y el trabajo pesado va después, sin solaparse.
+//
+// Topes de seguridad: (1) la espera de la transición corta a 300 ms por si se
+// interrumpe o no resuelve; (2) requestIdleCallback usa timeout 200 ms para no
+// quedarse esperando idle indefinidamente; (3) revealFailsafe (2 s) revela el
+// contenido pase lo que pase. Sin flashes: el hero arranca en visibility:hidden y
+// el resto anima con scrollTrigger fuera de pantalla.
 export function afterTransitionPaint(cb: () => void): void {
-  requestAnimationFrame(() => requestAnimationFrame(cb));
+  const idle = (fn: () => void): void => {
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(fn, { timeout: 200 });
+    } else {
+      requestAnimationFrame(() => requestAnimationFrame(fn));
+    }
+  };
+
+  const vtAnims = (document.getAnimations?.() ?? []).filter((a) => {
+    const pe = (a.effect as KeyframeEffect | null)?.pseudoElement;
+    return typeof pe === 'string' && pe.startsWith('::view-transition');
+  });
+
+  if (vtAnims.length === 0) {
+    // Carga inicial (sin transición): arranca en cuanto el hilo esté libre.
+    idle(cb);
+    return;
+  }
+
+  const finished = Promise.allSettled(vtAnims.map((a) => a.finished));
+  const cap = new Promise<void>((resolve) => window.setTimeout(resolve, 300));
+  Promise.race([finished, cap]).then(() => idle(cb));
 }
 
 // ── Reveal Tier 2 (fade + slide) ──────────────────────────────────────────────

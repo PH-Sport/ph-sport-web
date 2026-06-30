@@ -235,21 +235,30 @@ const isActive = (href: string): boolean => {
     position: absolute;
     bottom: -0.375rem;
     left: 0;
-    width: 0;
+    /* Ancho base fijo de referencia: el posicionamiento real se hace con
+       transform (translateX + scaleX) en JS → corre en compositor/GPU, ajeno al
+       hilo principal, evitando el microcorte que daba animar left/width. */
+    width: 100px;
     height: 1.5px;
     background: var(--color-ph-gold);
     border-radius: 1px;
     pointer-events: none;
-    /* Nombre propio de View Transition: el navegador morfea su geometría (left/
-       width) de la página vieja a la nueva → ESE morph es el deslizamiento. La
-       geometría nueva se fija en astro:after-swap, antes de capturar el snapshot. */
+    transform-origin: left center;
+    transform: scaleX(0);
+    /* Nombre propio de View Transition: el navegador morfea su geometría de la
+       página vieja a la nueva → ESE morph es el deslizamiento, por encima del
+       telón. La geometría nueva se fija en astro:after-swap, antes del snapshot. */
     view-transition-name: ph-nav-indicator;
   }
 
   .nav-indicator.is-animated {
-    transition:
-      left 0.4s cubic-bezier(0.34, 1.2, 0.64, 1),
-      width 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+    transition: transform 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-indicator.is-animated {
+      transition: none;
+    }
   }
 
   /* ── Language switch ── */
@@ -776,12 +785,22 @@ const isActive = (href: string): boolean => {
 
   let indicatorReady = false;
 
+  // Ancho base del indicador (coincide con .nav-indicator { width }). El
+  // posicionamiento se hace con transform sobre esa base: translateX fija el
+  // borde izquierdo y scaleX el ancho (transform-origin: left) → compositor/GPU.
+  const INDICATOR_BASE_WIDTH = 100;
+
   function setIndicatorToLink(link: HTMLElement) {
     if (!wrap || !indicator || !link) return;
     const wrapRect = wrap.getBoundingClientRect();
     const linkRect = link.getBoundingClientRect();
-    indicator.style.left = `${linkRect.left - wrapRect.left}px`;
-    indicator.style.width = `${linkRect.width}px`;
+    const x = linkRect.left - wrapRect.left;
+    const scaleX = linkRect.width / INDICATOR_BASE_WIDTH;
+    indicator.style.transform = `translateX(${x}px) scaleX(${scaleX})`;
+  }
+
+  function hideIndicator() {
+    if (indicator) indicator.style.transform = 'scaleX(0)';
   }
 
   // ── Rutas derivadas de la fuente central (src/lib/navigation.ts) ────────
@@ -889,7 +908,7 @@ const isActive = (href: string): boolean => {
         if (activeLink) {
           setIndicatorToLink(activeLink);
         } else {
-          indicator.style.width = '0';
+          hideIndicator();
         }
       }
     });
@@ -906,7 +925,7 @@ const isActive = (href: string): boolean => {
       if (activeLink) {
         setIndicatorToLink(activeLink);
       } else {
-        indicator.style.width = '0';
+        hideIndicator();
       }
     });
 

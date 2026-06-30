@@ -1,6 +1,6 @@
 ---
 import '@/styles/global.css';
-import { ClientRouter, fade } from 'astro:transitions';
+import { ClientRouter } from 'astro:transitions';
 import Header from './Header.astro';
 import Footer from './Footer.astro';
 import { useTranslations, getAlternateLangUrl, type Lang } from '@/i18n/utils';
@@ -152,7 +152,6 @@ const organizationJsonLd = {
       id="main-content"
       class:list={[!hasHero && 'main--padded']}
       transition:name="page-main"
-      transition:animate={fade({ duration: '0.15s' })}
     >
       <slot />
     </main>
@@ -241,6 +240,42 @@ const organizationJsonLd = {
   .main--padded {
     /* 5rem reserva la zona del header; +0.875rem el margen superior de la cápsula flotante */
     padding-top: calc(5rem + 0.875rem);
+  }
+
+  /* ── Telón de transición entre páginas ──────────────────────────────────
+     Fundido a oscuro: el contenido viejo (page-main) baja de opacidad hasta
+     dejar ver el fondo oscuro del body (~175ms); el nuevo aparece después
+     (~175ms, retardado), sin solape → en el punto medio solo se ve el fondo =
+     el telón. El header (ph-header) y la barra dorada (ph-nav-indicator) son
+     grupos de View Transition propios → quedan/se deslizan POR ENCIMA, ajenos
+     al telón. */
+  @keyframes ph-telon-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @keyframes ph-telon-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Duración/curva LITERALES (sin var): las custom properties no heredan de forma
+     fiable en el árbol de pseudo-elementos ::view-transition; con var() la
+     animación podía quedar inválida → corte seco sin telón. */
+  ::view-transition-old(page-main) {
+    animation: ph-telon-out 0.175s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  ::view-transition-new(page-main) {
+    animation: ph-telon-in 0.175s cubic-bezier(0.16, 1, 0.3, 1) 0.175s both;
+  }
+
+  /* Sin movimiento: cambio instantáneo, sin fundido. */
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(page-main),
+    ::view-transition-new(page-main) {
+      animation: none;
+    }
   }
 
   /* LogoReveal vive dentro de main (z-index 1); el header fijo quedaría encima del overlay.

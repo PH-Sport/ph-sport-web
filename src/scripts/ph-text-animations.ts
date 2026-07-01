@@ -33,46 +33,39 @@ export function scheduleScrollTriggerRefresh(): void {
   });
 }
 
-// ── Defer fuera de la View Transition ─────────────────────────────────────────
-// El init de animaciones (crear ScrollTriggers, wrapWords, gsap.set sobre las
-// cards + el ScrollTrigger.refresh que fuerza un reflow completo) es el bloque más
-// pesado del hilo principal al navegar. Si cae durante el fade de la transición,
-// compite con ella y causa el "trompicón" (medido en ~600-1300 ms de tareas largas
-// en CPU throttle 4×, dominado por GSAP + recálculo de layout).
+// ── Init: durante el telón en navegación, diferido en carga inicial ───────────
+// El init de animaciones (crear ScrollTriggers, wrapWords, gsap.set + el
+// ScrollTrigger.refresh que fuerza un reflow) es el bloque más pesado del hilo
+// principal al montar una página.
 //
-// El doble rAF anterior lo soltaba ~2 frames tras el swap → todavía dentro del
-// fade. Ahora esperamos a que TERMINEN las animaciones de ::view-transition y solo
-// entonces lanzamos el init en tiempo idle (requestIdleCallback), de modo que la
-// transición se reproduce limpia y el trabajo pesado va después, sin solaparse.
+// NAVEGACIÓN SPA: el telón (fundido a oscuro sobre page-main) corre en el
+// compositor → es inmune al trabajo del hilo principal y ADEMÁS lo enmascara.
+// Por eso lanzamos el init cuanto antes, DURANTE el telón, para que los reveals
+// de GSAP ya estén animando cuando el contenido aparece. Si se difiere hasta
+// después de la transición, el contenido llega (fundido del telón) y solo
+// DESPUÉS animan los títulos → entrance en dos fases percibido como "el texto se
+// muestra sin animar y luego empieza la animación". Correrlo pronto une ambas
+// cosas en un único movimiento; el telón oculta cualquier trompicón del init.
 //
-// Topes de seguridad: (1) la espera de la transición corta a 300 ms por si se
-// interrumpe o no resuelve; (2) requestIdleCallback usa timeout 200 ms para no
-// quedarse esperando idle indefinidamente; (3) revealFailsafe (2 s) revela el
-// contenido pase lo que pase. Sin flashes: el hero arranca en visibility:hidden y
-// el resto anima con scrollTrigger fuera de pantalla.
+// CARGA INICIAL: no hay telón que enmascare el primer paint, así que ahí sí
+// diferimos en idle (requestIdleCallback, timeout 200 ms) para no competir con
+// el render inicial.
+//
+// Failsafe (revealFailsafe, 2 s) revela el contenido pase lo que pase; lo que
+// tiene reveal arranca en visibility:hidden (guard) hasta que GSAP toma control.
+let navInProgress = false;
+
 export function afterTransitionPaint(cb: () => void): void {
-  const idle = (fn: () => void): void => {
-    if (typeof window.requestIdleCallback === 'function') {
-      window.requestIdleCallback(fn, { timeout: 200 });
-    } else {
-      requestAnimationFrame(() => requestAnimationFrame(fn));
-    }
-  };
-
-  const vtAnims = (document.getAnimations?.() ?? []).filter((a) => {
-    const pe = (a.effect as KeyframeEffect | null)?.pseudoElement;
-    return typeof pe === 'string' && pe.startsWith('::view-transition');
-  });
-
-  if (vtAnims.length === 0) {
-    // Carga inicial (sin transición): arranca en cuanto el hilo esté libre.
-    idle(cb);
+  if (navInProgress) {
+    // Doble rAF: tras el swap y su paint, con la geometría asentada para ScrollTrigger.
+    requestAnimationFrame(() => requestAnimationFrame(cb));
     return;
   }
-
-  const finished = Promise.allSettled(vtAnims.map((a) => a.finished));
-  const cap = new Promise<void>((resolve) => window.setTimeout(resolve, 300));
-  Promise.race([finished, cap]).then(() => idle(cb));
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(cb, { timeout: 200 });
+  } else {
+    requestAnimationFrame(() => requestAnimationFrame(cb));
+  }
 }
 
 // ── Reveal Tier 2 (fade + slide) ──────────────────────────────────────────────
@@ -333,6 +326,11 @@ export function clipPathReveal(
 
 // ── Cleanup on View Transitions swap ─────────────────────────────────────────
 document.addEventListener('astro:before-swap', (e) => {
+  // Marca que la próxima carga es una navegación SPA (hay telón que enmascara el
+  // init) → afterTransitionPaint lo lanzará pronto en vez de diferirlo. Se queda
+  // en true para el resto de navegaciones; una recarga completa resetea el módulo.
+  navInProgress = true;
+
   activeScrambles.forEach((t) => gsap.ticker.remove(t));
   activeScrambles.length = 0;
   magneticDisposers.forEach((d) => d());

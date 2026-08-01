@@ -929,7 +929,14 @@ const isActive = (href: string): boolean => {
       }
     });
 
+    // Sólo cuando cambia el ancho: en móvil, un resize de sólo altura es la barra
+    // del navegador entrando y saliendo durante el scroll, y la posición del
+    // indicador —horizontal, dentro del header— no depende de la altura. Mismo
+    // criterio que el `ignoreMobileResize` de ScrollTrigger.
+    let lastViewportWidth = window.innerWidth;
     window.addEventListener('resize', () => {
+      if (window.innerWidth === lastViewportWidth) return;
+      lastViewportWidth = window.innerWidth;
       const activeLink = desktopLinks.find((link) =>
         link.classList.contains('is-active'),
       );

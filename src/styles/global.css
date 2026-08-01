@@ -159,10 +159,13 @@ body {
   font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.6;
-  /* 100vh en iOS Safari incluye la barra que colapsa al scrollear → hueco negro abajo.
-     100dvh sigue la viewport dinámica y se ajusta correctamente. Fallback en navegadores sin dvh. */
+  /* `svh` (viewport pequeño, el que deja la barra del navegador visible) y no `dvh`:
+     la unidad dinámica se recalcula cada vez que la barra se recoge o vuelve a salir,
+     y en los navegadores de iPhone que no son Safari eso redimensiona el WKWebView en
+     pleno scroll → reflow y salto de layout. Con `svh` la altura no depende de la barra.
+     Fallback en navegadores sin unidades de viewport nuevas. */
   min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 100svh;
 }
 
 /* ── TIPOGRAFIA BASE ───────────────────────────────────────────────────────── */

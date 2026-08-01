@@ -138,7 +138,10 @@ const isActive = (href: string): boolean => {
   .header-shell {
     width: calc(100% - 2 * var(--ph-section-px));
     margin-inline: auto;
-    margin-top: 0.875rem;
+    /* Con `viewport-fit=cover` el `top: 0` del header queda debajo de la barra de
+       estado: se le suma la zona segura para que la cápsula siga cayendo por debajo.
+       Sin notch —escritorio, vertical sin isla— el inset es 0 y queda igual que antes. */
+    margin-top: calc(0.875rem + env(safe-area-inset-top));
     border-radius: var(--radius-md);
     /* Nombre propio de View Transition: saca la cápsula del snapshot `root` para
        que no se funda (sale/entra) en cada navegación SPA. Ver bloque is:global. */
@@ -154,7 +157,7 @@ const isActive = (href: string): boolean => {
 
   @media (max-width: 767px) {
     .header-shell {
-      margin-top: 0.5rem;
+      margin-top: calc(0.5rem + env(safe-area-inset-top));
     }
   }
 
@@ -510,10 +513,15 @@ const isActive = (href: string): boolean => {
     min-height: 100vh;
     min-height: 100dvh;
     margin-inline: auto;
-    padding-inline: var(--ph-section-px);
+    /* El overlay es `fixed`: no hereda las zonas seguras del body y las pide aparte.
+       El hueco de arriba ya lo da `--mobile-menu-chrome-offset`, que se mide del
+       header real y por tanto ya lleva el inset dentro. */
+    padding-inline:
+      calc(var(--ph-section-px) + env(safe-area-inset-left))
+      calc(var(--ph-section-px) + env(safe-area-inset-right));
     /* padding-top explícito para poder interpolarlo al cerrar (evita el salto al quitar .is-open) */
     padding-top: 1.25rem;
-    padding-bottom: 3rem;
+    padding-bottom: calc(3rem + env(safe-area-inset-bottom));
     display: flex;
     flex-direction: column;
     gap: 2rem;

@@ -158,6 +158,13 @@
 }
 
 html {
+  /* Modo oscuro fijo: la web no sigue al sistema. Sin esto el navegador la da por
+     clara y pinta en blanco lo que no es contenido —el rebote del scroll al llegar
+     al final, los controles nativos, las barras—. */
+  color-scheme: dark;
+  /* El fondo del lienzo, no sólo el del body: es lo que se ve en el rebote del
+     scroll y en la franja bajo la barra de estado con `viewport-fit=cover`. */
+  background-color: var(--color-ph-black);
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
   -webkit-font-smoothing: antialiased;
@@ -178,6 +185,15 @@ body {
      sin unidades de viewport nuevas. */
   min-height: 100vh;
   min-height: var(--ph-viewport-h);
+  /* Zonas seguras: con `viewport-fit=cover` la página llega hasta los bordes físicos,
+     así que el contenido se aparta del notch en apaisado y de la barra de gestos
+     abajo. En vertical y en escritorio estos valores son 0 y no cambia nada. El
+     inset de arriba no va aquí sino en la cápsula del header, que es `fixed` y no
+     hereda el padding del body; el hero, que sí debe llegar hasta el borde, se
+     queda a sangre a propósito. */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Sonda de medición del script que congela `--ph-viewport-h`. Lleva `svh` literal

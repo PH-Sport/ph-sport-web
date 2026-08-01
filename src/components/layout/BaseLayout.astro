@@ -75,7 +75,17 @@ const organizationJsonLd = {
 <html lang={lang}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {/* `viewport-fit=cover`: la página se dibuja también bajo la barra de estado y el
+        notch, así esas franjas salen del negro de la web y no del blanco del sistema
+        cuando el móvil está en modo claro. Lo que queda tapado se recupera con
+        `env(safe-area-inset-*)` en global.css y en la cápsula del header. */}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    {/* La web es oscura siempre, no sigue al sistema. Sin esta declaración el
+        navegador la trata como clara: pinta de blanco el rebote del scroll y los
+        controles nativos, y en iOS puede teñir su propio chrome en claro. Va en el
+        <head> —y repetida en CSS— para que valga desde el primer pintado. */}
+    <meta name="color-scheme" content="dark" />
 
     {/* FOUC guard: corre antes del primer paint. Marca el documento si vamos a
         animar (no reduced-motion). El CSS oculta [data-reveal] mientras esté la
@@ -98,6 +108,9 @@ const organizationJsonLd = {
 
     {/* iOS: si el usuario añade phsport.es a Home Screen, abre standalone (sin chrome de Safari)
         con status bar translúcido sobre el hero negro. Title corto bajo el icono. */}
+    {/* `mobile-web-app-capable` es el nombre estándar; el `apple-` está deprecado y
+        salta un aviso en consola, pero se mantiene porque iOS aún lee ese. */}
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="PHSPORT" />

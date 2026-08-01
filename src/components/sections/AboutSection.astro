@@ -184,11 +184,10 @@ const internationalCountries = [
     display: grid;
     grid-template-columns: 1.1fr 1fr;
     /* Hero a viewport completo como en Home: la página usa `hasHero` → sin `main--padded`,
-       el grid llega al top y el header pill flota encima. `svh` igual que el hero de Home:
-       altura estable con la barra del navegador dentro o fuera, así recogerla no reajusta
-       el layout en pleno scroll. */
+       el grid llega al top y el header pill flota encima. Alto de pantalla congelado
+       (ver `--ph-viewport-h` en global.css), igual que el hero de Home. */
     min-height: 100vh;
-    min-height: 100svh;
+    min-height: var(--ph-viewport-h);
     border-bottom: 1px solid var(--abt-line);
     position: relative;
   }

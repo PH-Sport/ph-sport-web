@@ -23,6 +23,13 @@
     <title>Laboratorio de viewport — PHSPORT</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
+      /* Réplica de lo que hace el sitio: respaldo en svh, congelado por el script. */
+      :root { --ph-viewport-h: 100svh; }
+      [data-viewport-probe] {
+        position: fixed; top: 0; left: -9999px;
+        width: 1px; height: 100svh;
+        visibility: hidden; pointer-events: none;
+      }
       body {
         background: #0d0f12;
         color: #fff;
@@ -59,6 +66,7 @@
       .ref-dvh { min-height: 100dvh; }
       /* Sondas de medición: fuera de vista, sólo para leer su altura */
       .sonda { position: absolute; top: 0; left: -9999px; width: 1px; }
+      #s-congelada { height: var(--ph-viewport-h); }
       #s-svh { height: 100svh; }
       #s-lvh { height: 100lvh; }
       #s-dvh { height: 100dvh; }
@@ -66,6 +74,8 @@
     </style>
   </head>
   <body>
+    <div data-viewport-probe aria-hidden="true"></div>
+    <div class="sonda" id="s-congelada"></div>
     <div class="sonda" id="s-svh"></div>
     <div class="sonda" id="s-lvh"></div>
     <div class="sonda" id="s-dvh"></div>
@@ -93,7 +103,25 @@
 
     <script is:inline>
       (function () {
+        // El congelador del sitio, replicado aquí para poder comparar en la misma
+        // pantalla lo que se mueve y lo que ya no.
+        (function congelar() {
+          var anchoMedido = -1;
+          var sonda = document.querySelector('[data-viewport-probe]');
+          function medir() {
+            if (!sonda || window.innerWidth === anchoMedido) return;
+            anchoMedido = window.innerWidth;
+            document.documentElement.style.setProperty(
+              '--ph-viewport-h',
+              Math.round(sonda.getBoundingClientRect().height) + 'px',
+            );
+          }
+          medir();
+          addEventListener('resize', medir, { passive: true });
+        })();
+
         var MEDIDAS = [
+          { id: '→ CONGELADA', leer: function () { return document.getElementById('s-congelada').getBoundingClientRect().height; } },
           { id: 'innerHeight', leer: function () { return window.innerHeight; } },
           { id: 'visualVP', leer: function () { return window.visualViewport ? Math.round(window.visualViewport.height) : 0; } },
           { id: '100svh', leer: function () { return document.getElementById('s-svh').getBoundingClientRect().height; } },

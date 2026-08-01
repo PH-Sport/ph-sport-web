@@ -151,6 +151,9 @@ const organizationJsonLd = {
     <ClientRouter />
   </head>
   <body>
+    {/* Sonda del alto de pantalla: la mide el script de más abajo para congelar
+        `--ph-viewport-h`. Invisible y sin peso en el layout. */}
+    <div data-viewport-probe aria-hidden="true"></div>
     <a href="#main-content" class="skip-link">{t('a11y.skip')}</a>
     <Header />
     <main
@@ -163,6 +166,48 @@ const organizationJsonLd = {
     <Footer />
 
     <script>
+      /* El alto de pantalla se mide una vez y se queda quieto.
+       *
+       * Ninguna unidad de CSS sirve para esto en los navegadores de iPhone que no
+       * son Safari: al recoger o sacar su barra de direcciones redimensionan la
+       * ventana entera, y `svh`, `lvh` y `vh` la siguen todas (medido en un iPhone
+       * real: 630 ↔ 717px). Un elemento a pantalla completa cambia de alto en pleno
+       * scroll, empuja lo que tiene debajo e invalida la capa del documento, así que
+       * se repinta la página entera. Congelado el valor, la ventana encoge y estira
+       * sin que el layout se mueva.
+       *
+       * Se vuelve a medir sólo cuando cambia el ANCHO —rotar el móvil, redimensionar
+       * la ventana—, que es el único cambio que de verdad pide recalcular. Un cambio
+       * de sólo alto es la barra, y ésa es justo la que hay que ignorar.
+       *
+       * Si el script no llega a correr, manda el `100svh` de respaldo y todo mide lo
+       * mismo: esto no añade una medida, congela la que ya había. */
+      let anchoMedido = -1;
+      let altoCongelado = '';
+
+      function medirAltoPantalla() {
+        // La sonda lleva `svh` literal, así que su altura no depende del valor
+        // congelado: se puede leer sin retirarlo antes.
+        const sonda = document.querySelector<HTMLElement>('[data-viewport-probe]');
+        if (!sonda || window.innerWidth === anchoMedido) return;
+        anchoMedido = window.innerWidth;
+        altoCongelado = `${Math.round(sonda.getBoundingClientRect().height)}px`;
+        document.documentElement.style.setProperty('--ph-viewport-h', altoCongelado);
+      }
+
+      function reaplicarAltoPantalla() {
+        // Astro rehace el <html> en cada swap y se lleva por delante el estilo
+        // inline: se repone el valor ya medido, sin volver a medir, para que todas
+        // las páginas de la sesión compartan el mismo alto.
+        if (altoCongelado) {
+          document.documentElement.style.setProperty('--ph-viewport-h', altoCongelado);
+        }
+      }
+
+      medirAltoPantalla();
+      window.addEventListener('resize', medirAltoPantalla, { passive: true });
+      document.addEventListener('astro:after-swap', reaplicarAltoPantalla);
+
       const HEADER_SCROLL_THRESHOLD = 16;
       const SCROLL_HIDE_MIN_Y = 64;
       const SCROLL_DIRECTION_DELTA = 6;

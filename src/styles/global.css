@@ -56,6 +56,21 @@
   --ph-section-px: clamp(1.5rem, 5vw, 6rem);
   --ph-duration:   400ms;
 
+  /* Alto de pantalla, congelado. Lo usa todo lo que ocupa la pantalla entera.
+     El valor de aquí es el respaldo y el del primer pintado; en cuanto corre el
+     script de BaseLayout, `--ph-viewport-h` pasa a ser ese mismo número en
+     píxeles y deja de moverse.
+
+     Motivo: los navegadores de iPhone que no son Safari redimensionan su
+     ventana entera al recoger o sacar la barra de direcciones, así que ninguna
+     unidad de viewport se salva —medido en un iPhone real: con la barra fuera y
+     dentro, `svh`, `lvh` y `vh` iban todas de 630 a 717px—. Un elemento a
+     pantalla completa cambia entonces de alto en pleno scroll, empuja todo lo
+     que tiene debajo e invalida la capa entera del documento: se repinta la
+     página completa, mires donde mires. Congelado, la ventana puede encoger y
+     estirar sin que el layout se entere. Mismo arreglo que en ochoa-cokima. */
+  --ph-viewport-h: 100svh;
+
   /* Glassmorphism */
   --ph-glass-bg:        rgba(255, 255, 255, 0.04);
   --ph-glass-border:    rgba(255, 255, 255, 0.08);
@@ -159,13 +174,23 @@ body {
   font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.6;
-  /* `svh` (viewport pequeño, el que deja la barra del navegador visible) y no `dvh`:
-     la unidad dinámica se recalcula cada vez que la barra se recoge o vuelve a salir,
-     y en los navegadores de iPhone que no son Safari eso redimensiona el WKWebView en
-     pleno scroll → reflow y salto de layout. Con `svh` la altura no depende de la barra.
-     Fallback en navegadores sin unidades de viewport nuevas. */
+  /* Alto de pantalla congelado (ver `--ph-viewport-h`). Fallback para navegadores
+     sin unidades de viewport nuevas. */
   min-height: 100vh;
-  min-height: 100svh;
+  min-height: var(--ph-viewport-h);
+}
+
+/* Sonda de medición del script que congela `--ph-viewport-h`. Lleva `svh` literal
+   —no la variable— porque es justo lo que hay que medir: si usara la variable se
+   estaría midiendo a sí misma. Fuera de la vista y sin afectar al layout. */
+[data-viewport-probe] {
+  position: fixed;
+  top: 0;
+  left: -9999px;
+  width: 1px;
+  height: 100svh;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* ── TIPOGRAFIA BASE ───────────────────────────────────────────────────────── */

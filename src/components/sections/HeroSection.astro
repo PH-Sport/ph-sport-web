@@ -48,7 +48,10 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
   .hero--home {
     position: relative;
     width: 100%;
-    min-height: 100svh;
+    /* Alto de pantalla congelado (ver `--ph-viewport-h` en global.css): con `svh`
+       a secas, el vaivén de la barra del navegador en iPhone cambiaba el alto del
+       hero y arrastraba el documento entero. */
+    min-height: var(--ph-viewport-h);
     overflow: hidden;
     background: var(--color-ph-black, #0d0f12);
     color: var(--color-ph-white, #ffffff);

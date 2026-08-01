@@ -1,0 +1,92 @@
+---
+/**
+ * Que el historial no se toque mientras se hace scroll.
+ *
+ * El `ClientRouter` de Astro escribe la posición de scroll en el historial cada
+ * vez que la página se queda quieta (`scrollend`, o un sondeo de 50 ms donde no
+ * existe). En los navegadores de iPhone que no son Safari, ese `replaceState`
+ * obliga a sacar la barra de direcciones: envuelven el WKWebView de Apple y
+ * vigilan su estado de navegación para pintar su propia barra, sin distinguir
+ * entre un cambio de URL y una reescritura del estado con la misma URL. Safari
+ * no lo hace porque su barra es parte del navegador, no un observador de la vista.
+ *
+ * Reportado en withastro/astro#12285 y cerrado sin arreglar, porque quitar ese
+ * guardado sin más rompería la restauración de posición al pulsar atrás.
+ *
+ * Aquí no se suprime: se retrasa. La posición sólo hace falta cuando se abandona
+ * la página, así que se retiene la escritura y se vuelca en el último instante
+ * útil — al navegar, al ocultarse la pestaña, al descargarse el documento —.
+ * Durante el scroll el historial no se toca y la barra se queda recogida.
+ *
+ * Sólo se filtra la escritura que no cambia la URL y que difiere únicamente en
+ * `scrollX`/`scrollY`, que es la firma exacta del guardado de scroll. Las demás
+ * llamadas del router pasan intactas, y `pushState` no se toca.
+ *
+ * Va `is:inline` y ANTES de `<ClientRouter />` a propósito: los módulos son
+ * diferidos, así que un script clásico en el `<head>` corre siempre antes que
+ * el router y llega a tiempo de envolver la función.
+ */
+---
+
+<script is:inline>
+  (function () {
+    var nativeReplaceState = history.replaceState.bind(history);
+    var pending = null;
+    // Ventana con caducidad en vez de un interruptor: si una navegación se
+    // queda a medias, el filtro se recupera solo en cinco segundos.
+    var navigatingUntil = 0;
+
+    function onlyScrollChanges(incoming, url) {
+      if (url != null) return false;
+      var current = history.state;
+      if (!current || !incoming || typeof incoming !== 'object') return false;
+      for (var a in current) {
+        if (a === 'scrollX' || a === 'scrollY') continue;
+        if (current[a] !== incoming[a]) return false;
+      }
+      for (var b in incoming) {
+        if (b === 'scrollX' || b === 'scrollY') continue;
+        if (current[b] !== incoming[b]) return false;
+      }
+      return true;
+    }
+
+    history.replaceState = function (incoming, unused, url) {
+      if (Date.now() > navigatingUntil && onlyScrollChanges(incoming, url)) {
+        pending = incoming;
+        return;
+      }
+      pending = null;
+      return nativeReplaceState(incoming, unused, url);
+    };
+
+    function flush() {
+      if (!pending) return;
+      var state = pending;
+      pending = null;
+      // Guarda de identidad: el estado retenido pertenece a una entrada concreta
+      // del historial. Al pulsar atrás, `popstate` ya ha movido `history.state`
+      // a la entrada destino antes de que Astro prepare la transición, y escribir
+      // ahí el estado de la página que se abandona corrompería su `index` — la
+      // dirección de la siguiente transición se calcula con él. Si los índices no
+      // coinciden, la entrada ya no es la nuestra: se descarta.
+      var currentIndex = history.state && history.state.index;
+      if (state.index !== currentIndex) return;
+      try {
+        nativeReplaceState(state, '');
+      } catch (e) {}
+    }
+
+    addEventListener('pagehide', flush);
+    addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') flush();
+    });
+    document.addEventListener('astro:before-preparation', function () {
+      flush();
+      navigatingUntil = Date.now() + 5000;
+    });
+    document.addEventListener('astro:page-load', function () {
+      navigatingUntil = 0;
+    });
+  })();
+</script>

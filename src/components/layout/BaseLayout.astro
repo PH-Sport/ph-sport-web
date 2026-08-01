@@ -1,6 +1,7 @@
 ---
 import '@/styles/global.css';
 import { ClientRouter } from 'astro:transitions';
+import QuietScrollHistory from './QuietScrollHistory.astro';
 import Header from './Header.astro';
 import Footer from './Footer.astro';
 import { useTranslations, getAlternateLangUrl, type Lang } from '@/i18n/utils';
@@ -143,6 +144,10 @@ const organizationJsonLd = {
       </>
     )}
 
+    {/* Antes del router a propósito: envuelve `history.replaceState` para que el
+        guardado de scroll no toque el historial y la barra de direcciones no
+        vuelva a salir en los navegadores WebKit de iPhone. Ver el componente. */}
+    <QuietScrollHistory />
     <ClientRouter />
   </head>
   <body>

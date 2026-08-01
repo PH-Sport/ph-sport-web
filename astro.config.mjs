@@ -4,9 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://phsport.es',
-  // `/lab-viewport` es una página de diagnóstico temporal (rama fix/ios-barra-navegador):
-  // fuera del sitemap para que no se indexe si el deploy llegara a producción.
-  integrations: [sitemap({ filter: (page) => !page.includes('/lab-viewport') })],
+  integrations: [sitemap()],
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'hover',

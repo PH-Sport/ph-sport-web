@@ -36,6 +36,7 @@ destapó dos meses describiendo una island de React que ya no existía.
 | `README.md` | Scripts, rutas, stack |
 | `ARCHITECTURE.md` | Estructura, i18n, hero, motion, performance, SEO, sistema de diseño |
 | `DECISIONS.md` | Decisiones no obvias con su motivo y alternativas descartadas. Más reciente primero |
+| `docs/rendimiento.md` | Histórico de las auditorías, cifras de referencia, **cómo medir** y qué diagnósticos resultaron falsos |
 | `docs/superpowers/` | Specs y planes de features concretas. **Histórico, no estado actual**: describen el proyecto tal como era el día que se escribieron y no se actualizan. Para saber cómo está algo hoy, mirar el código o los tres documentos de arriba |
 
 **Antes de proponer un cambio de arquitectura, buscar en `DECISIONS.md`**: puede
@@ -174,6 +175,14 @@ treinta segundos de un iPhone resolvieron lo que cuatro rondas de teoría no.
 - Sitelinks de Google mezclando ES y EN. El marcado está verificado correcto
   (`lang` por página, hreflang recíproco); los sitelinks los elige Google y no
   hay control directo.
+- **Coste del snapshot del `ClientRouter`** en páginas pesadas (`/talentos`, 116
+  tarjetas). Identificado en junio, **sin hacer a propósito por riesgo alto**:
+  tocar la View Transition ahí puede romper la fluidez que costó dos auditorías.
+  No abordarlo sin que Mario lo supervise. Detalle en `docs/rendimiento.md`.
+- **SEO pendiente (P1/P2)**: analítica sin cookies (Plausible o GA4), un
+  `public/llms.txt` para buscadores con IA, una página `/faq` con preguntas y
+  respuestas literales, y auditar los `alt=""` de Header, Footer y Hero para
+  confirmar que son decorativos.
 - ⚠️ **Söhne se sirve en producción con los `.woff2` de prueba de Klim.** La
   licencia **no está comprada** (confirmado por Mario el 2026-08-11) y la web
   está publicada desde abril. Es un incumplimiento de licencia abierto, no un

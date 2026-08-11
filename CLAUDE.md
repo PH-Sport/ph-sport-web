@@ -37,7 +37,8 @@ destapó dos meses describiendo una island de React que ya no existía.
 | `ARCHITECTURE.md` | Estructura, i18n, hero, motion, performance, SEO, sistema de diseño |
 | `DECISIONS.md` | Decisiones no obvias con su motivo y alternativas descartadas. Más reciente primero |
 | `docs/rendimiento.md` | Histórico de las auditorías, cifras de referencia, **cómo medir** y qué diagnósticos resultaron falsos |
-| `docs/superpowers/` | Specs y planes de features concretas. **Histórico, no estado actual**: describen el proyecto tal como era el día que se escribieron y no se actualizan. Para saber cómo está algo hoy, mirar el código o los tres documentos de arriba |
+| `docs/historico/` | Specs y planes de features concretas. **Histórico, no estado actual**: describen el proyecto tal como era el día que se escribieron y no se actualizan. Para saber cómo está algo hoy, mirar el código o los tres documentos de arriba |
+| `docs/README.md` | Qué hay en `docs/` y cuál de sus dos mitades es fiable hoy |
 
 **Antes de proponer un cambio de arquitectura, buscar en `DECISIONS.md`**: puede
 estar ya decidido y descartado, con el motivo escrito.
@@ -93,7 +94,7 @@ grep -rn "NombreQueYaNoExiste" README.md CLAUDE.md ARCHITECTURE.md
 
 Si aparece, la documentación miente. Arreglarlo entra en el mismo commit.
 
-`DECISIONS.md` y `docs/superpowers/` quedan fuera de esa comprobación **a
+`DECISIONS.md` y `docs/historico/` quedan fuera de esa comprobación **a
 propósito**: son registro histórico. Que un plan de abril mencione un archivo ya
 borrado es correcto — así fue. Lo que no puede ocurrir es que la documentación
 viva describa como presente algo que ya no existe.

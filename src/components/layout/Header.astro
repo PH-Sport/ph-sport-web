@@ -45,8 +45,11 @@ const isActive = (href: string): boolean => {
               </li>
             ))}
             <li>
+              {/* hreflang = idioma del destino, no el de esta página: declara la
+                  frontera entre las dos versiones a buscadores y lectores de pantalla. */}
               <a
                 href={alternateLangUrl}
+                hreflang={isEn ? 'es' : 'en'}
                 class="lang-switch"
                 aria-label={t('nav.lang.switch')}
               >
@@ -117,6 +120,7 @@ const isActive = (href: string): boolean => {
 
     <a
       href={alternateLangUrl}
+      hreflang={isEn ? 'es' : 'en'}
       data-mobile-link
       class="lang-switch lang-switch--mobile"
       aria-label={t('nav.lang.switch')}

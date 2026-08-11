@@ -242,6 +242,20 @@ Las animaciones de sección están en `src/scripts/ph-text-animations.ts`. El si
 - `<link rel="alternate" hreflang="es">` y `hreflang="en"` en todas las páginas
 - `@astrojs/sitemap` genera `sitemap.xml` automáticamente en build
 
+### Reglas de dominio (no romper)
+
+El dominio canónico es el **apex** `phsport.es`; `www` redirige con 308. Ver DECISIONS.md (2026-08-11).
+
+- El JSON-LD `WebSite` se emite **solo en la home**. Google resuelve el *site name* leyendo la raíz del dominio; si la raíz devuelve un 3xx o el bloque no está ahí, muestra el dominio en minúsculas ("phsport") en su lugar.
+- **Los redirects van en `vercel.json`**, nunca en `astro.config.mjs`: en build estático Astro los materializa como HTML con `meta refresh` y respuesta 200, no como 301.
+- Al tocar dominios o redirects, verificar que la raíz responde 200 y sirve el `WebSite`:
+  ```sh
+  curl -sS -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" \
+    -I https://phsport.es/
+  curl -sS https://phsport.es/ | grep -o '"@type":"WebSite"[^}]*}'
+  ```
+- `@astrojs/sitemap` **sin** opción `i18n`: empareja versiones por path y los slugs están traducidos (`/servicios` ↔ `/en/services`), así que solo anotaría 2 de 12 URLs.
+
 ---
 
 ## Sistema de diseño
@@ -375,7 +389,6 @@ No superar `0.75rem`. La marca no es redondeada.
 | Pendiente | Bloqueado por |
 |---|---|
 | Fotos del resto del roster (~43 jugadores) | Cliente |
-| Dominio definitivo → actualizar `SITE_URL` en `lib/constants.ts` | Cliente |
 | OG image 1200×630px | Diseño |
 | GA4 — Measurement ID | Decisión de si se integra |
 | Söhne `.woff2` con licencia de producción | Compra de licencia |

@@ -6,6 +6,34 @@ Orden: más reciente primero.
 
 ---
 
+## 2026-08-11 · Dominio canónico en el apex + todos los redirects en `vercel.json`
+
+**Decisión**: `phsport.es` (apex) es el dominio que sirve la web; `www.phsport.es` redirige a él con **308 permanente**. Se configura en Vercel → Settings → Domains. Además, **todos** los redirects del proyecto viven en `vercel.json`, no en `astro.config.mjs`.
+
+**Alternativa considerada**: dejar `www` como principal y cambiar `site` en `astro.config.mjs` para alinear el código con el hosting.
+
+**Motivo**: durante 4 meses la SERP mostró el nombre del sitio como **"phsport"** en minúsculas (visible sobre todo en móvil, donde Google sustituye el título por el *site name*). La causa no estaba en el marcado — estaba bien desde el P0 de mayo (commit `ac8f35d`) — sino en la capa de hosting: **el apex devolvía 307 a `www`, así que Googlebot nunca recibía HTML de la raíz del dominio**. El *site name* es el único mecanismo de Google que se resuelve leyendo el marcado **en la raíz** ("the domain or subdomain level root URI"); por eso fallaba solo el nombre mientras títulos, descripciones e indexación iban bien.
+
+Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.config`, canonical, sitemap, `robots.txt`, hreflang) y la propiedad de Search Console es `sc-domain:phsport.es`, que cubre ambos hosts. Girar la única pieza discordante (Vercel) en vez de reescribir las seis restantes.
+
+**Por qué los redirects no van en `astro.config`**: en build estático Astro los materializa como HTML con `<meta http-equiv="refresh">` y **respuesta 200**, que Google trata como redirección débil. `/equipo` llevaba así desde siempre. En `vercel.json` son 301 reales a nivel de servidor.
+
+**Cambios ejecutados**:
+- Vercel: apex a `Connect to an environment / Production`; `www` a `Redirect to Another Domain / 308 Permanent`.
+- `BaseLayout.astro`: el JSON-LD `WebSite` se emite **solo en la home** (`Astro.url.pathname === '/'`) — Google lo exige en la raíz del dominio e ignora el nivel de subdirectorio, así que en las otras 11 páginas era ruido. `url` con barra final para casar exacto con el canonical.
+- `vercel.json`: 146 redirects 301 para el legado del WordPress anterior (inventario vía Wayback CDX: 538 URLs). 130 fichas de jugador y las taxonomías (`/category/*`, `/cl_team/*`, `/tag/*`) → `/talentos/`; `/contacto/` y `/equipo/` → `/sobre-nosotros`; homes antiguas y `/author/*` → `/`. Las `/wp-*` (350) quedan fuera a propósito: son ficheros internos, no páginas indexables.
+- `astro.config.mjs`: retirado el bloque `redirects`.
+- `Header.astro`: `hreflang` en los enlaces del selector de idioma (commit `6a0aabf`).
+
+**Regla resultante**:
+- Cualquier redirect nuevo va a `vercel.json`, nunca a `astro.config.mjs`.
+- Al tocar dominios, verificar SIEMPRE con `curl -A "…Googlebot…" -I https://phsport.es/` que la raíz devuelve **200** y sirve el `WebSite` JSON-LD. Un 3xx ahí rompe el site name aunque el marcado sea perfecto.
+- El sitemap de `@astrojs/sitemap` **no** debe llevar la opción `i18n`: empareja versiones por path y aquí los slugs están traducidos (`/servicios` ↔ `/en/services`), así que solo anota 2 de 12 URLs. El hreflang vive en el HTML, completo y recíproco.
+
+**Pendiente de verificar (desde ~2026-08-25)**: que la SERP móvil muestre "PHSPORT". Los sitelinks que mezclan ES/EN no tienen control directo — los elige Google y la herramienta para degradarlos se retiró de Search Console hace años.
+
+---
+
 ## 2026-04-24 · Eliminar páginas de detalle + renombrar ruta a `/talentos/` + escudos en la card
 
 **Decisión**: retirar `/jugadores/[slug]` y `/en/players/[slug]`. El grid de `/talentos/` (antes `/jugadores/`) es la única vista de roster y las tarjetas no son clicables. Los escudos de selección nacional pasan a renderizarse en la esquina superior-derecha de cada card y la escuadra dorada (antes decorativa en hover) ahora los enmarca al hacer hover como énfasis.

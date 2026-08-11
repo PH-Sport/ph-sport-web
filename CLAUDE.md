@@ -105,6 +105,12 @@ viva describa como presente algo que ya no existe.
 npm run dev      # localhost:4321 (strictPort: falla si está ocupado, no salta a 4322)
 npm run build    # build de producción
 npm run preview  # previsualización del build
+
+# Regeneración de assets — a mano, solo al cambiar un original de assets/source-media/.
+# La salida se versiona en public/, así que NO forman parte del build.
+npm run assets:badges    # escudos PNG -> WebP 128x128
+npm run assets:hero      # master del vídeo -> variantes 480p y 720p
+npm run assets:favicons  # favicons, apple-touch-icon y og-image.jpg
 ```
 
 Despliegue: **Vercel** (proyecto `ph-sport-web`, equipo `rodz-dev`), push a `main`

@@ -8,15 +8,18 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "assets:badges": "node scripts/build-badge-variants.mjs",
+    "assets:favicons": "node scripts/build-favicons.mjs",
+    "assets:hero": "node scripts/build-hero-variants.mjs"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/PH-Sport/ph-sport-web.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "PH Sport",
+  "license": "UNLICENSED",
+  "private": true,
   "bugs": {
     "url": "https://github.com/PH-Sport/ph-sport-web/issues"
   },

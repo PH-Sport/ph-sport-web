@@ -9,6 +9,15 @@ Web de PH Sport construida con Astro 5, i18n ES/EN, vídeo hero y animaciones GS
 - `npm run preview` — previsualización del build
 - `npm run astro -- check` — validación Astro/TypeScript
 
+### Regeneración de assets
+
+Solo se ejecutan a mano al cambiar un original de `assets/source-media/`; su
+salida se versiona en `public/`.
+
+- `npm run assets:badges` — escudos PNG → WebP 128×128
+- `npm run assets:hero` — master del vídeo → variantes 480p y 720p
+- `npm run assets:favicons` — favicons, apple-touch-icon y `og-image.jpg`
+
 ## Páginas
 
 | Ruta | Contenido |

@@ -1,6 +1,6 @@
 [
   { "name": "Juan Cruz", "club": { "name": "CD Leganés" }, "nationalTeamCodes": [] },
-  { "name": "Pedro Lima", "club": { "name": "Wolverhampton Wanderers" }, "nationalTeamCodes": [] },
+  { "name": "Pedro Lima", "club": { "name": "Wolverhampton Wanderers" }, "nationalTeamCodes": [], "hidden": true, "note": "Ocultado 2026-08-11: se ha ido de PH. No eliminado por si vuelve." },
   { "name": "Dani Requena", "club": { "name": "Córdoba CF" }, "nationalTeamCodes": ["ES"] },
   { "name": "Javi Hernández", "club": { "name": "Panathinaikos" }, "nationalTeamCodes": [] },
   { "name": "Mati Barzic", "club": { "name": "Cultural Leonesa" }, "nationalTeamCodes": ["HR"] },

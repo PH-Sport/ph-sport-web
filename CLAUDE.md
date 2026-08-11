@@ -41,6 +41,23 @@ destapó dos meses describiendo una island de React que ya no existía.
 **Antes de proponer un cambio de arquitectura, buscar en `DECISIONS.md`**: puede
 estar ya decidido y descartado, con el motivo escrito.
 
+## Si te piden algo que ya está descartado
+
+Va a pasar: quien pide no siempre recuerda por qué se descartó, y algunas de
+estas decisiones se han pedido más de una vez. El comportamiento correcto **no
+es ejecutar en silencio, ni negarse a secas**:
+
+1. **Decirlo antes de empezar**, citando la entrada de `DECISIONS.md` y el
+   motivo original. No "eso no se hace", sino "esto se retiró el día X porque Y".
+2. **Si tras oírlo se mantiene la petición, se hace.** Deja de ser una regla
+   rota y pasa a ser una **decisión nueva**: se ejecuta y se registra en
+   `DECISIONS.md` con la fecha, quién la pidió y qué ha cambiado respecto a la
+   vez anterior.
+
+Lo que no puede ocurrir es que se rehaga algo ya descartado sin que quede
+escrito por qué se cambió de opinión. Un descarte no es eterno; lo que es
+innegociable es dejar rastro del cambio.
+
 ## Documentar es parte del cambio, no un extra
 
 La documentación se actualiza **en el mismo commit** que el cambio que la
@@ -157,6 +174,13 @@ treinta segundos de un iPhone resolvieron lo que cuatro rondas de teoría no.
 - Sitelinks de Google mezclando ES y EN. El marcado está verificado correcto
   (`lang` por página, hreflang recíproco); los sitelinks los elige Google y no
   hay control directo.
+- ⚠️ **Söhne se sirve en producción con los `.woff2` de prueba de Klim.** La
+  licencia **no está comprada** (confirmado por Mario el 2026-08-11) y la web
+  está publicada desde abril. Es un incumplimiento de licencia abierto, no un
+  pendiente estético. Comprar en https://klim.co.nz/retail-fonts/sohne/ y
+  sustituir los archivos de `public/fonts/sohne/`. **No tocar la tipografía ni
+  proponer alternativas sin hablarlo con Mario**: cambiar de fuente altera la
+  identidad de marca, y es decisión suya, no técnica.
 
 ## Convenciones
 

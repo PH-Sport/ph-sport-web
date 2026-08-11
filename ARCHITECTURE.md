@@ -393,7 +393,7 @@ No superar `0.75rem`. La marca no es redondeada.
 | Fotos del resto del roster (~43 jugadores) | Cliente |
 | OG image 1200×630px | Diseño |
 | GA4 — Measurement ID | Decisión de si se integra |
-| Söhne `.woff2` con licencia de producción | Compra de licencia |
+| ⚠️ Söhne `.woff2` con licencia de producción — **sigue sin comprar a 2026-08-11**, y la web está publicada desde abril con los archivos de prueba | Compra de licencia (Mario) |
 
 ---
 

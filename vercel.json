@@ -57,6 +57,11 @@
       "statusCode": 301
     },
     {
+      "source": "/pagina-de-mantenimiento",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
       "source": "/inicio2",
       "destination": "/",
       "statusCode": 301

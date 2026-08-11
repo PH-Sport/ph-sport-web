@@ -21,4 +21,4 @@ Web de PH Sport construida con Astro 5, i18n ES/EN, vídeo hero y animaciones GS
 
 ## Stack
 
-Astro 5 (SSG + Islands) · Tailwind CSS 4 · GSAP · TypeScript · Cloudflare Pages
+Astro 5 (SSG + Islands) · Tailwind CSS 4 · GSAP · TypeScript · Vercel

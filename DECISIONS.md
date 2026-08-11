@@ -13,6 +13,24 @@ leído el resto.
 
 ---
 
+## 2026-08-11 · Retiradas `lucide`, `marked` y `puppeteer` — restos sin uso
+
+**Decisión**: las tres salen de `package.json`. Ninguna se importaba en `src/`, `scripts/` ni `astro.config.mjs`, y ninguna aparecía en el `dist/` construido.
+
+**Alternativa considerada**: dejarlas. Son devDependencies y el sitio es estático, así que no llegan al usuario final. Se descartó porque el coste real no es el peso servido sino el engaño: una dependencia declarada se lee como "esto se usa", y lleva a conclusiones falsas sobre cómo funciona el proyecto (ver más abajo el caso de `puppeteer`).
+
+**Motivo, uno por uno** — de dónde venía cada una, rastreado con `git log -S`:
+
+- **`lucide`** (entró en `c994ae3`, con las secciones de servicios y equipo): los iconos acabaron siendo SVG inline y en `public/icons/`, pero la librería se quedó declarada.
+- **`marked`** (entró en `144578f`, "modal flip, detail view, and grid payloads"): servía para renderizar la biografía en la **vista de detalle de jugador**, que se retiró a propósito el 2026-04-24 (ver esa entrada). Se fue la feature y quedó el renderizador de markdown.
+- **`puppeteer`** (entró en `f64ee49`, el bootstrap inicial): nunca llegó a usarse en código versionado. Se usaba desde scripts de captura temporales en la raíz, que el `.gitignore` sigue excluyendo (`/capture-*.mjs`, `/check-*.mjs`). Al no haber rastro en el repo, la suposición natural es que lo usa `build-favicons.mjs` — **y no es cierto: ese script usa `sharp`**. Esa confusión es justo lo que motivó retirarla.
+
+**Verificación**: `npm run build` (12 páginas) y `npm run astro -- check` (0 errores) después de la retirada.
+
+**Regla resultante**: si una dependencia deja de usarse al retirar una feature, sale en el mismo commit que la feature. Para volver a necesitar Puppeteer (capturas, mediciones), instalarlo puntualmente en vez de dejarlo declarado sin consumidor en el repo.
+
+---
+
 ## 2026-08-11 · Dominio canónico en el apex + todos los redirects en `vercel.json`
 
 **Decisión**: `phsport.es` (apex) es el dominio que sirve la web; `www.phsport.es` redirige a él con **308 permanente**. Se configura en Vercel → Settings → Domains. Además, **todos** los redirects del proyecto viven en `vercel.json`, no en `astro.config.mjs`.

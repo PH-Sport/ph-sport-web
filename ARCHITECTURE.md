@@ -10,14 +10,14 @@
 
 | Capa | Tecnología | Versión mínima |
 |---|---|---|
-| Framework | Astro (SSG + Islands) | 5.x |
+| Framework | Astro (SSG) | 5.x |
 | Estilos | Tailwind CSS | 4.x |
-| Animaciones | GSAP (island + scripts de sección) | 3.x |
+| Animaciones | GSAP (scripts de sección, sin islands) | 3.x |
 | Internacionalización | Astro i18n nativo | — |
 | Datos | JSON en `data/` + helpers en `lib/` | — |
 | Imágenes | astro:assets | — |
 | SEO | @astrojs/sitemap | — |
-| Hosting | Cloudflare Pages | — |
+| Hosting | Vercel (proyecto `ph-sport-web`, equipo `rodz-dev`) | — |
 | Lenguaje | TypeScript strict | 5.x |
 
 ---
@@ -48,8 +48,7 @@ ph-sport-web/
 │   ├── assets/images/players/       # Fotos de jugadores (procesadas por astro:assets)
 │   │
 │   ├── components/
-│   │   ├── islands/
-│   │   │   └── LogoReveal.tsx       # Única island GSAP — client:load justificado
+│   │   ├── LogoReveal.astro         # Intro de la home — GSAP vanilla, sin React
 │   │   ├── layout/
 │   │   │   ├── BaseLayout.astro     # Layout raíz: meta, fuentes, global CSS
 │   │   │   ├── Header.astro         # Flotante, scroll-hide, selector de idioma
@@ -191,14 +190,14 @@ El poster `hero-poster.webp` se muestra mientras el vídeo carga y actúa como L
 
 ### Logo Reveal
 
-`LogoReveal.tsx` ejecuta una animación de entrada de pantalla completa antes de mostrar el contenido:
+`LogoReveal.astro` ejecuta una animación de entrada de pantalla completa antes de mostrar el contenido:
 
 1. Overlay `fixed` con fondo `#0d0f12` y `z-index: 9999`
 2. Logo: fade in → escala de `1` a `8` con fade out simultáneo
 3. Overlay: fade out y eliminación del DOM
 4. Duración total: máximo 2 segundos
 
-`client:load` es la única excepción permitida a la regla de `client:visible`. El reveal debe ejecutarse antes de que el usuario vea cualquier contenido.
+El overlay se renderiza **en servidor**, así que cubre la pantalla desde el primer paint, y un `<script>` con GSAP reproduce la intro en `astro:page-load` — el mismo patrón que las secciones. Fue una island de React hasta el 2026-06-25 (commit `2b74656`); ver `DECISIONS.md`.
 
 **Re-trigger en F5**: `src/lib/is-document-reload.ts` detecta recargas de página para que el reveal se re-ejecute en F5 desde la home. En navegación interna (View Transitions) no se vuelve a ejecutar.
 
@@ -214,7 +213,9 @@ Las animaciones de sección están en `src/scripts/ph-text-animations.ts`. El si
 - Parallax en el hero.
 - Respeta `prefers-reduced-motion` — todos los efectos se desactivan si el usuario lo ha configurado.
 
-**Regla**: GSAP en componentes `.astro` va siempre en un `<script>` inline que importa de `ph-text-animations.ts`. Las Islands (`.tsx`) son solo para `LogoReveal.tsx`. No importar GSAP directamente en el markup de un `.astro`.
+**Regla**: GSAP en componentes `.astro` va siempre en un `<script>` inline que importa de `ph-text-animations.ts`. No importar GSAP directamente en el markup de un `.astro`.
+
+**No hay islands de React en el proyecto** — cero archivos `.tsx`, y `@astrojs/react` no está en `astro.config.mjs`. La última (`LogoReveal`) se migró a vanilla el 2026-06-25. Si alguna vez hiciera falta una, sería una decisión nueva a registrar en `DECISIONS.md`, no la aplicación de un patrón existente.
 
 ---
 
@@ -223,8 +224,7 @@ Las animaciones de sección están en `src/scripts/ph-text-animations.ts`. El si
 | Regla | Motivo |
 |---|---|
 | Todas las imágenes con `<Image>` de `astro:assets` | WebP automático + width/height → cero CLS |
-| `client:visible` para GSAP, nunca `client:load` | GSAP no inicializa hasta viewport |
-| Excepción única: `LogoReveal.tsx` con `client:load` | Documentada y justificada |
+| GSAP en `<script>` de `.astro`, nunca en una island | React fuera del bundle (~182 KB menos en la home) |
 | Named imports: `import { X } from 'lib'` | Tree-shaking efectivo |
 | Fuentes self-hosted desde `/public/fonts/` | Elimina round-trips externos |
 | `font-display: swap` en `@font-face` | Sin FOIT |
@@ -337,7 +337,9 @@ No superar `0.75rem`. La marca no es redondeada.
 
 ## Estado del proyecto
 
-> Última actualización: 2026-04-24
+> Última revisión de esta sección: **2026-08-11**.
+> Es la parte que antes se queda obsoleta. Si vas a decidir algo a partir de la
+> tabla de pendientes, **verifícalo contra el código** — no la des por buena.
 
 ### Componentes
 
@@ -346,7 +348,7 @@ No superar `0.75rem`. La marca no es redondeada.
 | `BaseLayout.astro` | ✅ Completo | SEO, hreflang, preload fuentes, ClientRouter |
 | `Header.astro` | ✅ Completo | Flotante, scroll-hide, i18n, mobile accesible |
 | `Footer.astro` | ✅ Completo | V3 editorial, social links, i18n |
-| `LogoReveal.tsx` | ✅ Completo | GSAP island, re-trigger en F5 |
+| `LogoReveal.astro` | ✅ Completo | GSAP vanilla, re-trigger en F5 |
 | `HeroSection.astro` | ✅ Completo | Vídeo (3 variantes) + poster, curtain reveal GSAP |
 | `HomePlayersSection.astro` | ✅ Completo | Stagger + scale GSAP |
 | `HomeServicesSection.astro` | ✅ Completo | CSS accordion + GSAP |
@@ -401,7 +403,7 @@ No superar `0.75rem`. La marca no es redondeada.
 - **Foto por jugador**: cualquier jugador sin foto coincidente recibe el placeholder SVG automáticamente.
 - **Ocultar un talento**: `"hidden": true` en `jugadores.json`. `getAllRosterEntries()` lo filtra en build.
 - **GSAP en secciones**: siempre a través de `ph-text-animations.ts`, nunca importado directamente en `.astro`.
-- **`client:load` solo en `LogoReveal.tsx`**: única excepción, documentada y justificada.
+- **Sin islands de React**: todo el JS de cliente va en `<script>` de componentes `.astro`.
 - **Datos de dominio en `lib/`**: `playerDetail`, `teamMembers`, `servicesItems`, etc. son la fuente de verdad. Las páginas y secciones los consumen.
 
 Ver `DECISIONS.md` para el histórico completo de decisiones no obvias.

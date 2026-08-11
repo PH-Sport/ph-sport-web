@@ -34,6 +34,25 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 
 ---
 
+## 2026-06-25 · LogoReveal de island React a vanilla — React sale del proyecto
+
+> Registrada retroactivamente el 2026-08-11. El cambio se hizo en junio (commit `2b74656`) y no llegó a documentarse: durante dos meses `ARCHITECTURE.md` describió una island que ya no existía.
+
+**Decisión**: `LogoReveal` deja de ser una island de React (`LogoReveal.tsx` con `client:load`) y pasa a ser `src/components/LogoReveal.astro` con un `<script>` GSAP. Se retira la integración `@astrojs/react` de `astro.config.mjs`. **El proyecto se queda sin ninguna island de React.**
+
+**Alternativa considerada**: mantener la island y optimizar su carga.
+
+**Motivo**: era el único island del proyecto y arrastraba React al bundle de la home (~182 KB). El overlay se renderiza en servidor, así que cubre la pantalla desde el primer paint igual que hacía el SSR del island, y el `<script>` reproduce la intro en `astro:page-load` — el mismo patrón que ya usaban todas las secciones. Comportamiento preservado: reveal en cold-load, F5 y navegación SPA a la home.
+
+**Regla resultante**:
+- Todo el JS de cliente vive en `<script>` de componentes `.astro`, con GSAP importado desde `src/scripts/ph-text-animations.ts`.
+- **No existe ningún patrón de island vigente en el repo.** Si en el futuro hiciera falta una (estado de React genuino), es una decisión nueva que se registra aquí — no la aplicación de un patrón existente.
+- Queda **superada** la regla de 2026-04-21 en la parte que decía "`LogoReveal.tsx` sigue siendo la única island GSAP activa".
+
+**Pendiente**: `react`, `react-dom`, `@astrojs/react` y los `@types` siguen declarados en `package.json` pese a no usarse. Sin decidir si se retiran o se conservan a propósito.
+
+---
+
 ## 2026-04-24 · Eliminar páginas de detalle + renombrar ruta a `/talentos/` + escudos en la card
 
 **Decisión**: retirar `/jugadores/[slug]` y `/en/players/[slug]`. El grid de `/talentos/` (antes `/jugadores/`) es la única vista de roster y las tarjetas no son clicables. Los escudos de selección nacional pasan a renderizarse en la esquina superior-derecha de cada card y la escuadra dorada (antes decorativa en hover) ahora los enmarca al hacer hover como énfasis.

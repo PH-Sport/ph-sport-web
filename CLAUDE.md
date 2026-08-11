@@ -10,10 +10,49 @@ tiempo. El detalle vive en los otros documentos — esto es el índice y las reg
 | `README.md` | Scripts, rutas, stack |
 | `ARCHITECTURE.md` | Estructura, i18n, hero, motion, performance, SEO, sistema de diseño |
 | `DECISIONS.md` | Decisiones no obvias con su motivo y alternativas descartadas. Más reciente primero |
-| `docs/superpowers/` | Specs y planes de features concretas |
+| `docs/superpowers/` | Specs y planes de features concretas. **Histórico, no estado actual**: describen el proyecto tal como era el día que se escribieron y no se actualizan. Para saber cómo está algo hoy, mirar el código o los tres documentos de arriba |
 
 **Antes de proponer un cambio de arquitectura, buscar en `DECISIONS.md`**: puede
 estar ya decidido y descartado, con el motivo escrito.
+
+## Documentar es parte del cambio, no un extra
+
+La documentación se actualiza **en el mismo commit** que el cambio que la
+invalida. Nunca "más adelante": más adelante es cuando ya se ha perdido el
+*porqué* y solo queda el *qué*.
+
+Esto no es una recomendación. Una doc desactualizada es **peor que no tener
+doc**: un hueco se nota y se pregunta, pero una afirmación falsa se cree y se
+actúa sobre ella. En agosto de 2026 este repo describía durante dos meses una
+island de React que ya no existía, y cualquier agente que la leyera habría
+propuesto un patrón imposible.
+
+**Disparadores.** Si el cambio toca algo de esta lista, el documento se actualiza
+antes de commitear:
+
+| El cambio… | Actualizar |
+|---|---|
+| Toma una decisión de arquitectura o descarta una alternativa | `DECISIONS.md` (entrada nueva arriba) |
+| Migra, elimina o renombra un componente, o cambia un patrón | `DECISIONS.md` + `ARCHITECTURE.md` |
+| Toca plataforma, dominio, redirects o build | `ARCHITECTURE.md` + este archivo |
+| Resuelve una trampa que costó más de una hora | `CLAUDE.md` → "Trampas conocidas", con el porqué |
+| Deja un bug conocido sin arreglar | `CLAUDE.md` → "Hallazgos abiertos" |
+| Añade o quita una dependencia por un motivo no obvio | `DECISIONS.md` |
+
+**Comprobación antes de cerrar una tanda de trabajo** — el paso que habría
+evitado el caso de la island fantasma:
+
+```sh
+# ¿Queda documentación viva hablando de lo que acabas de borrar o renombrar?
+grep -rn "NombreQueYaNoExiste" README.md CLAUDE.md ARCHITECTURE.md
+```
+
+Si aparece, la documentación miente. Arreglarlo entra en el mismo commit.
+
+`DECISIONS.md` y `docs/superpowers/` quedan fuera de esa comprobación **a
+propósito**: son registro histórico. Que un plan de abril mencione un archivo ya
+borrado es correcto — así fue. Lo que no puede ocurrir es que la documentación
+viva describa como presente algo que ya no existe.
 
 ## Comandos
 
@@ -81,6 +120,14 @@ treinta segundos de un iPhone resolvieron lo que cuatro rondas de teoría no.
 - **`.abt-closing__quote` no tiene markup.** Existe la regla CSS
   (`AboutSection.astro:587`) y un `querySelector` que lo busca (`:761`), pero
   ningún elemento lo usa: no se renderiza nada.
+- **La restauración de scroll al pulsar atrás no funciona** (queda en `y≈2`), y
+  es **preexistente**: medido el 2026-08-01 en producción *sin* el parche de
+  `QuietScrollHistory` y con él, el resultado es el mismo. **No culpar al telón
+  de transición ni a `QuietScrollHistory`** — es el error clásico aquí. La
+  hipótesis viva es que el `scrollTo` de Astro ocurre cuando el documento
+  recién intercambiado aún no tiene altura (contenido oculto por `[data-reveal]`,
+  imágenes sin cargar) y el scroll se recorta. Si se aborda, atacar el **momento
+  del `scrollTo`**, no el guardado en el historial.
 - Sitelinks de Google mezclando ES y EN. El marcado está verificado correcto
   (`lang` por página, hreflang recíproco); los sitelinks los elige Google y no
   hay control directo.

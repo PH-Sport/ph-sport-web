@@ -1,22 +1,758 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/category/:s*",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/cl_team/:s*",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/tag/:s*",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/author/:s*",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/comments/feed",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/feed",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/betis",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/contacto",
+      "destination": "/sobre-nosotros/",
+      "statusCode": 301
+    },
+    {
+      "source": "/equipo",
+      "destination": "/sobre-nosotros#equipo",
+      "statusCode": 301
+    },
+    {
+      "source": "/granada",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/home",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/inicio2",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/jugadores",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/welcome",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/team",
+      "destination": "/en/about#equipo",
+      "statusCode": 301
+    },
+    {
+      "source": "/abdoulaye-keita",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/adam-arvelo",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/adboulaye-keita",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/adrian-cova-2",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/adrian-cova-3",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/adrian-cova",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/adrian-espinar",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/adrian-gomez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/adrian-pozo",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/agus-moreno",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/agustin-moreno",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/alberto-cordero-copy",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/alberto-cordero",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/alberto-de-frutos",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/alejandro-anes",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/alejandro-cova",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/alejandro-santiago",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/alessandro-burlamaqui-2",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/alessandro-burlamaqui",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/alex-lopez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/alvaro-perez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/alvaro-varez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/antonio-canton",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/antonio-jesus-canton",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/ardaitz-villorejo",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/arnau-riera",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/asier-carmona",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/axel-barbera",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/babacar-welle",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/byron-mendoza",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/carlos-guirao",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/coming-soon-2",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/damian-caceres",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/dani-munoz",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/dani-requena",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/daniel-lara",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/daniel-losada",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/daniel-requena",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/daniel-rodriguez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/david-arroyo",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/david-carreira",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/diego-robles",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/edu-lopez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/eduardo-lopez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/footer-2",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/fran-rivera",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/franco-gonzalez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/futbol-base-2",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/futbol-base",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/hector-pena",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/hector-tejada",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/hugo-caballero",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/hugo-garcia",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/hugo-rios",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/hugo-velon",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/ibrahim-juma",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/ignacio-castillo",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/iker-bravo",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/iker-luque",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/iker-vidal",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/inigo-blanco",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/ionut-cojocaru",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/isaac-garcia",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/isaac-umpa-mendes",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/ivan-lamuela",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/izan-martin",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/jaime-lillo",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/janusz-florek",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/javier-hernandez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/jawad-eljemili",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/jordan-gutierrez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/jorge-delgado",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/jorge-gonzalez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/jorge-rajado",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/jugadores-dev",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/jugadores-senior-2",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/jugadores-senior",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/kevin-andrade",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/lawson-sunderland",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/lucas-macazaga",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/lucas-rodriguez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/luis-quintero",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/marc-de-pedro",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/marco-beltran",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/mario-ramos",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/mateo-sciancalepore",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/mati-barzic",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/matias-sciancalepore",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/mauro-molina",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/mauro-valero",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/nacho-castillo",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/nacho-plaza",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/nico-exposito",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/nicolas-exposito",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/nicolas-rodriguez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/ognjen-teofilovic",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/omar-ouhdadi",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/oriol-soldevila-3",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/oriol-soldevila",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/ot-serrano",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/pablo-ibanez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/pablo-pascual",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/paco-esteban",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/pau-resta",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/pedro-lima",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/pere-haro",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/phsport-es-agencia-de-intermediacion-deportiva-3",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/phsport-es-agencia-de-intermediacion-deportiva",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/politica-cookies",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/politica-privacidad",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/privacy-policy",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/raul-alarcon",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/razvan-andrei-farcas-copy-2",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/razvan-andrei-farcas-copy",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/razvan-andrei-farcas",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/ruben-caceres",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/salim-eljebari",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/santi-pallares",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/sergio-esteban",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/thiago-helguera-copy",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/thiago-helguera",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/txus-alba",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/varo-alvarez",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/victor-garcia",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/victor-tito",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/victor-valencia",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/wp-admin",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/wp-json",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/yeray-izquierdo",
+      "destination": "/talentos/",
+      "statusCode": 301
+    },
+    {
+      "source": "/young-talents-2",
+      "destination": "/talentos/",
+      "statusCode": 301
+    }
+  ],
   "headers": [
     {
       "source": "/_astro/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
       ]
     },
     {
       "source": "/fonts/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
       ]
     },
     {
       "source": "/((?!_astro).*\\.(?:webp|avif|png|jpe?g|gif|svg|ico|mp4|webm))",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=2592000" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=2592000"
+        }
       ]
     }
   ]

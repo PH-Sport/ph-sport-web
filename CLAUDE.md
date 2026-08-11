@@ -3,6 +3,32 @@
 Guía de entrada al proyecto: dónde está cada cosa y qué trampas ya nos han costado
 tiempo. El detalle vive en los otros documentos — esto es el índice y las reglas.
 
+## Para qué existe esta documentación (prioridad nº 1)
+
+**Cualquier agente de IA —o persona— debe poder leer estos documentos sin ningún
+contexto previo y saber tres cosas: hacia dónde va el proyecto, por qué está como
+está, y qué no debe proponer.**
+
+Ese es el estándar, y es exigente a propósito: el trabajo se reparte entre
+dispositivos, sesiones y modelos distintos, y **no se puede contar con la memoria
+de ningún agente concreto**. Lo que no esté escrito aquí, no existe.
+
+De ahí se derivan dos obligaciones:
+
+1. **Registrar el porqué, no solo el qué.** Un cambio sin motivo escrito es un
+   cambio que alguien volverá a discutir dentro de tres meses. Y las alternativas
+   descartadas valen tanto como la elegida: sin ellas, la siguiente persona
+   propone lo que ya se probó y no funcionó.
+2. **Un cambio no está terminado si deja la documentación en un estado donde
+   alguien sin contexto sacaría una conclusión equivocada.** No es el último
+   paso: es parte del cambio.
+
+**Cómo se comprueba** (hecho por primera vez el 2026-08-11): se lanza un agente
+sin acceso a memorias locales, con permiso para leer solo el repositorio, y se le
+pide que responda qué haría y qué *no* sabría. Lo que no pueda contestar es un
+hueco de documentación, no un fallo suyo. Aquel primer intento sacó 86/100 y
+destapó dos meses describiendo una island de React que ya no existía.
+
 ## Mapa de documentación
 
 | Archivo | Contiene |

@@ -4,6 +4,13 @@ Registro de decisiones de arquitectura no obvias.
 Formato: fecha · decisión · alternativa considerada · motivo.
 Orden: más reciente primero.
 
+**Este documento es histórico y acumulativo: las entradas no se borran ni se
+reescriben.** Cuando una decisión queda superada, se marca **in situ** con un
+aviso al principio apuntando a la que la sustituye. Motivo: se llega aquí tanto
+leyendo de arriba abajo como buscando un término suelto, y quien caiga en mitad
+del documento tiene que saber si lo que está leyendo sigue vigente sin haber
+leído el resto.
+
 ---
 
 ## 2026-08-11 · Dominio canónico en el apex + todos los redirects en `vercel.json`
@@ -49,7 +56,7 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 - **No existe ningún patrón de island vigente en el repo.** Si en el futuro hiciera falta una (estado de React genuino), es una decisión nueva que se registra aquí — no la aplicación de un patrón existente.
 - Queda **superada** la regla de 2026-04-21 en la parte que decía "`LogoReveal.tsx` sigue siendo la única island GSAP activa".
 
-**Pendiente**: `react`, `react-dom`, `@astrojs/react` y los `@types` siguen declarados en `package.json` pese a no usarse. Sin decidir si se retiran o se conservan a propósito.
+**Cierre (2026-08-11)**: `react`, `react-dom`, `@astrojs/react`, `@types/react` y `@types/react-dom` **retirados** de `package.json`. Verificado antes de borrarlos: cero imports en `src/`, y `npm ls react` confirmaba que solo se necesitaban entre ellos. Tras quitarlos, el build produce los mismos 401 archivos y un HTML idéntico salvo hashes; la única diferencia en los JS eran 5 bytes de alias del minificador, porque `@astrojs/react` arrastraba una copia duplicada de `esbuild`. `package-lock.json` adelgaza 1.157 líneas. Preview verificado: las 6 rutas responden 200 y todos los JS de la home resuelven.
 
 ---
 
@@ -108,6 +115,8 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 
 **Nota**: el Logo Reveal (`LogoReveal.tsx`) coexiste con el vídeo — ejecuta la animación de entrada sobre el vídeo, no en lugar de él.
 
+> Aclaración 2026-08-11: esta decisión del hero **sigue vigente**; solo cambió el archivo del reveal, que hoy es `LogoReveal.astro` (ver 2026-06-25).
+
 ---
 
 ## 2026-04-22 · LogoReveal re-trigger en F5 via is-document-reload.ts
@@ -123,6 +132,8 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 ---
 
 ## 2026-04-21 · Sistema de animaciones en scripts/ (GSAP fuera de islands)
+
+> ⚠️ **SUPERADA PARCIALMENTE por la decisión de 2026-06-25.** La parte de esta entrada que habla de islands `.tsx` ya no aplica: no queda ninguna en el repo. Lo vigente es que **todo** el GSAP va en `<script>` de `.astro`.
 
 **Decisión**: ampliar el uso de GSAP a `src/scripts/ph-text-animations.ts`, importado como `<script>` vanilla desde componentes `.astro`. La regla anterior de "GSAP solo en islands" queda actualizada.
 
@@ -154,6 +165,8 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 
 **Decisión**: crear `src/lib/` como capa de datos y helpers de dominio. Las páginas y secciones consumen estos módulos; no acceden directamente a Content Collections salvo en las páginas de jugador.
 
+> Aclaración 2026-08-11: la decisión de `src/lib/` como capa de datos **sigue vigente**. La salvedad ya no aplica: ni las Content Collections ni las páginas de jugador existen desde el 2026-04-24. Hoy `src/lib/` es la única vía de acceso a los datos.
+
 **Módulos creados**:
 - `playerDetail.ts` — payloads enriquecidos de jugadores (foto, paths i18n, metadata)
 - `teamMembers.ts` — 21 integrantes del equipo
@@ -167,6 +180,8 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 ---
 
 ## 2026-04-19 · Páginas de jugador implementadas (PlayerDetailView)
+
+> ⚠️ **REVERTIDA por la decisión de 2026-04-24.** No hay páginas individuales por jugador: `/talentos/` es un grid único con tarjetas no clicables. `PlayerDetailView.astro` y las rutas `[slug]` están borradas. **No proponer resucitarlas.**
 
 **Decisión**: implementar `/jugadores/[slug]` y `/en/players/[slug]` con `PlayerDetailView.astro`. Los datos se preparan en `playerDetail.ts` y se pasan como props.
 
@@ -207,6 +222,8 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 ---
 
 ## 2026-03-16 · Convención única para slugs de Content Collections
+
+> ⚠️ **OBSOLETA desde 2026-04-24.** Las Content Collections se retiraron (`src/content/` ya no existe). El roster vive en `data/*.json` y el slug se deriva con `slugify(name)` en `src/lib/playerDetail.ts`.
 
 **Decisión**: usar una única convención en todo el proyecto:
 - Para rutas dinámicas de jugadores, el slug se obtiene con `entry.id.replace(/\.md$/, '')`
@@ -285,6 +302,8 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 
 ## 2026-03-03 · Content Collections sobre CMS headless
 
+> ⚠️ **SUPERADA por la decisión de 2026-04-24.** Se salió de Content Collections: el roster es JSON plano en `data/`. La conclusión de fondo (no meter un CMS headless) sigue vigente; el mecanismo elegido, no.
+
 **Decisión**: contenido gestionado en archivos Markdown en el propio repo.
 
 **Alternativa considerada**: Sanity, Storyblok o Contentful.
@@ -315,6 +334,8 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 
 ## 2026-03-03 · slug eliminado del schema de Content Collections
 
+> ⚠️ **OBSOLETA desde 2026-04-24.** Ya no hay Content Collections ni schema Zod en el proyecto.
+
 **Decisión**: el campo `slug` no se declara en el schema Zod ni en el frontmatter.
 
 **Motivo**: `slug` es un campo reservado de Astro Content Collections — declararlo provoca error de validación en el build.
@@ -344,6 +365,8 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 ---
 
 ## 2026-03-03 · @astrojs/react en astro.config.mjs
+
+> ⚠️ **REVERTIDA por la decisión de 2026-06-25.** `@astrojs/react` ya no está en `astro.config.mjs`, y el paquete se retiró de `package.json` el 2026-08-11. No hay renderer de React en el proyecto.
 
 **Decisión**: integrar `@astrojs/react` como renderer.
 

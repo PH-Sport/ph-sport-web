@@ -9,6 +9,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "prepare": "git config core.hooksPath .githooks || true",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "assets:badges": "node scripts/build-badge-variants.mjs",

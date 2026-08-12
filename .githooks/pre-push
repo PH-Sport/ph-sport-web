@@ -1,0 +1,48 @@
+#!/bin/sh
+# Corre el smoke E2E antes de subir a main. En este proyecto un push a main
+# despliega a producción, así que es la última parada antes de que un fallo sea
+# visible para el usuario.
+#
+# Vive en .githooks/ (versionado) y no en .git/hooks/ (que no se clona) para que
+# valga en cualquier dispositivo. Lo activa `core.hooksPath`, que configura el
+# script `prepare` de package.json en cada npm install.
+#
+# Para saltárselo puntualmente: git push --no-verify
+# (la Action de GitHub lo comprobará igual, solo que después del despliegue).
+
+rama_protegida="refs/heads/main"
+toca_main=0
+
+# git entrega por stdin una línea por ref empujada:
+#   <ref local> <sha local> <ref remota> <sha remota>
+while read -r _ref_local sha_local ref_remota _sha_remota; do
+  [ "$ref_remota" = "$rama_protegida" ] || continue
+  # Sha local a ceros = se está borrando la rama remota: nada que probar.
+  case "$sha_local" in
+    *[!0]*) toca_main=1 ;;
+  esac
+done
+
+if [ "$toca_main" -eq 0 ]; then
+  exit 0
+fi
+
+echo "▶ pre-push: smoke E2E antes de desplegar a producción (~40s)…"
+
+if npm run test:e2e --silent; then
+  echo "✓ pre-push: 38 tests en verde. Subiendo."
+  exit 0
+fi
+
+cat >&2 <<'MSG'
+
+✗ pre-push: el smoke E2E ha fallado — push abortado.
+
+  Un push a main despliega a producción, así que esto habría llegado a la web.
+
+  Ver el detalle:   npx playwright show-report
+  Repetir en vivo:  npm run test:e2e:ui
+  Subir de todos modos (bajo tu responsabilidad):  git push --no-verify
+
+MSG
+exit 1

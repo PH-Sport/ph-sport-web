@@ -120,6 +120,13 @@ npm run assets:favicons  # favicons, apple-touch-icon y og-image.jpg
 Despliegue: **Vercel** (proyecto `ph-sport-web`, equipo `rodz-dev`), push a `main`
 despliega a producción.
 
+**Un push a `main` dispara el smoke E2E y se aborta si falla** (`.githooks/pre-push`,
+~40s; las ramas de trabajo no lo pagan). No es un cuelgue: está construyendo y
+probando. Si hay que subir igualmente, `git push --no-verify` — pero entonces la
+Action de GitHub es la única red y avisa **después** de que Vercel haya
+desplegado. El hook se activa solo: el script `prepare` de `package.json` apunta
+`core.hooksPath` a `.githooks/` en cada `npm install`.
+
 ## Reglas que no hay que romper
 
 **La marca se escribe `PHSPORT`**, en mayúsculas y sin espacio. Nunca "PH Sport"

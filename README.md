@@ -11,6 +11,9 @@ Web de PHSPORT construida con Astro 5, i18n ES/EN, vídeo hero y animaciones GSA
 - `npm run test:e2e` — smoke E2E sobre el build (construye y sirve él solo)
 - `npm run test:e2e:ui` — el mismo smoke en modo interactivo
 
+El smoke corre **solo** antes de cada push a `main` (lo aborta si falla) y en
+GitHub Actions. En un clon nuevo se activa con `npm install`, sin más pasos.
+
 ### Regeneración de assets
 
 Solo se ejecutan a mano al cambiar un original de `assets/source-media/`; su

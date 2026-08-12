@@ -364,6 +364,24 @@ Qué cubre, y por qué justo esto:
 | `WebSite` JSON-LD **solo** en `/` | La regla que costó 4 meses de "phsport" en minúsculas en la SERP (`DECISIONS.md`, 2026-08-11) |
 | La marca se escribe `PHSPORT` | Que vuelva a colarse "PH Sport" en el marcado que lee Google |
 
+### Cuándo se ejecutan
+
+No hay que acordarse: corren solos en dos puntos.
+
+| Dónde | Cuándo | Qué hace si fallan |
+|---|---|---|
+| `.githooks/pre-push` | Antes de un push que toque `main` | **Aborta el push.** Es la última parada antes de producción |
+| `.github/workflows/e2e.yml` | Push a `main`, PRs y a mano | Avisa. **No** frena el despliegue de Vercel |
+
+El hook **solo actúa sobre `main`** — empujar una rama de trabajo no paga los 40s
+— y se salta con `git push --no-verify`, momento en que la Action pasa a ser la
+única red.
+
+Vive en `.githooks/` (versionado) y no en `.git/hooks/` (que no se clona) para
+que valga en cualquier dispositivo. Lo activa `core.hooksPath`, que configura el
+script `prepare` de `package.json` en cada `npm install`: en un clon nuevo no hay
+que ejecutar nada a mano.
+
 **Lo que NO cubre** — que es tanto como lo que cubre:
 
 - **Nada visual.** Sin capturas de referencia: en un sitio con GSAP y View

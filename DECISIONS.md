@@ -13,6 +13,29 @@ leído el resto.
 
 ---
 
+## 2026-08-12 · El smoke se ejecuta solo: hook `pre-push` que bloquea + Action que avisa
+
+**Decisión**: el smoke E2E deja de depender de que alguien se acuerde. Dos capas:
+- **`.githooks/pre-push`** — corre el smoke antes de cualquier push que toque `main` y **aborta el push** si falla.
+- **`.github/workflows/e2e.yml`** — lo repite en push a `main`, en PRs y a demanda. **Avisa, no frena el despliegue.**
+
+Pedido por Mario el 2026-08-12: "se me olvidará lanzarlos".
+
+**Alternativa considerada — correr los tests dentro del build de Vercel**, de modo que un fallo cancele el despliegue. Es la única opción que impide de verdad publicar una regresión, y aun así se descartó: obliga a descargar Chromium en cada build (1-2 min más por deploy) y deja la web sin actualizarse entera cuando falla un solo test. Para un sitio corporativo estático, quedarse sin poder publicar por un test frágil es peor que publicar con un fallo de marcado y arreglarlo en diez minutos. **Si algún día el smoke crece hacia cosas críticas de negocio, esta decisión merece revisarse.**
+
+**Alternativa considerada — solo la Action.** No resuelve el problema planteado: el aviso llega cuando Vercel ya ha desplegado.
+
+**Por qué las dos capas y no solo el hook**: un hook vive en la máquina de quien empuja. Este proyecto se trabaja desde varios dispositivos y con agentes distintos, y `--no-verify` siempre existe. La Action cubre justo esos huecos.
+
+**Detalles que no son obvios**:
+- El hook vive en **`.githooks/`, versionado**, no en `.git/hooks/`, que no se clona. Lo activa `core.hooksPath` vía el script **`prepare`** de `package.json`, que npm ejecuta tras cada `npm install`: en un clon nuevo no hay que hacer nada a mano. Se eligió eso antes que **Husky**, que es una dependencia más para lo que resuelven dos líneas — y el repo acaba de retirar tres dependencias sin uso.
+- El hook **solo actúa sobre `main`**: empujar una rama de trabajo no paga los 40 segundos.
+- Un push que **borra** la rama remota (sha local a ceros) se salta los tests.
+
+**Verificación**: se probaron los cuatro caminos del hook. Rama que no es `main` → sale en 0 sin ejecutar nada. Borrado de rama → ídem. Push a `main` con el código sano → 38 tests en verde, salida 0. Push a `main` tras comentar `/privacidad` en `STATIC_ROUTES` → 2 tests rojos y **salida 1, push abortado**. Revertido después.
+
+---
+
 ## 2026-08-12 · Smoke E2E con Playwright sobre el build, sin tests visuales
 
 **Decisión**: se adopta **Playwright** (`@playwright/test`, solo Chromium) para un único smoke que prueba las 12 páginas del build. Vive en `tests/e2e/` y se lanza con `npm run test:e2e`. **No se añaden snapshots visuales ni tests de animación.**

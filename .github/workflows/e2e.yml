@@ -1,0 +1,44 @@
+name: Smoke E2E
+
+# Vercel despliega en cuanto el push llega a main, así que esta Action NO impide
+# que una regresión se publique: avisa. El freno está en el hook pre-push
+# (.githooks/pre-push), que corre antes de subir. Esto cubre lo que el hook no
+# puede: pushes desde otro dispositivo, desde un agente o con --no-verify.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # Solo Chromium: es el único proyecto declarado en playwright.config.ts.
+      # --with-deps instala las librerías de sistema que el navegador necesita.
+      - name: Instalar Chromium
+        run: npx playwright install --with-deps chromium
+
+      # test:e2e construye y levanta el preview él solo (ver playwright.config.ts).
+      - name: Smoke sobre el build
+        run: npm run test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

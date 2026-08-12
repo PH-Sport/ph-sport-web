@@ -2,7 +2,7 @@
 
 > Documento de referencia para el proyecto. Leer antes de cualquier tarea estructural.
 > Última revisión: 2026-04-24
-> Secciones: Stack · Estructura · i18n · Hero · Motion · Performance · SEO · Sistema de diseño · Estado del proyecto
+> Secciones: Stack · Estructura · i18n · Hero · Motion · Performance · SEO · Sistema de diseño · Tests · Estado del proyecto
 
 ---
 
@@ -112,8 +112,14 @@ ph-sport-web/
 ├── data/
 │   ├── jugadores.json               # Roster principal. "hidden": true oculta sin borrar
 │   └── entrenadores.json            # Cuerpo técnico
+│
+├── tests/e2e/                       # Smoke sobre el build (Playwright)
+│   ├── rutas.ts                     # Deriva las rutas de dist/, no de una lista a mano
+│   └── smoke.spec.ts
+│
 ├── ARCHITECTURE.md
 ├── DECISIONS.md
+├── playwright.config.ts
 └── astro.config.mjs
 ```
 
@@ -332,6 +338,41 @@ No superar `0.75rem`. La marca no es redondeada.
 - **Espaciado**: generoso. El negro es parte del diseño.
 - **Animaciones**: lentas y controladas. Sin rebotes ni efectos llamativos.
 - **Fotografía**: high-contrast sobre fondo oscuro. Ratio portrait `3:4` para jugadores.
+
+---
+
+## Tests
+
+Un único smoke E2E con **Playwright**, en `tests/e2e/`. Se lanza con
+`npm run test:e2e`: construye, levanta `astro preview` en el **4322** y prueba
+las 12 páginas del build.
+
+**Corre contra `dist/`, no contra el dev server**, porque lo que importa es lo
+que se sube a Vercel. El puerto 4322 es deliberado: el 4321 tiene `strictPort`,
+así que los tests conviven con un `npm run dev` abierto.
+
+Las rutas **se derivan de `dist/`** (`tests/e2e/rutas.ts`), no de una lista
+escrita a mano: una página nueva entra en el smoke sola.
+
+Qué cubre, y por qué justo esto:
+
+| Comprobación | Qué regresión atrapa |
+|---|---|
+| 200, `<title>`, `lang`, canonical | La página deja de construirse o de identificarse |
+| Consola sin errores y sin respuestas ≥400 | Un asset renombrado, un script que revienta |
+| `hreflang` recíproco y apuntando a páginas que existen | Una ruta nueva olvidada en `STATIC_ROUTES`: `getAlternateLangUrl()` devuelve `/` en silencio y el aviso **solo salta en dev** |
+| `WebSite` JSON-LD **solo** en `/` | La regla que costó 4 meses de "phsport" en minúsculas en la SERP (`DECISIONS.md`, 2026-08-11) |
+| La marca se escribe `PHSPORT` | Que vuelva a colarse "PH Sport" en el marcado que lee Google |
+
+**Lo que NO cubre** — que es tanto como lo que cubre:
+
+- **Nada visual.** Sin capturas de referencia: en un sitio con GSAP y View
+  Transitions serían falsos positivos constantes.
+- **Nada de animaciones.** Ver la trampa en `CLAUDE.md`: las View Transitions
+  viven en la `top-layer` y no salen ni en captura ni en `getAnimations()`.
+- **Los 146 redirects de `vercel.json`**, que los sirve Vercel y no `astro preview`.
+- **Los bugs de motor concreto** (iOS fuera de Safari). Chromium headless no
+  puede reproducirlos: eso sigue exigiendo dispositivo real.
 
 ---
 

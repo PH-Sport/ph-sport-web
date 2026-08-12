@@ -8,6 +8,8 @@ Web de PHSPORT construida con Astro 5, i18n ES/EN, vídeo hero y animaciones GSA
 - `npm run build` — build de producción
 - `npm run preview` — previsualización del build
 - `npm run astro -- check` — validación Astro/TypeScript
+- `npm run test:e2e` — smoke E2E sobre el build (construye y sirve él solo)
+- `npm run test:e2e:ui` — el mismo smoke en modo interactivo
 
 ### Regeneración de assets
 

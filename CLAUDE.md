@@ -106,6 +106,10 @@ npm run dev      # localhost:4321 (strictPort: falla si está ocupado, no salta 
 npm run build    # build de producción
 npm run preview  # previsualización del build
 
+# Smoke E2E (Playwright). Construye y levanta el preview él solo en el 4322,
+# así que convive con `npm run dev` abierto en el 4321.
+npm run test:e2e
+
 # Regeneración de assets — a mano, solo al cambiar un original de assets/source-media/.
 # La salida se versiona en public/, así que NO forman parte del build.
 npm run assets:badges    # escudos PNG -> WebP 128x128

@@ -13,6 +13,32 @@ leído el resto.
 
 ---
 
+## 2026-08-12 · Smoke E2E con Playwright sobre el build, sin tests visuales
+
+**Decisión**: se adopta **Playwright** (`@playwright/test`, solo Chromium) para un único smoke que prueba las 12 páginas del build. Vive en `tests/e2e/` y se lanza con `npm run test:e2e`. **No se añaden snapshots visuales ni tests de animación.**
+
+**Alternativas consideradas**:
+- **Seguir sin tests.** Era el estado desde abril. Se descarta porque con 116 tarjetas de roster y View Transitions frágiles, una regresión no la ve nadie hasta que está en producción.
+- **Tests unitarios (Vitest) de los helpers de `src/lib/`.** Son funciones puras y fáciles de probar, pero ninguna de las regresiones que este proyecto ha sufrido de verdad vivía ahí: fueron marcado, hosting y timing. Habría dado cobertura donde no duele.
+- **Capturas de referencia (snapshot visual).** Descartadas a propósito: con GSAP y `ScrollTrigger` el resultado depende del momento exacto en que se toma la captura, y darían falsos positivos hasta que alguien dejase de mirarlos. Un test que se ignora es peor que no tenerlo.
+
+**Motivo de lo que sí cubre**: se eligieron comprobaciones sobre el **marcado servido**, que es estable, y en concreto las que protegen reglas que ya han costado tiempo:
+- El JSON-LD `WebSite` **solo en la home**: 4 meses de "phsport" en minúsculas en la SERP (entrada del 2026-08-11). Era un comentario en el código; ahora es un test.
+- **`hreflang` recíproco y hacia páginas existentes**: cuando una ruta no está en `STATIC_ROUTES`, `getAlternateLangUrl()` devuelve `/` sin avisar — el `console.warn` está bajo `import.meta.env.DEV`, así que en el build no se entera nadie.
+- **Errores de consola y respuestas ≥400**, con lista explícita de warnings tolerados (hoy solo `apple-mobile-web-app-capable`, deprecado a propósito). Silenciar la consola entera habría hecho el test inútil el día que aparezca un error nuevo.
+
+**Detalles que no son obvios**:
+- Corre contra `dist/` vía `astro preview`, **no contra el dev server**: se verifica lo que se sube a Vercel.
+- Puerto **4322**. El 4321 tiene `strictPort: true`, así que usarlo rompería los tests con `npm run dev` abierto.
+- Las rutas se derivan de `dist/`, no de una lista escrita a mano: una página nueva entra en el smoke sola.
+- `tests/e2e/rutas.ts` usa `process.cwd()` y no `import.meta.url` porque el `package.json` no declara `"type": "module"` y Playwright transpila a CommonJS.
+
+**Verificación de que los tests sirven**: no basta con que pasen. Se rompió a propósito la condición `isHome` de `BaseLayout.astro` para emitir `WebSite` en todas las páginas: el smoke pasó de 38 verdes a **11 fallos** — las 11 páginas que no son la home— y la home siguió pasando. Después se revirtió.
+
+**Fuera de alcance, y por qué**: los 146 redirects de `vercel.json` (los sirve Vercel, no `astro preview`), las View Transitions (viven en la `top-layer`: ni captura ni `getAnimations()` las ven) y los bugs de motor concreto en iOS, que siguen exigiendo dispositivo real.
+
+---
+
 ## 2026-08-11 · Retiradas `lucide`, `marked` y `puppeteer` — restos sin uso
 
 **Decisión**: las tres salen de `package.json`. Ninguna se importaba en `src/`, `scripts/` ni `astro.config.mjs`, y ninguna aparecía en el `dist/` construido.

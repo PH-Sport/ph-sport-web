@@ -9,6 +9,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "assets:badges": "node scripts/build-badge-variants.mjs",
     "assets:favicons": "node scripts/build-favicons.mjs",
     "assets:hero": "node scripts/build-hero-variants.mjs"
@@ -32,6 +34,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.7",
     "@astrojs/sitemap": "^3.7.1",
+    "@playwright/test": "^1.62.1",
     "@types/node": "^25.3.3",
     "astro": "^5.18.1",
     "ffmpeg-static": "^5.3.0",

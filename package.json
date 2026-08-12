@@ -1,7 +1,7 @@
 {
   "name": "ph-sport-web",
   "version": "1.0.0",
-  "description": "Web para PH Sport",
+  "description": "Web para PHSPORT",
   "scripts": {
     "dev": "astro dev",
     "dev:fresh": "node -e \"require('fs').rmSync('node_modules/.vite',{recursive:true,force:true})\" && astro dev",
@@ -17,7 +17,7 @@
     "type": "git",
     "url": "git+https://github.com/PH-Sport/ph-sport-web.git"
   },
-  "author": "PH Sport",
+  "author": "PHSPORT",
   "license": "UNLICENSED",
   "private": true,
   "bugs": {

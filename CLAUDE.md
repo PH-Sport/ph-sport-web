@@ -118,6 +118,14 @@ despliega a producción.
 
 ## Reglas que no hay que romper
 
+**La marca se escribe `PHSPORT`**, en mayúsculas y sin espacio. Nunca "PH Sport"
+ni "PH SPORT". Es el nombre que emiten el JSON-LD `Organization`, el
+`og:site_name` y el `apple-mobile-web-app-title`, y el que se espera ver en la
+SERP; escribirlo de otra forma en contenido nuevo introduce una variante de marca
+donde Google lee identidad. `alternateName` es `PHSPORT Management`. El repo, el
+proyecto de Vercel y las rutas de archivos siguen llamándose `ph-sport-web` — eso
+es correcto y no se toca.
+
 **Dominio y SEO** — el canónico es el apex `phsport.es`; `www` redirige con 308.
 Ver la sección "Reglas de dominio" en `ARCHITECTURE.md` y la entrada del
 2026-08-11 en `DECISIONS.md`. En corto:

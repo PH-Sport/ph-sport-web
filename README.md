@@ -1,6 +1,6 @@
 # ph-sport-web
 
-Web de PH Sport construida con Astro 5, i18n ES/EN, vídeo hero y animaciones GSAP.
+Web de PHSPORT construida con Astro 5, i18n ES/EN, vídeo hero y animaciones GSAP.
 
 ## Scripts
 

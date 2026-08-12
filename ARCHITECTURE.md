@@ -1,4 +1,4 @@
-# PH Sport — Architecture Document
+# PHSPORT — Architecture Document
 
 > Documento de referencia para el proyecto. Leer antes de cualquier tarea estructural.
 > Última revisión: 2026-04-24

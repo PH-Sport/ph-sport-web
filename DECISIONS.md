@@ -1,4 +1,4 @@
-# PH Sport — Decision Log
+# PHSPORT — Decision Log
 
 Registro de decisiones de arquitectura no obvias.
 Formato: fecha · decisión · alternativa considerada · motivo.

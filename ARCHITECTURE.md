@@ -117,9 +117,19 @@ ph-sport-web/
 │   ├── rutas.ts                     # Deriva las rutas de dist/, no de una lista a mano
 │   └── smoke.spec.ts
 │
+├── docs/
+│   ├── rendimiento.md               # Auditorías, cifras de referencia y cómo medir. VIVO
+│   └── historico/                   # Specs y planes tal como se escribieron. CONGELADO
+│
+├── .githooks/
+│   └── pre-push                     # Corre el smoke y ABORTA el push si falla (solo main)
+├── .github/workflows/
+│   └── e2e.yml                      # El mismo smoke en push y PRs. Avisa, no frena el deploy
+│
 ├── ARCHITECTURE.md
 ├── DECISIONS.md
 ├── playwright.config.ts
+├── vercel.json                      # Redirects (146) y headers. NUNCA en astro.config.mjs
 └── astro.config.mjs
 ```
 

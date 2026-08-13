@@ -12,15 +12,43 @@
 
 rama_protegida="refs/heads/main"
 toca_main=0
+shas_subidos=""
 
 # git entrega por stdin una línea por ref empujada:
 #   <ref local> <sha local> <ref remota> <sha remota>
 while read -r _ref_local sha_local ref_remota _sha_remota; do
-  [ "$ref_remota" = "$rama_protegida" ] || continue
-  # Sha local a ceros = se está borrando la rama remota: nada que probar.
+  # Sha local a ceros = se está borrando la rama remota: nada que comprobar.
   case "$sha_local" in
-    *[!0]*) toca_main=1 ;;
+    *[!0]*) ;;
+    *) continue ;;
   esac
+  shas_subidos="$shas_subidos $sha_local"
+  if [ "$ref_remota" = "$rama_protegida" ]; then
+    toca_main=1
+  fi
+done
+
+# Los planes y specs van a docs/historico/, no a docs/superpowers/ — que es donde
+# las skills de superpowers escriben por defecto, y por eso reaparece sola. El
+# porqué del nombre está en CLAUDE.md → "Dónde va un plan o una spec nueva".
+for sha in $shas_subidos; do
+  [ -n "$(git ls-tree -r --name-only "$sha" -- docs/superpowers 2>/dev/null)" ] || continue
+
+  cat >&2 <<'MSG'
+
+✗ pre-push: hay documentos en docs/superpowers/ — push abortado.
+
+  Esa carpeta se retiró: su nombre decía qué herramienta escribió los documentos,
+  no que están congelados, que es lo que hay que saber antes de leerlos.
+
+  Arreglarlo:  git mv docs/superpowers/plans/* docs/historico/plans/
+               git mv docs/superpowers/specs/* docs/historico/specs/
+               rmdir docs/superpowers/plans docs/superpowers/specs docs/superpowers
+
+  (Ojo: NO afecta a .superpowers/ en la raíz, que sí es del plugin.)
+
+MSG
+  exit 1
 done
 
 if [ "$toca_main" -eq 0 ]; then

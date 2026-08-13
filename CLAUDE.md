@@ -43,6 +43,26 @@ destapó dos meses describiendo una island de React que ya no existía.
 **Antes de proponer un cambio de arquitectura, buscar en `DECISIONS.md`**: puede
 estar ya decidido y descartado, con el motivo escrito.
 
+### Dónde va un plan o una spec nueva
+
+En `docs/historico/plans/` y `docs/historico/specs/`, con la fecha en el nombre
+(`AAAA-MM-DD-tema.md`). **Esto manda sobre la ruta que traiga la herramienta que
+lo genere.**
+
+Las skills de `superpowers` (`brainstorming`, `writing-plans`) llevan escrito en
+su propio `SKILL.md` que guardan en `docs/superpowers/`. Aquí no: esa carpeta se
+renombró el 2026-08-11 porque su nombre decía **qué herramienta** escribió los
+documentos, y lo único que importa saber antes de leerlos es **que están
+congelados** — describen el proyecto del día que se escribieron. Un agente que
+lea un plan de abril como si fuera el estado de hoy propone cosas imposibles.
+
+Si aparece un `docs/superpowers/`, el documento está en el sitio equivocado:
+moverlo a `docs/historico/` y borrar la carpeta. El hook de pre-push y la Action
+lo comprueban, así que no depende de que nadie se acuerde.
+
+No confundir con `.superpowers/` en la raíz: **esa sí es del plugin** (su espacio
+de trabajo de ejecución, ignorado por Git) y no se toca ni se renombra.
+
 ## Si te piden algo que ya está descartado
 
 Va a pasar: quien pide no siempre recuerda por qué se descartó, y algunas de

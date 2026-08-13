@@ -13,6 +13,43 @@ leído el resto.
 
 ---
 
+## 2026-08-13 · Una sola carpeta para planes y specs: `docs/historico/`, y un guard que lo sostiene
+
+**Decisión**: los planes y specs viven **solo** en `docs/historico/{plans,specs}/`.
+`docs/superpowers/` no existe, y si reaparece, el hook de pre-push y la Action
+abortan hasta que se mueva.
+
+**El problema**: las skills de `superpowers` (`brainstorming`, `writing-plans`)
+llevan `docs/superpowers/` escrito a fuego en su propio `SKILL.md`. El renombrado
+del 2026-08-11 por tanto **se deshacía solo**: bastaba con generar un plan nuevo
+para que la carpeta volviera y los documentos quedaran repartidos en dos sitios.
+
+**Alternativa considerada — volver a llamarla `docs/superpowers/`** y dejar que la
+skill escriba donde quiere. Es la opción de cero fricción, y se descartó por el
+nombre: `superpowers` dice **qué herramienta** generó los documentos, dato inútil
+para quien llega frío. `historico` dice **qué son** — foto congelada del día que
+se escribieron. Y confundir eso es el error caro de este repo: leer un plan de
+abril como si fuera el estado de hoy (ver la island fantasma en `CLAUDE.md`). Un
+nombre que avisa vale más que uno que le ahorra trabajo al plugin.
+
+**Alternativa considerada — mantener las dos carpetas**, la vieja para lo que
+escriba la skill y la nueva para lo demás. Descartada de plano: duplica el sitio
+donde buscar, que es exactamente lo que se venía de arreglar.
+
+**Alternativa considerada — solo la regla escrita en `CLAUDE.md`**, sin guard.
+Insuficiente: la skill lleva la ruta contraria en su texto, así que la regla
+compite con una instrucción explícita y basta un despiste para que se cuele. El
+guard convierte la convención en algo que el repo comprueba solo.
+
+**Por qué el guard va en el hook *y* en la Action**: mismo motivo que el smoke —
+un hook vive en la máquina de quien empuja, y `--no-verify` existe.
+
+**No confundir con `.superpowers/` en la raíz**: esa sí es del plugin (su espacio
+de trabajo de ejecución, en `.gitignore:70`) y no se toca. El guard mira
+`docs/superpowers/` únicamente.
+
+---
+
 ## 2026-08-12 · El smoke se ejecuta solo: hook `pre-push` que bloquea + Action que avisa
 
 **Decisión**: el smoke E2E deja de depender de que alguien se acuerde. Dos capas:

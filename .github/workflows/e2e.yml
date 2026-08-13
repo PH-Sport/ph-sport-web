@@ -18,6 +18,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Los planes y specs viven en docs/historico/. Las skills de superpowers
+      # escriben en docs/superpowers/ por defecto, así que la carpeta reaparece
+      # sola si nadie mira. Ver CLAUDE.md → "Dónde va un plan o una spec nueva".
+      - name: Documentación en su sitio
+        run: |
+          if [ -d docs/superpowers ]; then
+            echo "::error::docs/superpowers/ no va aquí: mueve su contenido a docs/historico/{plans,specs}/ y borra la carpeta (ver CLAUDE.md)."
+            exit 1
+          fi
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24

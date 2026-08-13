@@ -13,6 +13,54 @@ leído el resto.
 
 ---
 
+## 2026-08-13 · El examen al agente frío: banco fijo de regresión + encargo rotatorio de descubrimiento
+
+**Decisión**: la calidad de la documentación se mide examinando a un agente sin
+contexto sobre un clon del repo (`docs/examen/`). Dos mitades: un **banco fijo**
+que se corre entero (regresión, umbral 12/12) y **un encargo abierto nuevo cada
+vez** (descubrimiento, sin nota). Pedido por Mario: garantizar que el contexto
+viaja por Git y no por memorias locales de un dispositivo.
+
+**Alternativa considerada — una nota de 0-100 puesta por un juez, con aprobado en
+90.** Era la propuesta inicial y se descartó por dos motivos. Uno, no es
+reproducible: el mismo repo puntuado dos días distintos da cifras distintas, así
+que el umbral se decide por ruido. Dos, y más importante, **una nota no dice qué
+arreglar**. La corrección binaria por encargo sí: cada fallo apunta a una frase
+que falta en un documento concreto.
+
+**Por qué el umbral es 100 % y no 90 %**: es un banco de regresión, no un examen
+de conocimientos. Cada encargo es una trampa ya pagada una vez. Un 11 de 12 no es
+un notable — es un agente frío a punto de repetir un error que costó meses.
+
+**Alternativa considerada — rotarlo todo**, ya que un encargo se "quema" cuando la
+documentación aprende a responderlo. Descartada a medias, y ahí está el matiz:
+un encargo quemado deja de descubrir, pero **sigue detectando regresiones** —
+exactamente igual que el smoke E2E, que no encuentra bugs nuevos e impide que
+vuelvan los viejos. Por eso rota solo la mitad de descubrimiento.
+
+**Los encargos no se inventan**: entran desde un hueco real destapado por la mitad
+de descubrimiento, o desde un error caro cometido en el trabajo real. Misma
+disciplina que este documento.
+
+**Detalles que no son obvios**:
+- El clon va a una **ruta temporal nueva** (`npm run examen:clon`) porque la
+  memoria de un agente se indexa por ruta: una ruta inédita es un agente sin
+  recuerdos. Examinarlo en el directorio de trabajo invalidaría la prueba.
+- Se le retira el **remoto** al clon: sin él, no puede resolver dudas fuera de lo
+  que el repositorio contiene.
+- **Un agente nuevo por encargo**, y nunca un fork de la sesión en curso: heredaría
+  justo el contexto que se quiere descartar.
+- Los encargos van redactados **como los pediría un cliente**, con premisas
+  equivocadas a propósito. Si se reformulan con vocabulario del repo, se filtra
+  la respuesta y el examen deja de medir nada.
+
+**Lo que este examen no puede medir** — y conviene no confiar de más en un
+aprobado: documentación *equivocada* (el agente frío se equivocará igual, y con
+seguridad), criterio, y lo que a nadie se le ocurrió preguntar. Detalle en
+`docs/examen/README.md`.
+
+---
+
 ## 2026-08-13 · Una sola carpeta para planes y specs: `docs/historico/`, y un guard que lo sostiene
 
 **Decisión**: los planes y specs viven **solo** en `docs/historico/{plans,specs}/`.

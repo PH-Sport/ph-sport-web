@@ -5,6 +5,7 @@ Dos cosas distintas viven aquí, y confundirlas es el error caro:
 | Ruta | Qué es | ¿Fiable hoy? |
 |---|---|---|
 | `rendimiento.md` | Histórico de auditorías, cifras de referencia y **cómo medir**. Se mantiene | ✅ Sí — documentación viva |
+| `examen/` | Comprueba que el contexto viaja por Git: se examina a un agente frío con el repo recién clonado. Método, banco de encargos e historial | ✅ Sí — documentación viva |
 | `historico/` | Specs y planes de features concretas, tal como se escribieron | ⛔️ No — foto del día que se escribieron |
 
 ## Por qué `historico/` no se actualiza

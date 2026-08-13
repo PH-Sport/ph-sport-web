@@ -12,6 +12,7 @@
     "prepare": "git config core.hooksPath .githooks || true",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "examen:clon": "sh scripts/examen-clon.sh",
     "assets:badges": "node scripts/build-badge-variants.mjs",
     "assets:favicons": "node scripts/build-favicons.mjs",
     "assets:hero": "node scripts/build-hero-variants.mjs"

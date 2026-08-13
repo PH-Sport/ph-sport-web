@@ -38,6 +38,7 @@ destapó dos meses describiendo una island de React que ya no existía.
 | `DECISIONS.md` | Decisiones no obvias con su motivo y alternativas descartadas. Más reciente primero |
 | `docs/rendimiento.md` | Histórico de las auditorías, cifras de referencia, **cómo medir** y qué diagnósticos resultaron falsos |
 | `docs/historico/` | Specs y planes de features concretas. **Histórico, no estado actual**: describen el proyecto tal como era el día que se escribieron y no se actualizan. Para saber cómo está algo hoy, mirar el código o los tres documentos de arriba |
+| `docs/examen/` | El examen al agente frío: comprueba que todo lo necesario viaja en el repo y no en memorias locales. Método, banco de encargos e historial |
 | `docs/README.md` | Qué hay en `docs/` y cuál de sus dos mitades es fiable hoy |
 
 **Antes de proponer un cambio de arquitectura, buscar en `DECISIONS.md`**: puede

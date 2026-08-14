@@ -33,7 +33,7 @@
   { "name": "Adrián Martín", "club": { "name": "Real Betis Balompié" }, "nationalTeamCodes": [], "hidden": true },
   { "name": "Ongen Teofilovic", "club": { "name": "CD Lugo" }, "nationalTeamCodes": [] },
   { "name": "Pere Haro", "club": { "name": "CD Lugo" }, "nationalTeamCodes": [] },
-  { "name": "Txus Alba", "club": { "name": "CD Lugo" }, "nationalTeamCodes": [] },
+  { "name": "Txus Alba", "club": { "name": "CD Lugo" }, "nationalTeamCodes": [], "hidden": true, "note": "Ocultado 2026-08-14: se ha ido de PH. No eliminado por si vuelve." },
   { "name": "Destiny Ilahude", "club": { "name": "Antequera CF" }, "nationalTeamCodes": [] },
   { "name": "Agus Moreno", "club": { "name": "CD Guadalajara" }, "nationalTeamCodes": [] },
   { "name": "Abd. Keita", "club": { "name": "SD Ponferradina" }, "nationalTeamCodes": [] },

@@ -17,4 +17,24 @@ Formato:
 
 ---
 
-*Sin ejecuciones todavía. La primera fija la línea base.*
+## 2026-08-11 · commit ≈ `6a0aabf` · nota 86/100 — **línea base**
+
+Ejecución **anterior a este método**: se hizo a ojo, con nota de 0-100 y sin banco
+de encargos. Queda registrada porque es la línea base real y porque justifica todo
+lo que vino después, pero **su nota no es comparable** con las de abajo: aquella
+puntuaba "¿está bien documentado?" y las siguientes cuentan aciertos sobre 12
+encargos concretos. Ver `README.md` → "La nota".
+
+**Fallo principal**: el repo llevaba **dos meses** describiendo una island de React
+(`LogoReveal.tsx`) que se había reescrito a vanilla en junio. Un agente frío
+proponía sobre ella un patrón imposible.
+
+**Escrito a raíz de esto**: la tanda de documentación del 2026-08-11 completa —
+`CLAUDE.md` (commits `47c8a44`, `438af38`), la prioridad de la documentación
+(`3e6ef87`), el rescate del histórico de rendimiento (`dc636d4`) y la separación
+de lo congelado (`cdd7d69`). De ahí salió también la regla "documentar es parte
+del cambio, no un extra".
+
+**Pendiente**: repetir con el método actual. Los 12 encargos del banco cubren esa
+trampa (E-10) y once más que entonces no se probaron, así que la nota nueva **no
+tiene por qué salir mejor** — mide más cosas.

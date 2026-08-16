@@ -23,11 +23,28 @@ De ahí se derivan dos obligaciones:
    alguien sin contexto sacaría una conclusión equivocada.** No es el último
    paso: es parte del cambio.
 
-**Cómo se comprueba** (hecho por primera vez el 2026-08-11): se lanza un agente
-sin acceso a memorias locales, con permiso para leer solo el repositorio, y se le
-pide que responda qué haría y qué *no* sabría. Lo que no pueda contestar es un
-hueco de documentación, no un fallo suyo. Aquel primer intento sacó 86/100 y
-destapó dos meses describiendo una island de React que ya no existía.
+**Cómo se comprueba**: se examina a un agente sin contexto sobre un clon del repo.
+El método, el banco de encargos y el historial están en **`docs/examen/`**. La
+primera ejecución (2026-08-11, a ojo) sacó 86/100 y destapó dos meses describiendo
+una island de React que ya no existía; de ahí salió toda esta documentación.
+
+## Al empezar y al cerrar una sesión
+
+El trabajo salta entre ordenadores, así que el contexto se pierde por vías
+mecánicas antes que por documentación floja. Dos comprobaciones, treinta segundos:
+
+**Al empezar** — `git fetch && git status -sb`. Saber en qué rama se está y si el
+clon va por detrás de origin. Trabajar sobre un clon viejo produce conflictos que
+parecen bugs.
+
+**Al cerrar** — no dejar nada sin commitear ni sin subir. Un commit que se queda
+en el portátil equivocado es contexto perdido, y no hay documento que lo rescate.
+Si la tanda queda a medias, commitear igualmente en una rama y subirla: el trabajo
+incompleto y visible vale más que el trabajo perfecto e invisible.
+
+Y antes de cerrar, la pregunta de siempre: **¿lo que acabo de cambiar deja algún
+documento vivo diciendo algo que ya no es cierto?** (ver "Documentar es parte del
+cambio").
 
 ## Mapa de documentación
 

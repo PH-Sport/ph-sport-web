@@ -4,6 +4,7 @@ import { ClientRouter } from 'astro:transitions';
 import QuietScrollHistory from './QuietScrollHistory.astro';
 import Header from './Header.astro';
 import Footer from './Footer.astro';
+import LogoReveal from '@/components/LogoReveal.astro';
 import { useTranslations, getAlternateLangUrl, type Lang } from '@/i18n/utils';
 import { SITE_URL } from '@/lib/constants';
 import { SOCIAL_LINKS, isSocialPlaceholder } from '@/lib/social';
@@ -16,6 +17,9 @@ interface Props {
   ogImage?: string;
   hasHero?: boolean;
   noIndex?: boolean;
+  /** Monta el telón de intro (sólo la home). Va aquí y no en la página para que
+   *  quede fuera de <main> — ver el comentario junto a <LogoReveal />. */
+  intro?: boolean;
   /**
    * Imagen LCP a precargar. Si la imagen tiene variantes responsive,
    * pasa { mobile, desktop } y se emiten dos preloads media-aware
@@ -24,7 +28,7 @@ interface Props {
   preloadImage?: string | { mobile: string; desktop: string; mobileMaxWidth?: number };
 }
 
-const { title, description, lang, canonical, ogImage, hasHero = false, noIndex = false, preloadImage } = Astro.props;
+const { title, description, lang, canonical, ogImage, hasHero = false, noIndex = false, intro = false, preloadImage } = Astro.props;
 const preloadIsResponsive = typeof preloadImage === 'object' && preloadImage !== null;
 const preloadMobile = preloadIsResponsive ? preloadImage.mobile : null;
 const preloadDesktop = preloadIsResponsive ? preloadImage.desktop : null;
@@ -93,15 +97,40 @@ const organizationJsonLd = {
         <head> —y repetida en CSS— para que valga desde el primer pintado. */}
     <meta name="color-scheme" content="dark" />
 
-    {/* FOUC guard: corre antes del primer paint. Marca el documento si vamos a
-        animar (no reduced-motion). El CSS oculta [data-reveal] mientras esté la
-        clase; el init de cada sección los revela cuando GSAP toma el control,
-        evitando el parpadeo del contenido entre el pintado y el arranque de la
-        animación. Sin JS o con reduced-motion la clase no se añade → visible. */}
+    {/* Dos decisiones que hay que tomar ANTES del primer pintado, en una sola
+        pausa del parser:
+
+        1. FOUC guard: marca el documento si vamos a animar (no reduced-motion).
+           El CSS oculta [data-reveal] mientras esté la clase; el init de cada
+           sección los revela cuando GSAP toma el control, evitando el parpadeo
+           entre el pintado y el arranque. Sin JS o con reduced-motion la clase
+           no se añade → visible.
+
+        2. Telón de intro: si ya se vio hace menos de 18 h y el usuario no lo ha
+           pedido a propósito (clic en el logo), se marca el documento para que el
+           CSS no llegue ni a pintar el overlay. Tiene que ser aquí y no en el
+           componente: una vez pintado, ya es tarde.
+
+        `document.prerendering`: Chrome prerenderiza páginas desde la barra de
+        direcciones y ejecuta sus scripts antes de mostrarlas. Sin esta guarda, la
+        intro de la primera visita se daría por vista sin que nadie la viera. */}
     <script is:inline>
-      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        document.documentElement.classList.add('ph-anim');
-      }
+      (function () {
+        var raiz = document.documentElement;
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          raiz.classList.add('ph-anim');
+        }
+        if (document.prerendering) return;
+        try {
+          if (sessionStorage.getItem('ph-logo-reveal-request') === '1') return;
+          var t = Number(localStorage.getItem('ph-intro-vista'));
+          if (t > 0 && Date.now() - t < 18 * 60 * 60 * 1000) {
+            raiz.classList.add('ph-sin-intro');
+          }
+        } catch (e) {
+          /* almacenamiento bloqueado: que salga la intro */
+        }
+      })();
     </script>
 
     {/* Iconos: SVG primario + PNG fallback + apple-touch (iOS home screen) + mask-icon (Safari pinned tab). */}
@@ -163,6 +192,38 @@ const organizationJsonLd = {
       </>
     )}
 
+    {/* Telón de intro: su CSS va aquí, en línea, y no en el componente.
+        Medido: desde el `<style>` del componente el CSS no se aplicaba hasta los
+        838 ms (viaja en el bundle común, que hay que descargar), así que el
+        overlay se pintaba ~180 ms como un div suelto sin tapar nada y la
+        animación arrancaba tarde. En línea aplica con el primer pintado.
+
+        No confundir con lo que había antes: aquello eran declaraciones en el
+        atributo `style` del elemento, que ganan a cualquier regla y hacían
+        imposible ocultarlo. Esto es una hoja normal, así que la regla de
+        `ph-sin-intro` funciona. */}
+    {intro && (
+      <style is:inline set:html={`
+[data-logo-reveal-overlay]{--e-trazo:cubic-bezier(.77,0,.175,1);--e-color:cubic-bezier(.645,.045,.355,1);--e-salida:cubic-bezier(.95,.05,.795,.035);position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background-color:#0d0f12;view-transition-name:ph-intro;touch-action:none;animation:ph-intro-salir .18s linear 1.08s forwards}
+html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
+@media (prefers-reduced-motion:reduce){[data-logo-reveal-overlay]{display:none}}
+.logo-reveal-container{width:120px;color:#fff;animation:ph-intro-color .18s var(--e-color) .55s forwards}
+@media (min-width:1024px){.logo-reveal-container{width:220px}}
+[data-logo-reveal-overlay] svg{display:block;width:100%;height:auto;overflow:visible}
+[data-logo-line1],[data-logo-line2]{fill-opacity:0;transform-box:fill-box;transform-origin:center}
+[data-logo-line1]{animation:ph-intro-trazo-1 .52s var(--e-trazo) 0s both,ph-intro-relleno .2s var(--e-color) .66s forwards,ph-intro-sin-trazo .12s linear .84s forwards,ph-intro-salida-izq .28s var(--e-salida) .96s forwards}
+[data-logo-line2]{animation:ph-intro-trazo-2 .45s var(--e-trazo) .2s both,ph-intro-relleno .2s var(--e-color) .66s forwards,ph-intro-sin-trazo .12s linear .84s forwards,ph-intro-salida-der .28s var(--e-salida) .96s forwards}
+@keyframes ph-intro-trazo-1{from{stroke-dashoffset:753}to{stroke-dashoffset:0}}
+@keyframes ph-intro-trazo-2{from{stroke-dashoffset:637}to{stroke-dashoffset:0}}
+@keyframes ph-intro-color{to{color:#D6B25E}}
+@keyframes ph-intro-relleno{from{fill-opacity:0}to{fill-opacity:1}}
+@keyframes ph-intro-sin-trazo{from{stroke-opacity:1}to{stroke-opacity:0}}
+@keyframes ph-intro-salida-izq{from{transform:translateX(0);opacity:1}to{transform:translateX(-300%);opacity:0}}
+@keyframes ph-intro-salida-der{from{transform:translateX(0);opacity:1}to{transform:translateX(300%);opacity:0}}
+@keyframes ph-intro-salir{from{opacity:1}99%{opacity:0;visibility:visible;pointer-events:auto}to{opacity:0;visibility:hidden;pointer-events:none}}
+`} />
+    )}
+
     {/* Antes del router a propósito: envuelve `history.replaceState` para que el
         guardado de scroll no toque el historial y la barra de direcciones no
         vuelva a salir en los navegadores WebKit de iPhone. Ver el componente. */}
@@ -174,6 +235,12 @@ const organizationJsonLd = {
         `--ph-viewport-h`. Invisible y sin peso en el layout. */}
     <div data-viewport-probe aria-hidden="true"></div>
     <a href="#main-content" class="skip-link">{t('a11y.skip')}</a>
+    {/* El telón va FUERA de <main> a propósito. `transition:name` forma un
+        contexto de apilamiento propio, así que dentro de main su z-index no podía
+        ganarle al header (hacía falta un parche de CSS para ocultarlo) y además
+        el fundido entre páginas se comía los primeros fotogramas de la intro.
+        Como hermano de main, el z-index manda y no hace falta nada de eso. */}
+    {intro && <LogoReveal />}
     <Header />
     <main
       id="main-content"
@@ -252,7 +319,6 @@ const organizationJsonLd = {
         // PHASE 1 — reads
         const y = window.scrollY;
         const reducedMotion = prefersReducedMotion();
-        const revealActive = document.documentElement.classList.contains('ph-logo-reveal-active');
         const menuOpen = isMobileMenuOpen();
         const wasHidden = header.classList.contains('header--scroll-hidden');
         const delta = y - lastScrollY;
@@ -261,7 +327,7 @@ const organizationJsonLd = {
         const shouldBeSolid = y > HEADER_SCROLL_THRESHOLD;
         let shouldHide = wasHidden;
 
-        if (reducedMotion || revealActive || menuOpen || y < SCROLL_HIDE_MIN_Y) {
+        if (reducedMotion || menuOpen || y < SCROLL_HIDE_MIN_Y) {
           shouldHide = false;
         } else if (Math.abs(delta) >= SCROLL_DIRECTION_DELTA) {
           shouldHide = delta > 0;
@@ -345,16 +411,6 @@ const organizationJsonLd = {
     ::view-transition-new(page-main) {
       animation: none;
     }
-  }
-
-  /* LogoReveal vive dentro de main (z-index 1); el header fijo quedaría encima del overlay.
-     LogoReveal añade html.ph-logo-reveal-active mientras corre la animación.
-     Mientras dura, el header queda oculto y sin pointer-events: evita que tape el overlay
-     y es intencional (no se puede abrir el menú u otras acciones del chrome hasta terminar). */
-  html.ph-logo-reveal-active [data-header] {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
   }
 
   [data-header] {

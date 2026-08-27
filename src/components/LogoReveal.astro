@@ -1,235 +1,141 @@
 ---
-// LogoReveal vanilla (sin React) — reemplaza al island LogoReveal.tsx, su único
-// uso de React. Elimina el runtime de React/ReactDOM (~182 KB) de la home.
+// Telón de intro — animación en CSS, sin GSAP.
 //
-// El overlay se renderiza en server y cubre el contenido desde el primer paint
-// (igual que hacía el SSR del island), así que no hay flash de contenido antes de
-// la intro. Un <script> con GSAP reproduce la animación (o descarta el overlay) en
-// astro:page-load — el mismo patrón que usan todas las secciones .astro.
+// Antes esto era una timeline de GSAP lanzada en `astro:page-load` (es decir,
+// después de `window.load`): el overlay tapaba la home hasta 2,57 s DESPUÉS de
+// que hubiera terminado de cargar todo, y sólo desaparecía si el JS llegaba, se
+// ejecutaba y terminaba bien. Un fallo de JS dejaba la portada en negro.
+//
+// Ahora la animación es CSS puro: arranca con el primer pintado y termina sola
+// pase lo que pase. El JS que queda no la controla, sólo anota que ya se ha
+// visto.
+//
+// El overlay se monta como hermano de <main> (ver BaseLayout), no dentro. Con
+// `transition:name` en <main> se forma un contexto de apilamiento propio y el
+// z-index del overlay no podía ganar al header; había un parche de CSS para
+// taparlo que ya no hace falta.
+//
+// Longitudes del trazo: son constantes (el viewBox y los puntos están fijos), así
+// que van escritas. Antes se medían con getTotalLength() en tiempo de ejecución,
+// con 32 reintentos por si el SVG aún no tenía layout y dos valores de reserva
+// que, de paso, estaban un 22% pasados. Nada de eso hace falta.
 const LOGO_VIEWBOX = '0 0 259.8 206.1';
 const POLYGON_1_POINTS =
   '0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7';
 const POLYGON_2_POINTS =
   '122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9';
+
+/** Perímetros reales, redondeados HACIA ARRIBA: por debajo asomaría una esquirla
+ *  del segmento de cierre del polígono en el offset máximo. */
+const LEN_1 = 753; // real 752,4284
+const LEN_2 = 637; // real 636,0980
 ---
 
-<div
-  data-logo-reveal-overlay
-  style="position:fixed;inset:0;z-index:9999;background-color:#0d0f12;display:flex;align-items:center;justify-content:center"
->
-  <div
-    class="logo-reveal-container"
-    data-logo-reveal-container
-    style="color:#ffffff"
-    aria-hidden="true"
-  >
+<div data-logo-reveal-overlay aria-hidden="true" inert>
+  <div class="logo-reveal-container" data-logo-reveal-container>
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox={LOGO_VIEWBOX}
-      fill="none"
+      fill="currentColor"
       stroke="currentColor"
       stroke-width="3"
       stroke-linecap="butt"
       stroke-linejoin="bevel"
-      style="display:block;width:100%;height:auto;overflow:visible"
     >
-      <polygon
-        data-logo-line1
-        points={POLYGON_1_POINTS}
-        stroke-dasharray="9999"
-        stroke-dashoffset="9999"
-      />
-      <polygon
-        data-logo-line2
-        points={POLYGON_2_POINTS}
-        stroke-dasharray="9999"
-        stroke-dashoffset="9999"
-      />
+      <polygon data-logo-line1 points={POLYGON_1_POINTS} stroke-dasharray={LEN_1} stroke-dashoffset={LEN_1} />
+      <polygon data-logo-line2 points={POLYGON_2_POINTS} stroke-dasharray={LEN_2} stroke-dashoffset={LEN_2} />
     </svg>
   </div>
 </div>
 
+{/* El CSS del telón NO vive aquí sino en línea en el <head> de BaseLayout.
+    Motivo medido: desde este componente el CSS viaja en el bundle común y no se
+    aplicaba hasta los 838 ms — el overlay se pintaba antes como un div suelto,
+    sin tapar nada, y la animación arrancaba con medio segundo de retraso. */}
+
 <script>
-  import { gsap } from 'gsap';
+  /* Lo único que hace el JS es anotar que la intro ya se ha visto. Si nada de
+     esto llega a ejecutarse, el telón se reproduce y se va igual: la animación es
+     CSS y no depende de nadie. */
+  const CLAVE_VISTA = 'ph-intro-vista';
+  const CLAVE_PETICION = 'ph-logo-reveal-request';
+  /** 18 h: no repite la intro al que vuelve el mismo día por la tarde, y sí al que
+   *  vuelve al día siguiente. Se guarda un instante, no una fecha: así no hay
+   *  borde de medianoche, ni sorpresas al viajar de país o al cambiar el reloj. */
+  const VENTANA_MS = 18 * 60 * 60 * 1000;
 
-  const REVEAL_REQUEST_KEY = 'ph-logo-reveal-request';
-  // Oculta el chrome (header) mientras el overlay está activo: el overlay vive en
-  // main (z-index bajo) y el header fijo quedaría encima.
-  const REVEAL_CHROME_CLASS = 'ph-logo-reveal-active';
-  // Si getTotalLength() es 0 (SVG aún sin layout), reintentar en vez de saltar la animación.
-  const LAYOUT_LENGTH_RETRIES_MAX = 32;
-  const FALLBACK_LEN_1 = 920;
-  const FALLBACK_LEN_2 = 780;
-
-  // Persiste durante la vida del documento: el módulo se ejecuta una sola vez y
-  // sobrevive a las navegaciones SPA (Astro no re-ejecuta scripts ya cargados), se
-  // resetea solo en F5/cold load. Distingue la primera entrada a home (cold load o
-  // SPA-nav a home desde otra ruta) de los re-mounts por navegación interna.
-  let firstRunThisDoc = true;
-  let activeTimeline: gsap.core.Timeline | null = null;
-
-  function setRevealChromeVisible(visible: boolean): void {
-    document.documentElement.classList.toggle(REVEAL_CHROME_CLASS, !visible);
-  }
-
-  function restoreLayout(): void {
-    document.documentElement.style.overflow = '';
-    document.documentElement.style.paddingRight = '';
-  }
-
-  function dispatchLogoRevealed(): void {
-    document.dispatchEvent(new CustomEvent('ph:logo-revealed'));
-  }
-
-  // Si el dismiss ocurre en el mismo tick que el arranque, un posible listener
-  // (astro:page-load) puede no existir aún y el evento se perdería: lo aplazamos.
-  function scheduleLogoRevealed(): void {
-    requestAnimationFrame(() => requestAnimationFrame(dispatchLogoRevealed));
-  }
-
-  // Entrada suave del header tras el overlay (respeta reduced-motion → instantáneo).
-  function revealHeaderAfterIntro(): void {
-    const header = document.querySelector<HTMLElement>('[data-header]');
-    if (!header || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setRevealChromeVisible(true);
-      return;
+  function marcarVista(): void {
+    try {
+      localStorage.setItem(CLAVE_VISTA, String(Date.now()));
+    } catch {
+      /* almacenamiento bloqueado (incógnito estricto): la intro volverá a salir */
     }
-    gsap.killTweensOf(header);
-    gsap.set(header, { opacity: 0, y: -14, pointerEvents: 'none' });
-    setRevealChromeVisible(true);
-    gsap.to(header, {
-      opacity: 1,
-      y: 0,
-      duration: 0.55,
-      ease: 'power3.out',
-      onComplete: () => {
-        gsap.set(header, { clearProps: 'opacity,transform,pointerEvents' });
-      },
-    });
   }
 
-  function dismissOverlay(overlay: HTMLElement): void {
-    overlay.style.display = 'none';
-    restoreLayout();
-    setRevealChromeVisible(true);
-    scheduleLogoRevealed();
+  function marcaVigente(): boolean {
+    try {
+      const t = Number(localStorage.getItem(CLAVE_VISTA));
+      return Number.isFinite(t) && t > 0 && Date.now() - t < VENTANA_MS;
+    } catch {
+      return false;
+    }
   }
 
-  function runTimeline(
-    overlay: HTMLElement,
-    container: HTMLElement,
-    line1: SVGPolygonElement,
-    line2: SVGPolygonElement,
-    len1: number,
-    len2: number,
-  ): void {
-    gsap.set(overlay, { opacity: 1, display: 'flex' });
-
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    document.documentElement.style.paddingRight = `${scrollbarWidth}px`;
-    document.documentElement.style.overflow = 'hidden';
-    setRevealChromeVisible(false);
-
-    gsap.set([line1, line2], {
-      strokeDasharray: (i: number) => (i === 0 ? len1 : len2),
-      strokeDashoffset: (i: number) => (i === 0 ? len1 : len2),
-    });
-
-    let revealDispatched = false;
-    const dispatchRevealOnce = (): void => {
-      if (revealDispatched) return;
-      revealDispatched = true;
-      dispatchLogoRevealed();
-    };
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        overlay.style.display = 'none';
-        dispatchRevealOnce();
-        revealHeaderAfterIntro();
-        activeTimeline = null;
-      },
-    });
-    activeTimeline = tl;
-
-    tl.to(line1, { strokeDashoffset: 0, duration: 0.8, ease: 'power3.inOut' })
-      .to(line2, { strokeDashoffset: 0, duration: 0.7, ease: 'power3.inOut' }, '-=0.45')
-      .to(container, { color: '#D6B25E', duration: 0.3, ease: 'power2.inOut' }, '-=0.15')
-      .to([line1, line2], { fill: '#D6B25E', duration: 0.35, ease: 'power2.inOut' }, '-=0.1')
-      .to([line1, line2], { stroke: 'none', duration: 0.2 }, '-=0.05')
-      .to({}, { duration: 0.3 });
-
-    const exitDistance = window.innerWidth / 2 + 150;
-    tl.to(line1, { x: -exitDistance, opacity: 0, duration: 0.6, ease: 'expo.in' })
-      .to(line2, { x: exitDistance, opacity: 0, duration: 0.6, ease: 'expo.in' }, '<');
-    tl.to(overlay, { opacity: 0, duration: 0.3, onStart: restoreLayout }, '-=0.25');
+  /** El clic en el logo del menú pide la intro a propósito. Al ser navegación SPA
+   *  el script del <head> no vuelve a correr, así que se consume aquí. */
+  function consumirPeticion(): boolean {
+    try {
+      const pedida = sessionStorage.getItem(CLAVE_PETICION) === '1';
+      if (pedida) sessionStorage.removeItem(CLAVE_PETICION);
+      return pedida;
+    } catch {
+      return false;
+    }
   }
 
-  function runLogoReveal(): void {
+  function observarOverlay(): void {
     const overlay = document.querySelector<HTMLElement>('[data-logo-reveal-overlay]');
-    if (!overlay) return; // no estamos en home
+    if (!overlay) return; // no estamos en la home
+    if (document.documentElement.classList.contains('ph-sin-intro')) return;
+    if (overlay.dataset.observado === '1') return;
+    overlay.dataset.observado = '1';
 
-    const isFirstMount = firstRunThisDoc;
-    firstRunThisDoc = false;
+    // Se anota cuando la intro TERMINA de verse, no cuando carga el documento:
+    // Chrome prerenderiza páginas desde la barra de direcciones y ejecuta sus
+    // scripts antes de mostrarlas, así que anotar en la carga se comería la intro
+    // de la primera visita sin que nadie la viera.
+    //
+    // Se pregunta por la animación en vez de escuchar `animationend` porque este
+    // script no controla cuándo se ejecuta: si arrancara tarde, el evento ya
+    // habría pasado y la marca no se escribiría nunca (la intro reaparecía en
+    // cada visita). Preguntando, el caso "ya ha terminado" también queda cubierto.
+    const salida = overlay
+      .getAnimations()
+      .find((a) => (a as CSSAnimation).animationName === 'ph-intro-salir');
 
-    const container = document.querySelector<HTMLElement>('[data-logo-reveal-container]');
-    const line1 = document.querySelector<SVGPolygonElement>('[data-logo-line1]');
-    const line2 = document.querySelector<SVGPolygonElement>('[data-logo-line2]');
-
-    const path = window.location.pathname.replace(/\/$/, '') || '/';
-    const isHome = path === '/' || path === '/en';
-
-    if (!isHome || !container || !line1 || !line2) {
-      dismissOverlay(overlay);
+    if (!salida) {
+      // O ya terminó, o no hay animación (sin movimiento). Sólo cuenta como vista
+      // si de verdad se llegó a reproducir, es decir, si el telón está retirado.
+      if (getComputedStyle(overlay).visibility === 'hidden') marcarVista();
       return;
     }
-
-    const hasRequest = sessionStorage.getItem(REVEAL_REQUEST_KEY) === '1';
-    if (hasRequest) sessionStorage.removeItem(REVEAL_REQUEST_KEY);
-
-    // Reveal si: (1) primera entrada a home en este documento (cold load / F5 /
-    // SPA-nav a home desde otra ruta) → isFirstMount, o (2) click en el logo del
-    // navbar → REVEAL_REQUEST_KEY. Los re-mounts por SPA navigation quedan fuera.
-    const shouldReveal = hasRequest || isFirstMount;
-    if (!shouldReveal) {
-      dismissOverlay(overlay);
-      return;
-    }
-
-    let lengthAttempts = 0;
-    const start = (): void => {
-      let len1v = line1.getTotalLength();
-      let len2v = line2.getTotalLength();
-      if (len1v < 1 || len2v < 1) {
-        lengthAttempts += 1;
-        if (lengthAttempts < LAYOUT_LENGTH_RETRIES_MAX) {
-          requestAnimationFrame(start);
-          return;
-        }
-        len1v = FALLBACK_LEN_1;
-        len2v = FALLBACK_LEN_2;
-      }
-      runTimeline(overlay, container, line1, line2, len1v, len2v);
-    };
-    requestAnimationFrame(start);
+    void salida.finished.then(marcarVista).catch(() => {});
   }
 
-  // Cleanup antes de cada swap (equivale al unmount del island): mata la timeline,
-  // restaura el layout y revela el chrome para no dejar el header oculto.
-  document.addEventListener('astro:before-swap', () => {
-    if (activeTimeline) {
-      activeTimeline.kill();
-      activeTimeline = null;
-    }
-    const overlay = document.querySelector<HTMLElement>('[data-logo-reveal-overlay]');
-    const line1 = document.querySelector<SVGPolygonElement>('[data-logo-line1]');
-    const line2 = document.querySelector<SVGPolygonElement>('[data-logo-line2]');
-    [overlay, line1, line2].forEach((el) => el && gsap.killTweensOf(el));
-    restoreLayout();
-    setRevealChromeVisible(true);
-    const header = document.querySelector<HTMLElement>('[data-header]');
-    if (header) gsap.set(header, { clearProps: 'opacity,transform,pointerEvents' });
+  /* Se llama en cuanto corre el módulo —no sólo en `astro:page-load`, que espera a
+     `window.load` y puede llegar después de que el telón haya terminado— y también
+     en cada navegación interna. La guarda `observado` evita duplicar. */
+  observarOverlay();
+  document.addEventListener('astro:page-load', observarOverlay);
+
+  /* Navegación interna: Astro rehace <html> en cada swap y se lleva la clase, así
+     que hay que volver a DECIDIR sobre el documento entrante. Copiar la clase no
+     serviría: cuando la intro sí se reproduce, la clase no está puesta, y al
+     volver a la home desde otra página la intro saldría otra vez. */
+  document.addEventListener('astro:before-swap', (e) => {
+    const nuevo = (e as { newDocument?: Document }).newDocument;
+    if (!nuevo) return;
+    if (consumirPeticion()) return; // la ha pedido el usuario: que salga
+    if (marcaVigente()) nuevo.documentElement.classList.add('ph-sin-intro');
   });
-
-  document.addEventListener('astro:page-load', runLogoReveal);
 </script>

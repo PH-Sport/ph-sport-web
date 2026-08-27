@@ -22,7 +22,7 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
     {staticBackdrop && (
       <img class="hero-static-image" src={staticBackdrop} alt="" width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async" />
     )}
-    <video class="hero-video" data-hero-video muted loop playsinline autoplay preload="metadata" poster={videoPoster}>
+    <video class="hero-video" data-hero-video muted loop playsinline preload="none" poster={videoPoster}>
       {HERO_VIDEO_SOURCES.map((s) => (
         <source src={s.src} type={s.type} media={s.media} />
       ))}
@@ -230,14 +230,32 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
     }
   }
 
+  /* El titular arranca oculto para que GSAP controle su primer fotograma, con una
+     red de seguridad en CSS: pase lo que pase, a 1,1 s se muestra.
+
+     Antes no hacía falta porque el telón de intro y este titular colgaban del
+     mismo evento (`astro:page-load` = `window.load`): cuando el telón se
+     levantaba, el titular ya estaba puesto. Ahora el telón es CSS y termina a
+     1,26 s por su cuenta, así que son dos relojes distintos: si el JS se retrasa
+     —y `window.load` es mucho más variable que el primer pintado—, el telón se
+     abriría sobre un hero mudo.
+
+     El retardo hace que esto no estorbe cuando todo va bien: durante la espera la
+     animación no aplica nada (no es `backwards`), así que el `visibility` que
+     pone GSAP manda y el efecto de entrada se ve igual que siempre. */
   .hero-claim__lead,
   .hero-claim__accent {
     visibility: hidden;
+    animation: ph-hero-claim-visible 0s linear 1.1s forwards;
+  }
+
+  @keyframes ph-hero-claim-visible {
+    to { visibility: visible; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .hero-claim__lead,
-    .hero-claim__accent { visibility: visible; }
+    .hero-claim__accent { visibility: visible; animation: none; }
   }
 </style>
 
@@ -273,11 +291,27 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
       void video.play().catch(() => {});
     };
 
-    void video.play().catch(() => {
-      window.addEventListener('pointerdown', retryOnGesture, { passive: true });
-      window.addEventListener('touchstart', retryOnGesture, { passive: true });
-      window.addEventListener('scroll', retryOnGesture, { passive: true });
-    });
+    /* El vídeo se arranca a mano, no con el atributo `autoplay`.
+     *
+     * Con `autoplay` el navegador se baja el archivo entero nada más encontrarlo
+     * (el `preload="metadata"` no lo impide), y en móvil eso es 1 MB peleándose
+     * por el ancho de banda con el póster —que es el LCP real de la home— y con
+     * el JS. Medido: retrasaba el evento `load` 504 ms y el póster tardaba 2.381
+     * ms en bajar en vez de 1.878.
+     *
+     * Esperando a que el resto haya cargado, el vídeo no le quita sitio a nada.
+     * El hueco lo cubre el póster, que es literalmente su primer fotograma.
+     * En navegación SPA el documento ya está cargado, así que arranca directo. */
+    const startVideo = () => {
+      void video.play().catch(() => {
+        window.addEventListener('pointerdown', retryOnGesture, { passive: true });
+        window.addEventListener('touchstart', retryOnGesture, { passive: true });
+        window.addEventListener('scroll', retryOnGesture, { passive: true });
+      });
+    };
+
+    if (document.readyState === 'complete') startVideo();
+    else window.addEventListener('load', startVideo, { once: true });
   }
 
   document.addEventListener('astro:page-load', () => {

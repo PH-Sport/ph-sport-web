@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '@/components/layout/BaseLayout.astro';
-import LogoReveal from '@/components/LogoReveal.astro';
 import HeroSection from '@/components/sections/HeroSection.astro';
 import HomePlayersSection from '@/components/sections/HomePlayersSection.astro';
 import HomeServicesSection from '@/components/sections/HomeServicesSection.astro';
@@ -19,8 +18,8 @@ const t = useTranslations(lang);
   lang={lang}
   canonical={`${SITE_URL}/`}
   hasHero
+  intro
 >
-  <LogoReveal />
   <HeroSection lang={lang} sectionId="inicio" />
   <HomePlayersSection lang={lang} />
   <HomeServicesSection lang={lang} />

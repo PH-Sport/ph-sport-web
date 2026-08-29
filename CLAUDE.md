@@ -219,6 +219,31 @@ arreglarlo cambiando de unidad: ya se probó y no puede funcionar.
 - **Medir timing con la extensión de Chrome no es fiable**: al operar, la pestaña
   pasa a segundo plano, `rAF` se pausa y `setTimeout` se throttlea a ~1s.
 
+### El telón de intro (`LogoReveal.astro`)
+Cuatro cosas que cuestan una tarde cada una si se tocan sin saber por qué están:
+
+- **Nunca poner estilos en el atributo `style` del overlay.** Una declaración
+  inline gana a cualquier regla de hoja sin `!important`, así que la regla que lo
+  oculta en visita repetida deja de aplicarse y **la home se queda en negro** —
+  justo en el camino más frecuente.
+- **Su CSS va en línea en el `<head>` de `BaseLayout`, no en el `<style>` del
+  componente.** Desde el componente viaja en el bundle común: medido, no se
+  aplicaba hasta los 838 ms y el overlay se pintaba antes como un div suelto, sin
+  tapar nada.
+- **El overlay va fuera de `<main>`.** `transition:name` crea un contexto de
+  apilamiento *siempre*, no solo durante una transición, así que dentro su
+  `z-index: 9999` no le gana al header.
+- **`animationend` burbujea.** Escuchar con `{ once: true }` en el overlay gasta el
+  listener en la primera animación de un hijo. Y no vale colgarse de
+  `astro:page-load` (= `window.load`), que puede llegar *después* de que la
+  animación haya terminado: se pregunta con `getAnimations()` y `.finished`.
+
+### Rendimiento: no fiarse de un LCP bueno sin mirar qué elemento es
+La home reportaba 596 ms y medía el textito «SCROLL» de la esquina, porque el
+telón tapaba todo lo demás. Cinco segundos de pantalla negra que ninguna métrica
+denunciaba. Mirar siempre `entry.element`, no solo la cifra. Más diagnósticos
+falsos —y las trampas del instrumental de medida— en `docs/rendimiento.md`.
+
 ### Bugs de un motor concreto
 Medir **en ese motor**, con el dispositivo real. Una página de laboratorio y
 treinta segundos de un iPhone resolvieron lo que cuatro rondas de teoría no.
@@ -243,6 +268,16 @@ treinta segundos de un iPhone resolvieron lo que cuatro rondas de teoría no.
   tarjetas). Identificado en junio, **sin hacer a propósito por riesgo alto**:
   tocar la View Transition ahí puede romper la fluidez que costó dos auditorías.
   No abordarlo sin que Mario lo supervise. Detalle en `docs/rendimiento.md`.
+- **Backlog de rendimiento medido el 2026-08-18, sin hacer.** Todo verificado con
+  cifras, no estimado; detalle en `docs/rendimiento.md`. Lo más rentable, por
+  orden: los diccionarios `i18n` completos viajando en el JS del header para usar
+  ocho cadenas; ScrollTrigger cargándose en las cuatro páginas cuando
+  `ScrollTrigger.create()` se usa una sola vez en todo el sitio; el tirón de
+  217-359 ms al entrar en `/sobre-nosotros` (135 spans animados con
+  `filter: blur()`); y cuatro imágenes con margen de compresión real.
+- **Fuga de listeners de scroll en la home**: uno nuevo por visita
+  (`initHeroScrollCue` registra una función nueva en cada `astro:page-load` sin
+  quitar la anterior). Comprobado contando listeners reales: 3 → 4 → 6.
 - **SEO pendiente (P1/P2)**: analítica sin cookies (Plausible o GA4), un
   `public/llms.txt` para buscadores con IA, una página `/faq` con preguntas y
   respuestas literales, y auditar los `alt=""` de Header, Footer y Hero para

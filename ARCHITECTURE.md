@@ -1,7 +1,7 @@
 # PHSPORT — Architecture Document
 
 > Documento de referencia para el proyecto. Leer antes de cualquier tarea estructural.
-> Última revisión: 2026-04-24
+> Última revisión: 2026-08-29
 > Secciones: Stack · Estructura · i18n · Hero · Motion · Performance · SEO · Sistema de diseño · Tests · Estado del proyecto
 
 ---
@@ -48,13 +48,13 @@ ph-sport-web/
 │   ├── assets/images/players/       # Fotos de jugadores (procesadas por astro:assets)
 │   │
 │   ├── components/
-│   │   ├── LogoReveal.astro         # Intro de la home — GSAP vanilla, sin React
+│   │   ├── LogoReveal.astro         # Intro de la home — animación en CSS, sin GSAP
 │   │   ├── layout/
 │   │   │   ├── BaseLayout.astro     # Layout raíz: meta, fuentes, global CSS
 │   │   │   ├── Header.astro         # Flotante, scroll-hide, selector de idioma
 │   │   │   └── Footer.astro         # V3 editorial, social links
 │   │   ├── sections/
-│   │   │   ├── HeroSection.astro        # Vídeo + poster, GSAP curtain reveal
+│   │   │   ├── HeroSection.astro        # Vídeo (play diferido) + poster, GSAP curtain reveal
 │   │   │   ├── HomePlayersSection.astro
 │   │   │   ├── HomeServicesSection.astro   # CSS accordion + GSAP
 │   │   │   ├── HomeAboutSection.astro
@@ -77,7 +77,6 @@ ph-sport-web/
 │   │   ├── constants.ts             # SITE_URL y constantes globales
 │   │   ├── countryLabels.ts         # Etiquetas de selecciones nacionales
 │   │   ├── heroMedia.ts             # Fuente de verdad del vídeo hero (variantes mp4)
-│   │   ├── is-document-reload.ts    # Detección de F5 para re-trigger de LogoReveal
 │   │   ├── nationalTeamBadge.ts     # Resuelve escudo PNG por código ISO 3166-1 alpha-2
 │   │   ├── navigation.ts            # Items de navegación
 │   │   ├── playerDetail.ts          # Payloads de talentos para el grid (nombre, club, foto, códigos)
@@ -102,8 +101,8 @@ ph-sport-web/
 │   │           └── index.astro      # /en/talents/
 │   │
 │   ├── scripts/                     # Scripts vanilla para interacciones y animaciones
-│   │   ├── dropdown.ts              # Dropdown de filtro/sort en talentos
-│   │   └── ph-text-animations.ts   # Sistema GSAP de sección (clipPath, stagger, magnético)
+│   │   ├── dropdown.ts              # SIN USO: nadie lo importa. Talentos monta su combo aparte
+│   │   └── ph-text-animations.ts   # Sistema GSAP de sección (reveals, stagger, refresh coalescido)
 │   │
 │   └── styles/
 │       ├── global.css               # Reset + variables CSS + font-face
@@ -200,22 +199,28 @@ El hero usa un vídeo de fondo con dos variantes de calidad servidas localmente:
 
 El master `assets/source-media/video-ph-web.mp4` se usa solo como input de `npm run assets:hero` (`scripts/build-hero-variants.mjs`) y NO se sirve.
 
-`src/lib/heroMedia.ts` es la fuente de verdad de las rutas y configuración del vídeo. `preload="metadata"` — no precarga el vídeo completo.
+`src/lib/heroMedia.ts` es la fuente de verdad de las rutas y configuración del vídeo. `preload="none"` y la reproducción se lanza a mano tras `load` (ver la tabla de reglas de performance: con `autoplay`, `preload="metadata"` no impide la descarga).
 
 El poster `hero-poster.webp` se muestra mientras el vídeo carga y actúa como LCP real.
 
 ### Logo Reveal
 
-`LogoReveal.astro` ejecuta una animación de entrada de pantalla completa antes de mostrar el contenido:
+`LogoReveal.astro` tapa la home con un overlay negro mientras se dibuja el trazo del logo. **La animación es CSS puro, sin JavaScript**: arranca con el primer pintado y termina sola aunque el JS no llegue nunca. Duración 1,26 s.
 
-1. Overlay `fixed` con fondo `#0d0f12` y `z-index: 9999`
-2. Logo: fade in → escala de `1` a `8` con fade out simultáneo
-3. Overlay: fade out y eliminación del DOM
-4. Duración total: máximo 2 segundos
+Fue una island de React hasta el 2026-06-25 (`2b74656`), GSAP vanilla hasta el 2026-08-27; ver `DECISIONS.md`.
 
-El overlay se renderiza **en servidor**, así que cubre la pantalla desde el primer paint, y un `<script>` con GSAP reproduce la intro en `astro:page-load` — el mismo patrón que las secciones. Fue una island de React hasta el 2026-06-25 (commit `2b74656`); ver `DECISIONS.md`.
+**Cuatro cosas que parecen arbitrarias y no lo son.** Cambiar cualquiera vuelve a romper lo que arreglaron:
 
-**Re-trigger en F5**: `src/lib/is-document-reload.ts` detecta recargas de página para que el reveal se re-ejecute en F5 desde la home. En navegación interna (View Transitions) no se vuelve a ejecutar.
+| Cómo está | Por qué |
+|---|---|
+| El overlay se monta desde `BaseLayout` (prop `intro`), **fuera de `<main>`** | `transition:name` en `<main>` crea un contexto de apilamiento, así que dentro el `z-index: 9999` no le ganaba al header y hacía falta un parche para ocultarlo. Fuera, el z-index manda solo |
+| Su CSS va **en línea en el `<head>`**, no en el `<style>` del componente | Desde el componente viaja en el bundle común: medido, no se aplicaba hasta los 838 ms y el overlay se pintaba antes como un div suelto, sin tapar nada |
+| Los estilos **nunca** en el atributo `style` del elemento | Una declaración inline gana a cualquier regla de hoja: la que oculta el overlay en visita repetida no se aplicaría, y la home se quedaría en negro |
+| `stroke-dasharray` escrito a mano (753 y 637) | Son los perímetros reales de los dos polígonos, y son constantes. Antes se medían en ejecución con `getTotalLength()`, con 32 reintentos y dos valores de reserva que estaban un 22 % pasados. `pathLength="1"` sería lo elegante, pero en WebKit/iOS no es de fiar |
+
+**Cuándo sale**: la primera vez, y no vuelve hasta pasadas **18 h** (marca con `Date.now()` en `localStorage`, decidida por un script inline del `<head>` antes del primer pintado). El clic en el logo del header la fuerza siempre. Con `prefers-reduced-motion`, nunca.
+
+El titular del hero (`.hero-claim__lead/__accent`) tiene una **red de seguridad en CSS** que lo revela a 1,1 s pase lo que pase: arranca oculto esperando a GSAP, y como el telón ya no cuelga del mismo evento, sin ella podría abrirse sobre un hero mudo.
 
 ---
 
@@ -223,8 +228,10 @@ El overlay se renderiza **en servidor**, así que cubre la pantalla desde el pri
 
 Las animaciones de sección están en `src/scripts/ph-text-animations.ts`. El sistema usa GSAP con `ScrollTrigger` y expone helpers reutilizables:
 
-- **`clipPathReveal`**: entrada de elementos con clip-path desde abajo — el efecto principal de cabeceras y claims.
-- **`magneticHover`**: efecto magnético en CTAs y elementos interactivos.
+- **`revealOnView`**: fade + slide de cabeceras secundarias. Es el reveal por defecto (14 usos).
+- **`trackingReveal`**: compresión de letter-spacing en labels y eyebrows (20 usos).
+- **`wrapWords` + `gsap.from`**: cortina palabra a palabra de los titulares grandes.
+- **`clipPathReveal` y `magneticHover`**: exportados pero **con cero usos**. No son el patrón vigente; antes de usarlos, comprobar que siguen haciendo falta.
 - Stagger de cards y grids.
 - Parallax en el hero.
 - Respeta `prefers-reduced-motion` — todos los efectos se desactivan si el usuario lo ha configurado.
@@ -245,7 +252,8 @@ Las animaciones de sección están en `src/scripts/ph-text-animations.ts`. El si
 | Fuentes self-hosted desde `/public/fonts/` | Elimina round-trips externos |
 | `font-display: swap` en `@font-face` | Sin FOIT |
 | `<Image loading="eager" fetchpriority="high">` solo en primer fold | El resto: lazy |
-| Vídeo hero con `preload="metadata"` | No precarga el archivo completo |
+| Vídeo hero con `preload="none"` y `play()` a mano tras `load` | `preload="metadata"` **no basta**: con `autoplay`, Chrome se lo salta y descarga el vídeo igual. Medido: retrasaba el evento `load` 504 ms y el póster —que es el LCP real— medio segundo |
+| El telón de intro, en CSS y nunca dependiendo del JS | Un overlay opaco que solo se quita por JavaScript deja la portada en negro si el JS falla |
 | Hover prefetch en links de navegación | Precarga la siguiente página en hover |
 
 ---
@@ -417,7 +425,7 @@ que ejecutar nada a mano.
 | `BaseLayout.astro` | ✅ Completo | SEO, hreflang, preload fuentes, ClientRouter |
 | `Header.astro` | ✅ Completo | Flotante, scroll-hide, i18n, mobile accesible |
 | `Footer.astro` | ✅ Completo | V3 editorial, social links, i18n |
-| `LogoReveal.astro` | ✅ Completo | GSAP vanilla, re-trigger en F5 |
+| `LogoReveal.astro` | ✅ Completo | Animación en CSS, sin JS. Una vez cada 18 h |
 | `HeroSection.astro` | ✅ Completo | Vídeo (3 variantes) + poster, curtain reveal GSAP |
 | `HomePlayersSection.astro` | ✅ Completo | Stagger + scale GSAP |
 | `HomeServicesSection.astro` | ✅ Completo | CSS accordion + GSAP |

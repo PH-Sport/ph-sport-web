@@ -13,6 +13,77 @@ leído el resto.
 
 ---
 
+## 2026-08-29 · El telón de intro pasa a CSS, y el vídeo del hero deja de precargarse
+
+**Decisión**: la animación de entrada de la home se reproduce con `@keyframes`, sin
+GSAP y sin depender de que ningún JavaScript se ejecute. El vídeo del hero pierde
+el `autoplay` y pasa a `preload="none"`, con la reproducción lanzada a mano tras
+`load`.
+
+**El motivo no era la velocidad, aunque también.** El telón era un overlay opaco a
+pantalla completa que **solo desaparecía si el JS llegaba, se ejecutaba y terminaba
+bien**. Un error de JavaScript, una red que corta el chunk, un bloqueador: la
+portada se queda en negro para siempre. Eso no es lentitud, es un modo de fallo en
+la cara visible del negocio. En CSS termina solo pase lo que pase — comprobado
+cargando la home con JavaScript desactivado.
+
+De paso, las cifras (móvil, CPU ×4, 4G lenta, mediana de 5): contenido visible
+**4.978 → 1.832 ms**, transferido **1.254 → 259 KB**. La animación baja de 2,57 s
+a 1,26 s. Detalle y método en `docs/rendimiento.md`.
+
+**Alternativa considerada — parchear el telón sin reescribirlo** (adelantar su
+arranque a `DOMContentLoaded`, acortar la timeline, saltarlo en visitas
+repetidas). Llegaba a ~2,8 s con unas 20 líneas, contra ~1,8 s reescribiéndolo.
+Se descartó porque **dejaba intacto el modo de fallo**: seguía siendo un overlay
+que solo el JS puede retirar. Y, contra la intuición, la reescritura salió más
+barata en código: **+225 líneas contra −248**.
+
+**Alternativa considerada — `pathLength="1"` en los polígonos**, que es la forma
+elegante de normalizar la longitud del trazo a 0-1 y evitar medirla. Descartada:
+en formas básicas (`<polygon>`) es SVG 2, WebKit lo ignoró durante años y sigue
+habiendo un bug por el que el zoom de página altera el valor. En iPhone **todos**
+los navegadores son WebKit y este repo ya se ha llevado ese susto (ver la entrada
+del alto de viewport). Si fallara, el logo saldría punteado y completo desde el
+primer fotograma. Como los perímetros son constantes, van escritos: **753 y 637**.
+
+**Alternativa considerada — WebM/VP9 para el vídeo**, la recomendación de manual.
+Medida sobre el master real: sale **peor** que el H.264 actual (2.003–3.933 KB
+según el CRF, contra 2.849 KB). No se añade. El margen del vídeo está en bajar el
+CRF de 25 a 30, que da −50 % con el mismo códec, y queda pendiente.
+
+**Alternativa considerada — bloquear el scroll durante la intro**, como hacía la
+versión de GSAP (`overflow: hidden` + compensación de la barra). Descartada: no se
+puede deshacer en CSS puro, y colgarlo de un `animationend` cambia un modo de
+fallo por otro peor — hoy una pantalla negra, mañana una página que no scrollea
+nunca más. El overlay ya tapa; se le añade `touch-action: none` y ya está. Se
+asume a propósito que la rueda del ratón siga pasando durante 1,26 s.
+
+**Por qué "una vez cada 18 h" y no por sesión ni por día natural.** Pedido por
+Mario: que la intro no se repita mientras navegas, pero sí al volver al día
+siguiente. `sessionStorage` se comporta según la pestaña, no según el tiempo (la
+cierras y vuelves a los cinco minutos, y sale otra vez). Guardar la **fecha** del
+calendario tiene tres agujeros: medianoche, cambiar de país y tocar el reloj del
+sistema. Un `Date.now()` con ventana en horas no tiene ninguno, y 18 h es el
+número que cumple lo pedido: entras el lunes por la mañana, vuelves esa noche y no
+sale; vuelves el martes y sí.
+
+**Efecto secundario del cambio, para que nadie se asuste**: el LCP que reporta
+PageSpeed **sube** de 596 ms a ~1.692 ms. No es una regresión. Antes el telón
+tapaba todo y el único candidato visible era el textito «SCROLL» de la esquina
+(700 px²); ahora mide el titular del hero, que es el contenido de verdad.
+
+**Se borran** `src/lib/is-document-reload.ts` (sin referencias) y el evento
+`ph:logo-revealed` (sin oyentes), que existían solo para esta animación. También
+desaparece el parche `ph-logo-reveal-active` y su rama en el manejador de scroll,
+al montarse el overlay fuera de `<main>`.
+
+**El plan pasó por una revisión adversarial antes de ejecutarse**, y menos mal:
+tres de sus puntos rompían la home (entre ellos, que los estilos en el atributo
+`style` del overlay hacían imposible ocultarlo). Otros dos aparecieron al medir y
+no se ven leyendo el código. Están todos en `docs/rendimiento.md`.
+
+---
+
 ## 2026-08-13 · El examen al agente frío: banco fijo de regresión + encargo rotatorio de descubrimiento
 
 **Decisión**: la calidad de la documentación se mide examinando a un agente sin
@@ -195,6 +266,10 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 
 ## 2026-06-25 · LogoReveal de island React a vanilla — React sale del proyecto
 
+> **Superada en parte el 2026-08-29**: la salida de React y de las islands sigue
+> vigente, pero el reveal ya no usa GSAP ni `astro:page-load` — es CSS puro y no
+> depende del JavaScript. Ver la entrada del 2026-08-29.
+
 > Registrada retroactivamente el 2026-08-11. El cambio se hizo en junio (commit `2b74656`) y no llegó a documentarse: durante dos meses `ARCHITECTURE.md` describió una island que ya no existía.
 
 **Decisión**: `LogoReveal` deja de ser una island de React (`LogoReveal.tsx` con `client:load`) y pasa a ser `src/components/LogoReveal.astro` con un `<script>` GSAP. Se retira la integración `@astrojs/react` de `astro.config.mjs`. **El proyecto se queda sin ninguna island de React.**
@@ -272,6 +347,11 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 ---
 
 ## 2026-04-22 · LogoReveal re-trigger en F5 via is-document-reload.ts
+
+> **SUPERADA el 2026-08-29**: `src/lib/is-document-reload.ts` está **borrado**. Ya no
+> hace falta detectar el F5: cuándo sale la intro lo decide una marca de tiempo en
+> `localStorage` (una vez cada 18 h), leída antes del primer pintado. Ver la entrada
+> del 2026-08-29.
 
 **Decisión**: detectar recargas de página (F5) con `src/lib/is-document-reload.ts` para re-ejecutar el Logo Reveal en esos casos.
 

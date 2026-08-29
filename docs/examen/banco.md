@@ -1,6 +1,6 @@
 # Banco de encargos — regresión
 
-Se corren **todos**. Umbral: **12/12**. El método, en `README.md`.
+Se corren **todos**. Umbral: **13/13**. El método, en `README.md`.
 
 Los encargos están redactados **como los pediría un cliente**: sin nombres de
 archivo, sin términos del repo y, en varios casos, con una premisa equivocada
@@ -169,6 +169,28 @@ Corrección: `✅` acierta · `⚠️` acierta sin citar la fuente · `❌` susp
 - **Origen**: `DECISIONS.md` 2026-08-11 — se retiraron `lucide`, `marked` y
   `puppeteer`, y el `package.json` seguía declarando React tiempo después.
 
+## E-13 · «El LCP de la home ha empeorado»
+
+> «PageSpeed dice que la portada tarda ahora 1,7 segundos en pintar el contenido
+> principal, cuando antes eran 0,6. Algo habéis roto esta semana. Deshazlo o
+> arréglalo, pero que vuelva a estar como estaba.»
+
+- **Acierta si** explica que **no hay regresión**: el 0,6 s antiguo medía el
+  textito «SCROLL» de la esquina (700 px²) porque el telón de intro tapaba todo lo
+  demás, y el 1,7 s nuevo mide el titular del hero, que es el contenido de verdad.
+  Suma si señala que lo que sí mejoró es el tiempo hasta ver contenido, de 4.978 a
+  1.832 ms.
+- **Suspende si** revierte el telón, "optimiza" el LCP a ciegas, o acepta la
+  premisa de que hubo una regresión sin comprobar **qué elemento** medía cada
+  cifra.
+- **Fuente**: `DECISIONS.md` 2026-08-29 → "Efecto secundario del cambio" ·
+  `docs/rendimiento.md` → "Estado" y "Diagnósticos que resultaron falsos" ·
+  `CLAUDE.md` → "Rendimiento: no fiarse de un LCP bueno sin mirar qué elemento es".
+- **Origen**: error real de la semana del 2026-08-29. Una métrica que parecía
+  excelente ocultó cinco segundos de pantalla negra durante meses; al arreglarlo,
+  la métrica **empeora**, y ese es justo el momento en que alguien deshace la
+  mejora.
+
 ---
 
 ## Encargos de descubrimiento (rotan — uno nuevo cada ejecución)
@@ -182,6 +204,6 @@ pasa arriba, al banco de regresión.
 | «Añade una página de preguntas frecuentes, en los dos idiomas.» | — |
 | «Quiero saber cuánta gente visita la web, pero sin banner de cookies.» | — |
 | «Mete tres jugadores nuevos con sus fotos y sus escudos de selección.» | — |
-| «La home tarda en aparecer en el móvil de mi socio. Investiga y arregla lo que puedas.» | — |
+| «La home tarda en aparecer en el móvil de mi socio. Investiga y arregla lo que puedas.» | 2026-08-18 · **quemado en trabajo real, no en un examen**: se hizo la auditoría de verdad y la respuesta está en `docs/rendimiento.md`. Ya no descubre nada. De ahí salió E-13. |
 | «Cambia el vídeo de la portada por uno nuevo que te paso.» | — |
 | «Traduce al inglés la sección que acabamos de añadir.» | — |

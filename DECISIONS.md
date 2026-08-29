@@ -84,6 +84,67 @@ no se ven leyendo el código. Están todos en `docs/rendimiento.md`.
 
 ---
 
+## 2026-08-29 · El smoke comprueba de qué proyecto es el servidor antes de medir
+
+**Decisión**: un `globalSetup` (`tests/e2e/comprobar-servidor.ts`) busca la marca
+de este proyecto en el HTML antes de arrancar los tests. Si no está, aborta
+diciendo qué web sirve ese puerto. Se añade `PH_E2E_PORT` para cambiar de puerto
+sin editar la configuración.
+
+**El problema**: `playwright.config.ts` usa `reuseExistingServer` en local, que
+comprueba que *algo* responde en el puerto, no *qué* responde. Un `astro preview`
+de otro proyecto ocupaba el 4322, el smoke midió esa web y dio 37 fallos que
+abortaron un push a main. El informe decía que `og:site_name` era "Horizon Sport";
+hasta llegar a esa línea, el fallo se lee como una regresión propia.
+
+**Por qué merecía arreglarse y no era solo una molestia.** Un smoke que mide otra
+web **en verde miente**, que es mucho peor que fallar: si el otro proyecto se
+pareciera más, algunos tests pasarían. Y en rojo tiene un final previsible —
+alguien concluye "esto falla siempre" y empieza a usar `--no-verify`, con lo que
+el hook deja de proteger nada. Justo lo que el hook existe para impedir.
+
+**Alternativa considerada — `reuseExistingServer: false` siempre.** Playwright
+levantaría siempre el suyo y el conflicto daría un "puerto en uso" claro.
+Descartada porque quita la comodidad de reutilizar un `preview` propio ya abierto,
+y **no cubre el caso de fondo**: seguiría sin comprobar la identidad de lo que
+mide en CI o en cualquier otro montaje.
+
+**Alternativa considerada — mover el puerto a uno más raro.** Es mudar el problema,
+no resolverlo: cualquier puerto puede estar ocupado mañana por otra cosa.
+
+**Por qué un `globalSetup` y no un test más**: un test que compruebe la identidad
+llegaría tarde y en desorden, mezclado entre los otros 37 fallos. En `globalSetup`
+corre antes que nada, aborta en un segundo y el mensaje es lo único que se lee.
+
+---
+
+## 2026-08-29 · Los "6 PAÍSES" del equipo no se derivan de la plantilla
+
+**Decisión**: al sacar a Thiago Nanini —el único con `countryKey: 'uruguay'`—, el
+rótulo de la sección de equipo se queda en **6 países** aunque las nacionalidades
+de la plantilla sumen 5. El nº de integrantes sí baja, de 21 a 20.
+
+**Motivo** (de Mario): ese "6 PAÍSES" habla de **dónde opera PHSPORT**, no de la
+procedencia de los empleados. Que se vaya la persona asignada a un país no retira
+al país. Por el mismo motivo, `about.presencia.country.uruguay` tampoco se toca:
+Uruguay sigue en la sección de Presencia.
+
+**Por qué se registra algo tan pequeño**: porque el rótulo va escrito a mano y
+ahora **contradice al array** a ojos de cualquiera que los compare. Sin esto, el
+siguiente que pase lo dará por un bug y lo "arreglará" a 5. Queda también un
+comentario junto a la clave en `es.ts`, que es donde mirará quien lo vea.
+
+**Alternativa considerada — derivar ambos números de `TEAM_MEMBERS`**, que evitaría
+que se desincronicen. Descartada precisamente por esta decisión: los países no son
+derivables de la plantilla, así que automatizarlo daría el número equivocado. El de
+integrantes sí lo es, pero por un solo número no compensa montar el cálculo.
+
+**Nota sobre el borrado**: a diferencia del roster de jugadores, aquí no existe
+`hidden: true` — `TEAM_MEMBERS` es un array sin ese campo y la rotación del equipo
+no lo justifica. Si vuelve, se recupera la fila del commit `4b193e7`.
+
+---
+
 ## 2026-08-13 · El examen al agente frío: banco fijo de regresión + encargo rotatorio de descubrimiento
 
 **Decisión**: la calidad de la documentación se mide examinando a un agente sin

@@ -160,7 +160,7 @@ const es = {
   'about.team.titlePre': 'Quiénes ',
   'about.team.titleAccent': 'somos',
   'about.team.titlePost': '.',
-  'about.team.meta': '21 INTEGRANTES · 6 PAÍSES',
+  'about.team.meta': '20 INTEGRANTES · 5 PAÍSES',
   // Presencia
   'about.presencia.eyebrow': '05 · Presencia',
   'about.presencia.madridLabel': 'SEDE CENTRAL · ES',
@@ -185,7 +185,6 @@ const es = {
   'team.members.weggelaar.role': 'Dto. Fútbol',
   'team.members.canoa.role': 'Dto. Fútbol',
   'team.members.leon.role': 'Dto. Fútbol',
-  'team.members.nanini.role': 'Dto. Fútbol',
   'team.members.caserza.role': 'Agente FIFA · Dto. Fútbol',
   'team.members.hernansanz.role': 'Agente FIFA · Dto. Fútbol',
   'team.members.martin.role': 'Agente FIFA · Dto. Fútbol',

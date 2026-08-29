@@ -114,6 +114,7 @@ ph-sport-web/
 │   └── entrenadores.json            # Cuerpo técnico
 │
 ├── tests/e2e/                       # Smoke sobre el build (Playwright)
+│   ├── comprobar-servidor.ts        # Aborta si el puerto lo ocupa OTRO proyecto
 │   ├── rutas.ts                     # Deriva las rutas de dist/, no de una lista a mano
 │   └── smoke.spec.ts
 │

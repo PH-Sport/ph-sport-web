@@ -219,6 +219,18 @@ arreglarlo cambiando de unidad: ya se probó y no puede funcionar.
 - **Medir timing con la extensión de Chrome no es fiable**: al operar, la pestaña
   pasa a segundo plano, `rAF` se pausa y `setTimeout` se throttlea a ~1s.
 
+### El smoke puede estar midiendo otra web
+`playwright.config.ts` usa `reuseExistingServer` en local: si algo responde ya en
+el puerto, lo da por bueno **sin mirar qué sirve**. El 2026-08-29 un `astro
+preview` de otro proyecto ocupaba el 4322, el smoke midió esa web, dio 37 fallos
+y abortó un push a main. Los fallos no tenían nada que ver con el código, y ese
+camino termina en alguien usando `--no-verify` sin comprobar nada.
+
+Ahora un `globalSetup` (`tests/e2e/comprobar-servidor.ts`) lo detecta y aborta
+diciendo qué está sirviendo el puerto. La salida es `PH_E2E_PORT=4488 npm run
+test:e2e`. **Si el smoke falla de forma masiva y rara, mirar primero qué hay en el
+puerto**, no el código.
+
 ### Bugs de un motor concreto
 Medir **en ese motor**, con el dispositivo real. Una página de laboratorio y
 treinta segundos de un iPhone resolvieron lo que cuatro rondas de teoría no.

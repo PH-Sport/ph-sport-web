@@ -86,7 +86,7 @@ ph-sport-web/
 │   │   ├── slugify.ts
 │   │   ├── social.ts                # Links de redes sociales
 │   │   ├── sortRoster.ts            # Ordenación del roster
-│   │   └── teamMembers.ts           # Datos de los 21 integrantes del equipo
+│   │   └── teamMembers.ts           # Datos de los 20 integrantes del equipo
 │   │
 │   ├── pages/
 │   │   ├── index.astro              # / — Home ES
@@ -423,7 +423,7 @@ que ejecutar nada a mano.
 | `HomeServicesSection.astro` | ✅ Completo | CSS accordion + GSAP |
 | `HomeAboutSection.astro` | ✅ Completo | Head + counters GSAP |
 | `HomeContactSection.astro` | ✅ Completo | Layout 50/50 edge-to-edge, GSAP |
-| `AboutSection.astro` | ✅ Completo | V3 — historia, equipo (21 integrantes) |
+| `AboutSection.astro` | ✅ Completo | V3 — historia, equipo (20 integrantes) |
 | `ServicesSection.astro` | ✅ Completo | 6 pilares + hero |
 | `TalentsSection.astro` | ✅ Completo | Grid 3:4 no clicable, escudo de selección en hover enmarcado por escuadra dorada |
 | `Button.astro` | ✅ Completo | Primary / secondary, `<a>` o `<button>` |

@@ -19,7 +19,6 @@ export const TEAM_MEMBERS: readonly TeamMember[] = [
   { id: 'weggelaar',  name: 'Bibiana Weggelaar', nationality: 'ES', countryKey: 'uk' },
   { id: 'canoa',      name: 'Pedro Canoa',       nationality: 'PT', countryKey: 'portugal' },
   { id: 'leon',       name: 'Diego León',        nationality: 'ES', countryKey: 'alemania' },
-  { id: 'nanini',     name: 'Thiago Nanini',     nationality: 'ES', countryKey: 'uruguay' },
   { id: 'caserza',    name: 'Javier Caserza' },
   { id: 'hernansanz', name: 'Diego Hernansanz' },
   { id: 'martin',     name: 'Ismael Martín' },

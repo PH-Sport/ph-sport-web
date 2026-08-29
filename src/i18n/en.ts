@@ -162,7 +162,9 @@ const en: Record<TranslationKey, string> = {
   'about.team.titlePre': 'Who ',
   'about.team.titleAccent': 'we are',
   'about.team.titlePost': '.',
-  'about.team.meta': '21 MEMBERS · 6 COUNTRIES',
+  // Ver la nota en es.ts: los países son donde opera PHSPORT, no las
+  // nacionalidades de la plantilla. Se quedan en 6 a propósito.
+  'about.team.meta': '20 MEMBERS · 6 COUNTRIES',
   // Presencia
   'about.presencia.eyebrow': '05 · Presence',
   'about.presencia.madridLabel': 'HEADQUARTERS · ES',
@@ -187,7 +189,6 @@ const en: Record<TranslationKey, string> = {
   'team.members.weggelaar.role': 'Football Dept.',
   'team.members.canoa.role': 'Football Dept.',
   'team.members.leon.role': 'Football Dept.',
-  'team.members.nanini.role': 'Football Dept.',
   'team.members.caserza.role': 'FIFA Agent · Football Dept.',
   'team.members.hernansanz.role': 'FIFA Agent · Football Dept.',
   'team.members.martin.role': 'FIFA Agent · Football Dept.',

@@ -31,6 +31,12 @@ const LEN_1 = 753; // real 752,4284
 const LEN_2 = 637; // real 636,0980
 ---
 
+{/*
+  NUNCA añadir un atributo `style` a este div. Una declaración inline gana a
+  cualquier regla de hoja sin `!important`, así que la que lo oculta en visita
+  repetida deja de aplicarse y la home se queda en negro — justo en el camino
+  más frecuente. Ver docs/trampas-conocidas.md.
+*/}
 <div data-logo-reveal-overlay aria-hidden="true" inert>
   <div class="logo-reveal-container" data-logo-reveal-container>
     <svg

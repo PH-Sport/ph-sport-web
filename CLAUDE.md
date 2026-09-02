@@ -53,6 +53,8 @@ cambio").
 | `README.md` | Scripts, rutas, stack |
 | `ARCHITECTURE.md` | Estructura, i18n, hero, motion, performance, SEO, sistema de diseño |
 | `DECISIONS.md` | Decisiones no obvias con su motivo y alternativas descartadas. Más reciente primero |
+| `docs/trampas-conocidas.md` | El porqué largo de las trampas indexadas abajo: mediciones y **qué se probó ya sin éxito** |
+| `docs/hallazgos-abiertos.md` | Detalle y estado de los bugs sin arreglar y del trabajo medido sin hacer |
 | `docs/rendimiento.md` | Histórico de las auditorías, cifras de referencia, **cómo medir** y qué diagnósticos resultaron falsos |
 | `docs/historico/` | Specs y planes de features concretas. **Histórico, no estado actual**: describen el proyecto tal como era el día que se escribieron y no se actualizan. Para saber cómo está algo hoy, mirar el código o los tres documentos de arriba |
 | `docs/examen/` | El examen al agente frío: comprueba que todo lo necesario viaja en el repo y no en memorias locales. Método, banco de encargos e historial |
@@ -197,110 +199,52 @@ detalle ni JSON-LD `Person` — se retiró a propósito (`DECISIONS.md`, 2026-04
 
 ## Trampas conocidas
 
-### iOS fuera de Safari (Brave, Chrome, Firefox)
-**Ninguna unidad de viewport aguanta.** Medido en dispositivo real: al aparecer la
-barra del navegador, `svh`, `lvh` y `vh` cambian los tres (630→717). La creencia
-de que `svh` es estable ahí es falsa. El alto se congela en `--ph-viewport-h`
-(px, en `global.css`) y solo se remide al cambiar el ancho. No intentar
-arreglarlo cambiando de unidad: ya se probó y no puede funcionar.
+Cada línea dice **qué pasa si se ignora**. El porqué, las mediciones y lo que ya se
+probó sin éxito están en **[`docs/trampas-conocidas.md`](docs/trampas-conocidas.md)**:
+leerlo antes de tocar el fichero que se nombra.
 
-### View Transitions
-- **`var()` no hereda de forma fiable en el árbol de pseudos `::view-transition`.**
-  Usar **valores literales** (duración y curva) en `::view-transition-old/new(...)`.
-  Un `var()` ahí hace que la animación no aplique y salga un corte seco.
-- Dar `transition:name` a `<main>` sin `transition:animate` permite definir las
-  animaciones del grupo por CSS.
-
-### Verificar animaciones
-- **Las capturas de pantalla no fotografían la capa `top-layer` de las View
-  Transitions**, solo el DOM ya intercambiado: el telón nunca sale en un
-  screenshot. Verificar con eventos `animationstart`/`animationend` y su
-  `elapsedTime`. `getAnimations()` tampoco expone esas pseudo-animaciones.
-- **Medir timing con la extensión de Chrome no es fiable**: al operar, la pestaña
-  pasa a segundo plano, `rAF` se pausa y `setTimeout` se throttlea a ~1s.
-
-### El telón de intro (`LogoReveal.astro`)
-Cuatro cosas que cuestan una tarde cada una si se tocan sin saber por qué están:
-
-- **Nunca poner estilos en el atributo `style` del overlay.** Una declaración
-  inline gana a cualquier regla de hoja sin `!important`, así que la regla que lo
-  oculta en visita repetida deja de aplicarse y **la home se queda en negro** —
-  justo en el camino más frecuente.
-- **Su CSS va en línea en el `<head>` de `BaseLayout`, no en el `<style>` del
-  componente.** Desde el componente viaja en el bundle común: medido, no se
-  aplicaba hasta los 838 ms y el overlay se pintaba antes como un div suelto, sin
-  tapar nada.
-- **El overlay va fuera de `<main>`.** `transition:name` crea un contexto de
-  apilamiento *siempre*, no solo durante una transición, así que dentro su
-  `z-index: 9999` no le gana al header.
-- **`animationend` burbujea.** Escuchar con `{ once: true }` en el overlay gasta el
-  listener en la primera animación de un hijo. Y no vale colgarse de
-  `astro:page-load` (= `window.load`), que puede llegar *después* de que la
-  animación haya terminado: se pregunta con `getAnimations()` y `.finished`.
-
-### Rendimiento: no fiarse de un LCP bueno sin mirar qué elemento es
-La home reportaba 596 ms y medía el textito «SCROLL» de la esquina, porque el
-telón tapaba todo lo demás. Cinco segundos de pantalla negra que ninguna métrica
-denunciaba. Mirar siempre `entry.element`, no solo la cifra. Más diagnósticos
-falsos —y las trampas del instrumental de medida— en `docs/rendimiento.md`.
-
-### El smoke puede estar midiendo otra web
-`playwright.config.ts` usa `reuseExistingServer` en local: si algo responde ya en
-el puerto, lo da por bueno **sin mirar qué sirve**. El 2026-08-29 un `astro
-preview` de otro proyecto ocupaba el 4322, el smoke midió esa web, dio 37 fallos
-y abortó un push a main. Los fallos no tenían nada que ver con el código, y ese
-camino termina en alguien usando `--no-verify` sin comprobar nada.
-
-Ahora un `globalSetup` (`tests/e2e/comprobar-servidor.ts`) lo detecta y aborta
-diciendo qué está sirviendo el puerto. La salida es `PH_E2E_PORT=4488 npm run
-test:e2e`. **Si el smoke falla de forma masiva y rara, mirar primero qué hay en el
-puerto**, no el código.
-
-### Bugs de un motor concreto
-Medir **en ese motor**, con el dispositivo real. Una página de laboratorio y
-treinta segundos de un iPhone resolvieron lo que cuatro rondas de teoría no.
+- **`LogoReveal.astro` — nunca estilos en el atributo `style` del overlay** → una
+  declaración inline gana a la regla que lo oculta en visita repetida y **la home se
+  queda en negro**, en el camino más frecuente.
+- **`LogoReveal.astro` — su CSS va en línea en el `<head>` de `BaseLayout`**, no en el
+  `<style>` del componente → desde el componente no se aplica hasta los 838 ms y el
+  overlay se pinta sin tapar nada.
+- **`LogoReveal.astro` — el overlay va fuera de `<main>`** → dentro, `transition:name`
+  crea un contexto de apilamiento y su `z-index` no le gana al header.
+- **`animationend` burbujea** → un listener `{ once: true }` en el overlay se gasta en
+  la primera animación de un hijo.
+- **iOS fuera de Safari: ninguna unidad de viewport aguanta**, `svh` incluido → el alto
+  se congela en `--ph-viewport-h`. **No arreglarlo cambiando de unidad: ya se probó.**
+- **`var()` no hereda en el árbol de pseudos `::view-transition`** → usar valores
+  literales, o la animación no aplica y sale un corte seco.
+- **Las capturas de pantalla no fotografían la capa `top-layer`** → el telón nunca sale
+  en un screenshot; verificar con `animationstart`/`animationend`, no con capturas.
+- **Un LCP bueno puede estar midiendo el elemento equivocado** → mirar siempre
+  `entry.element`, no solo la cifra. Más diagnósticos falsos en `docs/rendimiento.md`.
+- **El smoke puede estar midiendo otra web** → si falla de forma masiva y rara, mirar
+  primero **qué ocupa el puerto 4322**, no el código.
+- **Bugs de un motor concreto: medir en ese motor**, con el dispositivo real.
 
 ## Hallazgos abiertos
 
-- **`.abt-closing__quote` no tiene markup.** Existe la regla CSS
-  (`AboutSection.astro:587`) y un `querySelector` que lo busca (`:761`), pero
-  ningún elemento lo usa: no se renderiza nada.
-- **La restauración de scroll al pulsar atrás no funciona** (queda en `y≈2`), y
-  es **preexistente**: medido el 2026-08-01 en producción *sin* el parche de
-  `QuietScrollHistory` y con él, el resultado es el mismo. **No culpar al telón
-  de transición ni a `QuietScrollHistory`** — es el error clásico aquí. La
-  hipótesis viva es que el `scrollTo` de Astro ocurre cuando el documento
-  recién intercambiado aún no tiene altura (contenido oculto por `[data-reveal]`,
-  imágenes sin cargar) y el scroll se recorta. Si se aborda, atacar el **momento
-  del `scrollTo`**, no el guardado en el historial.
-- Sitelinks de Google mezclando ES y EN. El marcado está verificado correcto
-  (`lang` por página, hreflang recíproco); los sitelinks los elige Google y no
-  hay control directo.
-- **Coste del snapshot del `ClientRouter`** en páginas pesadas (`/talentos`, 116
-  tarjetas). Identificado en junio, **sin hacer a propósito por riesgo alto**:
-  tocar la View Transition ahí puede romper la fluidez que costó dos auditorías.
-  No abordarlo sin que Mario lo supervise. Detalle en `docs/rendimiento.md`.
-- **Backlog de rendimiento medido el 2026-08-18, sin hacer.** Todo verificado con
-  cifras, no estimado; detalle en `docs/rendimiento.md`. Lo más rentable, por
-  orden: los diccionarios `i18n` completos viajando en el JS del header para usar
-  ocho cadenas; ScrollTrigger cargándose en las cuatro páginas cuando
-  `ScrollTrigger.create()` se usa una sola vez en todo el sitio; el tirón de
-  217-359 ms al entrar en `/sobre-nosotros` (135 spans animados con
-  `filter: blur()`); y cuatro imágenes con margen de compresión real.
-- **Fuga de listeners de scroll en la home**: uno nuevo por visita
-  (`initHeroScrollCue` registra una función nueva en cada `astro:page-load` sin
-  quitar la anterior). Comprobado contando listeners reales: 3 → 4 → 6.
-- **SEO pendiente (P1/P2)**: analítica sin cookies (Plausible o GA4), un
-  `public/llms.txt` para buscadores con IA, una página `/faq` con preguntas y
-  respuestas literales, y auditar los `alt=""` de Header, Footer y Hero para
-  confirmar que son decorativos.
-- ⚠️ **Söhne se sirve en producción con los `.woff2` de prueba de Klim.** La
-  licencia **no está comprada** (confirmado por Mario el 2026-08-11) y la web
-  está publicada desde abril. Es un incumplimiento de licencia abierto, no un
-  pendiente estético. Comprar en https://klim.co.nz/retail-fonts/sohne/ y
-  sustituir los archivos de `public/fonts/sohne/`. **No tocar la tipografía ni
-  proponer alternativas sin hablarlo con Mario**: cambiar de fuente altera la
-  identidad de marca, y es decisión suya, no técnica.
+Bugs conocidos sin arreglar y trabajo medido sin hacer. Detalle, cifras y estado en
+**[`docs/hallazgos-abiertos.md`](docs/hallazgos-abiertos.md)**.
+
+Lo que hay que saber **antes de tocar nada**:
+
+- ⚠️ **Söhne se sirve en producción sin licencia comprada.** Incumplimiento de
+  licencia abierto, no un pendiente estético. **No tocar la tipografía ni proponer
+  alternativas sin hablarlo con Mario**: es decisión suya, no técnica.
+- **La restauración de scroll al pulsar atrás está rota, y es preexistente.** **No
+  culpar al telón de transición ni a `QuietScrollHistory`** — es el error clásico aquí.
+- **El coste del snapshot del `ClientRouter` en `/talentos` está sin hacer a
+  propósito**, por riesgo alto. No abordarlo sin que Mario lo supervise.
+- **Los sitelinks ES/EN los elige Google.** El marcado está verificado correcto; no hay
+  control directo. No perseguirlo.
+
+Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: backlog de rendimiento
+del 2026-08-18, fuga de listeners de scroll en la home, `.abt-closing__quote` sin markup
+y SEO P1/P2.
 
 ## Convenciones
 

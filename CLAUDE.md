@@ -219,6 +219,10 @@ leerlo antes de tocar el fichero que se nombra.
   literales, o la animación no aplica y sale un corte seco.
 - **Las capturas de pantalla no fotografían la capa `top-layer`** → el telón nunca sale
   en un screenshot; verificar con `animationstart`/`animationend`, no con capturas.
+- **El scroll suave está apagado a propósito durante la navegación** → si se quita
+  ese apagado, la restauración al pulsar atrás se anima, el refresh de ScrollTrigger
+  la corta a medias y **la página se queda en y≈2**. `clearScrollMemory()` no lo
+  arregla: ya se probó.
 - **Un LCP bueno puede estar midiendo el elemento equivocado** → mirar siempre
   `entry.element`, no solo la cifra. Más diagnósticos falsos en `docs/rendimiento.md`.
 - **El smoke puede estar midiendo otra web** → si falla de forma masiva y rara, mirar
@@ -235,16 +239,13 @@ Lo que hay que saber **antes de tocar nada**:
 - ⚠️ **Söhne se sirve en producción sin licencia comprada.** Incumplimiento de
   licencia abierto, no un pendiente estético. **No tocar la tipografía ni proponer
   alternativas sin hablarlo con Mario**: es decisión suya, no técnica.
-- **La restauración de scroll al pulsar atrás está rota, y es preexistente.** **No
-  culpar al telón de transición ni a `QuietScrollHistory`** — es el error clásico aquí.
 - **El coste del snapshot del `ClientRouter` en `/talentos` está sin hacer a
   propósito**, por riesgo alto. No abordarlo sin que Mario lo supervise.
 - **Los sitelinks ES/EN los elige Google.** El marcado está verificado correcto; no hay
   control directo. No perseguirlo.
 
 Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: backlog de rendimiento
-del 2026-08-18, fuga de listeners de scroll en la home, `.abt-closing__quote` sin markup
-y SEO P1/P2.
+del 2026-08-18, fuga de listeners de scroll en la home y SEO P1/P2.
 
 ## Convenciones
 

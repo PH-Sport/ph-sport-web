@@ -13,6 +13,63 @@ leído el resto.
 
 ---
 
+## 2026-09-03 · El scroll suave se apaga durante la navegación entre páginas
+
+**Decisión**: en cada `astro:before-swap`, `ph-text-animations.ts` escribe
+`scroll-behavior: auto` en el `<html>` del documento **entrante**, y lo retira tras
+el `ScrollTrigger.refresh()` del montaje. Además, la posición que deja el
+`ClientRouter` se captura en `astro:after-swap` y se **reafirma** justo después de
+ese refresh.
+
+**El problema**: dos bugs con la misma raíz, medidos en producción el 2026-09-03
+envolviendo `window.scrollTo` para registrar cada llamada con su traza.
+
+1. **Atrás no devolvía donde estabas** (quedaba en `y≈2`, abierto desde agosto). El
+   router restaura con `scrollTo(x, y)` —forma de dos argumentos, que no admite
+   `behavior`—, así que hereda el `scroll-behavior: smooth` de `global.css` y la
+   restauración se anima. 60 ms después, el refresh de ScrollTrigger hace su ciclo
+   guardar → ir a 0 → restaurar, fotografía la animación a medio camino y la deja
+   clavada ahí.
+2. **Entrar en `/talentos` desde media página aterrizaba a la misma altura** en vez
+   de arriba (4 de 4, desde la home, `/sobre-nosotros` y `/servicios`). El mismo
+   refresh restauraba una posición heredada de la página anterior. Este no estaba
+   registrado en ninguna parte: apareció al investigar el primero.
+
+**Lo que esto corrige de la documentación anterior**: la hipótesis que estuvo
+escrita en `hallazgos-abiertos.md` —el `scrollTo` ocurre cuando el documento aún no
+tiene altura— **era falsa**. Y el guardado en el historial funcionaba correctamente:
+`history.state.scrollY` valía 1200 al volver. Lo que fallaba era la restauración.
+Sí se confirma lo que decía sobre `QuietScrollHistory`: no tiene nada que ver.
+
+**Alternativa considerada — `ScrollTrigger.clearScrollMemory()`**, que es la API que
+GSAP ofrece justo para limpiar la posición guardada al cambiar de ruta. Se
+implementó y se midió: **no arregla nada**, `/talentos` seguía aterrizando a la
+altura de la que venías. Por eso la posición buena se reafirma a mano en vez de
+confiar en la caché interna de GSAP.
+
+**Alternativa considerada — quitar `scroll-behavior: smooth` de `html`** en
+`global.css`. Es la solución de fondo y elimina la clase entera de "el `scrollTo` de
+otro se me anima sin querer", pero el indicador del hero (`<a href="#talentos">`) es
+un ancla pelada que depende de ese CSS: pasaría a saltar de golpe, y recuperar el
+movimiento suave cuesta un manejador de clic nuevo. Se descarta por ahora; si algún
+día el indicador deja de ser un ancla, esta es la simplificación que toca.
+
+**Por qué el atributo va en el documento entrante y no en el actual**: el swap
+resetea los atributos de `<html>` a los del documento nuevo, y el `scrollTo` del
+router corre *después* del swap. Es el mismo motivo por el que `.ph-anim` se copia
+ahí, dos líneas más abajo en el mismo hook.
+
+**Por qué hay un temporizador además del refresh**: `/aviso-legal` y `/privacidad`
+no montan animaciones, así que no piden ningún refresh y nadie volvería a encender
+el scroll suave. Un `setTimeout` de 1 s en `astro:page-load` lo cubre.
+
+**Verificado** con una sonda de Playwright contra el preview del build: atrás desde
+`/talentos` vuelve a 1200 y se queda ahí, entrar en `/talentos` aterriza en 0 (4 de
+4), el indicador del hero sigue bajando suave en carga directa y tras navegación
+SPA, y `/aviso-legal` recupera el scroll suave. Smoke E2E, 38/38.
+
+---
+
 ## 2026-08-29 · El telón de intro pasa a CSS, y el vídeo del hero deja de precargarse
 
 **Decisión**: la animación de entrada de la home se reproduce con `@keyframes`, sin

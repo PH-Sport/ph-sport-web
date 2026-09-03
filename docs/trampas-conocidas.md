@@ -62,6 +62,45 @@ puede funcionar.**
 - **Medir timing con la extensión de Chrome no es fiable**: al operar, la pestaña
   pasa a segundo plano, `rAF` se pausa y `setTimeout` se throttlea a ~1s.
 
+## El scroll suave se apaga durante la navegación, y hay que dejarlo apagado
+
+`global.css` pone `scroll-behavior: smooth` en `html` para el indicador del hero y
+el skip-link. El problema es quién más lo hereda: el `ClientRouter` de Astro
+restaura la posición al pulsar atrás con `scrollTo(x, y)` **en forma de dos
+argumentos**, que no admite `behavior`, así que esa restauración se **anima**. Sus
+otras llamadas sí pasan `behavior: 'instant'`; esa no
+(`node_modules/astro/dist/transitions/router.js:143`).
+
+Con la restauración animada, el `ScrollTrigger.refresh()` que corre ~60 ms después
+—y que hace guardar → ir a 0 → restaurar— fotografía la animación a medio camino y
+deja la página clavada **en y≈2**. Ese era el bug de "atrás no devuelve donde
+estabas" que estuvo abierto de agosto a septiembre de 2026, y durante meses se
+atribuyó al telón y a `QuietScrollHistory`, que no tenían nada que ver.
+
+Por eso `ph-text-animations.ts` apaga el scroll suave en cada `astro:before-swap` y
+lo vuelve a encender tras el refresh. **Si se quita ese apagado, el bug vuelve**, y
+la próxima vez tampoco se va a parecer a lo que es.
+
+Dos detalles que no son adorno:
+
+- El `scroll-behavior: auto` se escribe en el **documento entrante**, no en el
+  actual, porque el swap resetea los atributos de `<html>` y el `scrollTo` del
+  router corre después del swap. Mismo motivo que la copia de `.ph-anim`, dos
+  líneas más abajo.
+- El temporizador de `astro:page-load` que lo vuelve a encender existe para
+  `/aviso-legal` y `/privacidad`, que no montan animaciones y por tanto **no piden
+  ningún refresh**: sin él, esas dos páginas se quedarían sin scroll suave.
+
+**Ya se probó `ScrollTrigger.clearScrollMemory()`** —la API que GSAP ofrece justo
+para limpiar la posición guardada al cambiar de ruta— y **no arregla nada**: medido
+el 2026-09-03, `/talentos` seguía aterrizando a la altura de la que venías. Lo que
+sí funciona es reafirmar después del refresh la posición que dejó el router,
+capturada en `astro:after-swap`.
+
+Método para reproducirlo, si hace falta otra vez: envolver `window.scrollTo` para
+registrar cada llamada con su traza y sus tiempos. La secuencia es legible de un
+vistazo y dice quién pisa a quién; con capturas de pantalla no se ve nada.
+
 ## Rendimiento: no fiarse de un LCP bueno sin mirar qué elemento es
 
 La home reportaba 596 ms y medía el textito «SCROLL» de la esquina, porque el telón

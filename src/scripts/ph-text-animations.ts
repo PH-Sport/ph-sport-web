@@ -30,8 +30,55 @@ export function scheduleScrollTriggerRefresh(): void {
   requestAnimationFrame(() => {
     refreshScheduled = false;
     ScrollTrigger.refresh();
+    reafirmarScrollDeLlegada();
+    // El refresh es el último que toca el scroll en el montaje de una página, así
+    // que aquí se acaba la ventana en la que el scroll suave estorba (ver el hook
+    // de `astro:before-swap`).
+    permitirScrollSuave();
   });
 }
+
+// ── La posición de llegada manda sobre el refresh ─────────────────────────────
+// `ScrollTrigger.refresh()` guarda la posición de scroll, se va a 0 para medir y
+// restaura lo guardado. Ese "lo guardado" no siempre es lo que hay: entrar en
+// /talentos desde media página aterrizaba a la misma altura de la que se venía en
+// vez de arriba (4 de 4 en producción, 2026-09-03), porque restauraba una posición
+// heredada de la página anterior.
+//
+// En vez de pelearse con la caché interna de GSAP —se probó `clearScrollMemory()`
+// y NO lo arregla— se fija la posición buena y se reafirma después del refresh.
+// La buena es la que deja el ClientRouter, que ya ha corrido cuando salta
+// `astro:after-swap`: 0 en una navegación normal, la guardada al volver atrás.
+//
+// La ventana entre el swap y el refresh son ~60 ms tapados por el telón, así que
+// no hay un scroll del usuario que pisar. Se limpia al usarla para no reafirmar
+// nada en los refreshes posteriores (los de resize), donde el usuario sí manda.
+let scrollDeLlegada: number | null = null;
+
+document.addEventListener('astro:after-swap', () => {
+  scrollDeLlegada = window.scrollY;
+});
+
+function reafirmarScrollDeLlegada(): void {
+  if (scrollDeLlegada === null) return;
+  const objetivo = scrollDeLlegada;
+  scrollDeLlegada = null;
+  if (Math.abs(window.scrollY - objetivo) > 1) {
+    window.scrollTo({ top: objetivo, left: 0, behavior: 'instant' });
+  }
+}
+
+// ── Scroll suave: apagado durante la navegación ───────────────────────────────
+// El motivo largo está en el hook de `astro:before-swap`, abajo. Aquí solo queda
+// el interruptor y su red de seguridad: las páginas sin animaciones (aviso legal,
+// privacidad) no piden ningún refresh, así que nadie volvería a encenderlo.
+function permitirScrollSuave(): void {
+  document.documentElement.style.removeProperty('scroll-behavior');
+}
+
+document.addEventListener('astro:page-load', () => {
+  window.setTimeout(permitirScrollSuave, 1000);
+});
 
 // ── Init: durante el telón en navegación, diferido en carga inicial ───────────
 // El init de animaciones (crear ScrollTriggers, wrapWords, gsap.set + el
@@ -343,7 +390,19 @@ document.addEventListener('astro:before-swap', (e) => {
   // pierde en cada navegación SPA y el CSS deja de ocultar [data-reveal] → vuelve
   // el parpadeo. La copiamos al documento entrante ANTES del swap (y del paint).
   const newDoc = (e as { newDocument?: Document }).newDocument;
-  if (newDoc && document.documentElement.classList.contains('ph-anim')) {
-    newDoc.documentElement.classList.add('ph-anim');
+  if (newDoc) {
+    // Y por la misma vía, el scroll suave se apaga mientras dura la navegación.
+    // Al volver atrás, el ClientRouter restaura la posición con `scrollTo(x, y)`
+    // —forma de dos argumentos, que no admite `behavior`—, así que hereda el
+    // `scroll-behavior: smooth` de global.css y la restauración se ANIMA. Unos
+    // 60 ms después, el refresh de ScrollTrigger hace su ciclo guardar → ir a 0 →
+    // restaurar, fotografía esa animación a medio camino y deja la página clavada
+    // en y≈2. Medido en producción el 2026-09-03.
+    // Va en el documento ENTRANTE, no en el actual, porque el swap resetea los
+    // atributos de <html> y el `scrollTo` del router corre DESPUÉS del swap.
+    newDoc.documentElement.style.scrollBehavior = 'auto';
+    if (document.documentElement.classList.contains('ph-anim')) {
+      newDoc.documentElement.classList.add('ph-anim');
+    }
   }
 });

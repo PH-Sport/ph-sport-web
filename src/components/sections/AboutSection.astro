@@ -578,30 +578,6 @@ const internationalCountries = [
     }
   }
 
-  /* ── 05 CIERRE MANIFESTO ── */
-  .abt-closing {
-    padding: clamp(80px, 12vw, 160px) var(--edge);
-    text-align: center;
-    background: var(--abt-bg-2);
-  }
-  .abt-closing__quote {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(36px, 6vw, 72px);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    margin: 0 auto;
-    max-width: 900px;
-    color: var(--abt-ink);
-  }
-  .abt-closing__sig {
-    margin-top: 28px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-ink-faint);
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-  }
 </style>
 
 <script>
@@ -756,21 +732,6 @@ const internationalCountries = [
         scrollTrigger: { trigger: presenciaLeft, start: 'top 88%', once: true },
       });
     }
-
-    // ── Cierre ──
-    const closingQuote = section.querySelector<HTMLElement>('.abt-closing__quote');
-    if (closingQuote) {
-      const words = wrapWords(closingQuote);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 0.85,
-        stagger: 0.05,
-        ease: 'power4.out',
-        scrollTrigger: { trigger: closingQuote, start: 'top 82%', once: true },
-      });
-    }
-    const closingSig = section.querySelector<HTMLElement>('.abt-closing__sig');
-    if (closingSig) trackingReveal(closingSig, { trigger: closingSig, start: 'top 92%', once: true });
 
     revealReveals(section);
     scheduleScrollTriggerRefresh();

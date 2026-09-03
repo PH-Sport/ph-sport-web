@@ -33,19 +33,6 @@ Detalle en [`rendimiento.md`](rendimiento.md).
 
 ## Diagnosticados, con la causa equivocada ya descartada
 
-### La restauración de scroll al pulsar atrás no funciona
-
-Queda en `y≈2`. Es **preexistente**: medido el 2026-08-01 en producción *sin* el
-parche de `QuietScrollHistory` y con él, el resultado es el mismo.
-
-**No culpar al telón de transición ni a `QuietScrollHistory`** — es el error clásico
-aquí.
-
-Hipótesis viva: el `scrollTo` de Astro ocurre cuando el documento recién
-intercambiado aún no tiene altura (contenido oculto por `[data-reveal]`, imágenes sin
-cargar) y el scroll se recorta. Si se aborda, atacar el **momento del `scrollTo`**,
-no el guardado en el historial.
-
 ### Sitelinks de Google mezclando ES y EN
 
 El marcado está **verificado correcto** (`lang` por página, hreflang recíproco). Los
@@ -71,11 +58,6 @@ Por rentabilidad, de mayor a menor:
 Uno nuevo por visita: `initHeroScrollCue` registra una función nueva en cada
 `astro:page-load` sin quitar la anterior. Comprobado contando listeners reales:
 **3 → 4 → 6**.
-
-### `.abt-closing__quote` no tiene markup
-
-Existe la regla CSS (`AboutSection.astro:587`) y un `querySelector` que lo busca
-(`:761`), pero ningún elemento lo usa: no se renderiza nada.
 
 ### SEO pendiente (P1/P2)
 

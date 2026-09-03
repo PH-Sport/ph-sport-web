@@ -244,6 +244,11 @@ Lo que hay que saber **antes de tocar nada**:
 - **Los sitelinks ES/EN los elige Google.** El marcado está verificado correcto; no hay
   control directo. No perseguirlo.
 
+- **Transfermarkt no es fuente verificada**: sus datos los editan usuarios y la
+  asignación de agencia va muy por detrás. Vale para levantar sospechas, no para
+  aplicar cambios de roster a ciegas. Hay 16 fichas de jugadores pendientes de que
+  el equipo de PH valide el club.
+
 Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: backlog de rendimiento
 del 2026-08-18, fuga de listeners de scroll en la home y SEO P1/P2.
 

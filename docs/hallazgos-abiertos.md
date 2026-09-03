@@ -40,6 +40,54 @@ sitelinks los elige Google y no hay control directo. No perseguirlo.
 
 ## Pendientes acotados
 
+### 16 jugadores con el club sin confirmar (2026-09-03)
+
+El 2026-09-03 se cotejó `data/jugadores.json` con la ficha de la agencia PHSPORT en
+Transfermarkt (<https://www.transfermarkt.es/phsport/beraterfirma/berater/8087>).
+De ahí salieron 48 desajustes de club: 29 se verificaron contra el comunicado
+oficial del club o prensa deportiva y se aplicaron (commit `3f0668e`), 22 eran solo
+filial contra club matriz —el fichero nombra siempre el matriz, decisión de Mario— y
+**estos 16 quedaron sin cerrar, a la espera de que el equipo de PH los valide**.
+
+**Transfermarkt dice otra cosa y no hay fuente que lo decida** (13). Primera columna,
+lo que dice hoy la web:
+
+| Jugador | En la web | En Transfermarkt |
+|---|---|---|
+| Abd. Keita | SD Ponferradina | Avs Futebol |
+| Héctor Peña | CD Numancia | Racing Club Portuense |
+| Yeray Izquierdo | UD Barbastro | UE Cornellà |
+| Santi Pallarés | UD Las Palmas | CE Europa |
+| Unai Ordóñez | Real Madrid CF | CD Basconia B |
+| Miguel Serrano | Atlético de Madrid | Sin equipo |
+| Jordi Ortega | CE Sabadell FC | Atlètic Lleida / UE Olot |
+| Tomás Méndez | SC União Torreense | Sevilla FC Juvenil A |
+| Janick Buyla | *(vacío)* | Lusitano GC |
+| Hugo Buyla | *(vacío)* | CF América U21 |
+| Adrián Martín *(oculto)* | Real Betis Balompié | Getafe CF B |
+| Txus Alba *(oculto)* | CD Lugo | Sin equipo |
+| Rebollo *(oculto)* | Nástic Tarragona | Avs Futebol |
+
+En **Tomás Méndez** se sospecha que Transfermarkt mezcla a dos jugadores distintos:
+un Tomás Méndez del juvenil del Sevilla y un Tomás Mendes portugués del Torreense.
+De **Rebollo** sí está confirmado que dejó el Nàstic en junio de 2026; el destino, no.
+
+**Aquí el que falla es Transfermarkt, no la web** (3). No tocar estas tres fichas:
+
+| Jugador | En la web (correcto) | En Transfermarkt | Comprobación |
+|---|---|---|---|
+| Lawson Sunderland | FC Dordrecht | Sin equipo | ESPN, Sofascore y la Premier League lo mantienen en el Dordrecht, con contrato hasta 2027 |
+| Adrián Vidican | Real Betis Balompié | Sin equipo | el Betis lo lista en la plantilla de su Juvenil LN |
+| Jorge Rajado | Real Madrid CF | Sin equipo | fichó por el Madrid el 2026-09-02; ya aplicado |
+
+**Por qué esto importa más allá de estas 16 fichas**: Transfermarkt **no es una
+fuente verificada**, sus datos los editan usuarios. La asignación de agencia es lo
+menos fiable de todo —su ficha lista 73 jugadores y el repo tiene 117 visibles—, y
+las categorías inferiores van con retraso. Sirve para levantar sospechas, nunca para
+aplicar cambios a ciegas: si se hubiera hecho, se habría borrado el club de tres
+jugadores que sí lo tienen.
+
+
 ### Backlog de rendimiento (medido el 2026-08-18)
 
 Todo verificado con cifras, no estimado. Detalle en [`rendimiento.md`](rendimiento.md).

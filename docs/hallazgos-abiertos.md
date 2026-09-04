@@ -88,6 +88,24 @@ aplicar cambios a ciegas: si se hubiera hecho, se habría borrado el club de tre
 jugadores que sí lo tienen.
 
 
+### Fotos de jugadores con la camiseta del club anterior (2026-09-04)
+
+Encargo de Mario, pendiente de empezar. El 2026-09-03 se actualizó el club de 29
+jugadores (commit `3f0668e`), pero **la foto sigue siendo la del club de antes**, así
+que en `/talentos` hay tarjetas que dicen un club y enseñan la camiseta de otro.
+
+Los 29 nombres salen de ese commit; los más visibles son los que cambiaron de acera:
+Iker Luque (Atlético → Racing), Aimar García y Jorge Rajado (Atlético → Real Madrid),
+Rayan Zinebi (Granada → Real Madrid) y Javi Hernández (Panathinaikos → Cerezo Osaka).
+
+Las fotos viven en `src/assets/images/players/` (110 archivos, `nombre-apellido.jpg`
+o `.jpeg`) y las resuelve `getAllRosterEntries()` en `src/lib/playerDetail.ts`, que
+cae a `avatar-placeholder.svg` cuando no encuentra ninguna. No están en `public/`:
+las procesa el build, así que **sustituir el archivo basta y no hay que tocar código**.
+
+No confundir con los otros 16 jugadores de más arriba: ahí lo que está en duda es el
+club, no la foto.
+
 ### Backlog de rendimiento (medido el 2026-08-18)
 
 Todo verificado con cifras, no estimado. Detalle en [`rendimiento.md`](rendimiento.md).

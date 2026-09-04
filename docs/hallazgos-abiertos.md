@@ -103,6 +103,11 @@ o `.jpeg`) y las resuelve `getAllRosterEntries()` en `src/lib/playerDetail.ts`, 
 cae a `avatar-placeholder.svg` cuando no encuentra ninguna. No están en `public/`:
 las procesa el build, así que **sustituir el archivo basta y no hay que tocar código**.
 
+**Sustituir, no añadir**: `playerPhotos.ts` indexa por el nombre **sin extensión**, así
+que dejar `dani-requena.jpg` y `dani-requena.jpeg` a la vez hace que se pisen y gane
+uno u otro según el orden del glob. Si la foto nueva viene en otra extensión, se
+guarda con la del archivo que ya existe.
+
 No confundir con los otros 16 jugadores de más arriba: ahí lo que está en duda es el
 club, no la foto.
 

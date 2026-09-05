@@ -90,9 +90,12 @@ jugadores que sí lo tienen.
 
 ### Fotos de jugadores con la camiseta del club anterior (2026-09-04)
 
-Encargo de Mario, pendiente de empezar. El 2026-09-03 se actualizó el club de 29
-jugadores (commit `3f0668e`), pero **la foto sigue siendo la del club de antes**, así
-que en `/talentos` hay tarjetas que dicen un club y enseñan la camiseta de otro.
+Encargo de Mario, en curso. El 2026-09-03 se actualizó el club de 29 jugadores
+(commit `3f0668e`), pero **la foto sigue siendo la del club de antes**, así que en
+`/talentos` hay tarjetas que dicen un club y enseñan la camiseta de otro.
+
+**Hechas (6)**: Dani Requena, Juan Cruz, Mati Barzic, Javi Hernández, Thiago Helguera
+e Iker Luque.
 
 Los 29 nombres salen de ese commit; los más visibles son los que cambiaron de acera:
 Iker Luque (Atlético → Racing), Aimar García y Jorge Rajado (Atlético → Real Madrid),
@@ -110,6 +113,28 @@ guarda con la del archivo que ya existe.
 
 No confundir con los otros 16 jugadores de más arriba: ahí lo que está en duda es el
 club, no la foto.
+
+**De dónde salen las fotos.** Del Drive de PH, carpeta «JUGADORES PH SPORT» en
+*Compartido conmigo*, con una subcarpeta por jugador titulada `NOMBRE (CLUB)`. Dos
+trampas comprobadas el 2026-09-05:
+
+- **El título de la carpeta no dice qué hay dentro.** «RAYAN ZINEBI (REAL MADRID C)»
+  contiene solo fotos del Granada. La equipación se valida mirando el escudo y el
+  patrocinador, nunca por el nombre de la carpeta.
+- **Los nombres de archivo tampoco** (`WhatsApp Image 2026-07-20 at 20.54.31 (2).jpeg`).
+  Hay que verlas. La vista de cuadrícula de Drive sirve para triar de un vistazo.
+
+**Criterio de selección** (el que aplicó Mario al elegir las seis hechas): equipación
+del club actual, cara visible y encuadre 3:4. Se prefiere acción en el campo con balón
+y cuerpo entero, pero **un posado de presentación vale cuando es lo único que hay** —
+Javi Hernández, Thiago Helguera e Iker Luque son de sesión de estudio o de fichaje. Y
+entre dos de acción gana la del jugador aislado sobre la que tiene un rival encima.
+
+**Siete de los que quedan no tienen ninguna foto del club nuevo en Drive** (barrido del
+2026-09-05, carpeta por carpeta): Carlos Guirao, Víctor García, Jesús Bernal, Jorge
+Delgado, Ognjen Teofilovic, Rayan Zinebi y Salim El-Jebari. En todos ellos el material
+es del club anterior. No es que no se hayan buscado: no están. Volver a mirar cuando el
+fotógrafo suba material nuevo.
 
 ### Backlog de rendimiento (medido el 2026-08-18)
 

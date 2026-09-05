@@ -111,6 +111,17 @@ que dejar `dani-requena.jpg` y `dani-requena.jpeg` a la vez hace que se pisen y 
 uno u otro según el orden del glob. Si la foto nueva viene en otra extensión, se
 guarda con la del archivo que ya existe.
 
+**Renombrar a un jugador le quita la foto.** El nombre del archivo es
+`slugify(row.name)`, así que pasar de `"Eneko"` a `"Eneko Ortiz"` hace que la ficha
+busque `eneko-ortiz.jpeg` en vez de `eneko.jpeg`. No falla el build ni avisa nadie: la
+tarjeta cae al avatar genérico en silencio. Al cambiar un nombre en `jugadores.json`
+hay que renombrar el archivo de foto en el mismo commit.
+
+Ese avatar genérico **no se puede buscar por «avatar-placeholder» en el HTML**: pesa
+menos de 4 kB, así que Vite lo incrusta como `data:image/svg+xml`. Para contar cuántas
+fichas se quedan sin foto hay que cruzar `jugadores.json` con el listado de
+`src/assets/images/players/`, no hacer grep sobre `dist/`. A 2026-09-05 son 13.
+
 No confundir con los otros 16 jugadores de más arriba: ahí lo que está en duda es el
 club, no la foto.
 

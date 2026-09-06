@@ -97,6 +97,22 @@ Encargo de Mario, en curso. El 2026-09-03 se actualizó el club de 29 jugadores
 **Hechas (6)**: Dani Requena, Juan Cruz, Mati Barzic, Javi Hernández, Thiago Helguera
 e Iker Luque.
 
+**Lo primero que hay que retomar**, porque es trabajo ya hecho que se pierde si no se
+escribe:
+
+- **Alberto Del Moral tiene foto buena y ya localizada**, no hace falta volver a
+  buscarla: partido del Hajduk Split en Poljud, `WhatsApp Image 2026-07-14 at
+  13.44.15.jpeg` en su carpeta de Drive (1600×1066). Cumple el criterio entero —campo,
+  cuerpo entero, balón y cara— y admite un 3:4 de 798×1064 recortando desde x=510. No
+  se aplicó porque quedó pendiente del visto bueno de Mario. **No contarlo entre los
+  que están sin mirar.**
+- **La foto de Mati Barzic está aplicada pero corta de resolución**: 619×825, así que
+  la variante de 720w que sirve la tarjeta sale **escalada** desde 619 px y se ve más
+  blanda que el resto del roster. El original del que salió ese encuadre es de
+  1638×2048 (`WhatsApp Image 2026-07-20 at 14.34.41 (2).jpeg`) y da para repetir el
+  mismo recorte a ~1180×1573. No es urgente, pero es la única de las siete con esa
+  pega.
+
 Los 29 nombres salen de ese commit; los más visibles son los que cambiaron de acera:
 Iker Luque (Atlético → Racing), Aimar García y Jorge Rajado (Atlético → Real Madrid),
 Rayan Zinebi (Granada → Real Madrid) y Javi Hernández (Panathinaikos → Cerezo Osaka).

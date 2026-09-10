@@ -5,7 +5,7 @@
   { "name": "Javi Hernández", "club": { "name": "Cerezo Osaka" }, "nationalTeamCodes": [] },
   { "name": "Mati Barzic", "club": { "name": "Elche CF" }, "nationalTeamCodes": ["HR"] },
   { "name": "Thiago Helguera", "club": { "name": "Atlético de Madrid" }, "nationalTeamCodes": [] },
-  { "name": "Kevin Prieto", "club": { "name": "Casa Pía AC" }, "nationalTeamCodes": [] },
+  { "name": "Kevin Prieto", "club": { "name": "Casa Pía AC" }, "nationalTeamCodes": [], "hidden": true, "note": "Ocultado 2026-09-10: baja solicitada por Mario. No eliminado por si vuelve." },
   { "name": "Alessandro Burlamaqui", "club": { "name": "Alianza Lima" }, "nationalTeamCodes": ["PE"] },
   { "name": "Alberto Del Moral", "club": { "name": "HNK Hajduk Split" }, "nationalTeamCodes": [] },
   { "name": "Carlos Guirao", "club": { "name": "CD Eldense" }, "nationalTeamCodes": [] },

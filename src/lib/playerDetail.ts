@@ -17,6 +17,12 @@ export type RosterJsonRow = {
   club: { name: string } | null;
   nationalTeamCodes?: string[];
   hidden?: boolean;
+  /**
+   * Por qué está oculto: `left-agency` si ya no es de PH, `on-hold` si sigue
+   * pero no se muestra. Ausente = motivo sin registrar (entradas antiguas).
+   * Nadie lo lee: documenta el dato para quien edite el roster.
+   */
+  hiddenReason?: 'left-agency' | 'on-hold';
 };
 
 export type PlayerRole = 'player' | 'coach';
@@ -48,11 +54,13 @@ export function getAllRosterEntries(): RosterEntry[] {
       role: 'player' as const,
       row: row as RosterJsonRow,
     }));
-  const coaches = entrenadoresData.map((row) => ({
-    slug: slugify(row.name),
-    role: 'coach' as const,
-    row: row as RosterJsonRow,
-  }));
+  const coaches = entrenadoresData
+    .filter((row) => !row.hidden)
+    .map((row) => ({
+      slug: slugify(row.name),
+      role: 'coach' as const,
+      row: row as RosterJsonRow,
+    }));
   return [...players, ...coaches];
 }
 

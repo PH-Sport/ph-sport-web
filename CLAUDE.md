@@ -189,7 +189,13 @@ Ver la sección "Reglas de dominio" en `ARCHITECTURE.md` y la entrada del
 **Roster** — `data/jugadores.json` y `data/entrenadores.json` son la fuente de
 verdad. Para dar de baja a alguien: `"hidden": true` + nota con el motivo, **no
 borrar la entrada** (ver commits `c589e3c`, `031a1a9`). El filtro está en
-`getAllRosterEntries()` de `src/lib/playerDetail.ts`.
+`getAllRosterEntries()` de `src/lib/playerDetail.ts`, y se aplica a los dos
+archivos: jugadores **y** entrenadores.
+
+Junto a `hidden` va **`hiddenReason`**: `left-agency` (ya no es de PH) u
+`on-hold` (sigue en PH pero no se muestra). Ausente = motivo sin registrar, y
+no se rellena a posteriori inventándolo. El porqué, en `DECISIONS.md`
+(2026-09-10).
 
 **No hay páginas individuales por jugador.** `/talentos/` es un grid único y las
 tarjetas no son clicables. No proponer rutas `/talentos/[slug]`, modales de

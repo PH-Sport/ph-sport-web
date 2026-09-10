@@ -13,6 +13,41 @@ leído el resto.
 
 ---
 
+## 2026-09-10 · Un roster oculto no es lo mismo que un roster que se fue
+
+**Decisión**: junto a `hidden: true` en `data/jugadores.json` y
+`data/entrenadores.json` va **`hiddenReason`**, con dos valores cerrados:
+`left-agency` (ya no es de PH) y `on-hold` (sigue en PH pero no se muestra).
+El campo es opcional; ausente significa **motivo sin registrar**.
+
+**El problema**: `hidden: true` significaba las dos cosas a la vez. La única
+diferencia estaba en la prosa del campo `note` —«se ha ido de PH» frente a
+cualquier otra redacción—, y de las 16 entradas ocultas **7 no tenían nota
+ninguna**: Bernt Klavervoer, Adrián Martín, Rebollo, Carles Garrido, Marcos
+García, Vinicius da Conceição y Asier Carmona (más Liam Fernández). De esas
+nadie sabe ya por qué están fuera, y no hay forma de averiguarlo.
+
+**Alternativa descartada**: separar las salidas a un archivo aparte
+(`data/ex-jugadores.json`). Duplica los sitios donde mirar, rompe la fuente
+única de verdad del roster y la entrada pierde su posición en el orden del
+grid, que es manual.
+
+**Lo que el campo no hace**: nada del código lo lee. Los ocultos no se
+renderizan y no hay páginas por jugador, así que no cambia una sola línea de
+la web. Lo que compra es que la pregunta «¿se ha ido o solo lo escondemos?» se
+conteste en el momento de ocultar. Si algún día se quiere con dientes, un test
+del smoke que falle cuando un `hidden` no traiga `hiddenReason` son cinco
+líneas — se dejó fuera a propósito para no encarecer el cambio.
+
+**Relleno inicial**: se marcaron `left-agency` los cuatro cuya nota ya lo decía
+(Pedro Lima, Paco Esteban, Sergio Esteban, Txus Alba) más Kevin Prieto, y
+`on-hold` Lawson Sunderland y Gonzalo Rodríguez, que Mario confirmó que siguen
+en PH. Las 8 restantes se quedan sin campo: **no se rellena inventando**.
+
+**De paso**: el filtro `!row.hidden` de `getAllRosterEntries()` solo se aplicaba
+a los jugadores. Un entrenador marcado como oculto seguía saliendo en el grid.
+Se descubrió al ocultar a Nacho Castro y está corregido.
+
 ## 2026-09-03 · El scroll suave se apaga durante la navegación entre páginas
 
 **Decisión**: en cada `astro:before-swap`, `ph-text-animations.ts` escribe

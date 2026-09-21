@@ -459,7 +459,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ 2 variantes en `/public/` | 480p (móvil), 720p (tablet/desktop). Master en `/assets/source-media/` |
-| Fotos jugadores | ⏳ 47 de los 55 visibles | Sin ninguna: Abde Raihani, Dani Rebollo, Gonzalo Rodríguez, Fran Manzanara, Jesús Palacios, David Fernández, Víctor Santiago y JL Mejías. Mario va a revisar toda la selección (2026-09-21) |
+| Fotos jugadores | ⏳ 27 de los 31 visibles | Sin ninguna: Abde Raihani, Dani Rebollo, Gonzalo Rodríguez y Fran Manzanara (y cuatro más en el bloque aparcado de escudos). Mario va a revisar toda la selección (2026-09-21) |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia |
 | OG image (1200×630px) | ❌ Pendiente | |
@@ -468,7 +468,7 @@ que ejecutar nada a mano.
 
 | Pendiente | Bloqueado por |
 |---|---|
-| Fotos de la selección visible: 8 sin ninguna y el resto pendiente de revisión (2026-09-21) | Cliente |
+| Fotos de la selección visible: 4 sin ninguna y el resto pendiente de revisión (2026-09-21) | Cliente |
 | OG image 1200×630px | Diseño |
 | GA4 — Measurement ID | Decisión de si se integra |
 | ⚠️ Söhne `.woff2` con licencia de producción — **sigue sin comprar a 2026-08-11**, y la web está publicada desde abril con los archivos de prueba | Compra de licencia (Mario) |

@@ -25,6 +25,11 @@ detrás, agrupados por club. El entrenador (Thomas Christiansen) **sale del
 grid**: pasa a ser solo de jugadores. Nada se borra: quien sale queda
 `hidden` + `on-hold` con nota fechada.
 
+**El bloque de escudos importantes está aparcado** (oculto, `on-hold`, nota
+«bloque aparcado») desde el mismo día: Mario quiere cerrar antes su
+composición, que además incorpora al Getafe (Getafe B y juvenil). Hasta
+entonces la web enseña solo los cinco primeros bloques: **31 jugadores**.
+
 **Los bloques, tal como están hoy en `jugadores.json`** (el archivo no lleva
 el bloque; el corte entre uno y otro solo está escrito aquí):
 
@@ -38,9 +43,11 @@ el bloque; el corte entre uno y otro solo está escrito aquí):
   Jordi Ferrer, Gonzalo Rodríguez, Lawson Sunderland.
 - *1ª RFEF*: Pablo Pascual, Eneko Ortiz, Jorge Delgado, Omar Ouhdadi, Fran
   Manzanara, Destiny Ilahude.
-- *Escudos importantes*: Thiago Helguera, Rayan Zinebi, Aimar García, Jorge
-  Rajado, Hugo Ríos, Iker Vidal, José Rey, Mauro Valeiro, y después los del
-  campograma por club: Andrés Corcoba, Pablo Ibáñez, Jesús Palacios, Unai
+- *Escudos importantes* (aparcado, oculto en el archivo justo detrás de los
+  31 visibles y en este orden): Thiago Helguera, Rayan Zinebi, Aimar García,
+  Jorge Rajado, Hugo Ríos, Iker Vidal, José Rey, Mauro Valeiro (los dos
+  últimos, juvenil del Depor, no Fabril), y después los del campograma por
+  club: Andrés Corcoba, Pablo Ibáñez, Jesús Palacios, Unai
   Ordóñez, Hugo Fernández (Real Madrid); David Fernández, Carlos Núñez, Miguel
   Serrano (Atlético); Byron Mendoza, Víctor Santiago (Barça); Sosu Kwame,
   Adrián Vidican, JL Mejías (Betis); Frank Iglesias, Janusz Florek (Depor);
@@ -52,16 +59,18 @@ que faltaban en la web (Abde Raihani, Fran Manzanara, David Fernández, JL
 Mejías), tres clubes corregidos (Dani Rebollo y Abdoulaye Keita al AVS, los
 dos confirmados por prensa portuguesa; Víctor Santiago al FC Barcelona) y el
 nombre completo de Keita, antes «Abd. Keita» (la foto se renombró en el mismo
-cambio, porque el slug del nombre es el nombre del archivo). Con eso se
-cierran dos de las 16 fichas con el club en duda desde el 2026-09-03. Tres fichas que la web tenía en escudos importantes y que **no
-aparecen en el campograma** se quedan fuera con interrogante: Brayan de la
-Cruz (Atlético), Marcos López (Málaga) y Adrián Martín (Betis).
+cambio, porque el slug del nombre es el nombre del archivo). Tres fichas que la web tenía en escudos
+importantes **no aparecen en el campograma**; Mario confirmó el mismo día que siguen en PH y dónde:
+Brayan de la Cruz (juvenil del Atlético), Marcos López (Atlético Malagueño) y
+Adrián Martín (Getafe B; la ficha lo tenía en el Betis y se corrige). Con eso
+se cierran tres de las 16 fichas con el club en duda desde el 2026-09-03. Los
+tres pertenecen al bloque de escudos importantes y esperan con él.
 
-**El número y el grid**: el grid es de 2/3/5 columnas según el ancho. A fecha
-de hoy son **55 tarjetas**: cierra en escritorio (5) y deja una colgando en
-móvil (2) y en tablet (3). Mario prioriza móvil y escritorio, así que el total
-tiene que acabar en múltiplo de 10 (50 o 60); está pendiente de su decisión
-sobre a quién meter o quitar. El primer corte del día fue 29 jugadores +
+**El número y el grid**: el grid es de 2/3/5 columnas según el ancho. Con el
+bloque de escudos aparcado son **31 tarjetas**, que dejan una colgando en los
+tres anchos; con los escudos eran 55. Mario prioriza móvil y escritorio, así
+que el total final tiene que acabar en múltiplo de 10; está pendiente de
+cerrar el bloque de escudos y decidir a quién meter o quitar. El primer corte del día fue 29 jugadores +
 entrenador = 30, el único total cercano a 30 que cierra en los tres anchos; se
 descartó al pedir Mario que el grid fuera solo de jugadores y al ampliar la
 selección con las canteras de los escudos importantes.
@@ -81,8 +90,9 @@ Garrido, Marcos García, Vinicius da Conceição, Asier Carmona y Liam Fernánde
 siguen sin él: no se rellena inventando.
 
 **Sin foto** (salen con el avatar genérico): Abde Raihani, Dani Rebollo,
-Gonzalo Rodríguez, Fran Manzanara, Jesús Palacios, David Fernández, Víctor
-Santiago y JL Mejías. Mario va a revisar las fotos de toda la selección.
+Gonzalo Rodríguez y Fran Manzanara entre los visibles; en el bloque aparcado,
+Jesús Palacios, David Fernández, Víctor Santiago y JL Mejías. Mario va a
+revisar las fotos de toda la selección.
 
 ## 2026-09-10 · Un roster oculto no es lo mismo que un roster que se fue
 

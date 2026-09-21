@@ -199,7 +199,9 @@ no se rellena a posteriori inventándolo. El porqué, en `DECISIONS.md`
 
 Desde el 2026-09-21 la web muestra **una selección del roster ordenada por
 categoría** (1ª España · 2ª España · 1ª Fuera · 2ª Fuera · 1ª RFEF · escudos
-importantes), solo jugadores: el entrenador está `on-hold`. **Quién entra lo
+importantes), solo jugadores: el entrenador está `on-hold`. El bloque de
+escudos importantes está **aparcado** (oculto, con nota «bloque aparcado»)
+hasta que Mario cierre quién va en él. **Quién entra lo
 decide el campograma interno** (`campograma-ph`), no la web anterior. **El
 orden del grid es el orden del archivo**: las visibles van al principio de
 `jugadores.json`, por bloques; el corte entre bloques solo está escrito en
@@ -262,7 +264,7 @@ Lo que hay que saber **antes de tocar nada**:
 
 - **Transfermarkt no es fuente verificada**: sus datos los editan usuarios y la
   asignación de agencia va muy por detrás. Vale para levantar sospechas, no para
-  aplicar cambios de roster a ciegas. Hay 14 fichas de jugadores pendientes de que
+  aplicar cambios de roster a ciegas. Hay 13 fichas de jugadores pendientes de que
   el equipo de PH valide el club.
 
 Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: fotos de jugadores

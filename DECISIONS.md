@@ -29,15 +29,15 @@ grid**: pasa a ser solo de jugadores. Nada se borra: quien sale queda
 el bloque; el corte entre uno y otro solo está escrito aquí):
 
 - *1ª España*: Juan Cruz, Dani Requena, Mati Barzic, Iker Luque.
-- *2ª España*: Juanjo Sánchez, Carlos Guirao, Salim El-Jebari, Damián Cáceres,
-  Owen Emeka.
+- *2ª España*: Owen Emeka, Salim El-Jebari, Damián Cáceres, Juanjo Sánchez,
+  Carlos Guirao.
 - *1ª Fuera*: Javi Hernández, Alberto Del Moral, Francisco Dias, Dani Muñoz,
   Christian Manrique, Dimitar Danev, Roberto Olabe, Alessandro Burlamaqui,
   Axel Montaña.
 - *2ª Fuera*: Luis Quintero, Abde Raihani, Abdoulaye Keita, Dani Rebollo,
   Jordi Ferrer, Gonzalo Rodríguez, Lawson Sunderland.
-- *1ª RFEF*: Jorge Delgado, Omar Ouhdadi, Fran Manzanara, Destiny Ilahude,
-  Pablo Pascual, Eneko Ortiz.
+- *1ª RFEF*: Pablo Pascual, Eneko Ortiz, Jorge Delgado, Omar Ouhdadi, Fran
+  Manzanara, Destiny Ilahude.
 - *Escudos importantes*: Thiago Helguera, Rayan Zinebi, Aimar García, Jorge
   Rajado, Hugo Ríos, Iker Vidal, José Rey, Mauro Valeiro, y después los del
   campograma por club: Andrés Corcoba, Pablo Ibáñez, Jesús Palacios, Unai

@@ -197,6 +197,16 @@ Junto a `hidden` va **`hiddenReason`**: `left-agency` (ya no es de PH) u
 no se rellena a posteriori inventándolo. El porqué, en `DECISIONS.md`
 (2026-09-10).
 
+Desde el 2026-09-21 la web muestra **una selección del roster ordenada por
+categoría** (1ª España · 2ª España · 1ª Fuera · 2ª Fuera · 1ª RFEF · escudos
+importantes), solo jugadores: el entrenador está `on-hold`. **Quién entra lo
+decide el campograma interno** (`campograma-ph`), no la web anterior. **El
+orden del grid es el orden del archivo**: las visibles van al principio de
+`jugadores.json`, por bloques; el corte entre bloques solo está escrito en
+`DECISIONS.md` (2026-09-21). El grid es de 2/3/5 columnas y Mario prioriza que
+cierre en móvil y escritorio, así que el total debe ser múltiplo de 10: al
+meter o quitar a alguien hay que comprobarlo.
+
 **No hay páginas individuales por jugador.** `/talentos/` es un grid único y las
 tarjetas no son clicables. No proponer rutas `/talentos/[slug]`, modales de
 detalle ni JSON-LD `Person` — se retiró a propósito (`DECISIONS.md`, 2026-04-24).
@@ -252,7 +262,7 @@ Lo que hay que saber **antes de tocar nada**:
 
 - **Transfermarkt no es fuente verificada**: sus datos los editan usuarios y la
   asignación de agencia va muy por detrás. Vale para levantar sospechas, no para
-  aplicar cambios de roster a ciegas. Hay 16 fichas de jugadores pendientes de que
+  aplicar cambios de roster a ciegas. Hay 14 fichas de jugadores pendientes de que
   el equipo de PH valide el club.
 
 Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: fotos de jugadores

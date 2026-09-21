@@ -13,6 +13,77 @@ leído el resto.
 
 ---
 
+## 2026-09-21 · `/talentos` pasa a una selección ordenada por categoría, con el campograma como referencia
+
+**Decisión**: la web deja de enseñar el roster entero (114 jugadores visibles,
+sin orden declarado) y muestra **una selección** ordenada por los bloques que
+fijó Mario: 1ª División España · 2ª División España · 1ª Fuera (primera
+división extranjera) · 2ª Fuera · 1ª RFEF · Escudos importantes (canteras y
+filiales de Depor, Barça, Real Madrid, Atlético, Málaga, Betis y Valencia).
+Dentro de cada bloque, el orden de su lista; los que salen del campograma van
+detrás, agrupados por club. El entrenador (Thomas Christiansen) **sale del
+grid**: pasa a ser solo de jugadores. Nada se borra: quien sale queda
+`hidden` + `on-hold` con nota fechada.
+
+**Los bloques, tal como están hoy en `jugadores.json`** (el archivo no lleva
+el bloque; el corte entre uno y otro solo está escrito aquí):
+
+- *1ª España*: Juan Cruz, Dani Requena, Mati Barzic, Iker Luque.
+- *2ª España*: Juanjo Sánchez, Carlos Guirao, Salim El-Jebari, Damián Cáceres,
+  Owen Emeka.
+- *1ª Fuera*: Javi Hernández, Alberto Del Moral, Francisco Dias, Dani Muñoz,
+  Christian Manrique, Dimitar Danev, Roberto Olabe, Alessandro Burlamaqui,
+  Axel Montaña.
+- *2ª Fuera*: Luis Quintero, Abde Raihani, Abdoulaye Keita, Dani Rebollo,
+  Jordi Ferrer, Gonzalo Rodríguez, Lawson Sunderland.
+- *1ª RFEF*: Jorge Delgado, Omar Ouhdadi, Fran Manzanara, Destiny Ilahude,
+  Pablo Pascual, Eneko Ortiz.
+- *Escudos importantes*: Thiago Helguera, Rayan Zinebi, Aimar García, Jorge
+  Rajado, Hugo Ríos, Iker Vidal, José Rey, Mauro Valeiro, y después los del
+  campograma por club: Andrés Corcoba, Pablo Ibáñez, Jesús Palacios, Unai
+  Ordóñez, Hugo Fernández (Real Madrid); David Fernández, Carlos Núñez, Miguel
+  Serrano (Atlético); Byron Mendoza, Víctor Santiago (Barça); Sosu Kwame,
+  Adrián Vidican, JL Mejías (Betis); Frank Iglesias, Janusz Florek (Depor);
+  Mario Guilabert (Valencia).
+
+**La fuente de la selección es el campograma interno** (`campograma-ph`, el
+Numbers de PH), no la web anterior ni Transfermarkt. De ahí salen las altas
+que faltaban en la web (Abde Raihani, Fran Manzanara, David Fernández, JL
+Mejías), tres clubes corregidos (Dani Rebollo y Abdoulaye Keita al AVS, los
+dos confirmados por prensa portuguesa; Víctor Santiago al FC Barcelona) y el
+nombre completo de Keita, antes «Abd. Keita» (la foto se renombró en el mismo
+cambio, porque el slug del nombre es el nombre del archivo). Con eso se
+cierran dos de las 16 fichas con el club en duda desde el 2026-09-03. Tres fichas que la web tenía en escudos importantes y que **no
+aparecen en el campograma** se quedan fuera con interrogante: Brayan de la
+Cruz (Atlético), Marcos López (Málaga) y Adrián Martín (Betis).
+
+**El número y el grid**: el grid es de 2/3/5 columnas según el ancho. A fecha
+de hoy son **55 tarjetas**: cierra en escritorio (5) y deja una colgando en
+móvil (2) y en tablet (3). Mario prioriza móvil y escritorio, así que el total
+tiene que acabar en múltiplo de 10 (50 o 60); está pendiente de su decisión
+sobre a quién meter o quitar. El primer corte del día fue 29 jugadores +
+entrenador = 30, el único total cercano a 30 que cierra en los tres anchos; se
+descartó al pedir Mario que el grid fuera solo de jugadores y al ampliar la
+selección con las canteras de los escudos importantes.
+
+**Alternativas descartadas**:
+- *Un campo nuevo tipo `featured: true` o `category`.* Duplica el mecanismo
+  que ya existe (`hidden` + `hiddenReason`) y el orden dentro de cada bloque
+  seguiría siendo manual, así que no ahorra mantenimiento. El JSON sigue siendo
+  la única fuente y el orden, el del archivo.
+- *Mantener al entrenador en el grid.* Mario lo sacó expresamente: la lista es
+  de jugadores.
+
+**Lo que no cambia**: cero líneas de código. `getAllRosterEntries()` ya
+filtraba por `hidden` y el orden del grid ya era el del archivo. Las 7
+entradas ocultas sin `hiddenReason` (Bernt Klavervoer, Adrián Martín, Carles
+Garrido, Marcos García, Vinicius da Conceição, Asier Carmona y Liam Fernández)
+siguen sin él: no se rellena inventando.
+
+**Sin foto** (salen con el avatar genérico): Abde Raihani, Dani Rebollo,
+Gonzalo Rodríguez, Fran Manzanara, Jesús Palacios, David Fernández, Víctor
+Santiago y JL Mejías. Mario va a revisar las fotos de toda la selección.
+
 ## 2026-09-10 · Un roster oculto no es lo mismo que un roster que se fue
 
 **Decisión**: junto a `hidden: true` en `data/jugadores.json` y

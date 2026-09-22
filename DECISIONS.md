@@ -13,6 +13,126 @@ leído el resto.
 
 ---
 
+## 2026-09-22 · Vídeo nuevo del hero: 1080p en HEVC y H.264, recorte vertical para móvil, carpeta versionada
+
+**Decisión**: el hero pasa del vídeo de 8 s a 720p al nuevo de edición (17,7 s,
+1920×1080, 25 fps; llegó como `.mov` H.264 a 11,7 Mbps con audio PCM de 24 bits
+y pista de timecode). Se sirve en **cuatro archivos** desde `public/hero/2026-09/`:
+1080p en HEVC y en H.264 para escritorio y tablet, y un **recorte 2:3 centrado**
+(720×1080) en los mismos dos códecs para móvil en vertical. Dos pósteres (primer
+fotograma, mismo recorte que su vídeo) en un `<picture>`, y el `<video>` pierde el
+atributo `poster`. El master se guarda sin audio en
+`assets/source-media/hero-2026-09.mp4` (copia del stream de vídeo, sin
+recodificar: 26 MB). Lo pidió Mario: máxima calidad en todos los dispositivos sin
+descuidar la carga ni la navegación.
+
+**Cómo se eligió la calidad** — codificando el master con cada códec a varios CRF
+y midiendo SSIM contra el original (canal Y/U/V, media «All»; 1 = idéntico). Los
+CRF se eligieron **por parejas**, para que quien recibe HEVC y quien recibe H.264
+vean lo mismo y solo cambie el peso:
+
+| Variante | Códec · CRF | Peso | SSIM | Antes (vídeo de 8 s) |
+|---|---|---:|---:|---|
+| Escritorio 1920×1080 | HEVC 24 | 3.765 KB (213 KB/s) | 0,9890 | 720p H.264 CRF 25 · 2.849 KB (356 KB/s) |
+| Escritorio 1920×1080 | H.264 22 | 6.715 KB (380 KB/s) | 0,9894 | ídem |
+| Móvil 720×1080 | HEVC 25 | 1.278 KB (72 KB/s) | 0,9879 | 480p H.264 CRF 28 · 1.019 KB (127 KB/s) |
+| Móvil 720×1080 | H.264 23 | 2.116 KB (120 KB/s) | 0,9881 | ídem |
+
+Por segundo de vídeo, el móvil recibe **menos bytes que antes con 2,25× más
+resolución vertical**, y el escritorio en HEVC también menos. En H.264 de
+escritorio sube un 7 % por segundo a cambio de pasar de 720p a 1080p. El pico por
+segundo es 2,5-2,7× la media (el primer plano, la hierba a pleno sol); con descarga
+progresiva no bloquea, así que no se pone tope VBV. Como referencia de la escala:
+H.264 a CRF 20 da 0,9911 con 9.015 KB, y a CRF 24 da 0,9873 con 5.065 KB.
+
+**Por qué HEVC además de H.264.** La mitad de bytes a igual SSIM, y lo decodifica
+por hardware todo iPhone desde el 6s (2015), todo Mac, y casi todo Android. Chrome,
+Edge y Firefox solo lo aceptan cuando hay decodificador por hardware, y por eso el
+`type` de cada `<source>` lleva el parámetro `codecs` (`hvc1.1.6.L120.B0`,
+`avc1.640028`): con él, un navegador sin HEVC contesta «no» y pasa al H.264 sin
+descargar nada; sin él, contesta «maybe», se baja el HEVC, falla y solo entonces
+sigue. Hace falta `-tag:v hvc1` al codificar: ffmpeg escribe `hev1` por defecto y
+Safari no lo reproduce. Y H.264 pasa de perfil Main a High (nivel 4.0): un 10 %
+menos de bytes, y lo reproduce cualquier dispositivo de la última década.
+
+**Por qué el recorte vertical para móvil.** Con `object-fit: cover`, un teléfono
+en vertical (9:16 o 9:19,5) enseña solo el **tercio central** del ancho del
+fotograma. El 480p anterior mandaba el ancho entero a 480 px de alto y el teléfono
+lo estiraba 5× (480 → 2.532 px de pantalla). Ahora recibe el recorte a 1080 de
+alto (2,3×) por menos bytes. Es 2:3 y no 9:16 porque `max-width: 768px` también
+alcanza al iPad mini en vertical (3:4), que con 9:16 perdería más encuadre; con
+720 de ancho los teléfonos ven 608 y el iPad mini pierde un 11 % de alto. El
+`media` lleva `orientation: portrait` para que un iPhone SE apaisado (667 px) reciba
+el 16:9. Se evalúa una vez al cargar: si se gira el teléfono después, se queda el
+recorte y `cover` enseña su centro — aceptable para un fondo decorativo. El
+recorte es centrado porque todos los planos del montaje tienen el motivo en el
+centro (comprobado plano a plano sobre una hoja de contactos).
+
+**Alternativa considerada — AV1.** Medido con SVT-AV1 (preset 6, CRF 35): 2.630 KB
+con SSIM 0,9888, es decir, la calidad del HEVC elegido con un 30 % menos. Se
+descarta por ahora: Safari solo lo decodifica por hardware desde el iPhone 15 Pro
+y los Mac M3; en el resto, Chrome y Firefox lo decodifican por software, que en
+un móvil es CPU y batería justo en los dispositivos que más se beneficiarían del
+ahorro; es un tercer archivo por encuadre que mantener y tarda 5× más en
+codificar. El ahorro real es 1,1 MB en escritorio, donde menos importa. Revisar
+cuando el hardware AV1 sea la norma. Misma conclusión a la que llegó el proyecto
+hermano `ochoa-cokima` con su vídeo.
+
+**Alternativa considerada — VP9/WebM**, descartada ya en abril y en agosto sobre el
+vídeo anterior. Se volvió a medir porque el master es otro: CRF 33 da 3.253 KB con
+SSIM 0,9852, **peor que el HEVC a CRF 25 con el mismo peso** (3.241 KB, 0,9881).
+Y solo serviría a Chrome/Firefox sin HEVC, que ya reciben el H.264. Tercera vez
+que sale mal; no se añade.
+
+**Alternativa considerada — solo H.264**, dos archivos en vez de cuatro. Costaría
+a Safari e iOS —la mayoría del tráfico móvil— 1,7× los bytes por la misma
+calidad. Descartada.
+
+**Alternativa considerada — un escalón 720p para tablet y portátil.** En pantallas
+retina todo se amplía igualmente (un MacBook de 13" tiene 2.560 px de ancho), así
+que un 720p ahí es 2× de ampliación; la prioridad es la calidad y el 1080p en HEVC
+pesa lo que pesaba el 720p antiguo. Todo lo que no es móvil en vertical recibe el
+1080p.
+
+**Alternativa considerada — mantener `poster` en el `<video>`.** El navegador
+descarga el `poster` nada más crear el elemento, con `preload="none"` o sin él,
+así que en móvil sería bajar el póster de escritorio (76 KB) además del suyo
+(34 KB). Sin `poster` ni datos, el `<video>` es transparente y se ve el
+`<picture>` de debajo, que sí sirve el póster de cada encuadre. Como el póster es
+el primer fotograma del vídeo con el mismo recorte, el paso de imagen a vídeo no
+se ve. Comprobado en Chromium sobre el build (vídeo sin fuentes ni `poster`:
+se ve el `<picture>`); **en Safari e iOS queda por mirar en dispositivo real**,
+que es donde este repo ya se ha llevado sustos (`docs/hallazgos-abiertos.md`).
+
+**Alternativa considerada — bajar el CRF a 30, como decía el backlog de agosto.**
+Aquello se midió sobre un vídeo oscuro de 8 s bajo un degradado; el nuevo es
+metraje de oficina a plena luz, con hierba, tejidos y bolígrafos donde el bloqueo
+se nota, y la petición prioriza la calidad. Superado.
+
+**Por qué la versión va en la carpeta.** `vercel.json` sirve `.mp4` y `.webp` con
+7 días de caché más 30 de `stale-while-revalidate`: un vídeo nuevo con el nombre
+viejo seguiría siendo el viejo para quien ya visitó la web, y un póster viejo con
+un vídeo nuevo se nota como un salto al arrancar. La versión está en dos sitios
+que tienen que coincidir (`HERO_VERSION` en `heroMedia.ts` y `VERSION` en el
+script); detalle en `docs/trampas-conocidas.md`.
+
+**El master de 26 MB entra en el repo** siguiendo el precedente del anterior
+(6,4 MB): es lo único que permite retocar el CRF o el encuadre de ESTE vídeo sin
+pedirlo de nuevo a edición. El siguiente vídeo traerá su propio master y este
+quedará en el histórico.
+
+**Lo que se ve y no es un fallo**: el bucle corta en seco del último plano (la
+escultura de cerca) al primero (la puerta al jardín). Va con el ritmo del montaje,
+que cambia de plano cada ~1,8 s. Si se quiere un fundido, es decisión de edición
+sobre el master, no un apaño en la web.
+
+**Queda fuera a propósito**, como propuesta y no como cambio: pausar el vídeo
+cuando el hero sale de pantalla y no pedirlo con «Ahorro de datos» activado.
+Ambas cosas están validadas en `ochoa-cokima` (`docs/cokima-el-rediseno.md`, §4),
+pero son cambios de comportamiento que no se han pedido.
+
+---
+
 ## 2026-09-21 · `/talentos` pasa a una selección ordenada por categoría, con el campograma como referencia
 
 **Decisión**: la web deja de enseñar el roster entero (114 jugadores visibles,

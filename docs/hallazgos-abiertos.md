@@ -198,3 +198,21 @@ Uno nuevo por visita: `initHeroScrollCue` registra una función nueva en cada
 - Un `public/llms.txt` para buscadores con IA.
 - Una página `/faq` con preguntas y respuestas literales.
 - Auditar los `alt=""` de Header, Footer y Hero para confirmar que son decorativos.
+
+### El `<video>` del hero sin `poster`, sin comprobar en Safari ni en iPhone (2026-09-22)
+
+Desde el vídeo nuevo, el `<video>` del hero no lleva atributo `poster` (el porqué
+en `DECISIONS.md`, 2026-09-22): el póster lo pone un `<picture>` debajo, con un
+recorte por pantalla. Eso da por hecho que un `<video>` con `preload="none"` y sin
+`poster` **es transparente hasta que tiene un fotograma**. Es lo que dice la
+especificación y lo que hace Chromium (comprobado sobre el build el mismo día,
+vaciando las fuentes del vídeo y viendo el póster a través). **En Safari de
+escritorio y en iPhone no se ha comprobado**, y en iOS todos los navegadores son
+WebKit.
+
+Qué mirar, en un iPhone real con la caché vacía: al entrar en la home, ¿se ve el
+jardín (el póster) hasta que el vídeo arranca, o un rectángulo negro? Y con «Modo
+de bajo consumo», que bloquea el autoplay: ¿se queda el póster, sin botón de play
+encima? Si sale negro, el arreglo es devolver el atributo `poster` al `<video>`
+apuntando al póster de escritorio y asumir esa descarga extra en móvil (76 KB), o
+ponerlo por JavaScript según el `media` que aplique.

@@ -32,17 +32,16 @@ ph-sport-web/
 │   ├── national-team-badges/        # Escudos de selecciones nacionales
 │   ├── about-equipo.webp / *-sm.webp
 │   ├── favicon.svg
-│   ├── hero-poster.webp             # Poster estático del vídeo hero (LCP real)
 │   ├── logo-ph-3d.webp / *-sm.webp
 │   ├── logo.svg
 │   ├── services-hero.webp / *-sm.webp
 │   ├── talents-hero.webp / *-sm.webp
-│   └── video-ph-web-720.mp4 / *-480.mp4   # 2 variantes de calidad servidas en runtime
+│   └── hero/<versión>/              # Vídeo del hero: 1080-*.mp4, mobile-*.mp4 (hevc/h264) y poster*.webp
 │
 ├── assets/
 │   └── source-media/                  # Fuentes originales para scripts de build (NO se sirven)
 │       ├── badges/                    # PNG 600×600 → WebP 128×128 (npm run assets:badges)
-│       └── video-ph-web.mp4           # Master del hero → mp4 -480/-720 (npm run assets:hero)
+│       └── hero-<versión>.mp4         # Master del hero, sin audio → public/hero/<versión>/ (npm run assets:hero)
 │
 ├── src/
 │   ├── assets/images/players/       # Fotos de jugadores (procesadas por astro:assets)
@@ -191,18 +190,37 @@ No hay páginas de detalle por jugador: el grid de `/talentos/` es no-clicable p
 
 ### Vídeo
 
-El hero usa un vídeo de fondo con dos variantes de calidad servidas localmente:
+El hero usa un vídeo de fondo servido desde `public/hero/<versión>/`, en dos
+encuadres y dos códecs (desde el 2026-09-22; el porqué en `DECISIONS.md`):
 
-| Archivo | Resolución | Uso |
+| Archivo | Qué es | Quién lo recibe |
 |---|---|---|
-| `video-ph-web-480.mp4` | 480p | Móvil (`max-width: 768px`) |
-| `video-ph-web-720.mp4` | 720p | Tablet/Desktop |
+| `1080-hevc.mp4` | 1920×1080, HEVC (H.265) | Escritorio y tablet en Safari/iOS, y en Chrome/Edge/Firefox cuando el equipo decodifica HEVC por hardware |
+| `1080-h264.mp4` | 1920×1080, H.264 | Escritorio y tablet, el resto |
+| `mobile-hevc.mp4` | Recorte 2:3 centrado, 720×1080, HEVC | Móvil en vertical (`max-width: 768px` y `orientation: portrait`) |
+| `mobile-h264.mp4` | Mismo recorte, H.264 | Móvil en vertical, el resto |
+| `poster.webp` / `poster-mobile.webp` | Primer fotograma, con el mismo recorte que su vídeo | Se ve hasta que el vídeo arranca; en reduced-motion o si el vídeo falla, siempre |
 
-El master `assets/source-media/video-ph-web.mp4` se usa solo como input de `npm run assets:hero` (`scripts/build-hero-variants.mjs`) y NO se sirve.
+El navegador elige el primer `<source>` cuyo `media` cumple y cuyo `type` puede
+reproducir. **El parámetro `codecs` del `type` no es decorativo**: sin él, un
+Chrome sin HEVC pediría el archivo HEVC, fallaría al decodificar y solo
+entonces pasaría al H.264. El `media` se evalúa una vez al cargar: girar el
+teléfono después no cambia el archivo.
 
-`src/lib/heroMedia.ts` es la fuente de verdad de las rutas y configuración del vídeo. `preload="none"` y la reproducción se lanza a mano tras `load` (ver la tabla de reglas de performance: con `autoplay`, `preload="metadata"` no impide la descarga).
+El master `assets/source-media/hero-<versión>.mp4` (sin audio) es solo la
+entrada de `npm run assets:hero` (`scripts/build-hero-variants.mjs`), que
+genera los seis archivos. La versión va en la ruta porque `vercel.json` sirve
+`.mp4` y `.webp` con 7 días de caché: un vídeo nuevo con el mismo nombre
+seguiría siendo el viejo para quien ya visitó la web. Cambiar de vídeo es
+cambiar de carpeta, en `heroMedia.ts` y en el script.
 
-El poster `hero-poster.webp` se muestra mientras el vídeo carga y actúa como LCP real.
+`src/lib/heroMedia.ts` es la fuente de verdad de rutas, `media` y `codecs`.
+`preload="none"` y la reproducción se lanza a mano tras `load` (ver la tabla
+de reglas de performance: con `autoplay`, `preload="metadata"` no impide la
+descarga). El `<video>` **no lleva atributo `poster`**: el navegador lo
+descarga nada más crear el elemento, y en móvil sería bajar el póster de
+escritorio además del suyo. Sin datos ni póster el `<video>` es transparente y
+se ve el `<picture>` de debajo, que sí sirve un póster por encuadre.
 
 ### Logo Reveal
 
@@ -458,7 +476,7 @@ que ejecutar nada a mano.
 | Item | Estado | Notas |
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
-| Vídeo hero | ✅ 2 variantes en `/public/` | 480p (móvil), 720p (tablet/desktop). Master en `/assets/source-media/` |
+| Vídeo hero | ✅ `public/hero/2026-09/` | 1080p (escritorio) y recorte 720×1080 (móvil vertical), cada uno en HEVC y H.264, más dos pósteres. Master sin audio en `/assets/source-media/` |
 | Fotos jugadores | ⏳ 27 de los 31 visibles | Sin ninguna: Abde Raihani, Dani Rebollo, Gonzalo Rodríguez y Fran Manzanara (y cuatro más en el bloque aparcado de escudos). Mario va a revisar toda la selección (2026-09-21) |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia |

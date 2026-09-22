@@ -1,6 +1,6 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
-import { HERO_STATIC_IMAGE, HERO_VIDEO_POSTER, HERO_VIDEO_SOURCES } from '@/lib/heroMedia';
+import { HERO_MOBILE_MEDIA, HERO_POSTER, HERO_VIDEO_SOURCES } from '@/lib/heroMedia';
 
 interface Props {
   lang: Lang;
@@ -9,8 +9,6 @@ interface Props {
 
 const { lang, sectionId } = Astro.props;
 const t = useTranslations(lang);
-const staticBackdrop = HERO_STATIC_IMAGE.trim().length > 0 ? HERO_STATIC_IMAGE : null;
-const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : undefined;
 ---
 
 <section
@@ -19,10 +17,18 @@ const videoPoster = HERO_VIDEO_POSTER.trim().length > 0 ? HERO_VIDEO_POSTER : un
 >
   <div class="hero-media" aria-hidden="true">
     <div class="hero-video-fallback" />
-    {staticBackdrop && (
-      <img class="hero-static-image" src={staticBackdrop} alt="" width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async" />
-    )}
-    <video class="hero-video" data-hero-video muted loop playsinline preload="none" poster={videoPoster}>
+    {/* El póster es el primer fotograma del vídeo, con el mismo recorte por
+        pantalla, así que el cambio a vídeo no se ve. El <video> no lleva
+        atributo `poster` a propósito: el navegador lo descarga nada más
+        crear el elemento, y en móvil sería bajar la versión de escritorio
+        además de esta. Sin datos ni póster, el <video> es transparente y se
+        ve la imagen de debajo (comprobado en Chromium el 2026-09-22; en
+        Safari e iOS está pendiente, ver docs/hallazgos-abiertos.md). */}
+    <picture>
+      <source srcset={HERO_POSTER.mobile} media={HERO_MOBILE_MEDIA} width="720" height="1080" />
+      <img class="hero-static-image" src={HERO_POSTER.desktop} alt="" width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async" />
+    </picture>
+    <video class="hero-video" data-hero-video muted loop playsinline preload="none">
       {HERO_VIDEO_SOURCES.map((s) => (
         <source src={s.src} type={s.type} media={s.media} />
       ))}

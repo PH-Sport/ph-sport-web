@@ -138,7 +138,7 @@ ph-sport-web/
 
 El roster vive en **JSON plano** dentro de `data/`, no en Content Collections:
 
-- `data/jugadores.json` — jugadores. Campo opcional `"hidden": true` los oculta sin borrar. **El orden del archivo es el orden del grid.** Desde el 2026-09-21 solo está visible una selección ordenada por categoría (al principio del archivo, bloques en `DECISIONS.md`); el resto lleva `hidden` + `hiddenReason` (`DECISIONS.md`, 2026-09-10 y 2026-09-21).
+- `data/jugadores.json` — jugadores. Campo opcional `"hidden": true` los oculta sin borrar. **El orden del archivo es el orden del grid.** Desde el 2026-09-25 solo está visible una selección en el orden de la lista de Mario (al principio del archivo); el resto lleva `hidden` + `hiddenReason` (`DECISIONS.md`, 2026-09-10 y 2026-09-25).
 - `data/entrenadores.json` — cuerpo técnico.
 
 Ambos comparten esquema: `{ name, club: { name } | null, nationalTeamCodes?: string[] }`, más los opcionales `hidden`, `hiddenReason` y `note` (ver `RosterJsonRow` en `playerDetail.ts`).
@@ -477,7 +477,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ `public/hero/2026-09/` | 1080p (escritorio) y recorte 720×1080 (móvil vertical), cada uno en HEVC y H.264, más dos pósteres. Master sin audio en `/assets/source-media/` |
-| Fotos jugadores | ⏳ 27 de los 31 visibles | Sin ninguna: Abde Raihani, Dani Rebollo, Gonzalo Rodríguez y Fran Manzanara (y cuatro más en el bloque aparcado de escudos). Mario va a revisar toda la selección (2026-09-21) |
+| Fotos jugadores | ⏳ 44 de los 51 visibles | Sin ninguna: Abde Raihani, Dani Rebollo, Gonzalo Rodríguez, Fran Manzanara, Santi Pallarés, Boston Billups y Álex Domínguez. Mario va a revisar toda la selección (2026-09-25) |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia |
 | OG image (1200×630px) | ❌ Pendiente | |
@@ -486,7 +486,7 @@ que ejecutar nada a mano.
 
 | Pendiente | Bloqueado por |
 |---|---|
-| Fotos de la selección visible: 4 sin ninguna y el resto pendiente de revisión (2026-09-21) | Cliente |
+| Fotos de la selección visible: 7 sin ninguna y el resto pendiente de revisión (2026-09-25) | Cliente |
 | OG image 1200×630px | Diseño |
 | GA4 — Measurement ID | Decisión de si se integra |
 | ⚠️ Söhne `.woff2` con licencia de producción — **sigue sin comprar a 2026-08-11**, y la web está publicada desde abril con los archivos de prueba | Compra de licencia (Mario) |

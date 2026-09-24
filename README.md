@@ -28,7 +28,7 @@ salida se versiona en `public/`.
 | Ruta | Contenido |
 |---|---|
 | `/` | Home — Hero, talentos, servicios, about, contacto |
-| `/talentos/` | Selección del roster ordenada por categoría, con filtro y ordenación (cards no clicables) |
+| `/talentos/` | Selección del roster en el orden que fija Mario, con filtro y ordenación (cards no clicables) |
 | `/servicios` | 6 pilares del servicio |
 | `/sobre-nosotros` | Historia, equipo (20 integrantes) y cierre |
 | `/en/*` | Mirror completo en inglés (`/en/talents/`, `/en/services`, `/en/about`) |

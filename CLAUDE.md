@@ -197,17 +197,16 @@ Junto a `hidden` va **`hiddenReason`**: `left-agency` (ya no es de PH) u
 no se rellena a posteriori inventándolo. El porqué, en `DECISIONS.md`
 (2026-09-10).
 
-Desde el 2026-09-21 la web muestra **una selección del roster ordenada por
-categoría** (1ª España · 2ª España · 1ª Fuera · 2ª Fuera · 1ª RFEF · escudos
-importantes), solo jugadores: el entrenador está `on-hold`. El bloque de
-escudos importantes está **aparcado** (oculto, con nota «bloque aparcado»)
-hasta que Mario cierre quién va en él. **Quién entra lo
-decide el campograma interno** (`campograma-ph`), no la web anterior. **El
-orden del grid es el orden del archivo**: las visibles van al principio de
-`jugadores.json`, por bloques; el corte entre bloques solo está escrito en
-`DECISIONS.md` (2026-09-21). El grid es de 2/3/5 columnas y Mario prioriza que
-cierre en móvil y escritorio, así que el total debe ser múltiplo de 10: al
-meter o quitar a alguien hay que comprobarlo.
+Desde el 2026-09-25 la web muestra **una selección en el orden de la lista de
+notas de Mario** (no está en el repo): todos los de 1ª España, 2ª España, 1ª
+Fuera, 2ª Fuera y 1ª RFEF, más los escudos importantes que su lista pone por
+delante de una categoría superior. Solo jugadores: el entrenador está
+`on-hold`. **Quién entra lo decide el campograma interno** (`campograma-ph`),
+no la web anterior. **El orden del grid es el orden del archivo**: las visibles
+van al principio de `jugadores.json`; para meter a alguien hay que saber su
+posición en la lista de Mario (`DECISIONS.md`, 2026-09-25). El grid es de
+2/3/5 columnas y Mario prefiere que cierre en móvil y escritorio: con 51 queda
+una tarjeta suelta, y lo sabe.
 
 **No hay páginas individuales por jugador.** `/talentos/` es un grid único y las
 tarjetas no son clicables. No proponer rutas `/talentos/[slug]`, modales de
@@ -268,7 +267,7 @@ Lo que hay que saber **antes de tocar nada**:
 
 - **Transfermarkt no es fuente verificada**: sus datos los editan usuarios y la
   asignación de agencia va muy por detrás. Vale para levantar sospechas, no para
-  aplicar cambios de roster a ciegas. Hay 13 fichas de jugadores pendientes de que
+  aplicar cambios de roster a ciegas. Hay 12 fichas de jugadores pendientes de que
   el equipo de PH valide el club.
 
 Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: fotos de jugadores

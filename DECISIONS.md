@@ -13,6 +13,61 @@ leído el resto.
 
 ---
 
+## 2026-09-25 · `/talentos` sigue el orden de la lista de Mario, no los bloques por categoría
+
+**Decisión**: el grid enseña **51 jugadores en el orden exacto de la lista de
+notas de Mario** (su listado de 126 posiciones, que no está en el repo). Entran
+todos los de las cinco categorías —1ª España, 2ª España, 1ª Fuera, 2ª Fuera y
+1ª RFEF— y, de los escudos importantes, **solo los que su lista coloca por
+delante de jugadores de una categoría superior**. El resto de escudos queda
+oculto (`on-hold`). Sustituye al orden por bloques del 2026-09-21.
+
+**Qué cambió respecto al 2026-09-21**: aquel criterio agrupaba por categoría y,
+dentro de cada bloque, respetaba la lista. Al comparar con la lista completa,
+Mario prefirió que mande la lista: si él pone a alguien arriba, va arriba aunque
+su categoría sea menor. El ejemplo que lo disparó fue Thiago Helguera, séptimo
+en su lista y en el filial del Atlético. De ahí salen dos diferencias con los
+bloques: Javi Hernández y Alberto Del Moral (1ª Fuera) vuelven a ir delante de
+los de 2ª España, y ocho escudos entran intercalados.
+
+**Los ocho escudos que entran, con su posición en la lista**: Thiago Helguera
+(7), Rayan Zinebi (27), Aimar García (28), Jorge Rajado (29), Hugo Ríos (32),
+Iker Vidal (33), José Rey (34) y Mauro Valeiro (35). Todos van por delante de
+algún jugador de 1ª RFEF. José Rey y Mauro Valeiro son del juvenil del Depor, no
+del Fabril.
+
+**Los que se añaden de 1ª RFEF**, en orden de lista: Raúl Alarcón (40), Víctor
+García (41), Oriol Soldevila (42), Pere Haro (43), Alejandro Gil (44), Santi
+Pallarés (45), Boston Billups (46), Álex Domínguez (47), Lucas Macazaga (48),
+Víctor Villote (49), Jesús Bernal (50) y Zéno Stassin (118). Con ellos, las
+posiciones 1 a 50 de la lista están enteras en la web y Zéno cierra en el 51.
+Boston Billups (FC Cartagena, cedido por el Eldense) y Álex Domínguez (SD
+Ponferradina) son altas nuevas. Santi Pallarés pasa de UD Las Palmas a CE
+Europa, que es lo que dice el campograma. Jesús Bernal está en la lista de
+Mario pero no en el campograma.
+
+**Los escudos importantes** son ahora Real Madrid, Barcelona, Atlético,
+Valencia, Betis y Getafe; el Depor y el Málaga ya no figuran en la lista de
+Mario. No cambia nada en la web: los cuatro del Depor que entran lo hacen por
+posición, no por escudo.
+
+**Alternativas descartadas**:
+- *Seguir con los bloques por categoría.* Contradice la lista de Mario en los
+  puestos 5 a 12 y deja fuera a jugadores que él pone en el top 40.
+- *Tope de 40 jugadores.* Mario lo planteó, pero las cinco categorías ya suman
+  43 sin escudos; eligió meter a todos los de 1ª RFEF.
+- *Cortar en 50 sacando a Zéno Stassin*, que cerraría el grid en móvil y
+  escritorio. No se pidió: Zéno es de 1ª RFEF y entra por la regla.
+
+**Consecuencias**: con 51 queda una tarjeta suelta al final en móvil (2
+columnas) y en escritorio (5). El orden ya no se deduce de la categoría, solo
+de la lista de Mario: para meter o sacar a alguien hay que preguntarle su
+posición. Siete visibles no tienen foto: Abde Raihani, Dani Rebollo, Gonzalo
+Rodríguez, Fran Manzanara, Santi Pallarés, Boston Billups y Álex Domínguez.
+
+**Lo que no cambia**: cero líneas de código. El orden del grid sigue siendo el
+del archivo y el filtro sigue siendo `hidden`.
+
 ## 2026-09-22 · Vídeo nuevo del hero: 1080p en HEVC y H.264, recorte vertical para móvil, carpeta versionada
 
 **Decisión**: el hero pasa del vídeo de 8 s a 720p al nuevo de edición (17,7 s,
@@ -134,6 +189,11 @@ pero son cambios de comportamiento que no se han pedido.
 ---
 
 ## 2026-09-21 · `/talentos` pasa a una selección ordenada por categoría, con el campograma como referencia
+
+> **Superada el 2026-09-25**: el orden ya no es por bloques de categoría sino el
+> de la lista de Mario, y los escudos solo entran si la lista los pone delante.
+> Siguen vigentes el campograma como referencia, el entrenador fuera del grid y
+> las altas y cambios de club de este día. Ver la entrada del 2026-09-25.
 
 **Decisión**: la web deja de enseñar el roster entero (114 jugadores visibles,
 sin orden declarado) y muestra **una selección** ordenada por los bloques que

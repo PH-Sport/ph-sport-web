@@ -25,9 +25,7 @@ de fuente altera la identidad de marca, y es decisión suya, no técnica.
 
 ### Coste del snapshot del `ClientRouter` en páginas pesadas
 
-`/talentos`, 116 tarjetas cuando se midió. **Desde el 2026-09-21 son 31** (cifra
-provisional: el bloque de escudos importantes está aparcado y Mario decide el
-total): las
+`/talentos`, 116 tarjetas cuando se midió. **Desde el 2026-09-25 son 51**: las
 cifras de aquí y de `rendimiento.md` son anteriores a ese recorte y habría que
 volver a medir antes de decidir nada. Identificado en junio, **sin hacer a propósito por riesgo
 alto**: tocar la View Transition ahí puede romper la fluidez que costó dos
@@ -44,7 +42,7 @@ sitelinks los elige Google y no hay control directo. No perseguirlo.
 
 ## Pendientes acotados
 
-### 13 jugadores con el club sin confirmar (2026-09-03)
+### 12 jugadores con el club sin confirmar (2026-09-03)
 
 El 2026-09-03 se cotejó `data/jugadores.json` con la ficha de la agencia PHSPORT en
 Transfermarkt (<https://www.transfermarkt.es/phsport/beraterfirma/berater/8087>).
@@ -53,16 +51,17 @@ oficial del club o prensa deportiva y se aplicaron (commit `3f0668e`), 22 eran s
 filial contra club matriz —el fichero nombra siempre el matriz, decisión de Mario— y
 **estos 16 quedaron sin cerrar, a la espera de que el equipo de PH los valide**.
 El 2026-09-21 se cerraron tres (Abdoulaye Keita y Dani Rebollo al AVS, confirmado
-por prensa portuguesa; Adrián Martín al Getafe B, confirmado por Mario) y quedan 13.
+por prensa portuguesa; Adrián Martín al Getafe B, confirmado por Mario). El
+2026-09-25 se cerró Santi Pallarés (CE Europa, lo que dice el campograma) y
+quedan 12.
 
-**Transfermarkt dice otra cosa y no hay fuente que lo decida** (10). Primera columna,
+**Transfermarkt dice otra cosa y no hay fuente que lo decida** (9). Primera columna,
 lo que dice hoy la web:
 
 | Jugador | En la web | En Transfermarkt |
 |---|---|---|
 | Héctor Peña | CD Numancia | Racing Club Portuense |
 | Yeray Izquierdo | UD Barbastro | UE Cornellà |
-| Santi Pallarés | UD Las Palmas | CE Europa |
 | Unai Ordóñez | Real Madrid CF | CD Basconia B |
 | Miguel Serrano | Atlético de Madrid | Sin equipo |
 | Jordi Ortega | CE Sabadell FC | Atlètic Lleida / UE Olot |
@@ -96,11 +95,11 @@ Encargo de Mario, en curso. El 2026-09-03 se actualizó el club de 29 jugadores
 (commit `3f0668e`), pero **la foto sigue siendo la del club de antes**, así que en
 `/talentos` hay tarjetas que dicen un club y enseñan la camiseta de otro.
 
-**Desde el 2026-09-21 solo se muestra una selección de 31** (`DECISIONS.md`,
-misma fecha; el bloque de escudos importantes está aparcado): lo pendiente de
-esta sección solo importa para los que estén visibles. De ellos, cuatro no
-tienen foto ninguna (Abde Raihani, Dani Rebollo, Gonzalo Rodríguez y Fran
-Manzanara) y Mario va a revisar las del resto.
+**Desde el 2026-09-25 solo se muestra una selección de 51** (`DECISIONS.md`,
+misma fecha): lo pendiente de esta sección solo importa para los que estén
+visibles. De ellos, siete no tienen foto ninguna (Abde Raihani, Dani Rebollo,
+Gonzalo Rodríguez, Fran Manzanara, Santi Pallarés, Boston Billups y Álex
+Domínguez) y Mario va a revisar las del resto.
 
 **Hechas (6)**: Dani Requena, Juan Cruz, Mati Barzic, Javi Hernández, Thiago Helguera
 e Iker Luque.
@@ -145,7 +144,7 @@ Ese avatar genérico **no se puede buscar por «avatar-placeholder» en el HTML*
 menos de 4 kB, así que Vite lo incrusta como `data:image/svg+xml`. Para contar cuántas
 fichas se quedan sin foto hay que cruzar `jugadores.json` con el listado de
 `src/assets/images/players/`, no hacer grep sobre `dist/`. A 2026-09-05 eran 13;
-a 2026-09-21, con la selección de 31, son 4.
+a 2026-09-25, con la selección de 51, son 7.
 
 No confundir con los otros 16 jugadores de más arriba: ahí lo que está en duda es el
 club, no la foto.
@@ -170,8 +169,8 @@ entre dos de acción gana la del jugador aislado sobre la que tiene un rival enc
 2026-09-05, carpeta por carpeta): Carlos Guirao, Víctor García, Jesús Bernal, Jorge
 Delgado, Ognjen Teofilovic, Rayan Zinebi y Salim El-Jebari. En todos ellos el material
 es del club anterior. No es que no se hayan buscado: no están. Volver a mirar cuando el
-fotógrafo suba material nuevo. De los siete, a 2026-09-21 siguen visibles Carlos
-Guirao, Jorge Delgado y Salim El-Jebari.
+fotógrafo suba material nuevo. De los siete, a 2026-09-25 están visibles todos
+menos Ognjen Teofilovic.
 
 ### Backlog de rendimiento (medido el 2026-08-18)
 

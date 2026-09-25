@@ -125,24 +125,20 @@ test:e2e`.
 **Si el smoke falla de forma masiva y rara, mirar primero qué hay en el puerto**, no
 el código.
 
-## El vídeo y el póster del hero se sirven con 7 días de caché
+## Lo que está en `public/` se sirve con 7 días de caché
 
 `vercel.json` manda `Cache-Control: public, max-age=604800,
-stale-while-revalidate=2592000` para todo `.mp4`, `.webm` y `.webp` fuera de
-`_astro/`. Es lo correcto para assets que no cambian, pero tiene una
-consecuencia que no se ve hasta que se cambia el vídeo: **un archivo nuevo con
-el mismo nombre sigue siendo el viejo durante una semana** para quien ya visitó
-la web, y hasta 37 días si el navegador aprovecha el `stale-while-revalidate`.
-El póster igual. Y como el póster es el primer fotograma del vídeo, un póster
-viejo con un vídeo nuevo (o al revés) se nota como un salto al arrancar.
+stale-while-revalidate=2592000` para toda imagen y vídeo fuera de `_astro/`. Es
+lo correcto para archivos que no cambian, pero tiene una consecuencia que no se
+ve hasta que se cambia uno: **un archivo nuevo con el mismo nombre sigue siendo
+el viejo durante una semana** para quien ya visitó la web, y hasta 37 días si
+el navegador aprovecha el `stale-while-revalidate`.
 
-Por eso desde el 2026-09-22 el vídeo vive en `public/hero/<versión>/` y la
-versión está en dos sitios que tienen que coincidir: `HERO_VERSION` en
-`src/lib/heroMedia.ts` y `VERSION` en `scripts/build-hero-variants.mjs`.
-Cambiar de vídeo es: master nuevo en `assets/source-media/hero-<versión>.mp4`,
-versión nueva en los dos archivos, `npm run assets:hero`, y borrar la carpeta
-anterior. Nunca sobrescribir los archivos de una carpeta que ya se haya
-desplegado.
+Para sustituir algo de `public/`, cambiarle el nombre (y actualizar quien lo
+cite). Lo que pasa por `astro:assets` no tiene el problema: sale en `_astro/`
+con un hash en el nombre que cambia con el contenido. Por eso la foto del hero
+vive en `src/assets/` desde el 2026-09-25; el vídeo anterior, que sí estaba en
+`public/`, necesitaba una carpeta con versión (`DECISIONS.md`, 2026-09-22).
 
 ## Bugs de un motor concreto
 

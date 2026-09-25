@@ -35,16 +35,15 @@ ph-sport-web/
 │   ├── logo-ph-3d.webp / *-sm.webp
 │   ├── logo.svg
 │   ├── services-hero.webp / *-sm.webp
-│   ├── talents-hero.webp / *-sm.webp
-│   └── hero/<versión>/              # Vídeo del hero: 1080-*.mp4, mobile-*.mp4 (hevc/h264) y poster*.webp
+│   └── talents-hero.webp / *-sm.webp
 │
 ├── assets/
 │   └── source-media/                  # Fuentes originales para scripts de build (NO se sirven)
-│       ├── badges/                    # PNG 600×600 → WebP 128×128 (npm run assets:badges)
-│       └── hero-<versión>.mp4         # Master del hero, sin audio → public/hero/<versión>/ (npm run assets:hero)
+│       └── badges/                    # PNG 600×600 → WebP 128×128 (npm run assets:badges)
 │
 ├── src/
 │   ├── assets/images/players/       # Fotos de jugadores (procesadas por astro:assets)
+│   ├── assets/images/hero/portada.png  # Foto del hero, original 1672×941 (procesada por astro:assets)
 │   │
 │   ├── components/
 │   │   ├── LogoReveal.astro         # Intro de la home — animación en CSS, sin GSAP
@@ -53,7 +52,7 @@ ph-sport-web/
 │   │   │   ├── Header.astro         # Flotante, scroll-hide, selector de idioma
 │   │   │   └── Footer.astro         # V3 editorial, social links
 │   │   ├── sections/
-│   │   │   ├── HeroSection.astro        # Vídeo (play diferido) + poster, GSAP curtain reveal
+│   │   │   ├── HeroSection.astro        # Foto fija (astro:assets), GSAP curtain reveal
 │   │   │   ├── HomePlayersSection.astro
 │   │   │   ├── HomeServicesSection.astro   # CSS accordion + GSAP
 │   │   │   ├── HomeAboutSection.astro
@@ -75,7 +74,7 @@ ph-sport-web/
 │   ├── lib/                         # Helpers y datos de dominio
 │   │   ├── constants.ts             # SITE_URL y constantes globales
 │   │   ├── countryLabels.ts         # Etiquetas de selecciones nacionales
-│   │   ├── heroMedia.ts             # Fuente de verdad del vídeo hero (variantes mp4)
+│   │   ├── heroMedia.ts             # Fuente de verdad de la foto del hero (imagen, anchos, calidad, sizes)
 │   │   ├── nationalTeamBadge.ts     # Resuelve escudo PNG por código ISO 3166-1 alpha-2
 │   │   ├── navigation.ts            # Items de navegación
 │   │   ├── playerDetail.ts          # Payloads de talentos para el grid (nombre, club, foto, códigos)
@@ -186,41 +185,34 @@ No hay páginas de detalle por jugador: el grid de `/talentos/` es no-clicable p
 
 ---
 
-## Hero — Vídeo + Logo Reveal
+## Hero — Foto + Logo Reveal
 
-### Vídeo
+### Foto
 
-El hero usa un vídeo de fondo servido desde `public/hero/<versión>/`, en dos
-encuadres y dos códecs (desde el 2026-09-22; el porqué en `DECISIONS.md`):
+Desde el 2026-09-25 el hero es una **foto fija**: el logo PH en neón sobre la
+pared de fieltro (`src/assets/images/hero/portada.png`, 1672×941). Antes fue un
+vídeo; el porqué del cambio y lo que se midió, en `DECISIONS.md` (misma fecha).
 
-| Archivo | Qué es | Quién lo recibe |
+Se sirve con `<Image>` de `astro:assets` en WebP calidad 90, en cuatro anchos
+(640, 960, 1280 y 1672: el original no da para más). `src/lib/heroMedia.ts`
+reúne la imagen, los anchos, la calidad y el `sizes`.
+
+**Dos encuadres, con la misma imagen**, que decide el CSS de `HeroSection.astro`:
+
+| Pantalla | Cómo se pinta | Por qué |
 |---|---|---|
-| `1080-hevc.mp4` | 1920×1080, HEVC (H.265) | Escritorio y tablet en Safari/iOS, y en Chrome/Edge/Firefox cuando el equipo decodifica HEVC por hardware |
-| `1080-h264.mp4` | 1920×1080, H.264 | Escritorio y tablet, el resto |
-| `mobile-hevc.mp4` | Recorte 2:3 centrado, 720×1080, HEVC | Móvil en vertical (`max-width: 768px` y `orientation: portrait`) |
-| `mobile-h264.mp4` | Mismo recorte, H.264 | Móvil en vertical, el resto |
-| `poster.webp` / `poster-mobile.webp` | Primer fotograma, con el mismo recorte que su vídeo | Se ve hasta que el vídeo arranca; en reduced-motion o si el vídeo falla, siempre |
+| Horizontal, o casi (proporción ≥ 9:10) | `object-fit: cover` centrado en el logo | La foto llena el hero |
+| Vertical (móviles y tablets) | Franja al 192 % del ancho, con el logo ocupando el 88 % y los bordes de arriba y abajo fundidos con el fondo | Con `cover`, un móvil vería solo el centro del logo, ampliado 2,7× |
 
-El navegador elige el primer `<source>` cuyo `media` cumple y cuyo `type` puede
-reproducir. **El parámetro `codecs` del `type` no es decorativo**: sin él, un
-Chrome sin HEVC pediría el archivo HEVC, fallaría al decodificar y solo
-entonces pasaría al H.264. El `media` se evalúa una vez al cargar: girar el
-teléfono después no cambia el archivo.
+**Las cifras del encuadre vertical son de esta foto** (posición y tamaño del
+logo, medidos sobre los píxeles del neón). Si se cambia la foto, hay que volver
+a medirlas, y el `sizes` de `heroMedia.ts` tiene que seguir diciendo a qué
+ancho se pinta de verdad: si no, el navegador elige una variante pequeña y la
+amplía.
 
-El master `assets/source-media/hero-<versión>.mp4` (sin audio) es solo la
-entrada de `npm run assets:hero` (`scripts/build-hero-variants.mjs`), que
-genera los seis archivos. La versión va en la ruta porque `vercel.json` sirve
-`.mp4` y `.webp` con 7 días de caché: un vídeo nuevo con el mismo nombre
-seguiría siendo el viejo para quien ya visitó la web. Cambiar de vídeo es
-cambiar de carpeta, en `heroMedia.ts` y en el script.
-
-`src/lib/heroMedia.ts` es la fuente de verdad de rutas, `media` y `codecs`.
-`preload="none"` y la reproducción se lanza a mano tras `load` (ver la tabla
-de reglas de performance: con `autoplay`, `preload="metadata"` no impide la
-descarga). El `<video>` **no lleva atributo `poster`**: el navegador lo
-descarga nada más crear el elemento, y en móvil sería bajar el póster de
-escritorio además del suyo. Sin datos ni póster el `<video>` es transparente y
-se ve el `<picture>` de debajo, que sí sirve un póster por encuadre.
+Cambiar la foto es sustituir el archivo: `astro:assets` le da un nombre con
+hash, así que no le afecta la caché de 7 días de `public/`
+(`docs/trampas-conocidas.md`).
 
 ### Logo Reveal
 
@@ -271,7 +263,7 @@ Las animaciones de sección están en `src/scripts/ph-text-animations.ts`. El si
 | Fuentes self-hosted desde `/public/fonts/` | Elimina round-trips externos |
 | `font-display: swap` en `@font-face` | Sin FOIT |
 | `<Image loading="eager" fetchpriority="high">` solo en primer fold | El resto: lazy |
-| Vídeo hero con `preload="none"` y `play()` a mano tras `load` | `preload="metadata"` **no basta**: con `autoplay`, Chrome se lo salta y descarga el vídeo igual. Medido: retrasaba el evento `load` 504 ms y el póster —que es el LCP real— medio segundo |
+| Si vuelve un vídeo al hero: `preload="none"` y `play()` a mano tras `load` | `preload="metadata"` **no basta**: con `autoplay`, Chrome se lo salta y descarga el vídeo igual. Medido en agosto: retrasaba el evento `load` 504 ms y el póster —que era el LCP real— medio segundo. Hoy el hero es una foto fija |
 | El telón de intro, en CSS y nunca dependiendo del JS | Un overlay opaco que solo se quita por JavaScript deja la portada en negro si el JS falla |
 | Hover prefetch en links de navegación | Precarga la siguiente página en hover |
 
@@ -445,7 +437,7 @@ que ejecutar nada a mano.
 | `Header.astro` | ✅ Completo | Flotante, scroll-hide, i18n, mobile accesible |
 | `Footer.astro` | ✅ Completo | V3 editorial, social links, i18n |
 | `LogoReveal.astro` | ✅ Completo | Animación en CSS, sin JS. Una vez cada 18 h |
-| `HeroSection.astro` | ✅ Completo | Vídeo (3 variantes) + poster, curtain reveal GSAP |
+| `HeroSection.astro` | ✅ Completo | Foto fija con encuadre horizontal y vertical, curtain reveal GSAP |
 | `HomePlayersSection.astro` | ✅ Completo | Stagger + scale GSAP |
 | `HomeServicesSection.astro` | ✅ Completo | CSS accordion + GSAP |
 | `HomeAboutSection.astro` | ✅ Completo | Head + counters GSAP |
@@ -476,7 +468,7 @@ que ejecutar nada a mano.
 | Item | Estado | Notas |
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
-| Vídeo hero | ✅ `public/hero/2026-09/` | 1080p (escritorio) y recorte 720×1080 (móvil vertical), cada uno en HEVC y H.264, más dos pósteres. Master sin audio en `/assets/source-media/` |
+| Foto hero | ✅ `src/assets/images/hero/portada.png` | Logo en neón, 1672×941. Se ve algo blanda en pantallas retina grandes: falta un original más grande (`docs/hallazgos-abiertos.md`) |
 | Fotos jugadores | ⏳ 44 de los 51 visibles | Las 10 primeras ya son de la serie de estudio nueva; las otras 34, antiguas. Sin ninguna: Abde Raihani, Dani Rebollo, Gonzalo Rodríguez, Fran Manzanara, Santi Pallarés, Boston Billups y Álex Domínguez. Detalle en `docs/hallazgos-abiertos.md` (2026-09-25) |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia |

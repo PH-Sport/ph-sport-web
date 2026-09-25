@@ -1,56 +1,40 @@
 /**
- * Hero (home): vídeo a pantalla completa (muted + loop + playsInline), arrancado a
- * mano tras `load` desde `HeroSection.astro`.
+ * Hero (home): foto fija a pantalla completa. Desde el 2026-09-25 sustituye al
+ * vídeo (ver DECISIONS.md, misma fecha).
  *
- * Todo lo que se lista aquí lo genera `scripts/build-hero-variants.mjs` a partir
- * del master `assets/source-media/hero-<versión>.mp4`, y lo escribe en
- * `public/hero/<versión>/`.
- *
- * La versión va en la ruta A PROPÓSITO: `vercel.json` sirve `.mp4` y `.webp` con
- * 7 días de caché en el navegador y 30 más de stale-while-revalidate, así que un
- * vídeo nuevo con el mismo nombre seguiría siendo el viejo para quien ya visitó
- * la web. Para cambiar de vídeo: master nuevo, misma versión nueva aquí y en el
- * script, regenerar, y borrar la carpeta anterior de `public/hero/`.
+ * La imagen pasa por `astro:assets`, que genera en el build las variantes de
+ * `HERO_IMAGE_WIDTHS` con nombre con hash bajo `/_astro/`. Eso la libra de la
+ * caché de 7 días que `vercel.json` pone a todo lo de `public/`: una foto
+ * nueva tiene otro hash y nadie ve la vieja. Para cambiarla basta con
+ * sustituir el archivo; si el encuadre cambia, hay que volver a medir el logo
+ * (ver `HeroSection.astro`, bloque de pantallas en vertical).
  */
-export const HERO_VERSION = '2026-09';
+import portada from '@/assets/images/hero/portada.png';
 
-const BASE = `/hero/${HERO_VERSION}`;
+export const HERO_IMAGE = portada;
 
 /**
- * Móvil en vertical recibe un recorte 2:3 centrado del master (720×1080): es lo
- * que `object-fit: cover` enseñaría de todos modos en una pantalla vertical, pero
- * sin pagar los dos tercios de píxeles que quedan fuera. Se evalúa una sola vez
- * al cargar; girar el teléfono después no cambia el archivo (ver DECISIONS.md,
- * 2026-09-22).
+ * El original mide 1672×941, así que no se genera nada más ancho: ampliar en el
+ * build solo añade bytes, no detalle. En pantallas retina grandes se ve
+ * ampliada; el arreglo es un original más grande (docs/hallazgos-abiertos.md).
  */
-export const HERO_MOBILE_MEDIA = '(max-width: 768px) and (orientation: portrait)';
-
-export type HeroVideoSource = {
-  src: string;
-  type: string;
-  media?: string;
-};
+export const HERO_IMAGE_WIDTHS = [640, 960, 1280, 1672];
 
 /**
- * El orden es la prioridad: el navegador se queda con el primer `<source>` cuyo
- * `media` cumple y cuyo `type` dice poder reproducir. El parámetro `codecs` es lo
- * que hace que funcione: sin él, un Chrome sin HEVC diría «maybe» a cualquier
- * `video/mp4`, se bajaría el HEVC, fallaría al decodificar y solo entonces
- * pasaría al siguiente. Con él, contesta «» y salta directo al H.264.
- *
- * - `hvc1.1.6.L120.B0`: HEVC Main, nivel 4.0. Safari/iOS entero, y Chrome, Edge
- *   y Firefox cuando el equipo decodifica por hardware.
- * - `avc1.640028`: H.264 High, nivel 4.0. Lo reproduce todo.
+ * WebP a calidad 90, y sin AVIF: comparado a 2× lado a lado con el original,
+ * AVIF borra la textura de fieltro de la pared incluso a calidad 90 (301 KB),
+ * y WebP 90 la conserva con 152 KB a 1672 px.
  */
-export const HERO_VIDEO_SOURCES: readonly HeroVideoSource[] = [
-  { src: `${BASE}/mobile-hevc.mp4`, type: 'video/mp4; codecs="hvc1.1.6.L120.B0"', media: HERO_MOBILE_MEDIA },
-  { src: `${BASE}/mobile-h264.mp4`, type: 'video/mp4; codecs="avc1.640028"', media: HERO_MOBILE_MEDIA },
-  { src: `${BASE}/1080-hevc.mp4`, type: 'video/mp4; codecs="hvc1.1.6.L120.B0"' },
-  { src: `${BASE}/1080-h264.mp4`, type: 'video/mp4; codecs="avc1.640028"' },
-] as const;
+export const HERO_IMAGE_QUALITY = 90;
 
-/** Primer fotograma del master, con el mismo recorte que el vídeo de cada pantalla. */
-export const HERO_POSTER = {
-  mobile: `${BASE}/poster-mobile.webp`,
-  desktop: `${BASE}/poster.webp`,
-} as const;
+/**
+ * Ancho real al que se pinta la foto, para que el navegador elija variante:
+ * - En vertical (más estrecha que 9:10) se pinta al 192 % del ancho: es lo que
+ *   hace falta para que el logo, que ocupa el 45,7 % de la foto, llene el 88 %
+ *   de la pantalla.
+ * - En horizontal más ancha que la foto (16:9), llena el ancho: 100vw.
+ * - En horizontal más estrecha, `object-fit: cover` la ajusta al alto y el
+ *   ancho es el alto por 16/9: 178vh.
+ */
+export const HERO_IMAGE_SIZES =
+  '(max-aspect-ratio: 9/10) 192vw, (min-aspect-ratio: 16/9) 100vw, 178vh';

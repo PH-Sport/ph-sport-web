@@ -153,7 +153,6 @@ npm run test:e2e
 # Regeneración de assets — a mano, solo al cambiar un original de assets/source-media/.
 # La salida se versiona en public/, así que NO forman parte del build.
 npm run assets:badges    # escudos PNG -> WebP 128x128
-npm run assets:hero      # master del vídeo -> public/hero/<versión>/ (HEVC + H.264, escritorio y móvil, pósteres)
 npm run assets:favicons  # favicons, apple-touch-icon y og-image.jpg
 ```
 
@@ -245,10 +244,10 @@ leerlo antes de tocar el fichero que se nombra.
 - **El smoke puede estar midiendo otra web** → si falla de forma masiva y rara, mirar
   primero **qué ocupa el puerto 4322**, no el código.
 - **Bugs de un motor concreto: medir en ese motor**, con el dispositivo real.
-- **El vídeo y el póster del hero se sirven con 7 días de caché** (`vercel.json`) →
-  un archivo nuevo con el mismo nombre sigue siendo el viejo para quien ya visitó la
-  web. Por eso viven en `public/hero/<versión>/`: cambiar de vídeo es cambiar de
-  carpeta, en `heroMedia.ts` y en el script a la vez.
+- **Lo que está en `public/` se sirve con 7 días de caché** (`vercel.json`) → un
+  archivo nuevo con el mismo nombre sigue siendo el viejo para quien ya visitó la
+  web. Para sustituir algo, cambiarle el nombre. Lo que pasa por `astro:assets`
+  (como la foto del hero) lleva hash y no lo sufre.
 
 ## Hallazgos abiertos
 
@@ -272,8 +271,8 @@ Lo que hay que saber **antes de tocar nada**:
 
 Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: fotos de jugadores
 con la camiseta del club anterior, backlog de rendimiento del 2026-08-18, fuga de
-listeners de scroll en la home, SEO P1/P2 y comprobar en un iPhone real que el hero
-sin `poster` no arranca en negro (2026-09-22).
+listeners de scroll en la home, SEO P1/P2 y la foto del hero: original corto de
+resolución y titular sobre el logo (2026-09-25).
 
 ## Convenciones
 

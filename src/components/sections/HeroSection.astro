@@ -1,6 +1,7 @@
 ---
+import { Image } from 'astro:assets';
 import { useTranslations, type Lang } from '@/i18n/utils';
-import { HERO_MOBILE_MEDIA, HERO_POSTER, HERO_VIDEO_SOURCES } from '@/lib/heroMedia';
+import { HERO_IMAGE, HERO_IMAGE_QUALITY, HERO_IMAGE_SIZES, HERO_IMAGE_WIDTHS } from '@/lib/heroMedia';
 
 interface Props {
   lang: Lang;
@@ -16,23 +17,19 @@ const t = useTranslations(lang);
   class="hero hero--home"
 >
   <div class="hero-media" aria-hidden="true">
-    <div class="hero-video-fallback" />
-    {/* El póster es el primer fotograma del vídeo, con el mismo recorte por
-        pantalla, así que el cambio a vídeo no se ve. El <video> no lleva
-        atributo `poster` a propósito: el navegador lo descarga nada más
-        crear el elemento, y en móvil sería bajar la versión de escritorio
-        además de esta. Sin datos ni póster, el <video> es transparente y se
-        ve la imagen de debajo (comprobado en Chromium el 2026-09-22; en
-        Safari e iOS está pendiente, ver docs/hallazgos-abiertos.md). */}
-    <picture>
-      <source srcset={HERO_POSTER.mobile} media={HERO_MOBILE_MEDIA} width="720" height="1080" />
-      <img class="hero-static-image" src={HERO_POSTER.desktop} alt="" width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async" />
-    </picture>
-    <video class="hero-video" data-hero-video muted loop playsinline preload="none">
-      {HERO_VIDEO_SOURCES.map((s) => (
-        <source src={s.src} type={s.type} media={s.media} />
-      ))}
-    </video>
+    <div class="hero-backdrop" />
+    <Image
+      class="hero-image"
+      src={HERO_IMAGE}
+      widths={HERO_IMAGE_WIDTHS}
+      sizes={HERO_IMAGE_SIZES}
+      format="webp"
+      quality={HERO_IMAGE_QUALITY}
+      alt=""
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+    />
   </div>
 
   <div class="hero-overlay" aria-hidden="true"></div>
@@ -70,7 +67,9 @@ const t = useTranslations(lang);
     overflow: hidden;
   }
 
-  .hero-video-fallback {
+  /* Fondo bajo la foto: se ve mientras carga y, en vertical, por encima y por
+     debajo de la franja de la foto. */
+  .hero-backdrop {
     position: absolute;
     inset: 0;
     z-index: 0;
@@ -81,36 +80,46 @@ const t = useTranslations(lang);
       var(--ph-section-bg, #0d0f12);
   }
 
-  .hero-static-image {
+  /* En horizontal, la foto llena el hero. `object-position` es el centro del
+     logo de neón en la foto (53,1 % × 50,8 %, medido sobre los píxeles del
+     neón): si `cover` recorta, recorta alrededor del logo. */
+  .hero-image {
     position: absolute;
     inset: 0;
     z-index: 1;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
+    object-position: 53.1% 50.8%;
   }
 
-  .hero-video {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  /* En vertical (móviles y tablets), `cover` ajustaría la foto al alto y solo
+     se vería el centro del logo, ampliado 2,7× en un iPhone. Se pinta en una
+     franja en la que el logo entero ocupa el 88 % del ancho: la foto al 192 %
+     del ancho (el logo es el 45,7 % de ella), con el centro del logo en el
+     42 % del alto, por encima del titular. Los bordes de arriba y abajo se
+     funden con el fondo; el logo va del 7,8 % al 93,9 % del alto de la foto,
+     así que el fundido no lo toca.
+
+     Todas estas cifras son de ESTA foto. Si se cambia por otra, hay que volver
+     a medir el logo. El 9/10 es el punto en el que `cover` ya no cabe el
+     logo; debe coincidir con `HERO_IMAGE_SIZES` en `heroMedia.ts`. */
+  @media (max-aspect-ratio: 9/10) {
+    .hero-image {
+      inset: auto;
+      top: 42%;
+      left: 50%;
+      width: 192%;
+      /* El preflight de Tailwind pone `max-width: 100%` a todo `img`. */
+      max-width: none;
+      height: auto;
+      transform: translate(-53.1%, -50.8%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 7%, #000 93%, transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 7%, #000 93%, transparent 100%);
+    }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .hero--home .hero-video { display: none; }
-  }
-  .hero--home.hero--video-error .hero-video { display: none; }
-
-  /* Una vez el vídeo está reproduciendo, el poster ya no aporta nada visible
-     pero seguía siendo una capa compositada bajo el vídeo en cada frame.
-     Ocultarlo libera al compositor (importante en GPUs viejas tipo Intel HD). */
-  .hero--home.hero--video-playing .hero-static-image { display: none; }
-
-  /* Dark gradient overlay for legibility of the claim over the video */
+  /* Dark gradient overlay for legibility of the claim over the photo */
   .hero-overlay {
     position: absolute;
     inset: 0;
@@ -274,56 +283,7 @@ const t = useTranslations(lang);
     document.addEventListener('scroll', toggle, { passive: true });
   }
 
-  function initHeroVideo(): void {
-    const hero = document.querySelector<HTMLElement>('.hero--home');
-    const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
-    if (!hero || !video) return;
-    const markStatic = () => {
-      hero.classList.add('hero--video-error');
-      hero.classList.remove('hero--video-playing');
-    };
-    video.addEventListener('error', markStatic);
-    video.addEventListener(
-      'playing',
-      () => hero.classList.add('hero--video-playing'),
-      { once: true },
-    );
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    const retryOnGesture = () => {
-      window.removeEventListener('pointerdown', retryOnGesture);
-      window.removeEventListener('touchstart', retryOnGesture);
-      window.removeEventListener('scroll', retryOnGesture);
-      void video.play().catch(() => {});
-    };
-
-    /* El vídeo se arranca a mano, no con el atributo `autoplay`.
-     *
-     * Con `autoplay` el navegador se baja el archivo entero nada más encontrarlo
-     * (el `preload="metadata"` no lo impide), y en móvil eso es 1 MB peleándose
-     * por el ancho de banda con el póster —que es el LCP real de la home— y con
-     * el JS. Medido: retrasaba el evento `load` 504 ms y el póster tardaba 2.381
-     * ms en bajar en vez de 1.878.
-     *
-     * Esperando a que el resto haya cargado, el vídeo no le quita sitio a nada.
-     * El hueco lo cubre el póster, que es literalmente su primer fotograma.
-     * En navegación SPA el documento ya está cargado, así que arranca directo. */
-    const startVideo = () => {
-      void video.play().catch(() => {
-        window.addEventListener('pointerdown', retryOnGesture, { passive: true });
-        window.addEventListener('touchstart', retryOnGesture, { passive: true });
-        window.addEventListener('scroll', retryOnGesture, { passive: true });
-      });
-    };
-
-    if (document.readyState === 'complete') startVideo();
-    else window.addEventListener('load', startVideo, { once: true });
-  }
-
-  document.addEventListener('astro:page-load', () => {
-    initHeroScrollCue();
-    initHeroVideo();
-  });
+  document.addEventListener('astro:page-load', initHeroScrollCue);
 </script>
 
 <script>

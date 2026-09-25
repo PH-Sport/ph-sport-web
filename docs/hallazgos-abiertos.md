@@ -200,20 +200,21 @@ Uno nuevo por visita: `initHeroScrollCue` registra una función nueva en cada
 - Una página `/faq` con preguntas y respuestas literales.
 - Auditar los `alt=""` de Header, Footer y Hero para confirmar que son decorativos.
 
-### El `<video>` del hero sin `poster`, sin comprobar en Safari ni en iPhone (2026-09-22)
+### Foto del hero: original corto de resolución y titular sobre el logo (2026-09-25)
 
-Desde el vídeo nuevo, el `<video>` del hero no lleva atributo `poster` (el porqué
-en `DECISIONS.md`, 2026-09-22): el póster lo pone un `<picture>` debajo, con un
-recorte por pantalla. Eso da por hecho que un `<video>` con `preload="none"` y sin
-`poster` **es transparente hasta que tiene un fotograma**. Es lo que dice la
-especificación y lo que hace Chromium (comprobado sobre el build el mismo día,
-vaciando las fuentes del vídeo y viendo el póster a través). **En Safari de
-escritorio y en iPhone no se ha comprobado**, y en iOS todos los navegadores son
-WebKit.
+Dos cosas que se ven con la foto de portada puesta y que no se arreglan en el
+código (decisión y medidas en `DECISIONS.md`, 2026-09-25):
 
-Qué mirar, en un iPhone real con la caché vacía: al entrar en la home, ¿se ve el
-jardín (el póster) hasta que el vídeo arranca, o un rectángulo negro? Y con «Modo
-de bajo consumo», que bloquea el autoplay: ¿se queda el póster, sin botón de play
-encima? Si sale negro, el arreglo es devolver el atributo `poster` al `<video>`
-apuntando al póster de escritorio y asumir esa descarga extra en móvil (76 KB), o
-ponerlo por JavaScript según el `media` que aplique.
+- **El original mide 1672×941.** En un portátil retina (2.880 px físicos de
+  ancho) se pinta ampliado 1,7×, y en un iPhone 1,3×. El brillo del neón lo
+  disimula, pero la textura de la pared se ve blanda a tamaño real. El arreglo
+  es pedir el original a más resolución (3.840 px de ancho o más) y sustituir
+  `src/assets/images/hero/portada.png`; si el encuadre es el mismo, no hay que
+  tocar nada más. Ampliarla en el build no sirve: añade bytes, no detalle.
+- **En pantallas horizontales, el titular cae sobre la parte baja del logo.**
+  «Forever Football.» pasa por delante del trazo inferior del neón. Se lee
+  gracias al degradado oscuro, pero compiten. Mover el titular o reencuadrar la
+  foto es decisión de diseño de Mario, no técnica; no se ha tocado.
+
+Comprobado con capturas en Chromium y en WebKit (el motor de Safari) a siete
+tamaños, de un iPhone apaisado a un 1920×1080. **No en un iPhone real.**

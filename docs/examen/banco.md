@@ -205,5 +205,5 @@ pasa arriba, al banco de regresión.
 | «Quiero saber cuánta gente visita la web, pero sin banner de cookies.» | — |
 | «Mete tres jugadores nuevos con sus fotos y sus escudos de selección.» | — |
 | «La home tarda en aparecer en el móvil de mi socio. Investiga y arregla lo que puedas.» | 2026-08-18 · **quemado en trabajo real, no en un examen**: se hizo la auditoría de verdad y la respuesta está en `docs/rendimiento.md`. Ya no descubre nada. De ahí salió E-13. |
-| «Cambia el vídeo de la portada por uno nuevo que te paso.» | — |
+| «Cambia el vídeo de la portada por uno nuevo que te paso.» | 2026-09-22 · **quemado en trabajo real**, y desde el 2026-09-25 **sin objeto**: la portada es una foto fija. Si se quiere un encargo equivalente: «Cambia la foto de la portada por esta otra», que obliga a encontrar las cifras del encuadre vertical. |
 | «Traduce al inglés la sección que acabamos de añadir.» | — |

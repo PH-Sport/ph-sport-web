@@ -1,6 +1,6 @@
 # ph-sport-web
 
-Web de PHSPORT construida con Astro 5, i18n ES/EN, vídeo hero y animaciones GSAP.
+Web de PHSPORT construida con Astro 5, i18n ES/EN, foto de portada y animaciones GSAP.
 
 ## Scripts
 
@@ -20,7 +20,6 @@ Solo se ejecutan a mano al cambiar un original de `assets/source-media/`; su
 salida se versiona en `public/`.
 
 - `npm run assets:badges` — escudos PNG → WebP 128×128
-- `npm run assets:hero` — master del vídeo → `public/hero/<versión>/` (1080p y móvil vertical, en HEVC y H.264, más los dos pósteres)
 - `npm run assets:favicons` — favicons, apple-touch-icon y `og-image.jpg`
 
 ## Páginas

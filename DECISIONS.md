@@ -13,6 +13,86 @@ leído el resto.
 
 ---
 
+## 2026-09-25 · El hero pasa de vídeo a foto fija, servida por `astro:assets`
+
+**Decisión**: la portada deja el vídeo montado el 2026-09-22 y muestra una foto
+fija: el logo PH en neón sobre una pared oscura de fieltro
+(`src/assets/images/hero/portada.png`). Se la pidieron a Mario ese mismo día.
+Llegó como PNG de **1672×941**, sin perfil de color ni metadatos. Se sirve con
+`<Image>` de `astro:assets` en WebP calidad 90, en cuatro anchos (640, 960,
+1280 y 1672 px: 22, 53, 103 y 174 KB).
+
+**Por qué `astro:assets` y no `public/`, como el póster y el vídeo.** Da nombre
+con hash, así que la foto no sufre la caché de 7 días que `vercel.json` pone a
+`public/` (`docs/trampas-conocidas.md`): cambiarla es sustituir el archivo. Y
+genera los anchos en el build, sin script propio. Es además lo que pide la
+tabla de reglas de rendimiento de `ARCHITECTURE.md`. El póster anterior estaba
+en `public/` porque tenía que ser el primer fotograma exacto del vídeo; sin
+vídeo, ese motivo desaparece.
+
+**Por qué WebP 90 y no AVIF**, que sería lo esperable. Medido sobre la foto, a
+1672 px, con SSIM contra el original (1 = idéntico):
+
+| Formato · calidad | Peso | SSIM |
+|---|---:|---:|
+| AVIF 60 | 36 KB | 0,928 |
+| AVIF 80 | 126 KB | 0,964 |
+| AVIF 90 | 301 KB | 0,984 |
+| WebP 85 | 91 KB | 0,939 |
+| WebP 90 | 152 KB | 0,956 |
+
+El SSIM da ganador a AVIF, pero **comparado a 2× lado a lado, AVIF borra la
+textura de fieltro de la pared incluso a calidad 90**, y WebP 90 la conserva
+con la mitad de peso. El fieltro es casi ruido: un códec que lo aplana a una
+superficie lisa puntúa mejor que uno que conserva una textura parecida pero no
+idéntica píxel a píxel. **En texturas así, no elegir calidad solo por SSIM.**
+(En el build, el WebP de 1672 px sale a 174 KB y no a 152: el codificador de
+Astro no usa los mismos ajustes que la prueba.)
+
+**Por qué no se generan anchos mayores que el original.** Ampliar en el build
+solo añade bytes, no detalle. En un portátil retina la foto se pinta ampliada
+1,7× y se ve algo blanda; el arreglo es un original más grande
+(`docs/hallazgos-abiertos.md`).
+
+**Por qué dos encuadres con la misma imagen.** El logo ocupa el 45,7 % del
+ancho de la foto y el 86 % del alto (medido sobre los píxeles del neón). En
+horizontal, `object-fit: cover` centrado en el logo lo enseña entero. En
+vertical no: `cover` ajusta al alto y en un iPhone solo se vería el centro del
+logo, ampliado 2,7×. Así que en pantallas más estrechas que 9:10 la foto se
+pinta en una franja al 192 % del ancho, con el logo entero ocupando el 88 % de
+la pantalla, el centro en el 42 % del alto (por encima del titular) y los
+bordes de arriba y abajo fundidos con el fondo. El `sizes` declara esos anchos
+reales (192vw en vertical, 178vh en horizontal más estrecha que 16:9), porque
+con el `100vw` de siempre el navegador elegiría una variante pequeña y la
+ampliaría.
+
+**Alternativa considerada — `cover` también en vertical**, que es lo que había
+con el vídeo. Descartada: con el vídeo daba igual porque era metraje de
+oficina, pero aquí el motivo es el logo, y cortado a un fragmento central deja
+de reconocerse.
+
+**Alternativa considerada — un recorte vertical aparte**, como el del vídeo.
+Descartada: el logo es más ancho que cualquier recorte vertical de 941 px de
+alto, así que el recorte también lo cortaría.
+
+**Alternativa considerada — dejar la foto como póster del vídeo.** No era lo
+pedido: la foto sustituye al vídeo.
+
+**Lo que se retira**: los seis archivos de `public/hero/2026-09/`, el master
+`assets/source-media/hero-2026-09.mp4`, `scripts/build-hero-variants.mjs` y el
+script `npm run assets:hero`. **Para recuperar el vídeo**: `git checkout
+95e6af0 --` sobre esas rutas y sobre `src/lib/heroMedia.ts` y
+`src/components/sections/HeroSection.astro`, más la línea de `package.json`.
+`ffmpeg-static` se queda en las dependencias de desarrollo aunque ya no lo usa
+ningún script: quitarlo toca el lockfile y no hace falta para esto.
+
+**Lo que se ve y no se ha tocado**: en pantallas horizontales, «Forever
+Football.» pasa por delante del trazo inferior del neón. Se lee gracias al
+degradado, pero compiten. Recolocar el titular o reencuadrar es decisión de
+diseño, anotada en `docs/hallazgos-abiertos.md`.
+
+---
+
 ## 2026-09-25 · `/talentos` sigue el orden de la lista de Mario, no los bloques por categoría
 
 **Decisión**: el grid enseña **51 jugadores en el orden exacto de la lista de
@@ -69,6 +149,11 @@ Rodríguez, Fran Manzanara, Santi Pallarés, Boston Billups y Álex Domínguez.
 del archivo y el filtro sigue siendo `hidden`.
 
 ## 2026-09-22 · Vídeo nuevo del hero: 1080p en HEVC y H.264, recorte vertical para móvil, carpeta versionada
+
+> ⚠️ **SUPERADA el 2026-09-25**: el hero ya no tiene vídeo, es una foto fija (ver
+> esa entrada). Los archivos que se describen aquí están borrados del árbol y se
+> recuperan del commit `95e6af0`. Las mediciones de códecs siguen valiendo si
+> algún día vuelve un vídeo.
 
 **Decisión**: el hero pasa del vídeo de 8 s a 720p al nuevo de edición (17,7 s,
 1920×1080, 25 fps; llegó como `.mov` H.264 a 11,7 Mbps con audio PCM de 24 bits
@@ -367,6 +452,10 @@ SPA, y `/aviso-legal` recupera el scroll suave. Smoke E2E, 38/38.
 ---
 
 ## 2026-08-29 · El telón de intro pasa a CSS, y el vídeo del hero deja de precargarse
+
+> ⚠️ **La parte del vídeo quedó sin objeto el 2026-09-25**: el hero es una foto
+> fija. Lo aprendido (`preload="none"` y `play()` tras `load`) vale si vuelve un
+> vídeo. **La parte del telón en CSS sigue vigente.**
 
 **Decisión**: la animación de entrada de la home se reproduce con `@keyframes`, sin
 GSAP y sin depender de que ningún JavaScript se ejecute. El vídeo del hero pierde
@@ -745,6 +834,9 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 ---
 
 ## 2026-04-22 · Hero con vídeo de fondo — 2 variantes mp4 + poster
+
+> ⚠️ **SUPERADA**: el 2026-09-22 cambiaron el vídeo y sus archivos, y el
+> 2026-09-25 el hero pasó a una foto fija. Ver esas dos entradas.
 
 **Decisión**: el hero usa vídeo de fondo con dos variantes de calidad servidas localmente (`video-ph-web-480.mp4` para móvil, `*-720.mp4` para tablet/desktop) y un poster estático (`hero-poster.webp`) como LCP real. El master `video-ph-web.mp4` vive en `assets/source-media/` y solo se usa como input de `scripts/build-hero-variants.mjs`.
 

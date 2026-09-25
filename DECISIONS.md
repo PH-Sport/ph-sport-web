@@ -91,6 +91,38 @@ Football.» pasa por delante del trazo inferior del neón. Se lee gracias al
 degradado, pero compiten. Recolocar el titular o reencuadrar es decisión de
 diseño, anotada en `docs/hallazgos-abiertos.md`.
 
+**Actualización del mismo día — segunda versión de la foto.** Horas después
+llegó otra `Portada Web.png`, con el mismo nombre y el mismo tamaño, que
+sustituye a la primera. Mismo encuadre: el logo está en la misma posición al
+píxel (centro 53,1 % × 50,9 %, 45,7 % del ancho, del 7,8 % al 93,9 % del alto),
+así que las cifras del encuadre vertical no cambian. Cambia el acabado: la
+pared es más lisa y desaparecen los tornillos del metacrilato.
+
+Dos cosas de este archivo que no se ven a simple vista:
+
+- **Venía con transparencia en toda la imagen**, un 96 % de opacidad casi
+  uniforme (valores entre 233 y 251 sobre 255), sin viñeteado: un resto de la
+  exportación. Se guarda en el repo **sin el canal alfa** y con los colores
+  idénticos al original (comprobado píxel a píxel). Con la transparencia, el
+  fondo dorado del hero se habría transparentado un poco a través de la foto.
+- **El formato se volvió a medir**, porque el motivo de descartar AVIF era la
+  textura de la pared. Con la pared lisa:
+
+  | Formato · calidad | Peso | SSIM |
+  |---|---:|---:|
+  | AVIF 80 | 46 KB | 0,982 |
+  | AVIF 86 | 68 KB | 0,984 |
+  | AVIF 90 | 113 KB | 0,987 |
+  | WebP 85 | 50 KB | 0,975 |
+  | WebP 90 | 73 KB | 0,979 |
+  | WebP 94 | 106 KB | 0,981 |
+
+  Mirado con el contraste multiplicado por 3,2 sobre el halo del neón, que es
+  donde saldrían escalones: ninguno los hace, y las diferencias entre ellos
+  solo se ven forzando la imagen. AVIF ya no pierde nada visible, pero tampoco
+  gana lo bastante para añadir un segundo formato. **Se queda WebP 90.** En el
+  build: 20, 35, 52 y 77 KB (antes 22, 53, 103 y 174).
+
 ---
 
 ## 2026-09-25 · `/talentos` sigue el orden de la lista de Mario, no los bloques por categoría

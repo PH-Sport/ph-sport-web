@@ -190,7 +190,7 @@ No hay páginas de detalle por jugador: el grid de `/talentos/` es no-clicable p
 ### Foto
 
 Desde el 2026-09-25 el hero es una **foto fija**: el logo PH en neón sobre la
-pared de fieltro (`src/assets/images/hero/portada.png`, 1672×941). Antes fue un
+pared oscura (`src/assets/images/hero/portada.png`, 1672×941). Antes fue un
 vídeo; el porqué del cambio y lo que se midió, en `DECISIONS.md` (misma fecha).
 
 Se sirve con `<Image>` de `astro:assets` en WebP calidad 90, en cuatro anchos

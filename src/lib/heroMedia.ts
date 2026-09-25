@@ -21,9 +21,11 @@ export const HERO_IMAGE = portada;
 export const HERO_IMAGE_WIDTHS = [640, 960, 1280, 1672];
 
 /**
- * WebP a calidad 90, y sin AVIF: comparado a 2× lado a lado con el original,
- * AVIF borra la textura de fieltro de la pared incluso a calidad 90 (301 KB),
- * y WebP 90 la conserva con 152 KB a 1672 px.
+ * WebP a calidad 90, y sin AVIF. Con la primera versión de la foto, AVIF
+ * borraba la textura de la pared incluso a calidad 90; con la actual, de pared
+ * más lisa, AVIF ya no pierde nada visible, pero tampoco gana: WebP 90 pesa
+ * 77 KB a 1672 px y no hace escalones en el halo del neón. Cifras de las dos
+ * mediciones en DECISIONS.md (2026-09-25).
  */
 export const HERO_IMAGE_QUALITY = 90;
 

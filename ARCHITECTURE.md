@@ -477,7 +477,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ `public/hero/2026-09/` | 1080p (escritorio) y recorte 720×1080 (móvil vertical), cada uno en HEVC y H.264, más dos pósteres. Master sin audio en `/assets/source-media/` |
-| Fotos jugadores | ⏳ 44 de los 51 visibles | Sin ninguna: Abde Raihani, Dani Rebollo, Gonzalo Rodríguez, Fran Manzanara, Santi Pallarés, Boston Billups y Álex Domínguez. Mario va a revisar toda la selección (2026-09-25) |
+| Fotos jugadores | ⏳ 44 de los 51 visibles | Las 10 primeras ya son de la serie de estudio nueva; las otras 34, antiguas. Sin ninguna: Abde Raihani, Dani Rebollo, Gonzalo Rodríguez, Fran Manzanara, Santi Pallarés, Boston Billups y Álex Domínguez. Detalle en `docs/hallazgos-abiertos.md` (2026-09-25) |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia |
 | OG image (1200×630px) | ❌ Pendiente | |
@@ -486,7 +486,7 @@ que ejecutar nada a mano.
 
 | Pendiente | Bloqueado por |
 |---|---|
-| Fotos de la selección visible: 7 sin ninguna y el resto pendiente de revisión (2026-09-25) | Cliente |
+| Fotos de la selección visible: 41 por pasar a la serie de estudio, 7 de ellas sin ninguna foto (2026-09-25) | Cliente |
 | OG image 1200×630px | Diseño |
 | GA4 — Measurement ID | Decisión de si se integra |
 | ⚠️ Söhne `.woff2` con licencia de producción — **sigue sin comprar a 2026-08-11**, y la web está publicada desde abril con los archivos de prueba | Compra de licencia (Mario) |

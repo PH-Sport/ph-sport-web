@@ -99,26 +99,26 @@ Encargo de Mario, en curso. El 2026-09-03 se actualizó el club de 29 jugadores
 misma fecha): lo pendiente de esta sección solo importa para los que estén
 visibles. De ellos, siete no tienen foto ninguna (Abde Raihani, Dani Rebollo,
 Gonzalo Rodríguez, Fran Manzanara, Santi Pallarés, Boston Billups y Álex
-Domínguez) y Mario va a revisar las del resto.
+Domínguez) y el resto va pasando a la serie de estudio de abajo.
 
-**Hechas (6)**: Dani Requena, Juan Cruz, Mati Barzic, Javi Hernández, Thiago Helguera
-e Iker Luque.
+**Desde el 2026-09-25 las fotos son una serie de estudio que prepara Mario**: todas
+con el mismo fondo oscuro, posado de brazos cruzados y la camiseta del club actual.
+Las va entregando por tandas y se sustituyen en el orden del grid. Mientras no
+estén todas, el grid mezcla las de estudio con las antiguas.
 
-**Lo primero que hay que retomar**, porque es trabajo ya hecho que se pierde si no se
-escribe:
+**Hechas con la serie de estudio (10)**, las diez primeras posiciones: Juan Cruz,
+Dani Requena, Mati Barzic, Iker Luque, Javi Hernández, Alberto Del Moral, Thiago
+Helguera, Owen Emeka, Salim El-Jebari y Damián Cáceres. Con ellas se cierran dos
+pendientes de la vía anterior: la foto de Alberto Del Moral que esperaba visto bueno
+y la de Mati Barzic, que era corta de resolución (619×825).
 
-- **Alberto Del Moral tiene foto buena y ya localizada**, no hace falta volver a
-  buscarla: partido del Hajduk Split en Poljud, `WhatsApp Image 2026-07-14 at
-  13.44.15.jpeg` en su carpeta de Drive (1600×1066). Cumple el criterio entero —campo,
-  cuerpo entero, balón y cara— y admite un 3:4 de 798×1064 recortando desde x=510. No
-  se aplicó porque quedó pendiente del visto bueno de Mario. **No contarlo entre los
-  que están sin mirar.**
-- **La foto de Mati Barzic está aplicada pero corta de resolución**: 619×825, así que
-  la variante de 720w que sirve la tarjeta sale **escalada** desde 619 px y se ve más
-  blanda que el resto del roster. El original del que salió ese encuadre es de
-  1638×2048 (`WhatsApp Image 2026-07-20 at 14.34.41 (2).jpeg`) y da para repetir el
-  mismo recorte a ~1180×1573. No es urgente, pero es la única de las siete con esa
-  pega.
+**Cómo se aplica una tanda**: llegan en PNG de 1085×1450 (3:4), sin perfil de color,
+con el nombre `<Nombre> Web.png`. Se convierten a JPEG de calidad 92 y se guardan
+**encima del archivo que ya existe, con su misma extensión** (ver «Sustituir, no
+añadir» más abajo). Cada una queda en unos 300-400 kB. **El nombre del PNG no
+siempre coincide con el del roster** —en la primera tanda venía «Salim El Jabari»
+para `Salim El-Jebari`—, así que el emparejamiento se hace por posición en el grid y
+comprobando la camiseta, no por el nombre del archivo.
 
 Los 29 nombres salen de ese commit; los más visibles son los que cambiaron de acera:
 Iker Luque (Atlético → Racing), Aimar García y Jorge Rajado (Atlético → Real Madrid),
@@ -149,8 +149,9 @@ a 2026-09-25, con la selección de 51, son 7.
 No confundir con los otros 16 jugadores de más arriba: ahí lo que está en duda es el
 club, no la foto.
 
-**De dónde salen las fotos.** Del Drive de PH, carpeta «JUGADORES PH SPORT» en
-*Compartido conmigo*, con una subcarpeta por jugador titulada `NOMBRE (CLUB)`. Dos
+**De dónde salían las fotos antes de la serie de estudio.** Del Drive de PH, carpeta
+«JUGADORES PH SPORT» en *Compartido conmigo*, con una subcarpeta por jugador titulada
+`NOMBRE (CLUB)`. Sigue siendo la vía si a alguien no le llega foto de estudio. Dos
 trampas comprobadas el 2026-09-05:
 
 - **El título de la carpeta no dice qué hay dentro.** «RAYAN ZINEBI (REAL MADRID C)»
@@ -159,7 +160,8 @@ trampas comprobadas el 2026-09-05:
 - **Los nombres de archivo tampoco** (`WhatsApp Image 2026-07-20 at 20.54.31 (2).jpeg`).
   Hay que verlas. La vista de cuadrícula de Drive sirve para triar de un vistazo.
 
-**Criterio de selección** (el que aplicó Mario al elegir las seis hechas): equipación
+**Criterio de selección en Drive** (el que aplicó Mario al elegir las seis primeras,
+antes de la serie de estudio): equipación
 del club actual, cara visible y encuadre 3:4. Se prefiere acción en el campo con balón
 y cuerpo entero, pero **un posado de presentación vale cuando es lo único que hay** —
 Javi Hernández, Thiago Helguera e Iker Luque son de sesión de estudio o de fichaje. Y
@@ -170,7 +172,7 @@ entre dos de acción gana la del jugador aislado sobre la que tiene un rival enc
 Delgado, Ognjen Teofilovic, Rayan Zinebi y Salim El-Jebari. En todos ellos el material
 es del club anterior. No es que no se hayan buscado: no están. Volver a mirar cuando el
 fotógrafo suba material nuevo. De los siete, a 2026-09-25 están visibles todos
-menos Ognjen Teofilovic.
+menos Ognjen Teofilovic, y Salim El-Jebari ya tiene la de estudio.
 
 ### Backlog de rendimiento (medido el 2026-08-18)
 

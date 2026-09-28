@@ -110,9 +110,13 @@ estén todas, el grid mezcla las de estudio con las antiguas.
 Dani Requena, Mati Barzic, Iker Luque, Javi Hernández, Alberto Del Moral, Thiago
 Helguera, Owen Emeka, Salim El-Jebari y Damián Cáceres. Con ellas se cierran dos
 pendientes de la vía anterior: la foto de Alberto Del Moral que esperaba visto bueno
-y la de Mati Barzic, que era corta de resolución (619×825).
+y la de Mati Barzic, que era corta de resolución (619×825). El 2026-09-28 Mario
+rehízo cinco de ellas (Damián Cáceres, Iker Luque, Mati Barzic, Salim El-Jebari y
+Thiago Helguera) con menos resplandor dorado detrás, y las nuevas sustituyeron a las
+primeras. Una foto ya aplicada puede volver a llegar retocada: se sustituye igual.
 
-**Cómo se aplica una tanda**: llegan en PNG de 1085×1450 (3:4), sin perfil de color,
+**Cómo se aplica una tanda**: llegan en PNG de unos 1085×1450 (3:4; alguna varía en
+un par de píxeles), sin perfil de color,
 con el nombre `<Nombre> Web.png`. Se convierten a JPEG de calidad 92 y se guardan
 **encima del archivo que ya existe, con su misma extensión** (ver «Sustituir, no
 añadir» más abajo). Cada una queda en unos 300-400 kB. **El nombre del PNG no

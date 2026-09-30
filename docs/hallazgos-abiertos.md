@@ -102,41 +102,26 @@ Santi Pallarés, Boston Billups y Álex Domínguez) y el resto va pasando a la s
 estudio de abajo.
 
 **Desde el 2026-09-25 las fotos son una serie de estudio que prepara Mario**: todas
-con el mismo fondo oscuro, posado de brazos cruzados y, salvo las dos excepciones de
-abajo, la camiseta del club actual.
+con el mismo fondo oscuro, posado de brazos cruzados y la camiseta del club actual.
 Las va entregando por tandas y se sustituyen en el orden del grid. Mientras no
 estén todas, el grid mezcla las de estudio con las antiguas.
 
-**Hechas con la serie de estudio (24)**, las posiciones 1 a 25 del grid menos la 24
-(Jordi Ferrer), a 2026-09-30: Juan Cruz, Dani Requena, Mati Barzic, Iker Luque, Javi
-Hernández, Alberto Del Moral, Thiago Helguera, Owen Emeka, Salim El-Jebari, Damián
-Cáceres, Juanjo Sánchez, Carlos Guirao, Francisco Dias, Dani Muñoz, Christian
-Manrique, Dimitar Danev, Roberto Olabe, Alessandro Burlamaqui, Axel Montaña, Luis
-Quintero, Abde Raihani, Abdoulaye Keita, Dani Rebollo y Gonzalo Rodríguez. Con ellas
+**Hechas con la serie de estudio (25)**, las posiciones 1 a 25 del grid a
+2026-09-30: Juan Cruz, Dani Requena, Mati Barzic, Iker Luque, Javi Hernández, Alberto
+Del Moral, Thiago Helguera, Owen Emeka, Salim El-Jebari, Damián Cáceres, Juanjo
+Sánchez, Carlos Guirao, Francisco Dias, Dani Muñoz, Christian Manrique, Dimitar
+Danev, Roberto Olabe, Alessandro Burlamaqui, Axel Montaña, Luis Quintero, Abde
+Raihani, Abdoulaye Keita, Dani Rebollo, Jordi Ferrer y Gonzalo Rodríguez. Con ellas
 se cierran pendientes de la vía anterior: la foto de Alberto Del Moral que esperaba
-visto bueno, la de Mati Barzic, que era corta de resolución (619×825), y tres
-jugadores que no tenían ninguna (Abde Raihani, Dani Rebollo y Gonzalo Rodríguez).
-
-**Jordi Ferrer (posición 24) sigue con su foto antigua**: el PNG que llegó con su
-nombre el 2026-09-30 era una copia exacta, byte a byte, del de Dani Rebollo (portero
-del AVS; Ferrer es del Atlético La Paz). No se aplicó. Pendiente de que Mario mande
-la buena.
+visto bueno, la de Mati Barzic, que era corta de resolución (619×825), la de Carlos
+Guirao, que enseñaba el club anterior (Leganés), y tres jugadores que no tenían
+ninguna (Abde Raihani, Dani Rebollo y Gonzalo Rodríguez).
 
 **Las diez primeras llegaron dos veces.** La primera versión llevaba un resplandor
 dorado muy fuerte detrás; Mario las rehízo más suaves (cinco el 2026-09-28 y las
 otras cinco el 2026-09-30) y las nuevas sustituyeron a las primeras. Desde la
 posición 11 ya llegan con el resplandor suave. Una foto ya aplicada puede volver a
 llegar retocada: se sustituye igual.
-
-**Dos fotos de estudio no enseñan el club de la ficha**, pendiente de Mario (a
-2026-09-30). Las dos se aplicaron igual porque la foto anterior tenía ya la misma
-camiseta, así que no empeoran nada:
-- **Carlos Guirao** lleva la del **CD Leganés** y la ficha dice CD Eldense. Según el
-  barrido del 2026-09-05 (más abajo), el Leganés es su club anterior y en Drive no hay
-  material del Eldense.
-- **Dimitar Danev** lleva la de la **selección de Macedonia del Norte** (escudo de la
-  federación, ФФМ) y la ficha dice Vardar Skopje. Es internacional con esa selección
-  (`nationalTeamCodes: ["MK"]`), pero la tarjeta muestra el club.
 
 **Cómo se aplica una tanda**: llegan en PNG de unos 1085×1450 (3:4; alguna varía en
 un par de píxeles), sin perfil de color,
@@ -150,6 +135,13 @@ contenido sea el suyo**: en la tanda del 2026-09-30 dos PNG con nombres distinto
 eran el mismo archivo. Antes de aplicar, comparar las sumas (`md5 -q *.png`) y
 buscar repetidos. Si el jugador no tenía foto, el archivo nuevo se crea como
 `<slug>.jpg`.
+
+**Revisar cada camiseta contra el club de la ficha antes de aplicar**, ampliando el
+escudo. En la tanda del 2026-09-30 llegaron así Carlos Guirao con la del Leganés (su
+club anterior; la ficha dice CD Eldense) y Dimitar Danev con la de la selección de
+Macedonia del Norte (la ficha dice Vardar Skopje). Mario las rehízo con el club
+correcto esa misma noche. Si una no cuadra, se le dice a Mario; no se cambia el club
+de la ficha para que encaje con la foto.
 
 Los 29 nombres salen de ese commit; los más visibles son los que cambiaron de acera:
 Iker Luque (Atlético → Racing), Aimar García y Jorge Rajado (Atlético → Real Madrid),
@@ -203,8 +195,8 @@ entre dos de acción gana la del jugador aislado sobre la que tiene un rival enc
 Delgado, Ognjen Teofilovic, Rayan Zinebi y Salim El-Jebari. En todos ellos el material
 es del club anterior. No es que no se hayan buscado: no están. Volver a mirar cuando el
 fotógrafo suba material nuevo. De los siete, a 2026-09-25 están visibles todos
-menos Ognjen Teofilovic. Salim El-Jebari y Carlos Guirao ya tienen la de estudio,
-pero la de Guirao sigue con la camiseta del club anterior (arriba).
+menos Ognjen Teofilovic. Salim El-Jebari y Carlos Guirao ya tienen la de estudio con
+la camiseta del club actual.
 
 ### Backlog de rendimiento (medido el 2026-08-18)
 

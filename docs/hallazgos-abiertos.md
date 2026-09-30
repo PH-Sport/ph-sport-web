@@ -102,18 +102,34 @@ Gonzalo Rodríguez, Fran Manzanara, Santi Pallarés, Boston Billups y Álex
 Domínguez) y el resto va pasando a la serie de estudio de abajo.
 
 **Desde el 2026-09-25 las fotos son una serie de estudio que prepara Mario**: todas
-con el mismo fondo oscuro, posado de brazos cruzados y la camiseta del club actual.
+con el mismo fondo oscuro, posado de brazos cruzados y, salvo las dos excepciones de
+abajo, la camiseta del club actual.
 Las va entregando por tandas y se sustituyen en el orden del grid. Mientras no
 estén todas, el grid mezcla las de estudio con las antiguas.
 
-**Hechas con la serie de estudio (10)**, las diez primeras posiciones: Juan Cruz,
-Dani Requena, Mati Barzic, Iker Luque, Javi Hernández, Alberto Del Moral, Thiago
-Helguera, Owen Emeka, Salim El-Jebari y Damián Cáceres. Con ellas se cierran dos
-pendientes de la vía anterior: la foto de Alberto Del Moral que esperaba visto bueno
-y la de Mati Barzic, que era corta de resolución (619×825). El 2026-09-28 Mario
-rehízo cinco de ellas (Damián Cáceres, Iker Luque, Mati Barzic, Salim El-Jebari y
-Thiago Helguera) con menos resplandor dorado detrás, y las nuevas sustituyeron a las
-primeras. Una foto ya aplicada puede volver a llegar retocada: se sustituye igual.
+**Hechas con la serie de estudio (20)**, las posiciones 1 a 20 del grid a
+2026-09-30: Juan Cruz, Dani Requena, Mati Barzic, Iker Luque, Javi Hernández,
+Alberto Del Moral, Thiago Helguera, Owen Emeka, Salim El-Jebari, Damián Cáceres,
+Juanjo Sánchez, Carlos Guirao, Francisco Dias, Dani Muñoz, Christian Manrique,
+Dimitar Danev, Roberto Olabe, Alessandro Burlamaqui, Axel Montaña y Luis Quintero.
+Con ellas se cierran dos pendientes de la vía anterior: la foto de Alberto Del Moral
+que esperaba visto bueno y la de Mati Barzic, que era corta de resolución (619×825).
+
+**Las diez primeras llegaron dos veces.** La primera versión llevaba un resplandor
+dorado muy fuerte detrás; Mario las rehízo más suaves (cinco el 2026-09-28 y las
+otras cinco el 2026-09-30) y las nuevas sustituyeron a las primeras. Desde la
+posición 11 ya llegan con el resplandor suave. Una foto ya aplicada puede volver a
+llegar retocada: se sustituye igual.
+
+**Dos fotos de estudio no enseñan el club de la ficha**, pendiente de Mario (a
+2026-09-30). Las dos se aplicaron igual porque la foto anterior tenía ya la misma
+camiseta, así que no empeoran nada:
+- **Carlos Guirao** lleva la del **CD Leganés** y la ficha dice CD Eldense. Según el
+  barrido del 2026-09-05 (más abajo), el Leganés es su club anterior y en Drive no hay
+  material del Eldense.
+- **Dimitar Danev** lleva la de la **selección de Macedonia del Norte** (escudo de la
+  federación, ФФМ) y la ficha dice Vardar Skopje. Es internacional con esa selección
+  (`nationalTeamCodes: ["MK"]`), pero la tarjeta muestra el club.
 
 **Cómo se aplica una tanda**: llegan en PNG de unos 1085×1450 (3:4; alguna varía en
 un par de píxeles), sin perfil de color,
@@ -176,7 +192,8 @@ entre dos de acción gana la del jugador aislado sobre la que tiene un rival enc
 Delgado, Ognjen Teofilovic, Rayan Zinebi y Salim El-Jebari. En todos ellos el material
 es del club anterior. No es que no se hayan buscado: no están. Volver a mirar cuando el
 fotógrafo suba material nuevo. De los siete, a 2026-09-25 están visibles todos
-menos Ognjen Teofilovic, y Salim El-Jebari ya tiene la de estudio.
+menos Ognjen Teofilovic. Salim El-Jebari y Carlos Guirao ya tienen la de estudio,
+pero la de Guirao sigue con la camiseta del club anterior (arriba).
 
 ### Backlog de rendimiento (medido el 2026-08-18)
 

@@ -69,7 +69,8 @@ que es exactamente el mismo archivo que se servía antes.
   5,5 MB de fotos en vez de 2,6 (las tarjetas cargan en diferido, según se ve).
 - **La compilación en frío pasa de ~3 s a ~21 s** en local, porque codificar
   AVIF es lento. Con la caché de imágenes de Astro (`node_modules/.astro`)
-  vuelve a ser rápida.
+  vuelve a ser rápida. **En Vercel, el primer despliegue con AVIF tardó unos
+  6 min y medio** (el anterior, 25 s).
 - El `<picture>` lleva `display: contents` para que la foto siga midiéndose
   contra `.talents__photo`, como antes.
 

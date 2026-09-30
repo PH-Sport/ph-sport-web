@@ -97,9 +97,9 @@ Encargo de Mario, en curso. El 2026-09-03 se actualizó el club de 29 jugadores
 
 **Desde el 2026-09-25 solo se muestra una selección de 51** (`DECISIONS.md`,
 misma fecha): lo pendiente de esta sección solo importa para los que estén
-visibles. De ellos, siete no tienen foto ninguna (Abde Raihani, Dani Rebollo,
-Gonzalo Rodríguez, Fran Manzanara, Santi Pallarés, Boston Billups y Álex
-Domínguez) y el resto va pasando a la serie de estudio de abajo.
+visibles. De ellos, cuatro no tienen foto ninguna a 2026-09-30 (Fran Manzanara,
+Santi Pallarés, Boston Billups y Álex Domínguez) y el resto va pasando a la serie de
+estudio de abajo.
 
 **Desde el 2026-09-25 las fotos son una serie de estudio que prepara Mario**: todas
 con el mismo fondo oscuro, posado de brazos cruzados y, salvo las dos excepciones de
@@ -107,13 +107,20 @@ abajo, la camiseta del club actual.
 Las va entregando por tandas y se sustituyen en el orden del grid. Mientras no
 estén todas, el grid mezcla las de estudio con las antiguas.
 
-**Hechas con la serie de estudio (20)**, las posiciones 1 a 20 del grid a
-2026-09-30: Juan Cruz, Dani Requena, Mati Barzic, Iker Luque, Javi Hernández,
-Alberto Del Moral, Thiago Helguera, Owen Emeka, Salim El-Jebari, Damián Cáceres,
-Juanjo Sánchez, Carlos Guirao, Francisco Dias, Dani Muñoz, Christian Manrique,
-Dimitar Danev, Roberto Olabe, Alessandro Burlamaqui, Axel Montaña y Luis Quintero.
-Con ellas se cierran dos pendientes de la vía anterior: la foto de Alberto Del Moral
-que esperaba visto bueno y la de Mati Barzic, que era corta de resolución (619×825).
+**Hechas con la serie de estudio (24)**, las posiciones 1 a 25 del grid menos la 24
+(Jordi Ferrer), a 2026-09-30: Juan Cruz, Dani Requena, Mati Barzic, Iker Luque, Javi
+Hernández, Alberto Del Moral, Thiago Helguera, Owen Emeka, Salim El-Jebari, Damián
+Cáceres, Juanjo Sánchez, Carlos Guirao, Francisco Dias, Dani Muñoz, Christian
+Manrique, Dimitar Danev, Roberto Olabe, Alessandro Burlamaqui, Axel Montaña, Luis
+Quintero, Abde Raihani, Abdoulaye Keita, Dani Rebollo y Gonzalo Rodríguez. Con ellas
+se cierran pendientes de la vía anterior: la foto de Alberto Del Moral que esperaba
+visto bueno, la de Mati Barzic, que era corta de resolución (619×825), y tres
+jugadores que no tenían ninguna (Abde Raihani, Dani Rebollo y Gonzalo Rodríguez).
+
+**Jordi Ferrer (posición 24) sigue con su foto antigua**: el PNG que llegó con su
+nombre el 2026-09-30 era una copia exacta, byte a byte, del de Dani Rebollo (portero
+del AVS; Ferrer es del Atlético La Paz). No se aplicó. Pendiente de que Mario mande
+la buena.
 
 **Las diez primeras llegaron dos veces.** La primera versión llevaba un resplandor
 dorado muy fuerte detrás; Mario las rehízo más suaves (cinco el 2026-09-28 y las
@@ -138,13 +145,17 @@ con el nombre `<Nombre> Web.png`. Se convierten a JPEG de calidad 92 y se guarda
 añadir» más abajo). Cada una queda en unos 300-400 kB. **El nombre del PNG no
 siempre coincide con el del roster** —en la primera tanda venía «Salim El Jabari»
 para `Salim El-Jebari`—, así que el emparejamiento se hace por posición en el grid y
-comprobando la camiseta, no por el nombre del archivo.
+comprobando la camiseta, no por el nombre del archivo. **Tampoco garantiza que el
+contenido sea el suyo**: en la tanda del 2026-09-30 dos PNG con nombres distintos
+eran el mismo archivo. Antes de aplicar, comparar las sumas (`md5 -q *.png`) y
+buscar repetidos. Si el jugador no tenía foto, el archivo nuevo se crea como
+`<slug>.jpg`.
 
 Los 29 nombres salen de ese commit; los más visibles son los que cambiaron de acera:
 Iker Luque (Atlético → Racing), Aimar García y Jorge Rajado (Atlético → Real Madrid),
 Rayan Zinebi (Granada → Real Madrid) y Javi Hernández (Panathinaikos → Cerezo Osaka).
 
-Las fotos viven en `src/assets/images/players/` (110 archivos, `nombre-apellido.jpg`
+Las fotos viven en `src/assets/images/players/` (113 archivos a 2026-09-30, `nombre-apellido.jpg`
 o `.jpeg`) y las resuelve `getAllRosterEntries()` en `src/lib/playerDetail.ts`, que
 cae a `avatar-placeholder.svg` cuando no encuentra ninguna. No están en `public/`:
 las procesa el build, así que **sustituir el archivo basta y no hay que tocar código**.
@@ -164,7 +175,7 @@ Ese avatar genérico **no se puede buscar por «avatar-placeholder» en el HTML*
 menos de 4 kB, así que Vite lo incrusta como `data:image/svg+xml`. Para contar cuántas
 fichas se quedan sin foto hay que cruzar `jugadores.json` con el listado de
 `src/assets/images/players/`, no hacer grep sobre `dist/`. A 2026-09-05 eran 13;
-a 2026-09-25, con la selección de 51, son 7.
+a 2026-09-25, con la selección de 51, eran 7; a 2026-09-30, 4.
 
 No confundir con los otros 16 jugadores de más arriba: ahí lo que está en duda es el
 club, no la foto.

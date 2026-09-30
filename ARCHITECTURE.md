@@ -153,7 +153,9 @@ type PlayerDetailPayload = {
   subtitle: string;             // nombre del club (o cadena vacía)
   role: 'player' | 'coach';
   nationalTeamCodes: string[];  // ISO alpha-2 (hasta 2)
-  photoSrc: string;             // URL webp optimizada (astro:assets) o placeholder
+  photoSrc: string;             // WebP 480w (astro:assets) o placeholder
+  photoSrcset: string;          // WebP 85 en 320/480/720: reserva para navegadores sin AVIF
+  photoSrcsetAvif: string;      // AVIF 90 en 320/480/720: lo que carga casi todo el mundo
 };
 ```
 
@@ -257,7 +259,7 @@ Las animaciones de sección están en `src/scripts/ph-text-animations.ts`. El si
 
 | Regla | Motivo |
 |---|---|
-| Todas las imágenes con `<Image>` de `astro:assets` | WebP automático + width/height → cero CLS |
+| Todas las imágenes con `<Image>` de `astro:assets` | WebP automático + width/height → cero CLS. Excepción: las fotos del grid de talentos van en `<picture>` AVIF 90 con WebP 85 de reserva (`DECISIONS.md`, 2026-10-01) |
 | GSAP en `<script>` de `.astro`, nunca en una island | React fuera del bundle (~182 KB menos en la home) |
 | Named imports: `import { X } from 'lib'` | Tree-shaking efectivo |
 | Fuentes self-hosted desde `/public/fonts/` | Elimina round-trips externos |

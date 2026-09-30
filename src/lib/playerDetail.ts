@@ -34,10 +34,12 @@ export type PlayerDetailPayload = {
   subtitle: string;
   role: PlayerRole;
   nationalTeamCodes: string[];
-  /** URL final para `<img>` en la tarjeta (getImage / placeholder). */
+  /** URL final para `<img>` en la tarjeta (WebP 480w / placeholder). */
   photoSrc: string;
-  /** srcset 320w/480w/720w (vacío si es placeholder SVG). */
+  /** srcset WebP 320w/480w/720w, reserva sin AVIF (vacío si es placeholder SVG). */
   photoSrcset: string;
+  /** srcset AVIF 320w/480w/720w para el `<source>` (vacío si es placeholder SVG). */
+  photoSrcsetAvif: string;
 };
 
 export type RosterEntry = {
@@ -66,23 +68,32 @@ export function getAllRosterEntries(): RosterEntry[] {
 
 /** Anchos del srcset de tarjeta: cubren DPR 1-3 en grid de 2/3/5 columnas. */
 const PHOTO_WIDTHS = [320, 480, 720] as const;
-const PHOTO_QUALITY = 85;
+/**
+ * AVIF 90 para quien lo entiende; WebP 85 de reserva para navegadores sin AVIF
+ * (iOS anterior al 16, por ejemplo). Medido en `DECISIONS.md` (2026-10-01).
+ */
+const PHOTO_AVIF_QUALITY = 90;
+const PHOTO_WEBP_QUALITY = 85;
 
-async function resolvePhotoForSlug(slug: string): Promise<{ src: string; srcset: string }> {
+type PhotoSources = { src: string; srcset: string; srcsetAvif: string };
+
+async function resolvePhotoForSlug(slug: string): Promise<PhotoSources> {
   const src: ImageMetadata | undefined = getPlayerPhotoBySlug(slug);
-  if (!src) return { src: placeholderSrc, srcset: '' };
+  if (!src) return { src: placeholderSrc, srcset: '', srcsetAvif: '' };
   try {
-    const variants = await Promise.all(
-      PHOTO_WIDTHS.map((w) =>
-        getImage({ src, width: w, format: 'webp', quality: PHOTO_QUALITY }),
-      ),
-    );
-    const srcset = variants.map((v, i) => `${v.src} ${PHOTO_WIDTHS[i]}w`).join(', ');
+    const encode = (format: 'avif' | 'webp', quality: number) =>
+      Promise.all(PHOTO_WIDTHS.map((w) => getImage({ src, width: w, format, quality })));
+    const [avif, webp] = await Promise.all([
+      encode('avif', PHOTO_AVIF_QUALITY),
+      encode('webp', PHOTO_WEBP_QUALITY),
+    ]);
+    const toSrcset = (variants: { src: string }[]) =>
+      variants.map((v, i) => `${v.src} ${PHOTO_WIDTHS[i]}w`).join(', ');
     // Fallback `src`: la variante 480w (la que sirve la mayoría de móviles DPR 2-3).
     const fallbackIndex = PHOTO_WIDTHS.indexOf(480);
-    return { src: variants[fallbackIndex].src, srcset };
+    return { src: webp[fallbackIndex].src, srcset: toSrcset(webp), srcsetAvif: toSrcset(avif) };
   } catch {
-    return { src: placeholderSrc, srcset: '' };
+    return { src: placeholderSrc, srcset: '', srcsetAvif: '' };
   }
 }
 
@@ -104,6 +115,7 @@ export async function buildPlayerDetailPayloadsForLang(
         nationalTeamCodes: row.nationalTeamCodes ?? [],
         photoSrc: photo.src,
         photoSrcset: photo.srcset,
+        photoSrcsetAvif: photo.srcsetAvif,
       };
       return [slug, payload] as const;
     }),

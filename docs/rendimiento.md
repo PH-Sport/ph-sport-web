@@ -43,7 +43,7 @@ Home en carga fría 224 → 118 ms (−47 %).
 **Abril · carga y LCP**
 - Hero: variantes `mp4` 480/720 generadas por `scripts/build-hero-variants.mjs`, poster WebP real, `preload="metadata"`. VP9/webm probado y descartado — a esta duración salía más grande que h264.
 - Banderas de selección: 9 PNG (1.186 KB) → WebP 128×128 q90 (62 KB), vía `scripts/build-badge-variants.mjs`.
-- Fotos de jugadores: srcset 320/480/720 q85 con `sizes` alineado al grid de 2/3/5 columnas. La q85 se eligió comparando lado a lado; 240w se descartó por pérdida visible.
+- Fotos de jugadores: srcset 320/480/720 q85 con `sizes` alineado al grid de 2/3/5 columnas. La q85 se eligió comparando lado a lado; 240w se descartó por pérdida visible. (Desde el 2026-10-01 se sirven en AVIF 90 y ese WebP 85 queda de reserva; el peso de las fotos pasa a algo más del doble. Cifras en `DECISIONS.md`.)
 - Hero de talentos: era un `background-image` de CSS, invisible al preload scanner. `BaseLayout` acepta `preloadImage` y emite dos `<link rel="preload" media="...">` para bajar solo la variante que aplica.
 - Masters de los scripts de build movidos a `assets/source-media/` para que dejen de copiarse a `dist/`.
 - Söhne Extrafett 900 erradicada: no se usaba en `src/`, solo en su propio `@font-face`.

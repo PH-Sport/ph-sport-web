@@ -13,6 +13,66 @@ leído el resto.
 
 ---
 
+## 2026-10-01 · Fotos de las tarjetas de talentos en AVIF 90, con WebP 85 de reserva
+
+**Decisión**: las fotos del grid de `/talentos` se sirven en un `<picture>` con
+un `<source>` AVIF calidad 90 y, dentro, el `<img>` WebP calidad 85 de siempre
+como reserva para navegadores sin AVIF. Mismos tres anchos (320, 480 y 720) y
+mismo `sizes`. El resto de imágenes de la web no cambia. Lo pidió Mario al ver
+las fotos de la serie de estudio más blandas en la web que en el original.
+
+**Dónde se perdía calidad.** No en el paso de PNG a JPEG 92 con que entran al
+repo (SSIM 0,991 contra el PNG), sino en el WebP 85 del build: el humo dorado
+del fondo salía a bloques y las pestañas, los bordes del escudo y las letras del
+patrocinador, blandos. Medido sobre cuatro fotos (Carlos Guirao, Owen Emeka,
+Lawson Sunderland y José Rey), codificando igual que Astro
+(`toFormat(formato, { quality })` de sharp sobre el JPEG del repo), con SSIM
+medio contra el PNG reducido sin comprimir, en recortes de la cara y del pecho
+(escudo y patrocinador):
+
+| Salida | Cara · pecho a 480 px | Cara · pecho a 720 px | Peso 480 / 720 |
+|---|---|---|---:|
+| WebP 85 (lo de antes) | 0,952 · 0,910 | 0,959 · 0,908 | 27 / 51 KB |
+| WebP 95 | 0,967 · 0,934 | 0,973 · 0,932 | 53 / 108 KB |
+| JPEG 85 | 0,947 · 0,880 | 0,955 · 0,887 | 38 / 75 KB |
+| JPEG 95 | 0,968 · 0,919 | 0,972 · 0,922 | 74 / 153 KB |
+| AVIF 80 | 0,984 · 0,963 | 0,980 · 0,952 | 32 / 59 KB |
+| **AVIF 90** | **0,989 · 0,971** | **0,984 · 0,959** | 57 / 109 KB |
+
+Comparado además a ojo, ampliado a 4× lado a lado: AVIF 90 y JPEG 95 son
+prácticamente iguales al original en ojos, barba, escudo, letras y malla de la
+camiseta; AVIF 80 alisa algo la malla y la piel.
+
+**Esto no contradice la entrada del hero (2026-09-25)**, donde AVIF borraba la
+textura de fieltro de la pared incluso a 90. Allí la textura era toda la foto;
+aquí lo que importa es cara y letras, y a calidad 90 la malla de la camiseta se
+conserva en la comparación a ojo. Se mantiene la lección de aquella entrada: la
+decisión se tomó mirando, no solo con el SSIM.
+
+**Por qué la reserva en WebP.** El `<img>` servía un único formato. Un
+navegador sin AVIF (iOS anterior al 16, por ejemplo) habría dejado la tarjeta
+vacía. Con el `<picture>` ese navegador ignora el `<source>` y carga el WebP 85,
+que es exactamente el mismo archivo que se servía antes.
+
+**Alternativas descartadas**:
+- *JPEG 85*, que fue la primera recomendación a Mario, hecha mirando solo el humo
+  y la tela. En cara y letras sale peor que el WebP 85 que había.
+- *JPEG 95*: misma fidelidad que AVIF 90 con un 40 % más de peso.
+- *AVIF 80*: mejora clara casi sin añadir peso, pero alisa algo la tela y la
+  piel. Mario prefirió la máxima fidelidad.
+- *Subir el WebP a 90 o 95*: mejora poco en cara y letras para el peso que añade.
+
+**Consecuencias**:
+- **Peso algo más del doble.** Media sobre las 47 fotos del build: 56 → 119 KB
+  por foto en la variante de 720 px (móvil) y 30 → 63 KB en la de 480
+  (ordenador retina). Recorrer el grid entero en un iPhone descarga unos
+  5,5 MB de fotos en vez de 2,6 (las tarjetas cargan en diferido, según se ve).
+- **La compilación en frío pasa de ~3 s a ~21 s** en local, porque codificar
+  AVIF es lento. Con la caché de imágenes de Astro (`node_modules/.astro`)
+  vuelve a ser rápida.
+- El `<picture>` lleva `display: contents` para que la foto siga midiéndose
+  contra `.talents__photo`, como antes.
+
 ## 2026-09-25 · El hero pasa de vídeo a foto fija, servida por `astro:assets`
 
 **Decisión**: la portada deja el vídeo montado el 2026-09-22 y muestra una foto

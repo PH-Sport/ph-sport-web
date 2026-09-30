@@ -146,27 +146,6 @@ Macedonia del Norte (la ficha dice Vardar Skopje). Mario las rehízo con el club
 correcto esa misma noche. Si una no cuadra, se le dice a Mario; no se cambia el club
 de la ficha para que encaje con la foto.
 
-**Las fotos de estudio se ven peor en la web que el original** (Mario, 2026-09-30).
-Pendiente de su decisión; no se ha tocado nada. La pérdida **no está en el paso a
-JPEG 92** (SSIM 0,991 contra el PNG) sino en el build: `PHOTO_QUALITY = 85` en
-`src/lib/playerDetail.ts` pasa cada foto a WebP 85, y en esta serie el humo dorado
-del fondo sale a bloques y la malla de la camiseta se alisa. Medido sobre Carlos
-Guirao, con SSIM contra el PNG reducido sin comprimir:
-
-| Salida | 480 px | 720 px |
-|---|---:|---:|
-| WebP 85 (lo que se sirve) | 28 KB · 0,815 | 52 KB · 0,918 |
-| WebP 90 | — | 72 KB |
-| JPEG 85 (sharp, como lo haría Astro) | 38 KB | 76 KB |
-| AVIF 70 | 28 KB · 0,961 | 52 KB · 0,959 |
-
-Comparado a 2× lado a lado, **JPEG 85 es el que conserva el humo y la tela**; WebP 90
-mejora poco para casi el mismo peso, y **AVIF alisa la tela** pese a su SSIM, lo mismo
-que se vio con la foto del hero (`DECISIONS.md`, 2026-09-25). La recomendación dada a
-Mario es JPEG 85 solo para las tarjetas: unos 40 % más por foto, ~1,3 MB más si se
-recorre el grid entero en el móvil. En ordenador retina se sirve la variante de 480 px
-(la que más pierde); en móvil, la de 720.
-
 Los 29 nombres salen de ese commit; los más visibles son los que cambiaron de acera:
 Iker Luque (Atlético → Racing), Aimar García y Jorge Rajado (Atlético → Real Madrid),
 Rayan Zinebi (Granada → Real Madrid) y Javi Hernández (Panathinaikos → Cerezo Osaka).

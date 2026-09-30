@@ -106,16 +106,18 @@ con el mismo fondo oscuro, posado de brazos cruzados y la camiseta del club actu
 Las va entregando por tandas y se sustituyen en el orden del grid. Mientras no
 estén todas, el grid mezcla las de estudio con las antiguas.
 
-**Hechas con la serie de estudio (25)**, las posiciones 1 a 25 del grid a
-2026-09-30: Juan Cruz, Dani Requena, Mati Barzic, Iker Luque, Javi Hernández, Alberto
+**Hechas con la serie de estudio (34)**, las posiciones 1 a 34 del grid a
+2026-10-01: Juan Cruz, Dani Requena, Mati Barzic, Iker Luque, Javi Hernández, Alberto
 Del Moral, Thiago Helguera, Owen Emeka, Salim El-Jebari, Damián Cáceres, Juanjo
 Sánchez, Carlos Guirao, Francisco Dias, Dani Muñoz, Christian Manrique, Dimitar
 Danev, Roberto Olabe, Alessandro Burlamaqui, Axel Montaña, Luis Quintero, Abde
-Raihani, Abdoulaye Keita, Dani Rebollo, Jordi Ferrer y Gonzalo Rodríguez. Con ellas
-se cierran pendientes de la vía anterior: la foto de Alberto Del Moral que esperaba
-visto bueno, la de Mati Barzic, que era corta de resolución (619×825), la de Carlos
-Guirao, que enseñaba el club anterior (Leganés), y tres jugadores que no tenían
-ninguna (Abde Raihani, Dani Rebollo y Gonzalo Rodríguez).
+Raihani, Abdoulaye Keita, Dani Rebollo, Jordi Ferrer, Gonzalo Rodríguez, Lawson
+Sunderland, Rayan Zinebi, Aimar García, Jorge Rajado, Pablo Pascual, Eneko Ortiz,
+Hugo Ríos, Iker Vidal y José Rey. Con ellas se cierran pendientes de la vía anterior:
+la foto de Alberto Del Moral que esperaba visto bueno, la de Mati Barzic, que era
+corta de resolución (619×825), las de Carlos Guirao y Rayan Zinebi, que enseñaban el
+club anterior (Leganés y Granada), y tres jugadores que no tenían ninguna (Abde
+Raihani, Dani Rebollo y Gonzalo Rodríguez).
 
 **Las diez primeras llegaron dos veces.** La primera versión llevaba un resplandor
 dorado muy fuerte detrás; Mario las rehízo más suaves (cinco el 2026-09-28 y las
@@ -127,7 +129,8 @@ llegar retocada: se sustituye igual.
 un par de píxeles), sin perfil de color,
 con el nombre `<Nombre> Web.png`. Se convierten a JPEG de calidad 92 y se guardan
 **encima del archivo que ya existe, con su misma extensión** (ver «Sustituir, no
-añadir» más abajo). Cada una queda en unos 300-400 kB. **El nombre del PNG no
+añadir» más abajo); si el que existe es `.png` (Rayan Zinebi), se copia el PNG tal
+cual, sin convertir. Cada JPEG queda en unos 300-400 kB. **El nombre del PNG no
 siempre coincide con el del roster** —en la primera tanda venía «Salim El Jabari»
 para `Salim El-Jebari`—, así que el emparejamiento se hace por posición en el grid y
 comprobando la camiseta, no por el nombre del archivo. **Tampoco garantiza que el
@@ -142,6 +145,27 @@ club anterior; la ficha dice CD Eldense) y Dimitar Danev con la de la selección
 Macedonia del Norte (la ficha dice Vardar Skopje). Mario las rehízo con el club
 correcto esa misma noche. Si una no cuadra, se le dice a Mario; no se cambia el club
 de la ficha para que encaje con la foto.
+
+**Las fotos de estudio se ven peor en la web que el original** (Mario, 2026-09-30).
+Pendiente de su decisión; no se ha tocado nada. La pérdida **no está en el paso a
+JPEG 92** (SSIM 0,991 contra el PNG) sino en el build: `PHOTO_QUALITY = 85` en
+`src/lib/playerDetail.ts` pasa cada foto a WebP 85, y en esta serie el humo dorado
+del fondo sale a bloques y la malla de la camiseta se alisa. Medido sobre Carlos
+Guirao, con SSIM contra el PNG reducido sin comprimir:
+
+| Salida | 480 px | 720 px |
+|---|---:|---:|
+| WebP 85 (lo que se sirve) | 28 KB · 0,815 | 52 KB · 0,918 |
+| WebP 90 | — | 72 KB |
+| JPEG 85 (sharp, como lo haría Astro) | 38 KB | 76 KB |
+| AVIF 70 | 28 KB · 0,961 | 52 KB · 0,959 |
+
+Comparado a 2× lado a lado, **JPEG 85 es el que conserva el humo y la tela**; WebP 90
+mejora poco para casi el mismo peso, y **AVIF alisa la tela** pese a su SSIM, lo mismo
+que se vio con la foto del hero (`DECISIONS.md`, 2026-09-25). La recomendación dada a
+Mario es JPEG 85 solo para las tarjetas: unos 40 % más por foto, ~1,3 MB más si se
+recorre el grid entero en el móvil. En ordenador retina se sirve la variante de 480 px
+(la que más pierde); en móvil, la de 720.
 
 Los 29 nombres salen de ese commit; los más visibles son los que cambiaron de acera:
 Iker Luque (Atlético → Racing), Aimar García y Jorge Rajado (Atlético → Real Madrid),
@@ -195,8 +219,8 @@ entre dos de acción gana la del jugador aislado sobre la que tiene un rival enc
 Delgado, Ognjen Teofilovic, Rayan Zinebi y Salim El-Jebari. En todos ellos el material
 es del club anterior. No es que no se hayan buscado: no están. Volver a mirar cuando el
 fotógrafo suba material nuevo. De los siete, a 2026-09-25 están visibles todos
-menos Ognjen Teofilovic. Salim El-Jebari y Carlos Guirao ya tienen la de estudio con
-la camiseta del club actual.
+menos Ognjen Teofilovic. Salim El-Jebari, Carlos Guirao y Rayan Zinebi ya tienen la de
+estudio con la camiseta del club actual.
 
 ### Backlog de rendimiento (medido el 2026-08-18)
 

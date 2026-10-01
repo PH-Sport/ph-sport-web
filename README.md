@@ -30,7 +30,7 @@ salida se versiona en `public/`.
 | `/` | Home — Hero, talentos, servicios, about, contacto |
 | `/talentos/` | Selección del roster en el orden que fija Mario, con filtro y ordenación (cards no clicables) |
 | `/servicios` | 6 pilares del servicio |
-| `/sobre-nosotros` | Historia, equipo (20 integrantes) y cierre |
+| `/sobre-nosotros` | Historia, equipo (21 integrantes) y cierre |
 | `/en/*` | Mirror completo en inglés (`/en/talents/`, `/en/services`, `/en/about`) |
 | `/it/*` | Mirror en italiano sin textos legales (`/it/talenti/`, `/it/servizi`, `/it/chi-siamo`). Texto pendiente de revisión nativa |
 

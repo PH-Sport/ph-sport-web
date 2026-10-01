@@ -53,7 +53,7 @@ const it: Record<TranslationKey, string> = {
   'home.services.area.career.title': 'Pianificazione della carriera',
   'home.services.area.career.body': 'Contesto e momento sportivo per tracciare un percorso coerente e ambizioso.',
   'home.services.area.international.title': 'Accesso internazionale',
-  'home.services.area.international.body': 'Uffici propri in sei mercati chiave e contatti in tutto il mondo.',
+  'home.services.area.international.body': 'Uffici propri in sette mercati chiave e contatti in tutto il mondo.',
   'home.services.area.comms.title': 'Comunicazione e marketing',
   'home.services.area.comms.body': 'Il brand personale del giocatore dentro e fuori dal campo, con un approccio editoriale.',
   'home.services.area.legal.title': 'Consulenza legale e finanziaria',
@@ -90,7 +90,7 @@ const it: Record<TranslationKey, string> = {
   'home.about.body': 'Siamo un’agenzia di rappresentanza specializzata nel calcio. Costruiamo e tuteliamo la carriera di ogni giocatore con vicinanza, rigore ed eccellenza.',
   'home.about.cta': 'Scopri chi siamo',
   'home.about.stats.aria': 'I numeri di PHSPORT',
-  'home.about.stats.countries.value': '6',
+  'home.about.stats.countries.value': '7',
   'home.about.stats.countries.label': 'Paesi',
   'home.about.stats.service.value': '360°',
   'home.about.stats.service.label': 'Accompagnamento',
@@ -165,8 +165,8 @@ const it: Record<TranslationKey, string> = {
   'about.team.titleAccent': 'siamo',
   'about.team.titlePost': '.',
   // Ver la nota en es.ts: los países son donde opera PHSPORT, no las
-  // nacionalidades de la plantilla. Se quedan en 6 a propósito.
-  'about.team.meta': '20 PERSONE · 6 PAESI',
+  // nacionalidades de la plantilla, y qué más cambiar con ellos.
+  'about.team.meta': '21 PERSONE · 7 PAESI',
   // Presencia
   'about.presencia.eyebrow': '05 · Presenza',
   'about.presencia.madridLabel': 'SEDE CENTRALE · ES',
@@ -175,6 +175,7 @@ const it: Record<TranslationKey, string> = {
   'about.presencia.country.portugal': 'Portogallo',
   'about.presencia.country.uk': 'Regno Unito',
   'about.presencia.country.alemania': 'Germania',
+  'about.presencia.country.italia': 'Italia',
   'about.presencia.country.arabia': 'Arabia Saudita',
   'about.presencia.country.uruguay': 'Uruguay',
 
@@ -185,12 +186,14 @@ const it: Record<TranslationKey, string> = {
   'team.countries.portugal': 'Portogallo',
   'team.countries.alemania': 'Germania',
   'team.countries.uruguay': 'Uruguay',
+  'team.countries.italia': 'Italia',
   'team.members.cogollos.role': 'CEO',
   'team.members.castello.role': 'Agente FIFA · Coordinatore Area Calcio',
   'team.members.castell.role': 'Agente FIFA · Area Calcio',
   'team.members.weggelaar.role': 'Area Calcio',
   'team.members.canoa.role': 'Area Calcio',
   'team.members.leon.role': 'Area Calcio',
+  'team.members.armari.role': 'Area Calcio',
   'team.members.caserza.role': 'Agente FIFA · Area Calcio',
   'team.members.hernansanz.role': 'Agente FIFA · Area Calcio',
   'team.members.martin.role': 'Agente FIFA · Area Calcio',
@@ -258,10 +261,10 @@ const it: Record<TranslationKey, string> = {
 
   // Áreas — 03 Accesso internazionale
   'services.areas.items.international.title': 'Accesso internazionale',
-  'services.areas.items.international.lead': 'Uffici propri in sei mercati chiave. Apriamo porte reali e accompagniamo il giocatore in ogni fase di adattamento.',
+  'services.areas.items.international.lead': 'Uffici propri in sette mercati chiave. Apriamo porte reali e accompagniamo il giocatore in ogni fase di adattamento.',
   'services.areas.items.international.bullet1': 'Strategia di mercato e posizionamento',
-  'services.areas.items.international.bullet2': 'Presenza in 6 paesi',
-  'services.areas.items.international.bullet3': 'Uffici in ESP, PT, UK, DE, KSA e UY',
+  'services.areas.items.international.bullet2': 'Presenza in 7 paesi',
+  'services.areas.items.international.bullet3': 'Uffici in ESP, PT, UK, DE, IT, KSA e UY',
   'services.areas.items.international.bullet4': 'Adattamento a ogni fase della carriera',
 
   // Áreas — 04 Comunicazione e marketing

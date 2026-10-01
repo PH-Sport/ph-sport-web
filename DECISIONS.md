@@ -13,6 +13,26 @@ leído el resto.
 
 ---
 
+## 2026-10-01 · PHSPORT opera en Italia: los países pasan de 6 a 7
+
+**Decisión** (de Mario): con la entrada de Tommaso Armari en el equipo, en el
+departamento de fútbol en Italia, Italia se suma a los países donde opera PHSPORT.
+No es automático: los países no se derivan de la plantilla (entrada del
+2026-08-29), así que se preguntó y Mario confirmó que Italia cuenta.
+
+**Qué cambia**, en los tres idiomas: el rótulo del equipo («7 PAÍSES»), la cifra
+de países de la home, los «siete mercados clave» y «Presencia en 7 países» de
+Servicios, la lista de oficinas (se añade IT) y la lista de Presencia de Sobre
+nosotros (Italia, entre Alemania y Arabia Saudí). Todo está escrito a mano en
+varios sitios; la lista de qué tocar al cambiarlo está en el comentario de
+`about.team.meta` en `src/i18n/es.ts`.
+
+**Alternativa considerada**: dejar los 6 y tener a Tommaso como un integrante
+más, como Uruguay en sentido contrario (país sin nadie asignado). Descartada por
+Mario.
+
+---
+
 ## 2026-10-01 · Italiano como tercer idioma, sin textos legales y con selector desplegable
 
 **Decisión** (pedida por Mario): la web se publica también en italiano, bajo
@@ -942,6 +962,10 @@ corre antes que nada, aborta en un segundo y el mensaje es lo único que se lee.
 ---
 
 ## 2026-08-29 · Los "6 PAÍSES" del equipo no se derivan de la plantilla
+
+> **El número cambió el 2026-10-01**: son 7 desde que PHSPORT opera en Italia (ver
+> la entrada de esa fecha). El criterio de esta entrada sigue vigente: los países
+> cuentan dónde opera PHSPORT, no de dónde es la plantilla.
 
 **Decisión**: al sacar a Thiago Nanini —el único con `countryKey: 'uruguay'`—, el
 rótulo de la sección de equipo se queda en **6 países** aunque las nacionalidades

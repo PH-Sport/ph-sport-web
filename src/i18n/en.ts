@@ -48,7 +48,7 @@ const en: Record<TranslationKey, string> = {
   'home.services.area.career.title': 'Career planning',
   'home.services.area.career.body': 'Context and sporting momentum to shape a coherent, ambitious trajectory.',
   'home.services.area.international.title': 'International access',
-  'home.services.area.international.body': 'Owned offices in six key markets and connections around the world.',
+  'home.services.area.international.body': 'Owned offices in seven key markets and connections around the world.',
   'home.services.area.comms.title': 'Communication & marketing',
   'home.services.area.comms.body': 'The player\u2019s personal brand on and off the pitch, built with an editorial approach.',
   'home.services.area.legal.title': 'Legal & financial advisory',
@@ -86,7 +86,7 @@ const en: Record<TranslationKey, string> = {
   'home.about.body': 'We are a football-only representation agency. We build and protect the career of every player with closeness, rigour and excellence.',
   'home.about.cta': 'Get to know us',
   'home.about.stats.aria': 'PHSPORT figures',
-  'home.about.stats.countries.value': '6',
+  'home.about.stats.countries.value': '7',
   'home.about.stats.countries.label': 'Countries',
   'home.about.stats.service.value': '360°',
   'home.about.stats.service.label': 'Support',
@@ -161,8 +161,8 @@ const en: Record<TranslationKey, string> = {
   'about.team.titleAccent': 'we are',
   'about.team.titlePost': '.',
   // Ver la nota en es.ts: los países son donde opera PHSPORT, no las
-  // nacionalidades de la plantilla. Se quedan en 6 a propósito.
-  'about.team.meta': '20 MEMBERS · 6 COUNTRIES',
+  // nacionalidades de la plantilla, y qué más cambiar con ellos.
+  'about.team.meta': '21 MEMBERS · 7 COUNTRIES',
   // Presencia
   'about.presencia.eyebrow': '05 · Presence',
   'about.presencia.madridLabel': 'HEADQUARTERS · ES',
@@ -171,6 +171,7 @@ const en: Record<TranslationKey, string> = {
   'about.presencia.country.portugal': 'Portugal',
   'about.presencia.country.uk': 'United Kingdom',
   'about.presencia.country.alemania': 'Germany',
+  'about.presencia.country.italia': 'Italy',
   'about.presencia.country.arabia': 'Saudi Arabia',
   'about.presencia.country.uruguay': 'Uruguay',
 
@@ -181,12 +182,14 @@ const en: Record<TranslationKey, string> = {
   'team.countries.portugal': 'Portugal',
   'team.countries.alemania': 'Germany',
   'team.countries.uruguay': 'Uruguay',
+  'team.countries.italia': 'Italy',
   'team.members.cogollos.role': 'CEO',
   'team.members.castello.role': 'FIFA Agent · Football Dept. Coordinator',
   'team.members.castell.role': 'FIFA Agent · Football Dept.',
   'team.members.weggelaar.role': 'Football Dept.',
   'team.members.canoa.role': 'Football Dept.',
   'team.members.leon.role': 'Football Dept.',
+  'team.members.armari.role': 'Football Dept.',
   'team.members.caserza.role': 'FIFA Agent · Football Dept.',
   'team.members.hernansanz.role': 'FIFA Agent · Football Dept.',
   'team.members.martin.role': 'FIFA Agent · Football Dept.',
@@ -254,10 +257,10 @@ const en: Record<TranslationKey, string> = {
 
   // Áreas — 03 International access
   'services.areas.items.international.title': 'International access',
-  'services.areas.items.international.lead': 'Owned offices in six key markets. We open real doors and stand by the player through every adaptation.',
+  'services.areas.items.international.lead': 'Owned offices in seven key markets. We open real doors and stand by the player through every adaptation.',
   'services.areas.items.international.bullet1': 'Market strategy and positioning',
-  'services.areas.items.international.bullet2': 'Presence across 6 countries',
-  'services.areas.items.international.bullet3': 'Offices in ESP, PT, UK, DE, KSA, and UY',
+  'services.areas.items.international.bullet2': 'Presence across 7 countries',
+  'services.areas.items.international.bullet3': 'Offices in ESP, PT, UK, DE, IT, KSA, and UY',
   'services.areas.items.international.bullet4': 'Adaptation at every career stage',
 
   // Áreas — 04 Communication & marketing

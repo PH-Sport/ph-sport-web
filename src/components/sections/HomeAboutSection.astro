@@ -9,6 +9,9 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const aboutHref = localizePath('/sobre-nosotros/', lang);
+// Países donde opera PHSPORT: sale del texto traducido, la misma fuente que el
+// resto de menciones (ver la nota de `about.team.meta` en es.ts).
+const countriesValue = Number(t('home.about.stats.countries.value'));
 ---
 
 <section class="home-about" id="sobre-nosotros" aria-labelledby="home-about-title">
@@ -28,7 +31,7 @@ const aboutHref = localizePath('/sobre-nosotros/', lang);
 
     <dl class="home-about__stats" aria-label={t('home.about.stats.aria')}>
       <div class="home-about__stat">
-        <dt class="home-about__stat-value" data-counter={6}>6</dt>
+        <dt class="home-about__stat-value" data-counter={countriesValue}>{countriesValue}</dt>
         <dd class="home-about__stat-label">{t('home.about.stats.countries.label')}</dd>
       </div>
       <div class="home-about__stat">

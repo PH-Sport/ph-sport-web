@@ -47,7 +47,7 @@ const es = {
   'home.services.area.career.title': 'Planificación de carrera',
   'home.services.area.career.body': 'Contexto y momento deportivo para trazar una trayectoria coherente y ambiciosa.',
   'home.services.area.international.title': 'Acceso internacional',
-  'home.services.area.international.body': 'Oficinas propias en seis mercados clave y conexiones en todo el mundo.',
+  'home.services.area.international.body': 'Oficinas propias en siete mercados clave y conexiones en todo el mundo.',
   'home.services.area.comms.title': 'Comunicación y marketing',
   'home.services.area.comms.body': 'Marca personal del jugador dentro y fuera del campo, con enfoque editorial.',
   'home.services.area.legal.title': 'Asesoramiento legal y financiero',
@@ -84,7 +84,7 @@ const es = {
   'home.about.body': 'Somos una agencia de representación especializada en fútbol. Construimos y protegemos la carrera de cada jugador con cercanía, rigor y excelencia.',
   'home.about.cta': 'Conócenos',
   'home.about.stats.aria': 'Cifras PHSPORT',
-  'home.about.stats.countries.value': '6',
+  'home.about.stats.countries.value': '7',
   'home.about.stats.countries.label': 'Países',
   'home.about.stats.service.value': '360°',
   'home.about.stats.service.label': 'Acompañamiento',
@@ -159,10 +159,13 @@ const es = {
   'about.team.titleAccent': 'somos',
   'about.team.titlePost': '.',
   // El nº de países NO se deriva de `TEAM_MEMBERS`: son los países donde opera
-  // PHSPORT, no las nacionalidades de la plantilla. Se mantiene en 6 aunque hoy
-  // no haya nadie asignado a Uruguay (decisión de Mario, 2026-08-29). El de
+  // PHSPORT, no las nacionalidades de la plantilla. Cuenta Uruguay aunque hoy
+  // no haya nadie asignado allí (decisión de Mario, 2026-08-29); son 7 desde que
+  // se suma Italia (2026-10-01). Al cambiarlo, cambiar también la cifra de la
+  // home (`home.about.stats.countries.value`), los «siete mercados» y la lista de
+  // oficinas de Servicios, y la lista de Presencia de AboutSection. El de
   // integrantes sí sigue a la tabla: al cambiarla, actualizarlo aquí.
-  'about.team.meta': '20 INTEGRANTES · 6 PAÍSES',
+  'about.team.meta': '21 INTEGRANTES · 7 PAÍSES',
   // Presencia
   'about.presencia.eyebrow': '05 · Presencia',
   'about.presencia.madridLabel': 'SEDE CENTRAL · ES',
@@ -171,6 +174,7 @@ const es = {
   'about.presencia.country.portugal': 'Portugal',
   'about.presencia.country.uk': 'Reino Unido',
   'about.presencia.country.alemania': 'Alemania',
+  'about.presencia.country.italia': 'Italia',
   'about.presencia.country.arabia': 'Arabia Saudí',
   'about.presencia.country.uruguay': 'Uruguay',
 
@@ -181,12 +185,14 @@ const es = {
   'team.countries.portugal': 'Portugal',
   'team.countries.alemania': 'Alemania',
   'team.countries.uruguay': 'Uruguay',
+  'team.countries.italia': 'Italia',
   'team.members.cogollos.role': 'CEO',
   'team.members.castello.role': 'Agente FIFA · Coordinador Dto. Fútbol',
   'team.members.castell.role': 'Agente FIFA · Dto. Fútbol',
   'team.members.weggelaar.role': 'Dto. Fútbol',
   'team.members.canoa.role': 'Dto. Fútbol',
   'team.members.leon.role': 'Dto. Fútbol',
+  'team.members.armari.role': 'Dto. Fútbol',
   'team.members.caserza.role': 'Agente FIFA · Dto. Fútbol',
   'team.members.hernansanz.role': 'Agente FIFA · Dto. Fútbol',
   'team.members.martin.role': 'Agente FIFA · Dto. Fútbol',
@@ -254,10 +260,10 @@ const es = {
 
   // Áreas — 03 Acceso internacional
   'services.areas.items.international.title': 'Acceso internacional',
-  'services.areas.items.international.lead': 'Oficinas propias en seis mercados clave. Abrimos puertas reales y acompañamos al jugador en cada adaptación.',
+  'services.areas.items.international.lead': 'Oficinas propias en siete mercados clave. Abrimos puertas reales y acompañamos al jugador en cada adaptación.',
   'services.areas.items.international.bullet1': 'Estrategia de mercado y posicionamiento',
-  'services.areas.items.international.bullet2': 'Presencia en 6 países',
-  'services.areas.items.international.bullet3': 'Oficinas en ESP, PT, UK, DE, KSA y UY',
+  'services.areas.items.international.bullet2': 'Presencia en 7 países',
+  'services.areas.items.international.bullet3': 'Oficinas en ESP, PT, UK, DE, IT, KSA y UY',
   'services.areas.items.international.bullet4': 'Adaptación a cada etapa de la carrera',
 
   // Áreas — 04 Comunicación y marketing

@@ -171,6 +171,53 @@ type PlayerDetailPayload = {
 
 El slug se genera con `slugify(name)` y es la clave común con la foto en `src/assets/images/players/{slug}.{jpg,jpeg,png,webp}`. No se declara slug en los JSON — se deriva del nombre.
 
+### Fotos de jugadores
+
+**Desde el 2026-10-01 las 51 tarjetas visibles llevan foto de la serie de estudio**
+que prepara Mario: fondo oscuro con resplandor dorado suave, brazos cruzados y la
+camiseta del club de la ficha. Los jugadores ocultos conservan su foto antigua; si
+alguno vuelve al grid, hay que pedirle la de estudio. El build las sirve en AVIF 90
+con WebP 85 de reserva (`DECISIONS.md`, 2026-10-01).
+
+Viven en `src/assets/images/players/` y no en `public/`: las procesa el build, así que
+**cambiar una foto es sustituir el archivo**, sin tocar código. Sin foto, la tarjeta
+cae al avatar genérico.
+
+**Cómo se aplica una foto nueva.** Mario las entrega en PNG de unos 1085×1450 (3:4),
+sin perfil de color, con el nombre `<Nombre> Web.png`:
+
+1. **Emparejar por la posición en el grid y por la camiseta, no por el nombre del
+   archivo.** El PNG no siempre se llama como la ficha (llegó «Salim El Jabari» para
+   `Salim El-Jebari`).
+2. **Buscar repetidos** con `md5 -q *.png`: el 2026-09-30, la foto de Jordi Ferrer era
+   una copia exacta de la de Dani Rebollo.
+3. **Comprobar la camiseta contra el club de la ficha**, ampliando el escudo y
+   mirando también el parche de competición de la manga. El escudo, por sí solo, puede engañar: la de
+   portero de la Ponferradina de Álex Domínguez se dio por del Real Valladolid, y el
+   parche de Primera Federación lo habría descartado. Si no cuadra, se avisa a Mario
+   (en la serie llegaron seis así y las rehízo todas), y **nunca se cambia el club de
+   la ficha para que encaje con la foto**. Mientras tanto no se aplica una foto que
+   deje la tarjeta peor de lo que estaba.
+4. **Convertir a JPEG calidad 92 y guardar encima del archivo existente, con su misma
+   extensión**: `playerPhotos.ts` indexa por el nombre sin extensión, así que
+   `dani-requena.jpg` y `dani-requena.jpeg` juntos se pisan y gana uno según el orden
+   del glob. Si el existente es `.png` (Rayan Zinebi), se copia el PNG tal cual. Si el
+   jugador no tenía foto, se crea `<slug>.jpg`. Queda en unos 300-400 KB.
+
+**Renombrar a un jugador le quita la foto.** El archivo se busca por
+`slugify(row.name)`: pasar de `"Eneko"` a `"Eneko Ortiz"` busca `eneko-ortiz.jpeg` en
+vez de `eneko.jpeg`, sin fallo de build ni aviso, y la tarjeta cae al avatar genérico.
+Al cambiar un nombre en `jugadores.json`, renombrar la foto en el mismo commit.
+
+**Para contar tarjetas sin foto no sirve buscar en `dist/`**: el avatar genérico pesa
+menos de 4 KB y Vite lo incrusta como `data:image/svg+xml`. Hay que cruzar
+`jugadores.json` con el listado de la carpeta.
+
+**Si un jugador nuevo no tiene foto de estudio**, la vía anterior era el Drive de PH
+(«JUGADORES PH SPORT», una subcarpeta `NOMBRE (CLUB)` por jugador). Ni el nombre de la
+carpeta ni el de los archivos dicen de qué club es la foto («RAYAN ZINEBI (REAL MADRID
+C)» solo tenía fotos del Granada): hay que verlas.
+
 ---
 
 ## Internacionalización (i18n)
@@ -635,7 +682,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
-| Fotos jugadores | ⏳ 51 de los 51 visibles | 50 son de la serie de estudio. Pendientes de Mario: Pere Haro, que sigue con la antigua porque la de estudio enseña otro club, y tres aplicadas con la camiseta de otro club. Detalle en `docs/hallazgos-abiertos.md` (2026-10-01) |
+| Fotos jugadores | ✅ 51 de los 51 visibles | Serie de estudio de Mario, todas con la camiseta del club de la ficha (2026-10-01). Ver «Fotos de jugadores» arriba |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
 | OG image (1200×630px) | ❌ Pendiente | |
@@ -644,7 +691,6 @@ que ejecutar nada a mano.
 
 | Pendiente | Bloqueado por |
 |---|---|
-| Fotos de la selección visible: 4 con la camiseta de otro club que la ficha (1 sin aplicar) (2026-10-01) | Cliente |
 | Revisión nativa de los textos en italiano (2026-10-01) | Alguien que hable italiano |
 | OG image 1200×630px | Diseño |
 | GA4 — Measurement ID | Decisión de si se integra |

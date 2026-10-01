@@ -15,9 +15,10 @@
  * 7 días de caché en el navegador y 30 más de stale-while-revalidate, así que un
  * vídeo nuevo con el mismo nombre seguiría siendo el viejo para quien ya visitó
  * la web. Para cambiar de vídeo: versión nueva aquí y en el script, regenerar, y
- * borrar la carpeta anterior de `public/hero/`.
+ * borrar la carpeta anterior de `public/hero/`. También entre versiones que solo
+ * han estado en preview: el enlace fijo de la rama de Vercel cachea igual.
  */
-export const HERO_VERSION = '2026-10';
+export const HERO_VERSION = '2026-10b';
 
 const BASE = `/hero/${HERO_VERSION}`;
 

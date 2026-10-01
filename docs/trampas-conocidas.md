@@ -135,7 +135,12 @@ el viejo durante una semana** para quien ya visitó la web, y hasta 37 días si
 el navegador aprovecha el `stale-while-revalidate`.
 
 Para sustituir algo de `public/`, cambiarle el nombre (y actualizar quien lo
-cite). Lo que pasa por `astro:assets` no tiene el problema: sale en `_astro/`
+cite). **También si el archivo viejo solo llegó a preview**: cada despliegue tiene
+su URL, pero la rama tiene además un enlace fijo
+(`ph-sport-web-git-preview-rodz-dev.vercel.app`) con la misma caché. El
+2026-10-01 se sustituyeron vídeos del hero con el mismo nombre dando por hecho
+lo contrario, y el arreglo de un tirón no le llegaba a quien probaba con ese
+enlace: seguía viendo el vídeo de su primera visita. Lo que pasa por `astro:assets` no tiene el problema: sale en `_astro/`
 con un hash en el nombre que cambia con el contenido. Los vídeos no pasan por
 ahí, así que el del hero vive en `public/hero/<versión>/` y cambiar de vídeo es
 cambiar de carpeta (`HERO_VERSION` en `src/lib/heroMedia.ts`; `DECISIONS.md`,

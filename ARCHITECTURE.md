@@ -32,7 +32,7 @@ ph-sport-web/
 │   ├── national-team-badges/        # Escudos de selecciones nacionales
 │   ├── about-equipo.webp / *-sm.webp
 │   ├── favicon.svg
-│   ├── hero/2026-10/                # Vídeos y pósters del hero (npm run assets:hero). La versión va en la ruta por la caché de 7 días
+│   ├── hero/2026-10b/               # Vídeos y pósters del hero (npm run assets:hero). La versión va en la ruta por la caché de 7 días
 │   ├── logo-ph-3d.webp / *-sm.webp
 │   ├── logo.svg
 │   ├── services-hero.webp / *-sm.webp
@@ -499,7 +499,7 @@ que ejecutar nada a mano.
 | Item | Estado | Notas |
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
-| Vídeo hero | ✅ `public/hero/2026-10/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
+| Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
 | Fotos jugadores | ⏳ 47 de los 51 visibles | 34 ya son de la serie de estudio nueva (puestos 1 a 34); las otras 13, antiguas. Sin ninguna: Fran Manzanara, Santi Pallarés, Boston Billups y Álex Domínguez. Detalle en `docs/hallazgos-abiertos.md` (2026-10-01) |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia |

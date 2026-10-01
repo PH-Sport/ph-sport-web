@@ -13,6 +13,20 @@ leído el resto.
 
 ---
 
+## 2026-10-01 · Los vídeos del hero pasan a `public/hero/2026-10b/`
+
+**Decisión**: la carpeta de versión del hero cambia de `2026-10` a `2026-10b`, sin
+tocar los vídeos. **Motivo**: las tres versiones del día se subieron con el mismo
+nombre, con el argumento de que solo habían estado en preview y cada despliegue
+tiene su propia URL. Es falso: la rama tiene un enlace fijo
+(`ph-sport-web-git-preview-rodz-dev.vercel.app`) que sirve `public/` con la misma
+caché de 7 días. Mario seguía viendo el tirón después del arreglo; en su
+navegador, a través de ese enlace, podía seguir el vídeo de la primera visita. Se
+cumple la regla de siempre: vídeo nuevo, carpeta nueva, también en preview
+(`docs/trampas-conocidas.md`).
+
+---
+
 ## 2026-10-01 · El hero: la cámara se para en el plano frontal
 
 **Problema** (Mario, en escritorio): «pega un salto un poco raro». Medido con
@@ -84,6 +98,10 @@ Más movimiento de cámara es menos parecido entre fotogramas: el bucle en HEVC
 pesa un 70 % más que con la deriva quieta, y en H.264 un 20 %. Un iPhone baja
 unos 565 KB y un Android unos 1,65 MB (escritorio: 590 KB en Safari, 1,8 MB en
 Chrome).
+
+> ⚠️ **El párrafo siguiente es ERRÓNEO**: la rama de preview tiene un enlace fijo
+> con la misma caché. Corregido en la entrada «Los vídeos del hero pasan a
+> `public/hero/2026-10b/`».
 
 **Por qué la carpeta sigue siendo `2026-10`** aunque cambian los archivos: los
 anteriores no llegaron a producción. Solo estuvieron en un despliegue de preview,

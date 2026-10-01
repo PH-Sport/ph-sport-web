@@ -48,7 +48,7 @@ import ffmpegPath from 'ffmpeg-static';
 import { chromium } from '@playwright/test';
 
 /** Misma cadena que HERO_VERSION en src/lib/heroMedia.ts. */
-const VERSION = '2026-10';
+const VERSION = '2026-10b';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const PAGE = pathToFileURL(resolve(ROOT, 'scripts', 'hero-neon', 'neon.html')).href;

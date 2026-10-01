@@ -13,6 +13,123 @@ leído el resto.
 
 ---
 
+## 2026-10-01 · Rediseño con el lenguaje de Mochi: esquinas redondeadas, movimiento solo como respuesta, sin GSAP
+
+**Decisión** (de Mario, a petición de los jefes):
+
+- **Lo que pidió:** un rediseño de toda la web «tratando de mantener el estilo
+  premium y de lujo, pero con ese lenguaje de motion graphics, con amortiguaciones
+  sutiles, sombras estratégicas en botones», apoyado en Mochi (`mochi-ui`, su
+  propio sistema de diseño, repo `RodzCantCode/mochi`). La web tiene que ser un
+  escaparate de la agencia.
+- **Lo que no se toca**, «a estricta petición de los jefes»: los textos, la
+  paleta, los logos y las fuentes (Söhne).
+- **Forma:** ni la píldora de Mochi ni la esquina casi viva de antes: «un
+  rectángulo con bordes redondeados». Tokens `--ph-r-*`, de 8 a 28 px.
+- **Cómo se decidió:** primero un prototipo con movimiento, publicado como
+  artifact y aprobado por Mario; después, la implementación.
+
+**Cómo entra Mochi** (opción A, elegida por Mario):
+
+- Los componentes de Mochi son de React. **Se dibujan en el servidor al
+  construir** (`@astrojs/react`), sin ninguna directiva `client:`: al navegador
+  llegan HTML y CSS, sin React. Se usan `LinkButton` para los enlaces.
+- Lo interactivo (acordeón, pestañas, desplegable, raíl, etiqueta que viaja,
+  copiar, indicador del menú) está reescrito en `src/scripts/ph-motion.ts`, con
+  las curvas y tiempos de Mochi (`--mochi-ease-*`, `--mochi-duration-*`).
+- La paleta de PHSPORT se aplica redefiniendo los tokens de Mochi en
+  `src/styles/mochi-phsport.css`. Mochi no se parchea: lo que le falta se
+  compensa allí, en un bloque marcado como provisional
+  (`docs/hallazgos-abiertos.md`).
+- Detalle de las piezas en `ARCHITECTURE.md`, «Sistema de diseño y movimiento».
+
+**Animaciones** (lista aprobada por Mario antes de quitar nada):
+
+- **Se quedan:**
+  - el vídeo del neón del hero;
+  - el fundido entre páginas;
+  - las luces de fondo de Talentos, Servicios y Sobre nosotros;
+  - la intro del logo (`LogoReveal`): «mantén la intro del logo».
+- **Pasan al estilo de Mochi:**
+  - el subrayado dorado del menú, que ahora es una cápsula que se desliza y sigue
+    al ratón;
+  - el acordeón de servicios;
+  - el selector de idioma, cuyo botón crece hasta ser el panel;
+  - las tarjetas de jugador al pasar el ratón.
+- **Se van:**
+  - los titulares que entraban palabra a palabra;
+  - los párrafos que aparecían palabra a palabra con desenfoque;
+  - todo lo que aparecía al hacer scroll;
+  - los rótulos cuyas letras se juntaban;
+  - los contadores (7 países, 360°).
+
+  Con ellos se van GSAP (dependencia retirada), `src/scripts/ph-text-animations.ts`,
+  `src/scripts/dropdown.ts` (ya sin uso), y la guarda que escondía el contenido
+  (`data-reveal`) hasta que llegaba el JavaScript.
+- **Motivo:** el principio de Mochi es que la interfaz responde a lo que hace la
+  persona; lo que se mueve solo compite con el contenido. Además, ahora todo se
+  ve desde el primer pintado: ya no hay texto oculto esperando a un script, ni
+  redes de seguridad por si no llega.
+
+**Qué cambia en la web**:
+
+- **Cabecera:**
+  - se estrecha y se vuelve sólida al bajar;
+  - el indicador sigue al ratón;
+  - lleva un botón dorado de contacto, con el texto «Contacto» que ya existía;
+  - en móvil, el menú crece desde la propia cápsula.
+- **Portada:**
+  - Talentos pasa a un raíl con los 10 primeros jugadores del roster;
+  - Servicios queda en acordeón, con el Plan de acción en pestañas;
+  - Sobre PHSPORT muestra las cifras en tarjetas;
+  - Contacto: «Hablemos.», un botón de email y otro de copiar.
+- **Talentos:**
+  - buscador y desplegables «Ver» y «Orden» que crecen desde el botón;
+  - tarjetas que se elevan al pasar el ratón;
+  - los escudos de selección siempre visibles;
+  - sin escuadra dorada.
+- **Servicios:**
+  - áreas en acordeón, la primera abierta;
+  - cinco pilares en tarjetas con la foto enmarcada, sin el fondo de rayas;
+  - el manifiesto en una tarjeta.
+- **Sobre nosotros:**
+  - Filosofía en tres tarjetas, con «Forever Football.» siempre en oro;
+  - el equipo en una tabla de filas finas;
+  - Presencia en dos tarjetas.
+- **Textos legales:** columna de lectura de 64 caracteres y los datos de la
+  empresa en una tarjeta. No cambia ni una palabra.
+- **Pie:** las redes como iconos con una etiqueta que viaja de uno a otro.
+- **Todas las páginas:**
+  - las etiquetas pequeñas pasan de 10–11 px a 12–15 px;
+  - los rótulos encima de los titulares pasan a filas índice;
+  - la jerarquía de títulos de Sobre nosotros ya no salta de h1 a h3.
+
+**Alternativas descartadas**:
+
+- **B · Islands de React con los componentes interactivos de Mochi**
+  (`client:visible`), que es lo que propone su README. Volvería a meter React en
+  el navegador, justo lo que se retiró el 2026-06-25 por su peso (~182 KB en la
+  home). Lo ligero (A) da el mismo movimiento con las mismas curvas.
+- **La píldora de Mochi tal cual** (`border-radius: 9999px`): Mario pidió un
+  punto intermedio, «sin que llegue a ser una píldora por completo».
+- **La esquina casi viva de antes** («no superar 0,75 rem», `ARCHITECTURE.md`
+  hasta hoy): no casaba con el lenguaje pedido.
+- **Conservar las entradas de GSAP y añadir Mochi encima**: dos lenguajes de
+  movimiento a la vez, y el contenido seguía oculto hasta que llegaba el JS.
+
+**Coste y límites**:
+
+- `react`, `react-dom` y `@astrojs/react` vuelven a `package.json`, solo para el
+  build. `mochi-ui` va fijado a la etiqueta `v0.3.1` del repo de GitHub, sin
+  publicar en npm.
+- Sale `gsap`.
+- **Sin probar en un móvil real**, y lo que se ajusta por fuera de Mochi queda
+  anotado: `docs/hallazgos-abiertos.md`.
+- El scroll suave sigue apagado durante la navegación: el arreglo pasó de
+  `ph-text-animations.ts` a `ph-motion.ts` (`docs/trampas-conocidas.md`).
+
+---
+
 ## 2026-10-01 · Cabecera de sección legible: el contenido empieza en la primera pantalla y la luz es el fondo de toda la página
 
 **Decisión** (de Mario, sobre la cabecera «Escenario» de la entrada siguiente):
@@ -1314,6 +1431,11 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 
 ## 2026-06-25 · LogoReveal de island React a vanilla — React sale del proyecto
 
+> **Superada en parte el 2026-10-01** («Rediseño con el lenguaje de Mochi»): React
+> vuelve a `package.json`, pero solo para dibujar los componentes de Mochi al
+> construir. Sigue sin haber islands y sin React en el navegador, que era el
+> motivo de esta entrada.
+
 > **Superada en parte el 2026-08-29**: la salida de React y de las islands sigue
 > vigente, pero el reveal ya no usa GSAP ni `astro:page-load` — es CSS puro y no
 > depende del JavaScript. Ver la entrada del 2026-08-29.
@@ -1415,6 +1537,10 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 ---
 
 ## 2026-04-21 · Sistema de animaciones en scripts/ (GSAP fuera de islands)
+
+> ⚠️ **SUPERADA el 2026-10-01** («Rediseño con el lenguaje de Mochi»): GSAP y
+> `ph-text-animations.ts` salieron del proyecto. El movimiento va en CSS con las
+> curvas de Mochi y, lo interactivo, en `src/scripts/ph-motion.ts`.
 
 > ⚠️ **SUPERADA PARCIALMENTE por la decisión de 2026-06-25.** La parte de esta entrada que habla de islands `.tsx` ya no aplica: no queda ninguna en el repo. Lo vigente es que **todo** el GSAP va en `<script>` de `.astro`.
 
@@ -1599,6 +1725,9 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 
 ## 2026-03-03 · GSAP restringido — regla original
 
+> ⚠️ **SUPERADA el 2026-10-01**: ya no hay GSAP en el proyecto («Rediseño con el
+> lenguaje de Mochi»).
+
 **Decisión original (2026-03-03)**: GSAP solo en `src/components/islands/` con `client:visible`.
 
 **Actualización (2026-04-21)**: regla ampliada — GSAP también puede usarse en `src/scripts/ph-text-animations.ts` importado como `<script>` vanilla desde `.astro`. Ver decisión de 2026-04-21.
@@ -1648,6 +1777,11 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 ---
 
 ## 2026-03-03 · @astrojs/react en astro.config.mjs
+
+> **Vuelve el 2026-10-01 con otro papel** («Rediseño con el lenguaje de Mochi»):
+> `@astrojs/react` está otra vez en `astro.config.mjs`, solo para dibujar en el
+> servidor los componentes de Mochi. No hidrata nada: ningún componente lleva
+> `client:`.
 
 > ⚠️ **REVERTIDA por la decisión de 2026-06-25.** `@astrojs/react` ya no está en `astro.config.mjs`, y el paquete se retiró de `package.json` el 2026-08-11. No hay renderer de React en el proyecto.
 

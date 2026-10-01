@@ -27,6 +27,31 @@ const cards = players.map((player) => {
     .filter((b): b is { code: string; src: string } => b !== null);
   return { player, badges };
 });
+
+/** Los dos desplegables («Ver» y «Orden») con la pieza `.ph-select` de ph-ui.css:
+ *  el botón crece hasta ser la lista. La primera opción de cada uno es la de partida. */
+const selects = [
+  {
+    key: 'role',
+    label: t('talents.role.label'),
+    trigger: t('talents.role.trigger'),
+    options: [
+      { value: 'all', label: t('talents.role.all') },
+      { value: 'player', label: t('talents.role.players') },
+      { value: 'coach', label: t('talents.role.coaches') },
+    ],
+  },
+  {
+    key: 'sort',
+    label: t('talents.sort.label'),
+    trigger: t('talents.sort.trigger'),
+    options: [
+      { value: 'default', label: t('talents.sort.default') },
+      { value: 'az', label: t('talents.sort.az') },
+      { value: 'za', label: t('talents.sort.za') },
+    ],
+  },
+];
 ---
 
 <section class="talents" aria-labelledby="talents-title">
@@ -35,23 +60,25 @@ const cards = players.map((player) => {
   </div>
 
   <header class="talents__head">
-    <p class="ph-rowline talents__index" data-reveal>
+    <p class="ph-rowline talents__index">
       <span class="ph-rowline__group">
         <span class="ph-rowline__num">{eyebrowNum}</span>
         <span class="ph-rowline__sep" aria-hidden="true">·</span>
         <span class="ph-rowline__label">{eyebrowLabel}</span>
       </span>
     </p>
-    <h1 class="talents__title ph-head-title" id="talents-title" data-reveal>
+    <h1 class="talents__title ph-head-title" id="talents-title">
       {t('talents.title')}<em>{t('talents.titleAccent')}</em>.
     </h1>
-    <p class="talents__lead ph-head-lead" data-reveal>{t('talents.lead')}</p>
+    <p class="talents__lead ph-head-lead">{t('talents.lead')}</p>
   </header>
 
-  <div class="talents__controls" data-talents-controls data-reveal>
+  <div class="talents__controls" data-talents-controls>
+    {/* En móvil el buscador se pliega a un cuadro con la lupa; al tocarlo, ese
+        cuadro crece hasta ocupar la barra (comportamiento en el script de abajo). */}
     <label class="talents__search" data-talents-search-wrap>
       <span class="visually-hidden">{t('talents.search.label')}</span>
-      <svg class="talents__search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <svg class="ph-ico talents__search-icon" viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="11" cy="11" r="7"></circle>
         <path d="m20 20-3.5-3.5"></path>
       </svg>
@@ -65,142 +92,124 @@ const cards = players.map((player) => {
       />
       <button
         type="button"
-        class="talents__search-clear"
+        class="talents__search-btn talents__search-clear"
         aria-label={t('talents.search.clear')}
         data-talents-clear
         hidden
       >
-        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="m6 6 12 12M18 6 6 18"></path>
-        </svg>
+        <svg class="ph-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"></path></svg>
       </button>
       <button
         type="button"
-        class="talents__search-close"
+        class="talents__search-btn talents__search-close"
         aria-label={t('talents.search.close')}
         data-talents-search-close
       >
-        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="m6 6 12 12M18 6 6 18"></path>
-        </svg>
+        <svg class="ph-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"></path></svg>
       </button>
     </label>
 
-    <div class="talents__combo" data-talents-combo="role">
-      <button
-        type="button"
-        class="talents__combo-button"
-        aria-haspopup="listbox"
-        aria-expanded="false"
-        aria-label={t('talents.role.label')}
-        data-talents-combo-trigger
-      >
-        <span class="talents__combo-trigger-label">{t('talents.role.trigger')}</span>
-        <svg class="talents__select-arrow" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="m6 9 6 6 6-6"></path>
-        </svg>
-      </button>
-      <ul
-        class="talents__combo-panel"
-        role="listbox"
-        aria-label={t('talents.role.label')}
-        data-talents-combo-panel
-        hidden
-      >
-        <li class="talents__combo-option" role="option" aria-selected="true"  data-value="all"    style="--i: 0">{t('talents.role.all')}</li>
-        <li class="talents__combo-option" role="option" aria-selected="false" data-value="player" style="--i: 1">{t('talents.role.players')}</li>
-        <li class="talents__combo-option" role="option" aria-selected="false" data-value="coach"  style="--i: 2">{t('talents.role.coaches')}</li>
-      </ul>
-    </div>
-
-    <div class="talents__combo" data-talents-combo="sort">
-      <button
-        type="button"
-        class="talents__combo-button"
-        aria-haspopup="listbox"
-        aria-expanded="false"
-        aria-label={t('talents.sort.label')}
-        data-talents-combo-trigger
-      >
-        <span class="talents__combo-trigger-label">{t('talents.sort.trigger')}</span>
-        <svg class="talents__select-arrow" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="m6 9 6 6 6-6"></path>
-        </svg>
-      </button>
-      <ul
-        class="talents__combo-panel"
-        role="listbox"
-        aria-label={t('talents.sort.label')}
-        data-talents-combo-panel
-        hidden
-      >
-        <li class="talents__combo-option" role="option" aria-selected="true"  data-value="default" style="--i: 0">{t('talents.sort.default')}</li>
-        <li class="talents__combo-option" role="option" aria-selected="false" data-value="az"      style="--i: 1">{t('talents.sort.az')}</li>
-        <li class="talents__combo-option" role="option" aria-selected="false" data-value="za"      style="--i: 2">{t('talents.sort.za')}</li>
-      </ul>
-    </div>
+    {/* Desplegables: la pieza compartida `.ph-select` (ph-ui.css + ph-motion.ts).
+        Al elegir emite `ph:select`, que el script de abajo convierte en filtro u
+        orden. Las opciones llevan tabindex="-1": se llega a ellas con las flechas
+        al abrir, y con la lista cerrada no se cuelan en el recorrido del tabulador. */}
+    {selects.map((s) => (
+      <div class="ph-select talents__select" data-ph-select data-align="end" data-talents-select={s.key}>
+        <button
+          type="button"
+          class="ph-select__btn"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-controls={`talents-${s.key}-list`}
+          aria-label={s.label}
+        >
+          <span>{s.trigger}</span>
+          <svg class="ph-select__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+        </button>
+        <div class="ph-select__panel">
+          <div class="ph-select__current" aria-hidden="true">
+            <span>{s.trigger}</span>
+            <svg class="ph-select__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+          </div>
+          <div class="ph-select__list" role="listbox" id={`talents-${s.key}-list`} aria-label={s.label}>
+            <span class="ph-select__hl" aria-hidden="true"></span>
+            {s.options.map((o, i) => (
+              <button
+                type="button"
+                class="ph-select__opt"
+                role="option"
+                aria-selected={i === 0 ? 'true' : 'false'}
+                tabindex="-1"
+                data-value={o.value}
+                style={`--i: ${i}`}
+              >
+                <span>{o.label}</span>
+                <svg class="ph-select__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    ))}
   </div>
 
+  {/* Tarjetas con la pieza `.ph-player` de ph-ui.css (la misma de la portada): al
+      pasar el ratón se eleva y la foto crece un poco. No son clicables (CLAUDE.md). */}
   <ul class="talents__grid" role="list" data-talents-grid>
     {cards.map(({ player, badges }, idx) => (
       <li
-        class="talents__item"
+        class="ph-player talents__item"
         data-talent-card
         data-name={player.name}
         data-role={player.role}
         data-index={idx}
       >
-        <div class="talents__card" data-badges={badges.length} data-reveal>
-          <div class="talents__photo">
-            <picture>
-              {player.photoSrcsetAvif && (
-                <source type="image/avif" srcset={player.photoSrcsetAvif} sizes={photoSizes} />
-              )}
+        <div class="ph-player__photo">
+          <picture>
+            {player.photoSrcsetAvif && (
+              <source type="image/avif" srcset={player.photoSrcsetAvif} sizes={photoSizes} />
+            )}
+            <img
+              src={player.photoSrc}
+              srcset={player.photoSrcset || undefined}
+              sizes={photoSizes}
+              alt={player.name}
+              loading="lazy"
+              decoding="async"
+              width="480"
+              height="640"
+            />
+          </picture>
+        </div>
+        {badges.length > 0 && (
+          <div class="ph-player__badges" aria-hidden="true">
+            {badges.map(({ code, src }) => (
               <img
-                src={player.photoSrc}
-                srcset={player.photoSrcset || undefined}
-                sizes={photoSizes}
-                alt={player.name}
+                src={src}
+                alt=""
+                width="22"
+                height="22"
                 loading="lazy"
                 decoding="async"
-                width="480"
-                height="640"
+                data-national-code={code}
               />
-            </picture>
+            ))}
           </div>
-          {badges.length > 0 && (
-            <div class="talents__badges" aria-hidden="true">
-              {badges.map(({ code, src }) => (
-                <img
-                  src={src}
-                  alt=""
-                  class="talents__badge"
-                  width="22"
-                  height="22"
-                  loading="lazy"
-                  decoding="async"
-                  data-national-code={code}
-                />
-              ))}
-            </div>
-          )}
-          <span class="talents__corner" aria-hidden="true"></span>
-          <div class="talents__meta">
-            <span class="talents__name">{player.name}</span>
-            {player.subtitle && <span class="talents__club">{player.subtitle}</span>}
-          </div>
-          <span class="talents__underline" aria-hidden="true"></span>
+        )}
+        <div class="ph-player__meta">
+          <span class="ph-player__name">{player.name}</span>
+          {player.subtitle && <span class="ph-player__club">{player.subtitle}</span>}
         </div>
       </li>
     ))}
   </ul>
 
-  <p class="talents__empty" data-talents-empty role="status" hidden>
-    {t('talents.empty.filter')}
+  <div class="talents__empty" data-talents-empty role="status" hidden>
+    <p class="talents__empty-text">{t('talents.empty.filter')}</p>
     <button type="button" class="talents__reset" data-talents-reset>
       {t('talents.reset')}
     </button>
-  </p>
+  </div>
 </section>
 
 <style>
@@ -226,568 +235,276 @@ const cards = players.map((player) => {
     font-weight: 400;
   }
 
-  /* Sticky controls bar */
+  /* ── Barra de controles ─────────────────────────────────────────────────────
+     Buscador a la izquierda y los dos desplegables a la derecha, todos a 44 px de
+     alto (lo mínimo cómodo para el dedo). `z-index: 2` para que las listas abiertas
+     pasen por encima de las tarjetas. */
   .talents__controls {
     position: relative;
     z-index: 2;
     display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
+    align-items: center;
+    gap: 8px;
     padding: 16px 0;
     margin-top: var(--ph-head-after);
     margin-bottom: clamp(8px, calc(0.76vw + 5px), 16px);
     border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    background: transparent;
   }
+  /* Los desplegables se quedan a la derecha también cuando el buscador de móvil
+     sale del flujo al abrirse. */
+  .talents__controls > .talents__select:first-of-type { margin-left: auto; }
 
+  /* Buscador: campo de Mochi. El filo es una sombra interior para que, al enfocar,
+     pase de 1 px gris a 2 px dorado con el mismo muelle (como `TextField`). */
   .talents__search {
     position: relative;
     flex: 1 1 280px;
+    max-width: 520px;
+    min-width: 0;
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 12px 16px;
-    background: rgba(13, 15, 18, 0.72);
-    backdrop-filter: var(--ph-glass-backdrop-ui);
-    -webkit-backdrop-filter: var(--ph-glass-backdrop-ui);
-    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: var(--radius-sm);
-    box-shadow: var(--ph-glass-highlight);
-    transition: border-color 0.2s, background 0.2s;
+    height: 44px;
+    padding: 0 6px 0 13px;
+    box-sizing: border-box;
+    border-radius: var(--ph-r-btn);
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: inset 0 0 0 1px var(--mochi-surface-border);
+    cursor: text;
+    transition:
+      box-shadow var(--mochi-duration-snappy) var(--mochi-ease-snappy),
+      background-color var(--mochi-duration-color) var(--mochi-ease-color);
   }
-  /* Escritorio: el buscador con un ancho razonable para 51 nombres y los filtros a
-     la derecha. En móvil el buscador se pliega a un icono (más abajo). */
-  @media (min-width: 721px) {
-    .talents__search { max-width: 520px; }
-    .talents__controls > .talents__combo:first-of-type { margin-left: auto; }
+  @media (hover: hover) {
+    .talents__search:hover { background: rgba(255, 255, 255, 0.05); }
   }
   .talents__search:focus-within {
-    border-color: var(--color-ph-gold, #d6b25e);
+    box-shadow: inset 0 0 0 2px var(--mochi-focus-ring);
   }
   .talents__search-icon {
-    flex: 0 0 auto;
-    color: var(--color-ph-ink-soft, #b5b7bb);
+    width: 18px;
+    height: 18px;
+    color: var(--ph-ink-meta);
   }
   .talents__search-input {
     flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    padding: 0;
     background: transparent;
     border: none;
     outline: none;
     color: var(--color-ph-white, #ffffff);
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 14px;
-    min-width: 0;
+    font: 400 15px/1.2 var(--font-display);
+    letter-spacing: -0.003em;
   }
-  .talents__search-input::placeholder {
-    color: var(--color-ph-ink-soft, #b5b7bb);
+  /* En pantallas táctiles, 16 px: por debajo, iOS amplía la página al enfocar. */
+  @media (pointer: coarse) {
+    .talents__search-input { font-size: 16px; }
   }
-  /* Hide native clear/search decorations (we render our own) */
+  .talents__search-input::placeholder { color: var(--ph-ink-meta); opacity: 1; }
+  /* Fuera los adornos nativos del campo de búsqueda: los botones son los nuestros. */
   .talents__search-input::-webkit-search-decoration,
   .talents__search-input::-webkit-search-cancel-button,
   .talents__search-input::-webkit-search-results-button,
   .talents__search-input::-webkit-search-results-decoration {
     appearance: none;
   }
-  .talents__search-clear {
-    flex: 0 0 auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    background: transparent;
-    border: none;
-    border-radius: 50%;
-    color: var(--color-ph-ink-soft, #b5b7bb);
+
+  /* Botones dentro del campo (limpiar y, en móvil, cerrar): 32 px a 6 px del borde,
+     con esquinas concéntricas a las del campo. */
+  .talents__search-btn {
+    all: unset;
+    box-sizing: border-box;
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ph-r-xs);
+    color: var(--ph-ink-meta);
     cursor: pointer;
-    transition: color 0.2s, background 0.2s;
+    transition:
+      background-color var(--mochi-duration-color) var(--mochi-ease-color),
+      color var(--mochi-duration-color) var(--mochi-ease-color),
+      transform var(--mochi-duration-snappy) var(--mochi-ease-snappy);
   }
-  .talents__search-clear:hover {
-    color: var(--color-ph-white, #ffffff);
-    background: rgba(255, 255, 255, 0.06);
+  .talents__search-btn .ph-ico { width: 16px; height: 16px; }
+  @media (hover: hover) {
+    .talents__search-btn:hover { background: rgba(255, 255, 255, 0.07); color: var(--color-ph-white); }
   }
-  /* Close button: only shown in the mobile expanded-overlay state */
-  .talents__search-close {
-    display: none;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    background: transparent;
-    border: none;
-    border-radius: 50%;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    cursor: pointer;
-    transition: color 0.2s, background 0.2s;
+  .talents__search-btn:active {
+    transform: scale(0.965);
+    transition-duration: var(--mochi-duration-press);
+    transition-timing-function: var(--mochi-ease-press);
   }
-  .talents__search-close:hover {
-    color: var(--color-ph-white, #ffffff);
-    background: rgba(255, 255, 255, 0.06);
+  .talents__search-btn:focus-visible { outline: 2px solid var(--mochi-focus-ring); outline-offset: 1px; }
+  /* La X de limpiar aparece al escribir: entra con desenfoque corto. */
+  .talents__search-clear { animation: talentsBtnIn var(--mochi-duration-snappy) var(--mochi-ease-snappy) both; }
+  /* «Cerrar» solo existe en el buscador desplegado de móvil. */
+  .talents__search-close { display: none; }
+
+  @keyframes talentsBtnIn {
+    from { opacity: 0; scale: 0.8; filter: blur(4px); }
+    to { opacity: 1; scale: 1; filter: blur(0); }
   }
 
-  /* ── Custom combo (role + sort) ──
-     Reemplaza a los <select> nativos para poder animar el popover y sus opciones. */
-  .talents__combo {
-    position: relative;
-    display: inline-flex;
-    flex: 0 0 auto;
-  }
+  /* Desplegables: la pieza compartida a 44 px de alto, a juego con el buscador. La
+     fila de arriba de la lista abierta se recoloca para caer justo donde estaba el
+     texto del botón; las opciones no llevan bandera, así que van en dos columnas. */
+  .talents__select { flex: none; }
+  .talents__select .ph-select__btn { height: 44px; }
+  .talents__select .ph-select__current { height: 30px; }
+  .talents__select .ph-select__opt { grid-template-columns: 1fr 16px; }
 
-  .talents__combo-button {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 40px 12px 16px;
-    background: rgba(13, 15, 18, 0.72);
-    backdrop-filter: var(--ph-glass-backdrop-ui);
-    -webkit-backdrop-filter: var(--ph-glass-backdrop-ui);
-    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: var(--radius-sm);
-    box-shadow: var(--ph-glass-highlight);
-    color: var(--color-ph-white, #ffffff);
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 14px;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .talents__combo-button:focus-visible {
-    outline: none;
-    border-color: var(--color-ph-gold, #d6b25e);
-  }
-  .talents__combo[data-open="true"] .talents__combo-button {
-    border-color: var(--color-ph-gold, #d6b25e);
-  }
-
-  .talents__combo-trigger-label {
-    color: var(--color-ph-white, #ffffff);
-  }
-
-  .talents__select-arrow {
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    transition: transform 240ms cubic-bezier(.7, 0, .2, 1);
-  }
-  .talents__combo[data-open="true"] .talents__select-arrow {
-    transform: translateY(-50%) rotate(180deg);
-  }
-
-  .talents__combo-panel {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    min-width: 100%;
-    margin: 0;
-    padding: 6px;
-    list-style: none;
-    background: var(--color-ph-bg-2, #15171b);
-    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: var(--radius-sm);
-    box-shadow: var(--shadow-ph, 0 4px 24px rgba(13, 15, 18, 0.6));
-    z-index: 6;
-    white-space: nowrap;
-    transform-origin: top center;
-  }
-
-  /* Open: el panel "cae" desde el trigger — clip-path revela de arriba abajo. */
-  .talents__combo[data-open="true"] .talents__combo-panel {
-    animation: talentsPanelOpen 300ms cubic-bezier(.7, 0, .2, 1) both;
-  }
-  @keyframes talentsPanelOpen {
-    from {
-      opacity: 0;
-      transform: translateY(-6px);
-      clip-path: inset(0 0 100% 0);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-      clip-path: inset(0);
-    }
-  }
-
-  /* Close: el panel "se recoge" — clip-path retrae de abajo hacia arriba. */
-  .talents__combo[data-closing="true"] .talents__combo-panel {
-    animation: talentsPanelClose 220ms cubic-bezier(.7, 0, .2, 1) both;
-    pointer-events: none;
-  }
-  @keyframes talentsPanelClose {
-    from {
-      opacity: 1;
-      transform: translateY(0);
-      clip-path: inset(0);
-    }
-    to {
-      opacity: 0;
-      transform: translateY(-4px);
-      clip-path: inset(0 0 100% 0);
-    }
-  }
-
-  .talents__combo-option {
-    position: relative;
-    padding: 10px 14px 10px 26px;
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 14px;
-    color: var(--color-ph-white-80, rgba(255, 255, 255, 0.8));
-    cursor: pointer;
-    border-radius: 2px;
-    user-select: none;
-    transition: background 0.15s, color 0.15s;
-  }
-  /* Chivato: punto dorado a la izquierda sólo en la opción activa.
-     Reservamos el slot en todas para que el texto no se desplace. */
-  .talents__combo-option::before {
-    content: "";
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    width: 6px;
-    height: 6px;
-    margin-top: -3px;
-    border-radius: 50%;
-    background: var(--color-ph-gold, #d6b25e);
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-  .talents__combo-option[aria-selected="true"]::before {
-    opacity: 1;
-  }
-  .talents__combo-option[data-highlighted="true"] {
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--color-ph-white, #ffffff);
-  }
-  .talents__combo-option[aria-selected="true"] {
-    color: var(--color-ph-gold, #d6b25e);
-  }
-
-  /* Stagger: cada opción aparece con pequeño retraso, empezando cuando
-     el panel ya ha iniciado su caída. Complementa el clip-path del panel. */
-  .talents__combo[data-open="true"] .talents__combo-option {
-    animation: talentsOptionEnter 240ms cubic-bezier(.7, 0, .2, 1) both;
-    animation-delay: calc(var(--i, 0) * 40ms + 70ms);
-  }
-  @keyframes talentsOptionEnter {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .talents__combo[data-open="true"] .talents__combo-panel,
-    .talents__combo[data-closing="true"] .talents__combo-panel,
-    .talents__combo[data-open="true"] .talents__combo-option {
-      animation: none;
-    }
-    .talents__select-arrow { transition: none; }
-  }
-
-
-  /* ── Mobile: collapse search to icon, reveal overlay on tap ── */
+  /* ── Móvil: el buscador se pliega a la lupa y crece hasta ser la barra ──────
+     Plegado es un cuadro de 44 px. Al tocarlo pasa a cubrir la barra entera y el
+     recorte se abre desde ese cuadro con el muelle «morph»; el campo y la X entran
+     60 ms después con desenfoque. Al cerrar se recoge al mismo cuadro y solo
+     entonces vuelve a su sitio (`is-closing`, ver el script). */
   @media (max-width: 720px) {
-    .talents__controls {
-      flex-wrap: nowrap;
-      gap: 8px;
-    }
-
-    /* Placeholder del slot del search mientras está en overlay (expand/collapse).
-       Evita que los combos se reajusten al salir el search del flujo flex. */
-    .talents__controls:has(.talents__search.is-expanded)::before,
-    .talents__controls:has(.talents__search.is-collapsing)::before {
-      content: '';
-      flex: 0 0 44px;
-      height: 44px;
-    }
-
-    /* Collapsed search = 44×44 icon-only tap target */
     .talents__search {
       flex: 0 0 44px;
       width: 44px;
-      height: 44px;
       padding: 0;
       gap: 0;
       justify-content: center;
       cursor: pointer;
+      /* En el cuadro de 44 px este recorte no quita nada; en la barra abierta deja
+         ver solo su primer cuadro, y desde ahí se anima. */
+      clip-path: inset(0 calc(100% - 44px) 0 0 round var(--ph-r-btn));
+      transition:
+        clip-path var(--mochi-duration-morph) var(--mochi-ease-morph),
+        box-shadow var(--mochi-duration-snappy) var(--mochi-ease-snappy),
+        background-color var(--mochi-duration-color) var(--mochi-ease-color);
     }
     .talents__search .talents__search-input,
-    .talents__search .talents__search-clear,
-    .talents__search .talents__search-close {
+    .talents__search .talents__search-btn {
       display: none;
     }
 
-    /* Expanded/Collapsing: overlay absoluto que cubre toda la barra.
-       El reveal usa clip-path (de izquierda a derecha), no distorsiona el contenido. */
-    .talents__search.is-expanded,
-    .talents__search.is-collapsing {
+    .talents__search.is-open,
+    .talents__search.is-closing {
       position: absolute;
       top: 16px;
-      bottom: 16px;
-      left: var(--ph-section-px, 24px);
-      right: var(--ph-section-px, 24px);
+      left: 0;
+      right: 0;
+      z-index: 4;
       width: auto;
-      height: auto;
-      flex: 0 0 auto;
-      padding: 8px 8px 8px 16px;
+      padding: 0 6px 0 13px;
       gap: 10px;
       justify-content: flex-start;
-      background: var(--color-ph-black, #0d0f12);
-      border-color: var(--color-ph-gold, #d6b25e);
-      z-index: 4;
+      cursor: text;
+      background: var(--mochi-solid);
     }
-    .talents__search.is-expanded {
-      animation: talentsSearchOpen 340ms cubic-bezier(.7, 0, .2, 1) both;
-    }
-    .talents__search.is-collapsing {
-      animation: talentsSearchClose 260ms cubic-bezier(.7, 0, .2, 1) both;
-      pointer-events: none;
-    }
-    .talents__search.is-expanded .talents__search-input,
-    .talents__search.is-collapsing .talents__search-input {
-      display: block;
-      flex: 1 1 auto;
-    }
-    .talents__search.is-expanded .talents__search-clear:not([hidden]),
-    .talents__search.is-collapsing .talents__search-clear:not([hidden]) {
-      display: inline-flex;
-    }
-    .talents__search.is-expanded .talents__search-close,
-    .talents__search.is-collapsing .talents__search-close {
-      display: inline-flex;
-    }
-    /* Contenido interno: pequeño fade tras el reveal del contenedor. */
-    .talents__search.is-expanded .talents__search-input,
-    .talents__search.is-expanded .talents__search-close {
-      animation: talentsSearchContentIn 280ms cubic-bezier(.7, 0, .2, 1) 90ms both;
-    }
+    .talents__search.is-open { clip-path: inset(0 0 0 0 round var(--ph-r-btn)); }
+    .talents__search.is-open .talents__search-input,
+    .talents__search.is-closing .talents__search-input { display: block; }
+    .talents__search.is-open .talents__search-btn,
+    .talents__search.is-closing .talents__search-btn { display: inline-grid; }
 
-    @keyframes talentsSearchOpen {
-      from { clip-path: inset(0 calc(100% - 44px) 0 0); }
-      to   { clip-path: inset(0); }
+    .talents__search.is-open .talents__search-input,
+    .talents__search.is-open .talents__search-close {
+      animation: talentsSearchIn var(--mochi-duration-fade-in) var(--mochi-ease-fade-in) 60ms both;
     }
-    @keyframes talentsSearchClose {
-      from { clip-path: inset(0); }
-      to   { clip-path: inset(0 calc(100% - 44px) 0 0); }
-    }
-    @keyframes talentsSearchContentIn {
-      from { opacity: 0; transform: translateX(-4px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-
-    /* Combos: comparten el ancho restante; ocultamos el label inline. */
-    .talents__combo {
-      flex: 1 1 0;
-      min-width: 0;
-    }
-    .talents__combo-button {
-      width: 100%;
-      height: 44px;
-      padding: 0 12px;
-      justify-content: center;
-      gap: 8px;
-    }
-    .talents__combo-trigger-label {
-      font-size: 13px;
-    }
-    /* En móvil el arrow forma parte del flex flow (junto al label), no absoluto.
-       Así el grupo label+arrow se centra como una unidad y queda simétrico. */
-    .talents__select-arrow {
-      position: static;
-      transform: none;
-      right: auto;
-      top: auto;
-    }
-    .talents__combo[data-open="true"] .talents__select-arrow {
-      transform: rotate(180deg);
+    .talents__search.is-closing .talents__search-input,
+    .talents__search.is-closing .talents__search-btn {
+      animation: talentsSearchOut var(--mochi-duration-fade-out) var(--mochi-ease-fade-out) both;
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .talents__search.is-expanded,
-    .talents__search.is-collapsing,
-    .talents__search.is-expanded .talents__search-input,
-    .talents__search.is-expanded .talents__search-close {
-      animation: none;
-    }
+  @keyframes talentsSearchIn {
+    from { opacity: 0; filter: blur(6px); translate: -6px 0; }
+    to { opacity: 1; filter: blur(0); translate: 0 0; }
+  }
+  @keyframes talentsSearchOut {
+    from { opacity: 1; filter: blur(0); }
+    to { opacity: 0; filter: blur(4px); }
   }
 
-  /* Grid: 2 → 3 → 5 columns */
+  /* ── Rejilla: 2 → 3 → 5 columnas ─────────────────────────────────────────── */
   .talents__grid {
     list-style: none;
     padding: 0;
     margin: 0;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: clamp(10px, 1.5vw, 16px);
   }
   @media (min-width: 720px) {
-    .talents__grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .talents__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
   }
   @media (min-width: 1200px) {
-    .talents__grid { grid-template-columns: repeat(5, 1fr); gap: 18px; }
+    .talents__grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; }
   }
 
   .talents__item { margin: 0; }
-  .talents__item[hidden] { display: none; }
+  /* Sin caja propia: la foto se mide contra `.ph-player__photo`, como sin <picture>. */
+  .talents__item picture { display: contents; }
 
-  .talents__card {
-    position: relative;
-    display: block;
-    overflow: hidden;
-    background: var(--color-ph-bg-2, #15171b);
-    border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    border-radius: var(--radius-md);
-    transition: transform 0.35s cubic-bezier(.7, 0, .2, 1);
-    transform-origin: center bottom;
-  }
-  .talents__photo { position: relative; aspect-ratio: 3 / 4; }
-  /* Sin caja propia: la foto sigue midiéndose contra .talents__photo, como sin <picture>. */
-  .talents__photo picture { display: contents; }
-  .talents__photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  /* Escudos de selección: siempre visibles, arriba-derecha de la foto. */
-  .talents__badges {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 2;
-    display: flex;
-    gap: 4px;
-    pointer-events: none;
-  }
-  .talents__badge {
-    display: block;
-    width: 22px;
-    height: 22px;
-    object-fit: contain;
-    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55));
-    transition: transform 0.35s cubic-bezier(.7, 0, .2, 1);
-  }
-
-  /* Escuadra: decorativa sola (cuando no hay escudo) y enmarca los escudos al hacer hover. */
-  .talents__corner {
-    position: absolute;
-    top: 7px;
-    right: 7px;
-    width: 32px;
-    height: 32px;
-    border-top: 1px solid var(--color-ph-gold, #d6b25e);
-    border-right: 1px solid var(--color-ph-gold, #d6b25e);
-    opacity: 0;
-    transition: opacity 0.35s;
-    pointer-events: none;
-  }
-  /* Sin escudo: volvemos al tamaño original (22×22 en 12/12). */
-  .talents__card[data-badges="0"] .talents__corner {
-    top: 12px;
-    right: 12px;
-    width: 22px;
-    height: 22px;
-  }
-  /* Dos escudos: la escuadra se ensancha para abrazarlos (22 + 4 + 22 + 10 padding = 58). */
-  .talents__card[data-badges="2"] .talents__corner {
-    width: 58px;
-  }
-
-  .talents__meta {
-    position: absolute;
-    inset: 0;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    gap: 3px;
-    background: linear-gradient(
-      to top,
-      rgba(13, 15, 18, 0.96) 0%,
-      rgba(13, 15, 18, 0.5) 38%,
-      rgba(13, 15, 18, 0) 64%
-    );
-    pointer-events: none;
-  }
-  .talents__name {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(15px, 1.3vw, 18px);
-    letter-spacing: -0.005em;
-    line-height: 1.2;
-    color: var(--color-ph-white, #ffffff);
-    transition: color 0.3s;
-  }
-  /* El club en letra normal y a tamaño de lectura: antes iba en mayúsculas de
-     máquina de escribir a 10 px, por debajo de lo legible. */
-  .talents__club {
-    font-size: clamp(12px, calc(0.1vw + 11.6px), 13px);
-    line-height: 1.4;
-    color: var(--color-ph-gold, #d6b25e);
-    transition: color 0.3s;
-  }
-
-  .talents__underline {
-    position: absolute;
-    left: 16px;
-    right: 16px;
-    bottom: 14px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.5s cubic-bezier(.7, 0, .2, 1);
-    pointer-events: none;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .talents__card:hover { transform: translateY(-3px); }
-    .talents__card:hover .talents__name { color: var(--color-ph-gold, #d6b25e); }
-    .talents__card:hover .talents__club { color: var(--color-ph-ink-soft, #b5b7bb); }
-    .talents__card:hover .talents__corner { opacity: 1; }
-    .talents__card:hover .talents__underline { transform: scaleX(1); }
-    .talents__card:hover .talents__badge { transform: scale(1.08); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .talents__card,
-    .talents__name,
-    .talents__corner,
-    .talents__underline,
-    .talents__badge { transition: none; }
-    .talents__card:hover { transform: none; }
-    .talents__card:hover .talents__badge { transform: none; }
-  }
-
-  /* Empty filter state */
+  /* ── Sin resultados: tarjeta con el botón para volver a empezar ──────────── */
   .talents__empty {
-    margin: clamp(40px, 6vw, 64px) 0 0;
-    padding: 32px 24px;
+    display: grid;
+    justify-items: center;
+    gap: 18px;
+    /* Ocupa el sitio donde empezarían las tarjetas. */
+    margin: 0;
+    padding: clamp(32px, 4vw, 48px) 24px;
     text-align: center;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 15px;
+    background: var(--mochi-surface);
+    border: 1px solid var(--mochi-surface-border);
+    border-radius: var(--ph-r-lg);
+    box-shadow: var(--mochi-shadow-surface);
+  }
+  .talents__empty-text {
+    margin: 0;
+    max-width: 44ch;
+    font-size: 16px;
     line-height: 1.6;
-    border: 1px dashed var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    color: var(--ph-ink-body);
   }
+  /* Botón de Mochi en tono «surface»: se eleva al pasar el ratón y se hunde al pulsar. */
   .talents__reset {
-    margin-left: 12px;
-    padding: 8px 16px;
-    background: transparent;
-    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: var(--radius-sm);
-    color: var(--color-ph-white, #ffffff);
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 12px;
+    all: unset;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 18px;
+    border-radius: var(--ph-r-btn);
+    background: var(--mochi-solid);
+    color: var(--color-ph-white);
+    box-shadow: inset 0 0 0 1px var(--mochi-solid-border), var(--mochi-shadow-surface);
+    font: 500 15px/1 var(--font-display);
+    letter-spacing: -0.005em;
     cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
+    transition:
+      transform var(--mochi-duration-snappy) var(--mochi-ease-snappy),
+      box-shadow var(--mochi-duration-morph) var(--mochi-ease-morph);
   }
-  .talents__reset:hover {
-    border-color: var(--color-ph-gold, #d6b25e);
-    color: var(--color-ph-gold, #d6b25e);
+  @media (hover: hover) {
+    .talents__reset:hover { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), var(--ph-sh-raise); }
+  }
+  .talents__reset:active {
+    transform: scale(0.965);
+    transition-duration: var(--mochi-duration-press);
+    transition-timing-function: var(--mochi-ease-press);
+  }
+  .talents__reset:focus-visible { outline: 2px solid var(--mochi-focus-ring); outline-offset: 3px; }
+
+  /* «Reducir movimiento»: todo salta a su estado final. */
+  @media (prefers-reduced-motion: reduce) {
+    .talents__search,
+    .talents__search-btn,
+    .talents__reset {
+      transition-duration: 1ms !important;
+      transition-delay: 0ms !important;
+    }
+    .talents__search-clear,
+    .talents__search .talents__search-input,
+    .talents__search .talents__search-btn {
+      animation: none !important;
+    }
   }
 
   .visually-hidden {
@@ -815,135 +532,23 @@ const cards = players.map((player) => {
     return window.matchMedia('(max-width: 720px)').matches;
   }
 
-  interface ComboController {
-    setValue(value: string): void;
-    close(): void;
+  /** Duración del muelle «morph» de Mochi en ms (0 con «reducir movimiento»). */
+  function morphMs(): number {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return 0;
+    const v = getComputedStyle(document.documentElement).getPropertyValue('--mochi-duration-morph');
+    return parseFloat(v) || 0;
   }
 
-  function initCombo(
-    combo: HTMLElement,
-    onChange: (value: string) => void,
-  ): ComboController | null {
-    const trigger = combo.querySelector<HTMLButtonElement>('[data-talents-combo-trigger]');
-    const panel = combo.querySelector<HTMLUListElement>('[data-talents-combo-panel]');
-    if (!trigger || !panel) return null;
-
-    const options = Array.from(panel.querySelectorAll<HTMLLIElement>('.talents__combo-option'));
-    if (options.length === 0) return null;
-
-    let highlightIdx = options.findIndex((o) => o.getAttribute('aria-selected') === 'true');
-    if (highlightIdx < 0) highlightIdx = 0;
-
-    function setHighlight(next: number): void {
-      highlightIdx = (next + options.length) % options.length;
-      for (let i = 0; i < options.length; i++) {
-        if (i === highlightIdx) options[i].setAttribute('data-highlighted', 'true');
-        else options[i].removeAttribute('data-highlighted');
-      }
-    }
-
-    let closeAnimEnd: ((e: AnimationEvent) => void) | null = null;
-
-    function open(): void {
-      if (combo.dataset.open === 'true') return;
-      /* Si estaba cerrándose, interrumpimos la animación y volvemos a abrir. */
-      if (combo.dataset.closing === 'true') {
-        delete combo.dataset.closing;
-        if (closeAnimEnd) {
-          panel!.removeEventListener('animationend', closeAnimEnd);
-          closeAnimEnd = null;
-        }
-      }
-      combo.dataset.open = 'true';
-      trigger!.setAttribute('aria-expanded', 'true');
-      panel!.hidden = false;
-      const selected = options.findIndex((o) => o.getAttribute('aria-selected') === 'true');
-      setHighlight(selected >= 0 ? selected : 0);
-      document.addEventListener('pointerdown', onDocPointerDown, true);
-    }
-
-    function close(): void {
-      if (combo.dataset.open !== 'true') return;
-      delete combo.dataset.open;
-      combo.dataset.closing = 'true';
-      trigger!.setAttribute('aria-expanded', 'false');
-      document.removeEventListener('pointerdown', onDocPointerDown, true);
-      closeAnimEnd = (e: AnimationEvent): void => {
-        if (e.target !== panel) return;
-        delete combo.dataset.closing;
-        panel!.hidden = true;
-        panel!.removeEventListener('animationend', closeAnimEnd!);
-        closeAnimEnd = null;
-      };
-      panel!.addEventListener('animationend', closeAnimEnd);
-    }
-
-    function onDocPointerDown(e: PointerEvent): void {
-      if (!(e.target instanceof Node)) return;
-      if (!combo.contains(e.target)) close();
-    }
-
-    function selectByIndex(i: number): void {
-      const opt = options[i];
-      if (!opt) return;
-      const value = opt.dataset.value ?? '';
-      for (const o of options) o.setAttribute('aria-selected', o === opt ? 'true' : 'false');
-      close();
-      trigger!.focus();
-      onChange(value);
-    }
-
-    trigger.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (combo.dataset.open === 'true') close();
-      else open();
+  /** Marca como elegida la opción `value` de un desplegable `.ph-select`. Al abrirlo,
+   *  ph-motion.ts lee `aria-selected` para colocar el resaltado y el foco. */
+  function setSelectValue(sel: HTMLElement, value: string): void {
+    sel.querySelectorAll<HTMLElement>('.ph-select__opt').forEach((o) => {
+      o.setAttribute('aria-selected', String(o.dataset.value === value));
     });
+  }
 
-    trigger.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        if (combo.dataset.open !== 'true') {
-          open();
-        } else if (e.key === 'ArrowDown') {
-          setHighlight(highlightIdx + 1);
-        } else if (e.key === 'ArrowUp') {
-          setHighlight(highlightIdx - 1);
-        } else {
-          selectByIndex(highlightIdx);
-        }
-      } else if (e.key === 'Escape' && combo.dataset.open === 'true') {
-        e.preventDefault();
-        close();
-      }
-    });
-
-    panel.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowDown') { e.preventDefault(); setHighlight(highlightIdx + 1); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); setHighlight(highlightIdx - 1); }
-      else if (e.key === 'Home') { e.preventDefault(); setHighlight(0); }
-      else if (e.key === 'End') { e.preventDefault(); setHighlight(options.length - 1); }
-      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectByIndex(highlightIdx); }
-      else if (e.key === 'Escape') { e.preventDefault(); close(); trigger!.focus(); }
-    });
-
-    options.forEach((opt, i) => {
-      opt.addEventListener('pointerenter', () => setHighlight(i));
-      opt.addEventListener('click', (e) => {
-        e.preventDefault();
-        selectByIndex(i);
-      });
-    });
-
-    return {
-      setValue(value: string): void {
-        const idx = options.findIndex((o) => o.dataset.value === value);
-        if (idx < 0) return;
-        const opt = options[idx];
-        for (const o of options) o.setAttribute('aria-selected', o === opt ? 'true' : 'false');
-        setHighlight(idx);
-      },
-      close,
-    };
+  function selectedValue(e: Event): string {
+    return (e as CustomEvent<{ value?: string }>).detail?.value ?? '';
   }
 
   function initTalents(): void {
@@ -956,10 +561,10 @@ const cards = players.map((player) => {
     const search = controls.querySelector<HTMLInputElement>('[data-talents-search]');
     const clearBtn = controls.querySelector<HTMLButtonElement>('[data-talents-clear]');
     const closeBtn = controls.querySelector<HTMLButtonElement>('[data-talents-search-close]');
-    const roleCombo = controls.querySelector<HTMLElement>('[data-talents-combo="role"]');
-    const sortCombo = controls.querySelector<HTMLElement>('[data-talents-combo="sort"]');
+    const roleSel = controls.querySelector<HTMLElement>('[data-talents-select="role"]');
+    const sortSel = controls.querySelector<HTMLElement>('[data-talents-select="sort"]');
     const reset = empty.querySelector<HTMLButtonElement>('[data-talents-reset]');
-    if (!searchWrap || !search || !clearBtn || !closeBtn || !roleCombo || !sortCombo || !reset) return;
+    if (!searchWrap || !search || !clearBtn || !closeBtn || !roleSel || !sortSel || !reset) return;
 
     const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-talent-card]'));
     let currentRole: RoleFilter = 'all';
@@ -994,23 +599,29 @@ const cards = players.map((player) => {
       clearBtn!.hidden = search!.value.length === 0;
     }
 
+    /* Buscador de móvil. Abrir: `is-open` lo saca a cubrir la barra y su recorte se
+       abre con una transición (interrumpible). Cerrar: `is-closing` lo mantiene
+       encima mientras el recorte se recoge a la lupa; al terminar, vuelve al flujo.
+       Se mide con la duración del muelle y no con `transitionend`, que también
+       llega burbujeando desde los hijos (CLAUDE.md, «animationend burbujea»). */
+    let closeTimer = 0;
+
     function openSearch(): void {
-      searchWrap!.classList.remove('is-collapsing');
-      searchWrap!.classList.add('is-expanded');
+      window.clearTimeout(closeTimer);
+      searchWrap!.classList.remove('is-closing');
+      searchWrap!.classList.add('is-open');
       requestAnimationFrame(() => search!.focus());
     }
 
     function closeSearch(): void {
-      if (!searchWrap!.classList.contains('is-expanded')) return;
+      if (!searchWrap!.classList.contains('is-open')) return;
       search!.blur();
-      searchWrap!.classList.remove('is-expanded');
-      searchWrap!.classList.add('is-collapsing');
-      const onEnd = (e: AnimationEvent): void => {
-        if (e.target !== searchWrap) return;
-        searchWrap!.classList.remove('is-collapsing');
-        searchWrap!.removeEventListener('animationend', onEnd);
-      };
-      searchWrap!.addEventListener('animationend', onEnd);
+      searchWrap!.classList.remove('is-open');
+      searchWrap!.classList.add('is-closing');
+      window.clearTimeout(closeTimer);
+      closeTimer = window.setTimeout(() => {
+        searchWrap!.classList.remove('is-closing');
+      }, morphMs() + 40);
     }
 
     search.addEventListener('input', () => {
@@ -1026,10 +637,10 @@ const cards = players.map((player) => {
       search.focus();
     });
 
-    /* Mobile: tapping the collapsed search wrapper expands it */
+    /* Móvil: tocar la lupa plegada despliega el buscador. */
     searchWrap.addEventListener('click', (e) => {
       if (!isMobile()) return;
-      if (searchWrap.classList.contains('is-expanded')) return;
+      if (searchWrap.classList.contains('is-open')) return;
       e.preventDefault();
       openSearch();
     });
@@ -1044,26 +655,30 @@ const cards = players.map((player) => {
     });
 
     search.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && searchWrap.classList.contains('is-expanded')) {
+      if (e.key === 'Escape' && searchWrap.classList.contains('is-open')) {
         e.preventDefault();
         closeSearch();
       }
     });
 
-    const roleCtl = initCombo(roleCombo, (value) => {
+    /* Los desplegables los abre, recorre y cierra ph-motion.ts (ratón y teclado);
+       aquí solo se escucha la opción elegida. */
+    roleSel.addEventListener('ph:select', (e) => {
+      const value = selectedValue(e);
       currentRole = value === 'player' || value === 'coach' ? value : 'all';
       applyFilter(search.value);
     });
 
-    const sortCtl = initCombo(sortCombo, (value) => {
+    sortSel.addEventListener('ph:select', (e) => {
+      const value = selectedValue(e);
       applySort(value === 'az' || value === 'za' ? value : 'default');
     });
 
     reset.addEventListener('click', () => {
       search.value = '';
       currentRole = 'all';
-      roleCtl?.setValue('all');
-      sortCtl?.setValue('default');
+      setSelectValue(roleSel, 'all');
+      setSelectValue(sortSel, 'default');
       syncClearBtn();
       applyFilter('');
       applySort('default');
@@ -1075,109 +690,6 @@ const cards = players.map((player) => {
   }
 
   document.addEventListener('astro:page-load', initTalents);
-</script>
-
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, wrapWords, scheduleScrollTriggerRefresh, afterTransitionPaint, revealReveals,
-  } from '@/scripts/ph-text-animations';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initTalentsAnimations(): void {
-    const section = document.querySelector<HTMLElement>('.talents');
-    if (!section) return;
-    if (reducedMotion()) return;
-
-    const index = section.querySelector<HTMLElement>('.talents__index');
-    const title = section.querySelector<HTMLElement>('.talents__title');
-    const lead = section.querySelector<HTMLElement>('.talents__lead');
-    const controls = section.querySelector<HTMLElement>('.talents__controls');
-    const grid = section.querySelector<HTMLElement>('.talents__grid');
-    const cards = section.querySelectorAll<HTMLElement>('.talents__card');
-
-    // La cabecera está SIEMPRE above-the-fold (es el hero de la página). Animarla
-    // con scrollTrigger era frágil: el trigger `once` para un elemento ya visible
-    // en la carga fallaba intermitentemente al disparar (~80% de las recargas) y
-    // el título quedaba congelado en yPercent:115 → invisible. Igual que el hero y
-    // el hero de Servicios, la animamos de forma INMEDIATA (sin scrollTrigger), en
-    // cascada con delays. Las cards siguen con IntersectionObserver (fiable).
-    if (index) {
-      gsap.from(index, { opacity: 0, y: 8, duration: 0.7, ease: 'power3.out' });
-    }
-    if (title) {
-      const words = wrapWords(title);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 0.9,
-        ease: 'power4.out',
-        stagger: 0.08,
-        delay: 0.1,
-      });
-    }
-    if (lead) {
-      gsap.from(lead, {
-        opacity: 0,
-        y: 18,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.3,
-      });
-    }
-    if (controls) {
-      gsap.from(controls, {
-        opacity: 0,
-        y: 14,
-        duration: 0.7,
-        ease: 'power3.out',
-        delay: 0.4,
-      });
-    }
-    if (cards.length && grid) {
-      // IntersectionObserver per-card en lugar de gsap.from(cards, { stagger }).
-      // Antes: las 116 cards animaban a la vez al entrar el grid (1.4-1.9 s de
-      // scriptEvaluation aunque solo 6-9 fueran visibles). Ahora cada card
-      // anima al entrar al viewport, y el stagger se reinicia entre batches.
-      gsap.set(cards, { opacity: 0, scale: 0.96, y: 20 });
-
-      const STAGGER_S = 0.05;
-      const STAGGER_RESET_GAP_MS = 250;
-      let staggerOffset = 0;
-      let lastFiredAt = 0;
-
-      const cardObserver = new IntersectionObserver(
-        (entries) => {
-          const now = performance.now();
-          if (now - lastFiredAt > STAGGER_RESET_GAP_MS) staggerOffset = 0;
-          for (const entry of entries) {
-            if (!entry.isIntersecting) continue;
-            gsap.to(entry.target, {
-              opacity: 1,
-              scale: 1,
-              y: 0,
-              duration: 0.8,
-              delay: staggerOffset,
-              ease: 'power3.out',
-              clearProps: 'transform,opacity',
-            });
-            staggerOffset += STAGGER_S;
-            lastFiredAt = now;
-            cardObserver.unobserve(entry.target);
-          }
-        },
-        { rootMargin: '0px 0px -8% 0px' },
-      );
-
-      for (const card of cards) cardObserver.observe(card);
-    }
-
-    revealReveals(section);
-    scheduleScrollTriggerRefresh();
-  }
-
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initTalentsAnimations));
 </script>
 
 <script>

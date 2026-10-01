@@ -1,0 +1,84 @@
+/* Capa de marca de PHSPORT sobre Mochi (mochi-ui).
+ *
+ * Mochi pone la forma, el movimiento y las sombras; PHSPORT pone la paleta (negro y
+ * oro), la tipografía (Söhne) y las esquinas. Aquí solo se redefinen variables de
+ * Mochi, sin tocar la librería: el oro ocupa el papel del verde matcha como único
+ * acento. Va importado después de `mochi-ui/styles.css` (BaseLayout), y con
+ * `:root[data-theme="dark"]` para ganar al tema oscuro de Mochi sin depender del
+ * orden. Por qué Mochi y cómo entra: DECISIONS.md (2026-10-01). */
+
+:root[data-theme="dark"] {
+  --mochi-canvas: #0d0f12;
+  --mochi-on-canvas: #ffffff;
+  --mochi-on-canvas-muted: rgba(255, 255, 255, 0.62);
+
+  --mochi-solid: #1c1f24;
+  --mochi-on-solid: #ffffff;
+  --mochi-on-solid-muted: rgba(255, 255, 255, 0.62);
+  --mochi-solid-subtle: rgba(255, 255, 255, 0.06);
+  --mochi-solid-border: rgba(255, 255, 255, 0.08);
+
+  --mochi-surface: #15171b;
+  --mochi-on-surface: #ffffff;
+  --mochi-on-surface-muted: rgba(255, 255, 255, 0.62);
+  --mochi-surface-border: rgba(255, 255, 255, 0.08);
+  --mochi-surface-border-strong: rgba(255, 255, 255, 0.16);
+
+  --mochi-thumb: #f4f2ee;
+  --mochi-on-thumb: #0d0f12;
+  --mochi-on-thumb-muted: rgba(13, 15, 18, 0.58);
+
+  --mochi-accent: #d6b25e;
+  --mochi-on-accent: #0d0f12;
+  --mochi-accent-strong: #e6c682;
+  --mochi-focus-ring: #d6b25e;
+
+  --mochi-font-sans: 'Sohne', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --mochi-font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* Sombras para fondo oscuro: un filo de luz arriba y una caída larga. El oro
+     proyecta luz cálida en vez de sombra negra. */
+  --mochi-shadow-surface: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 1px 1.5px rgba(0, 0, 0, 0.35), 0 14px 32px -14px rgba(0, 0, 0, 0.8);
+  --mochi-shadow-thumb: 0 1px 2px rgba(0, 0, 0, 0.35), 0 3px 8px rgba(0, 0, 0, 0.25);
+  --mochi-shadow-pop: 0 6px 16px rgba(0, 0, 0, 0.55);
+  --mochi-shadow-overlay: 0 24px 60px -12px rgba(0, 0, 0, 0.75), 0 2px 6px rgba(0, 0, 0, 0.35);
+
+  /* Esquinas de PHSPORT: rectángulo redondeado, a medio camino de la píldora. */
+  --ph-r-xs: 8px;
+  --ph-r-sm: 10px;
+  --ph-r-btn-sm: 12px;
+  --ph-r-btn: 14px;
+  --ph-r-btn-lg: 16px;
+  --ph-r-md: 16px;
+  --ph-r-lg: 22px;
+  --ph-r-xl: 28px;
+
+  --ph-sh-raise: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 2px 4px rgba(0, 0, 0, 0.42), 0 24px 44px -16px rgba(0, 0, 0, 0.95);
+  --ph-sh-gold: inset 0 1px 0 rgba(255, 255, 255, 0.42), inset 0 -1px 0 rgba(0, 0, 0, 0.16), 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 28px -12px rgba(214, 178, 94, 0.55);
+  --ph-sh-gold-raise: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.4), 0 20px 40px -14px rgba(214, 178, 94, 0.7);
+}
+
+/* ── Ajustes provisionales sobre los botones de Mochi ────────────────────────
+   Mochi fija la píldora (`border-radius: 9999px`) y la misma sombra para todos los
+   tonos, sin variable para cambiarlo. Hasta que Mochi lo exponga (apuntado como
+   pendiente para su repo, docs/hallazgos-abiertos.md), se ajusta aquí. Al sacar
+   Mochi esa variable, esto se cambia por la variable y se borra lo demás. */
+.mochi-button { border-radius: var(--ph-r-btn); }
+.mochi-button[data-size="sm"] { border-radius: var(--ph-r-btn-sm); }
+.mochi-button[data-size="lg"] { border-radius: var(--ph-r-btn-lg); }
+.mochi-button[data-tone="accent"] { box-shadow: var(--ph-sh-gold); }
+.mochi-button[data-tone="solid"],
+.mochi-button[data-tone="surface"],
+.mochi-button[data-tone="accent"] {
+  transition:
+    transform var(--mochi-duration-snappy) var(--mochi-ease-snappy),
+    box-shadow var(--mochi-duration-morph) var(--mochi-ease-morph),
+    background-color var(--mochi-duration-color) var(--mochi-ease-color);
+}
+@media (hover: hover) {
+  .mochi-button[data-tone="solid"]:hover,
+  .mochi-button[data-tone="surface"]:hover { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), var(--ph-sh-raise); }
+  .mochi-button[data-tone="accent"]:hover { background: var(--mochi-accent-strong); box-shadow: var(--ph-sh-gold-raise); }
+  .mochi-button .mochi-button__label svg { transition: transform var(--mochi-duration-snappy) var(--mochi-ease-snappy); }
+  .mochi-button:hover .mochi-button__label svg:last-child { transform: translateX(3px); }
+}

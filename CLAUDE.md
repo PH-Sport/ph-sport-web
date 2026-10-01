@@ -213,7 +213,12 @@ una tarjeta suelta, y lo sabe.
 tarjetas no son clicables. No proponer rutas `/talentos/[slug]`, modales de
 detalle ni JSON-LD `Person` — se retiró a propósito (`DECISIONS.md`, 2026-04-24).
 
-**GSAP vive en `src/scripts/`, fuera de las islands de React.**
+**Mochi sin React en el navegador, y movimiento solo como respuesta.** Los
+componentes de Mochi (`mochi-ui`) se dibujan en el servidor: ninguno lleva
+`client:`. Lo interactivo va en `src/scripts/ph-motion.ts` con las curvas de
+Mochi, y nada se anima al cargar ni al hacer scroll; GSAP salió del proyecto el
+2026-10-01. Ver `ARCHITECTURE.md` («Sistema de diseño y movimiento») y
+`DECISIONS.md` (2026-10-01).
 
 ## Trampas conocidas
 
@@ -238,9 +243,9 @@ leerlo antes de tocar el fichero que se nombra.
 - **Las capturas de pantalla no fotografían la capa `top-layer`** → el telón nunca sale
   en un screenshot; verificar con `animationstart`/`animationend`, no con capturas.
 - **El scroll suave está apagado a propósito durante la navegación** → si se quita
-  ese apagado, la restauración al pulsar atrás se anima, el refresh de ScrollTrigger
-  la corta a medias y **la página se queda en y≈2**. `clearScrollMemory()` no lo
-  arregla: ya se probó.
+  ese apagado, la restauración al pulsar atrás se anima. Con GSAP (hasta el
+  2026-10-01), además, el refresh de ScrollTrigger la cortaba a medias y **la página
+  se quedaba en y≈2**. Vive al final de `src/scripts/ph-motion.ts`.
 - **Un LCP bueno puede estar midiendo el elemento equivocado** → mirar siempre
   `entry.element`, no solo la cifra. Más diagnósticos falsos en `docs/rendimiento.md`.
 - **El smoke puede estar midiendo otra web** → si falla de forma masiva y rara, mirar
@@ -282,8 +287,9 @@ Lo que hay que saber **antes de tocar nada**:
 
 Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: fotos de jugadores
 con la camiseta del club anterior, backlog de rendimiento del 2026-08-18, fuga de
-listeners de scroll en la home, SEO P1/P2, y el vídeo del hero y los fondos
-animados de sección sin probar en un móvil real (2026-10-01).
+listeners de scroll en la home, SEO P1/P2, el vídeo del hero, los fondos
+animados de sección y el rediseño sin probar en un móvil real (2026-10-01), y lo
+que la web ajusta por fuera de Mochi mientras Mochi no lo trae.
 
 ## Convenciones
 

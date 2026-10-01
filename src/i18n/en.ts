@@ -344,6 +344,9 @@ const en: Record<TranslationKey, string> = {
   'a11y.menu.open': 'Open menu',
   'a11y.menu.close': 'Close menu',
   'a11y.close': 'Close',
+  'a11y.rail.prev': 'Previous',
+  'a11y.rail.next': 'Next',
+  'a11y.copyEmail': 'Copy email',
 };
 
 export default en;

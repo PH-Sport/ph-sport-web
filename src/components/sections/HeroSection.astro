@@ -60,7 +60,7 @@ const t = useTranslations(lang);
 
   <a class="hero-scroll" href="#talentos" data-hero-scroll-indicator>
     <span class="hero-scroll__label">{t('hero.scroll.label')}</span>
-    <span class="hero-scroll__line" aria-hidden="true"></span>
+    <svg class="hero-scroll__arrow" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
   </a>
 </section>
 
@@ -157,8 +157,8 @@ const t = useTranslations(lang);
     font-family: var(--font-display, 'Inter Tight', sans-serif);
     font-weight: 500;
     font-size: clamp(44px, 8.5vw, 132px);
-    letter-spacing: -0.03em;
-    line-height: 0.96;
+    letter-spacing: -0.04em;
+    line-height: 0.92;
     margin: 0;
     text-wrap: balance;
   }
@@ -173,75 +173,55 @@ const t = useTranslations(lang);
     font-weight: 400;
   }
 
-  /* Vertical scroll cue — bottom-right */
+  /* Aviso de scroll: una pieza quieta, como un botón. Sin bucles de adorno: el
+     movimiento de la web responde a lo que haces (DECISIONS.md, 2026-10-01). */
   .hero-scroll {
     position: absolute;
     right: var(--ph-section-px, clamp(20px, 4vw, 48px));
-    bottom: clamp(24px, 4vw, 48px);
+    bottom: clamp(40px, 5vw, 72px);
     z-index: 4;
-    display: flex;
-    flex-direction: column;
+    display: inline-flex;
     align-items: center;
-    gap: 12px;
-    color: var(--color-ph-white, #ffffff);
-    opacity: 0.7;
-    transition: opacity 0.2s ease, color 0.2s ease;
+    gap: 10px;
+    height: 40px;
+    padding: 0 12px 0 14px;
+    border: 1px solid var(--mochi-surface-border);
+    border-radius: var(--ph-r-btn-sm, 12px);
+    background: rgba(21, 23, 27, 0.55);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: rgba(255, 255, 255, 0.78);
+    font-family: var(--font-display);
+    font-size: 13px;
+    letter-spacing: 0.03em;
     text-decoration: none;
+    transition:
+      opacity var(--mochi-duration-fade-out) var(--mochi-ease-fade-out),
+      color var(--mochi-duration-color) var(--mochi-ease-color),
+      transform var(--mochi-duration-snappy) var(--mochi-ease-snappy);
   }
-  .hero-scroll:hover {
-    opacity: 1;
-    color: var(--color-ph-gold, #d6b25e);
+  .hero-scroll:hover { color: var(--color-ph-white); }
+  .hero-scroll:active { transform: scale(0.965); transition-duration: var(--mochi-duration-press); transition-timing-function: var(--mochi-ease-press); }
+  .hero-scroll__arrow {
+    fill: none;
+    stroke: var(--color-ph-gold);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform var(--mochi-duration-snappy) var(--mochi-ease-snappy);
   }
-  .hero-scroll__label {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-  .hero-scroll__line {
-    position: relative;
-    width: 1px;
-    height: 56px;
-    background: currentColor;
-    overflow: hidden;
-  }
-  .hero-scroll__line::after {
-    content: "";
-    position: absolute;
-    top: -100%;
-    left: 0;
-    width: 1px;
-    height: 60%;
-    background: var(--color-ph-gold, #d6b25e);
-    animation: heroScrollCue 2.4s linear infinite;
-  }
-  @keyframes heroScrollCue {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(400%); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .hero-scroll__line::after { animation: none; }
-  }
-
+  .hero-scroll:hover .hero-scroll__arrow { transform: translateY(2px); }
   .hero-scroll.is-hidden {
     opacity: 0;
     pointer-events: none;
   }
 
-  /* Mientras el indicador está oculto (usuario ya scrolleó), pausar la
-     animación CSS infinita evita que mantenga el compositor activo
-     gastando ciclos de GPU para algo invisible. */
-  .hero-scroll.is-hidden .hero-scroll__line::after {
-    animation-play-state: paused;
-  }
-
   @media (max-width: 720px) {
     .hero-content {
       bottom: clamp(24px, 4vw, 48px);
-      right: 64px;
+      right: 120px;
     }
+    .hero-scroll { bottom: clamp(24px, 4vw, 48px); }
   }
 
   @media (min-width: 1024px) {
@@ -251,34 +231,6 @@ const t = useTranslations(lang);
     .hero-claim {
       font-size: clamp(56px, 6.2vw, 96px);
     }
-  }
-
-  /* El titular arranca oculto para que GSAP controle su primer fotograma, con una
-     red de seguridad en CSS: pase lo que pase, a 1,1 s se muestra.
-
-     Antes no hacía falta porque el telón de intro y este titular colgaban del
-     mismo evento (`astro:page-load` = `window.load`): cuando el telón se
-     levantaba, el titular ya estaba puesto. Ahora el telón es CSS y termina a
-     1,26 s por su cuenta, así que son dos relojes distintos: si el JS se retrasa
-     —y `window.load` es mucho más variable que el primer pintado—, el telón se
-     abriría sobre un hero mudo.
-
-     El retardo hace que esto no estorbe cuando todo va bien: durante la espera la
-     animación no aplica nada (no es `backwards`), así que el `visibility` que
-     pone GSAP manda y el efecto de entrada se ve igual que siempre. */
-  .hero-claim__lead,
-  .hero-claim__accent {
-    visibility: hidden;
-    animation: ph-hero-claim-visible 0s linear 1.1s forwards;
-  }
-
-  @keyframes ph-hero-claim-visible {
-    to { visibility: visible; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero-claim__lead,
-    .hero-claim__accent { visibility: visible; animation: none; }
   }
 </style>
 
@@ -370,64 +322,4 @@ const t = useTranslations(lang);
     initHeroScrollCue();
     initHeroNeon();
   });
-</script>
-
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, wrapWords, scheduleScrollTriggerRefresh, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initHeroAnimations(): void {
-    const hero = document.querySelector<HTMLElement>('.hero--home');
-    if (!hero) return;
-    if (reducedMotion()) return;
-
-    const lead = hero.querySelector<HTMLElement>('.hero-claim__lead');
-    const accent = hero.querySelector<HTMLElement>('.hero-claim__accent');
-    const claim = hero.querySelector<HTMLElement>('.hero-claim');
-
-    // Reveal now so GSAP controls the first visible frame.
-    if (lead) lead.style.visibility = 'visible';
-    if (accent) accent.style.visibility = 'visible';
-
-    if (lead) {
-      const words = wrapWords(lead);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 1.0,
-        ease: 'power4.out',
-        stagger: 0.08,
-        delay: 0.2,
-      });
-    }
-    if (accent) {
-      const words = wrapWords(accent);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 1.0,
-        ease: 'power4.out',
-        stagger: 0.08,
-        delay: 0.4,
-      });
-    }
-    if (claim) {
-      ScrollTrigger.create({
-        trigger: hero,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: 0.8,
-        onUpdate: (self) => {
-          gsap.set(claim, { yPercent: self.progress * 20 });
-        },
-      });
-    }
-
-    scheduleScrollTriggerRefresh();
-  }
-
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHeroAnimations));
 </script>

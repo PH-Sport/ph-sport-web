@@ -3,6 +3,7 @@
 
 @import "tailwindcss";
 @import "./ph-ui-buttons.css";
+@import "./ph-ui.css";
 
 /* ── DESIGN TOKENS (Tailwind v4 @theme) ────────────────────────────────────── */
 
@@ -364,21 +365,6 @@ strong {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-ph-black); }
 ::-webkit-scrollbar-thumb { background: var(--color-ph-gold-muted); border-radius: 3px; }
-
-/* ── Word-curtain helpers (ph-text-animations.ts) ──────────────────────────── */
-
-.ph-clip {
-  display: inline-block;
-  vertical-align: bottom;
-  /* Clip only the bottom so the curtain reveal (yPercent: 115 → 0) works,
-     while letting ascenders, italic tops, and italic right-overshoot remain
-     visible at tight display line-heights (< 1). */
-  clip-path: inset(-0.25em -0.15em 0 -0.05em);
-}
-
-.ph-clip-inner {
-  display: inline-block;
-}
 
 /* ── Logo reveal ───────────────────────────────────────────────────────────── */
 

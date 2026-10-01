@@ -15,6 +15,19 @@ const teamMembers = getTeamMembers(lang);
 const [eyebrowNum, ...eyebrowRest] = t('about.hero.eyebrow').split(' · ');
 const eyebrowLabel = eyebrowRest.join(' · ');
 
+/** «05 · Presencia»: mismo reparto que la cabecera. */
+const [presenciaNum, ...presenciaRest] = t('about.presencia.eyebrow').split(' · ');
+const presenciaLabel = presenciaRest.join(' · ');
+
+/* Los tres bloques se leen de izquierda a derecha como el lema de la marca
+   («Now. Next. Forever Football.»), así que el último lleva el mismo acento
+   que el lema en la portada y el pie: oro e itálica. */
+const manifestoBlocks = [
+  { idx: t('about.manifesto.blocks.now.idx'),     title: t('about.manifesto.blocks.now.title'),     body: t('about.manifesto.blocks.now.body'),     accent: false },
+  { idx: t('about.manifesto.blocks.next.idx'),    title: t('about.manifesto.blocks.next.title'),    body: t('about.manifesto.blocks.next.body'),    accent: false },
+  { idx: t('about.manifesto.blocks.forever.idx'), title: t('about.manifesto.blocks.forever.title'), body: t('about.manifesto.blocks.forever.body'), accent: true },
+];
+
 const internationalCountries = [
   { key: 'portugal' as const, iso: 'PT' },
   { key: 'uk' as const,       iso: 'UK' },
@@ -32,143 +45,131 @@ const internationalCountries = [
   </div>
 
   <!-- 01 HERO: misma cabecera que Talentos y Servicios (global.css): fila índice,
-       titular y entradilla debajo. -->
+       titular y entradilla debajo. Sin `data-reveal`: ya no hay animación de
+       entrada que la revele, y el guardia global la dejaría oculta. -->
   <div class="abt-hero">
-    <p class="ph-rowline abt-hero__index" data-reveal>
+    <p class="ph-rowline abt-hero__index">
       <span class="ph-rowline__group">
         <span class="ph-rowline__num">{eyebrowNum}</span>
         <span class="ph-rowline__sep" aria-hidden="true">·</span>
         <span class="ph-rowline__label">{eyebrowLabel}</span>
       </span>
     </p>
-    <h1 id="about-hero-title" class="abt-hero__title ph-head-title" data-reveal>
+    <h1 id="about-hero-title" class="abt-hero__title ph-head-title">
       {t('about.hero.titlePre')}<span class="abt-gold">{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
     </h1>
-    <p class="abt-hero__lead ph-head-lead" data-reveal>{t('about.hero.body1')}</p>
+    <p class="abt-hero__lead ph-head-lead">{t('about.hero.body1')}</p>
   </div>
 
   <!-- Valores y pie en una fila índice, y el resto de la presentación en dos
        columnas. Mismo texto y mismo orden que antes. -->
   <div class="ph-rowline abt-hero__rail">
-    <span class="ph-rowline__meta abt-hero__values" data-reveal>{t('about.hero.values')}</span>
+    <span class="ph-rowline__meta abt-hero__values">{t('about.hero.values')}</span>
     <span class="ph-rowline__meta abt-hero__caption">{t('about.hero.caption')}</span>
   </div>
   <div class="abt-intro">
-    <p class="abt-hero__body" data-reveal>{t('about.hero.body2')}</p>
-    <p class="abt-hero__body" data-reveal>{t('about.hero.body3')}</p>
+    <p class="abt-hero__body">{t('about.hero.body2')}</p>
+    <p class="abt-hero__body">{t('about.hero.body3')}</p>
   </div>
 
-  <!-- 02 MANIFESTO (Now. Next. Forever Football. — explicado por bloques) -->
-  <div class="abt-manifesto" id="historia">
-    <div class="abt-manifesto__head">
-      <div class="abt-eyebrow">{t('about.manifesto.eyebrow')}</div>
+  <!-- 02 FILOSOFÍA (Now. Next. Forever Football.). La fila índice es el h2 de la
+       sección: así el h1 no salta directo a los h3 de los bloques. -->
+  <section class="abt-block abt-manifesto" id="historia" aria-labelledby="about-manifesto-title">
+    <div class="ph-rowline">
+      <h2 id="about-manifesto-title" class="abt-index-heading">
+        <span class="ph-rowline__label">{t('about.manifesto.eyebrow')}</span>
+      </h2>
     </div>
 
-    <div class="abt-manifesto__rows">
-      {[
-        { idx: t('about.manifesto.blocks.now.idx'),     title: t('about.manifesto.blocks.now.title'),     body: t('about.manifesto.blocks.now.body') },
-        { idx: t('about.manifesto.blocks.next.idx'),    title: t('about.manifesto.blocks.next.title'),    body: t('about.manifesto.blocks.next.body') },
-        { idx: t('about.manifesto.blocks.forever.idx'), title: t('about.manifesto.blocks.forever.title'), body: t('about.manifesto.blocks.forever.body') },
-      ].map((row) => (
-        <article class="abt-manifesto__row">
-          <span class="abt-manifesto__idx">{row.idx}</span>
-          <h3 class="abt-manifesto__title">{row.title}</h3>
-          <p class="abt-manifesto__body">{row.body}</p>
-        </article>
+    <ol class="abt-manifesto__blocks" role="list">
+      {manifestoBlocks.map((block) => (
+        <li class="abt-manifesto__card">
+          <span class="abt-manifesto__idx">{block.idx}</span>
+          <h3 class:list={['abt-manifesto__title', block.accent && 'is-accent']}>{block.title}</h3>
+          <p class="abt-manifesto__body">{block.body}</p>
+        </li>
       ))}
-    </div>
-  </div>
+    </ol>
+  </section>
 
-  <!-- 03 EQUIPO -->
-  <div class="abt-team" id="equipo" aria-labelledby="about-team-title">
-    <div class="abt-team__head">
-      <div>
-        <div class="abt-eyebrow">{t('about.team.eyebrow')}</div>
-        <h2 id="about-team-title" class="abt-team__title">
-          {t('about.team.titlePre')}<span class="abt-gold">{t('about.team.titleAccent')}</span>{t('about.team.titlePost')}
-        </h2>
-      </div>
-      <div class="abt-team__meta">{t('about.team.meta')}</div>
+  <!-- 03 EQUIPO: la etiqueta y el recuento van en la fila índice, separados del
+       titular (antes eran un rótulo pegado encima). -->
+  <section class="abt-block abt-team" id="equipo" aria-labelledby="about-team-title">
+    <div class="ph-rowline">
+      <span class="ph-rowline__label">{t('about.team.eyebrow')}</span>
+      <span class="ph-rowline__meta">{t('about.team.meta')}</span>
     </div>
+    <h2 id="about-team-title" class="ph-h2 abt-block__title">
+      {t('about.team.titlePre')}<span class="ph-accent">{t('about.team.titleAccent')}</span>{t('about.team.titlePost')}
+    </h2>
 
-    <div class="abt-team-table" role="list">
+    <ol class="abt-team__list" role="list">
       {teamMembers.map((m) => (
-        <div class="abt-team-row" role="listitem" data-id={m.id}>
-          <span class="abt-team-row__idx">{m.index}</span>
-          <div class="abt-team-row__name">
-            <span class="abt-team-row__name-text">{m.name}</span>
-            <span class="abt-team-row__mobile-extras">
-              {m.role} · {m.country ?? m.defaultLocation}
-            </span>
-          </div>
-          <span class="abt-team-row__role">{m.role}</span>
-          <span class="abt-team-row__flag">
-            <span>{(m.country ?? m.defaultLocation).toUpperCase()}</span>
-          </span>
-        </div>
+        <li class="abt-team__row" data-id={m.id}>
+          <span class="abt-team__idx">{m.index}</span>
+          <span class="abt-team__name">{m.name}</span>
+          <span class="abt-team__role">{m.role}</span>
+          {/* El país va en mayúsculas como antes: `team.defaultLocation` viene
+              así en el i18n y los demás países no, y sin igualarlos la columna
+              mezclaría «ESPAÑA» con «Arabia». */}
+          <span class="abt-team__place">{(m.country ?? m.defaultLocation).toUpperCase()}</span>
+        </li>
       ))}
-    </div>
-  </div>
+    </ol>
+  </section>
 
-  <!-- 04 PRESENCIA -->
-  <div class="abt-presencia" id="presencia" aria-labelledby="about-presencia-title">
-    <div class="abt-presencia__eyebrow-row">
-      <div class="abt-eyebrow">{t('about.presencia.eyebrow')}</div>
+  <!-- 04 PRESENCIA: la sede y la red internacional, en dos tarjetas. -->
+  <section class="abt-block abt-presencia" id="presencia" aria-labelledby="about-presencia-title">
+    <div class="ph-rowline">
+      <h2 id="about-presencia-title" class="ph-rowline__group abt-index-heading">
+        <span class="ph-rowline__num">{presenciaNum}</span>
+        <span class="ph-rowline__sep" aria-hidden="true">·</span>
+        <span class="ph-rowline__label">{presenciaLabel}</span>
+      </h2>
     </div>
+
     <div class="abt-presencia__grid">
-      <div class="abt-presencia__left">
-        <h3 id="about-presencia-title" class="abt-presencia__madrid">
-          {t('about.presencia.madridTitle')}
-        </h3>
-        <div class="abt-presencia__madrid-label">{t('about.presencia.madridLabel')}</div>
+      <div class="abt-presencia__card abt-presencia__hq">
+        <h3 class="abt-presencia__madrid">{t('about.presencia.madridTitle')}</h3>
+        <p class="abt-presencia__label">{t('about.presencia.madridLabel')}</p>
       </div>
-      <div class="abt-presencia__right">
-        <div class="abt-presencia__intl-label">{t('about.presencia.internationalLabel')}</div>
-        <div class="abt-presencia__countries">
+      <div class="abt-presencia__card abt-presencia__intl">
+        <p class="abt-presencia__label">{t('about.presencia.internationalLabel')}</p>
+        <ul class="abt-presencia__countries" role="list">
           {internationalCountries.map((c) => (
-            <div class="abt-presencia__country">
+            <li class="abt-presencia__country">
               <span>{t(`about.presencia.country.${c.key}` as const)}</span>
               <span class="abt-presencia__iso">{c.iso}</span>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </div>
-  </div>
+  </section>
 
 </section>
 
 <style>
+  /* Mismo sistema que el resto de páginas (global.css: `.ph-rowline`,
+     `.ph-head-*`; ph-ui.css: `.ph-h2`, tarjetas). Todo se ve nada más cargar:
+     sin titulares palabra a palabra, sin párrafos que se desenfocan ni filas que
+     aparecen al hacer scroll. Lo único que se mueve responde al ratón. */
   .about-section {
     --abt-gold: var(--color-ph-gold);
-    --abt-ink: var(--color-ph-white);
-    --abt-ink-soft: var(--color-ph-white-80);
-    --abt-ink-faint: var(--color-ph-white-60);
     --abt-line: var(--color-ph-white-10);
-    --abt-line-strong: var(--color-ph-white-20);
-    --abt-bg: transparent;
-    --abt-bg-2: rgba(255, 255, 255, 0.02);
     --edge: var(--ph-section-px);
+    /* Espacio entre bloques: el mismo que separa las secciones de la portada. */
+    --abt-block-gap: clamp(88px, 9vw, 156px);
 
     position: relative;
-    background: var(--abt-bg);
-    color: var(--abt-ink);
+    background: transparent;
+    color: var(--color-ph-white);
   }
 
   .about-section .abt-gold {
     color: var(--abt-gold);
     font-weight: 400;
     font-style: italic;
-  }
-
-  /* Shared eyebrow pattern (mono). */
-  .about-section .abt-eyebrow {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--abt-gold);
   }
 
   /* ── 01 HERO: misma cabecera que Talentos y Servicios (estilos y cifras en
@@ -183,15 +184,15 @@ const internationalCountries = [
     margin: var(--ph-head-after) var(--edge) 0;
   }
 
-  /* El resto de la presentación, en dos columnas de lectura cómoda. */
+  /* El resto de la presentación, en dos columnas de lectura cómoda. Sin línea
+     de cierre: cada bloque siguiente abre con la suya (fila índice). */
   .abt-intro {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: clamp(16px, 2vw, 32px);
     row-gap: 18px;
     margin-top: clamp(24px, calc(1.14vw + 19.5px), 36px);
-    padding: 0 var(--edge) clamp(48px, 6vw, 88px);
-    border-bottom: 1px solid var(--abt-line);
+    padding: 0 var(--edge);
   }
   .abt-hero__body {
     margin: 0;
@@ -211,453 +212,255 @@ const internationalCountries = [
     .abt-intro .abt-hero__body:nth-child(2) { grid-column: 1 / -1; }
   }
 
-  /* ── 02 MANIFESTO (Now. Next. Forever Football.) ── */
-  .abt-manifesto {
-    padding: clamp(72px, 10vw, 140px) var(--edge);
-    border-bottom: 1px solid var(--abt-line);
+  /* ── Bloques (Filosofía, Equipo, Presencia): fila índice arriba ── */
+  .abt-block {
+    padding: var(--abt-block-gap) var(--edge) 0;
   }
-  .abt-manifesto__head {
-    margin-bottom: clamp(40px, 6vw, 72px);
+  .abt-block:last-of-type {
+    padding-bottom: var(--abt-block-gap);
+  }
+  /* Cuando la fila índice es el encabezado de la sección, el h2 no impone su
+     letra: manda la de la fila (`.ph-rowline__label` y compañía). */
+  .abt-index-heading {
+    margin: 0;
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+  }
+  .abt-block__title {
+    margin-top: var(--ph-head-title-gap);
   }
 
-  .abt-manifesto__rows {
-    border-top: 1px solid var(--abt-line-strong);
-  }
-  .abt-manifesto__row {
+  /* ── 02 FILOSOFÍA: tres tarjetas que se leen como el lema ── */
+  .abt-manifesto__blocks {
     display: grid;
-    grid-template-columns: 80px 1.3fr 1.7fr;
-    gap: clamp(20px, 3vw, 40px);
-    align-items: start;
-    padding-block: clamp(36px, 5vw, 64px);
-    border-bottom: 1px solid var(--abt-line);
-    transition: padding 300ms var(--ease-ph, ease), background 300ms var(--ease-ph, ease);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    /* Tres pistas compartidas (número, titular, texto) para que los textos
+       arranquen a la misma altura aunque «Forever Football.» ocupe dos líneas. */
+    grid-template-rows: auto auto 1fr;
+    column-gap: clamp(12px, 1.2vw, 18px);
+    row-gap: 0;
+    margin: var(--ph-head-title-gap) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .abt-manifesto__card {
+    grid-row: span 3;
+    display: grid;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+    padding: clamp(22px, 2vw, 32px);
+    border: 1px solid var(--mochi-surface-border);
+    border-radius: var(--ph-r-lg);
+    background: var(--mochi-surface);
+    box-shadow: var(--mochi-shadow-surface);
   }
   .abt-manifesto__idx {
     font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-ink-faint);
-    letter-spacing: 0.2em;
-    /* Compensar el desplazamiento del baseline tipográfico para que el "01"
-       quede ópticamente alineado con la cap-height del título. */
-    padding-top: 0.6em;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--abt-gold);
+    font-variant-numeric: tabular-nums;
   }
-  /* Estado base (desktop con puntero): blanco display 500, sin itálica.
-     El lockup de marca (oro + itálico, idéntico a .hero-claim__accent) se
-     "desbloquea" al hacer hover. En mobile / touch (sin hover disponible)
-     se aplica directamente como base — ver media queries más abajo. */
   .abt-manifesto__title {
+    align-self: end;
+    margin: clamp(48px, 5vw, 88px) 0 0;
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(40px, 5.5vw, 72px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    margin: 0;
-    color: var(--abt-ink);
-    transition: color 300ms var(--ease-ph, ease);
+    font-size: clamp(40px, calc(2.4vw + 18px), 64px);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--color-ph-white);
+    text-wrap: balance;
+  }
+  /* El acento del lema (como `.ph-h2 em`). */
+  .abt-manifesto__title.is-accent {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--abt-gold);
   }
   .abt-manifesto__body {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--abt-ink-soft);
-    margin: 0;
-    max-width: 480px;
-    /* El body alinea ópticamente con el primer descender del título. */
-    padding-top: 0.4em;
-  }
-
-  @media (hover: hover) {
-    .abt-manifesto__row:hover {
-      padding-inline: 18px;
-      background: rgba(201, 164, 90, 0.04);
-    }
-    /* Hover desbloquea el lockup de marca: gold + itálico + weight 400
-       (firma del eslogan, idéntica a .hero-claim__accent del home/footer). */
-    .abt-manifesto__row:hover .abt-manifesto__title {
-      color: var(--abt-gold);
-      font-style: italic;
-      font-weight: 400;
-    }
+    margin: clamp(18px, 1.4vw, 24px) 0 0;
+    max-width: 42ch;
+    font-size: clamp(16px, calc(0.1vw + 15.6px), 17px);
+    line-height: 1.6;
+    color: var(--ph-ink-body);
+    text-wrap: pretty;
   }
 
   @media (max-width: 900px) {
-    .abt-manifesto__head {
-      margin-bottom: 40px;
+    .abt-manifesto__blocks {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: none;
+      row-gap: 12px;
     }
-    .abt-manifesto__row {
-      grid-template-columns: 1fr;
-      gap: 14px;
-      padding-block: 32px;
+    .abt-manifesto__card {
+      grid-row: auto;
+      grid-template-rows: auto;
     }
-    /* Sin hover disponible: el lockup gold + itálico aplica como estado base
-       para que la firma de marca sea visible en touch sin necesidad de gesto. */
-    .abt-manifesto__title {
-      color: var(--abt-gold);
-      font-style: italic;
-      font-weight: 400;
-      font-size: clamp(34px, 9vw, 44px);
-    }
-    .abt-manifesto__body {
-      max-width: none;
-    }
-    .abt-manifesto__idx {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .abt-manifesto__idx::after {
-      content: '';
-      width: 18px;
-      height: 1px;
-      background: var(--abt-gold);
-      opacity: 0.6;
-    }
+    .abt-manifesto__title { margin-top: 36px; }
   }
 
-  /* ── 03 EQUIPO ── */
-  .abt-team {
-    padding: clamp(72px, 10vw, 140px) var(--edge);
-    border-bottom: 1px solid var(--abt-line);
+  /* ── 03 EQUIPO: tabla de filas limpias con línea fina ── */
+  .abt-team__list {
+    margin: clamp(36px, 3vw, 56px) 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--abt-line);
   }
-  .abt-team__head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-bottom: clamp(32px, 5vw, 64px);
-  }
-  .abt-team__title {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(36px, 5vw, 64px);
-    letter-spacing: -0.02em;
-    margin: 10px 0 0;
-    line-height: 1;
-  }
-  .abt-team__meta {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-ink-faint);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-  }
-
-  .abt-team-table {
-    border-top: 1px solid var(--abt-line-strong);
-  }
-  .abt-team-row {
+  .abt-team__row {
+    --abt-row-bleed: 14px;
+    position: relative;
+    isolation: isolate;
     display: grid;
-    grid-template-columns: 60px 1.4fr 1.2fr;
-    gap: 24px;
-    align-items: center;
-    padding-block: clamp(18px, 2.5vw, 28px);
+    grid-template-columns: 48px minmax(0, 1.3fr) minmax(0, 1.2fr) minmax(110px, auto);
+    column-gap: clamp(16px, 2vw, 32px);
+    align-items: baseline;
+    padding-block: clamp(16px, 1.4vw, 22px);
     border-bottom: 1px solid var(--abt-line);
-    transition: padding 300ms var(--ease-ph, ease), background 300ms var(--ease-ph, ease);
+  }
+  /* Resalte al pasar el ratón: una superficie suave detrás de la fila que solo
+     cambia de opacidad. Desborda un poco hacia los lados para que el texto no
+     quede pegado al canto; nada cambia de tamaño ni de sitio. */
+  .abt-team__row::before {
+    content: '';
+    position: absolute;
+    inset: 0 calc(-1 * var(--abt-row-bleed));
+    z-index: -1;
+    border-radius: var(--ph-r-md);
+    background: var(--mochi-solid-subtle);
+    opacity: 0;
+    transition: opacity var(--mochi-duration-color) var(--mochi-ease-color);
   }
   @media (hover: hover) {
-    .abt-team-row:hover {
-      padding-inline: 18px;
-      background: rgba(201, 164, 90, 0.04);
-    }
-    .abt-team-row:hover .abt-team-row__name-text {
-      color: var(--abt-gold);
-    }
+    .abt-team__row:hover::before { opacity: 1; }
   }
-  .abt-team-row__idx {
+  .abt-team__idx {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
     color: var(--abt-gold);
-    letter-spacing: 0.15em;
+    font-variant-numeric: tabular-nums;
   }
-  .abt-team-row__name-text {
+  .abt-team__name {
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(22px, 2.4vw, 34px);
+    font-size: clamp(20px, calc(0.8vw + 15px), 28px);
+    line-height: 1.15;
     letter-spacing: -0.02em;
-    line-height: 1.1;
-    transition: color 300ms var(--ease-ph, ease);
+    color: var(--color-ph-white);
   }
-  .abt-team-row__role {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-ink-soft);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+  .abt-team__role {
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--ph-ink-body);
   }
-  .abt-team-row__flag {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-ink-soft);
-    letter-spacing: 0.1em;
-  }
-  .abt-team-row__mobile-extras {
-    display: none;
+  .abt-team__place {
+    justify-self: end;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    color: var(--ph-ink-meta);
   }
 
+  /* En móvil el país sube a la derecha del nombre y el cargo baja a una
+     segunda línea a todo lo ancho: así un cargo largo no deja el país colgando. */
   @media (max-width: 900px) {
-    .abt-team-row {
-      grid-template-columns: 40px 1fr;
-      gap: 10px;
-      padding-block: 18px;
+    .abt-team__row {
+      --abt-row-bleed: 10px;
+      grid-template-columns: 32px minmax(0, 1fr) auto;
+      column-gap: 12px;
+      row-gap: 6px;
+      padding-block: 16px;
     }
-    .abt-team-row__role,
-    .abt-team-row__flag {
-      display: none;
-    }
-    .abt-team-row__name {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .abt-team-row__mobile-extras {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--abt-ink-soft);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      font-style: normal;
-      line-height: 1.5;
-    }
+    .abt-team__idx { grid-area: 1 / 1; }
+    .abt-team__name { grid-area: 1 / 2; }
+    .abt-team__place { grid-area: 1 / 3; }
+    .abt-team__role { grid-area: 2 / 2 / 3 / 4; font-size: 14px; }
   }
 
-  /* ── 04 PRESENCIA ── */
-  .abt-presencia {
-    padding: clamp(60px, 9vw, 100px) var(--edge);
-    border-bottom: 1px solid var(--abt-line);
-  }
-  .abt-presencia__eyebrow-row {
-    margin-bottom: 32px;
-  }
+  /* ── 04 PRESENCIA: sede y red internacional en dos tarjetas ── */
   .abt-presencia__grid {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: clamp(40px, 6vw, 80px);
-    align-items: end;
-    border-top: 1px solid var(--abt-line);
-    padding-top: clamp(32px, 4vw, 48px);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(12px, 1.2vw, 18px);
+    row-gap: 12px;
+    margin-top: var(--ph-head-title-gap);
   }
-  .abt-presencia__madrid {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(36px, 5vw, 56px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    margin: 0;
+  .abt-presencia__card {
+    padding: clamp(22px, 2vw, 32px);
+    border: 1px solid var(--mochi-surface-border);
+    border-radius: var(--ph-r-lg);
+    background: var(--mochi-surface);
+    box-shadow: var(--mochi-shadow-surface);
   }
-  .abt-presencia__madrid-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--abt-ink-faint);
-    text-transform: uppercase;
-    margin-top: 12px;
-  }
-  .abt-presencia__intl-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--abt-ink-faint);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .abt-presencia__countries {
+  .abt-presencia__hq {
+    grid-column: 1 / 7;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 40px;
+  }
+  .abt-presencia__intl {
+    grid-column: 7 / 13;
+    display: grid;
+    gap: 14px;
+    align-content: start;
+  }
+  .abt-presencia__madrid {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(48px, calc(4vw + 26px), 104px);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    color: var(--color-ph-white);
+  }
+  /* Etiquetas que ya vienen en mayúsculas en el i18n: tamaño legible y poco aire. */
+  .abt-presencia__label {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.4;
+    letter-spacing: 0.05em;
+    color: var(--ph-ink-meta);
+    text-wrap: balance;
+  }
+  .abt-presencia__countries {
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
   .abt-presencia__country {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    font-family: var(--font-body);
-    font-size: 13px;
-    color: var(--abt-ink);
-    border-bottom: 1px solid var(--abt-line);
-    padding-bottom: 6px;
+    gap: 16px;
+    padding-block: 12px;
+    font-size: 16px;
+    line-height: 1.3;
+    color: var(--color-ph-white);
   }
+  .abt-presencia__country + .abt-presencia__country {
+    border-top: 1px solid var(--mochi-surface-border);
+  }
+  .abt-presencia__country:last-child { padding-bottom: 0; }
   .abt-presencia__iso {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
     color: var(--abt-gold);
-    letter-spacing: 0.15em;
   }
 
   @media (max-width: 900px) {
-    .abt-presencia__grid {
-      grid-template-columns: 1fr;
-      align-items: stretch;
-      gap: 32px;
-    }
-    .abt-presencia__madrid {
-      font-size: 40px;
-    }
+    .abt-presencia__hq,
+    .abt-presencia__intl { grid-column: 1 / -1; }
   }
 
+  /* «Reducir movimiento»: el resalte de la fila aparece sin transición. */
+  @media (prefers-reduced-motion: reduce) {
+    .abt-team__row::before { transition-duration: 1ms; }
+  }
 </style>
-
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion,
-    wrapWords,
-    splitWords,
-    trackingReveal,
-    scheduleScrollTriggerRefresh,
-    afterTransitionPaint,
-    revealReveals,
-    revealOnView,
-  } from '@/scripts/ph-text-animations';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initAboutAnimations(): void {
-    const section = document.querySelector<HTMLElement>('.about-section');
-    if (!section) return;
-
-    if (reducedMotion()) {
-      // Ensure all content is visible without animating.
-      section.querySelectorAll<HTMLElement>('.abt-team-row').forEach((r) => {
-        r.style.opacity = '1';
-        r.style.transform = 'none';
-      });
-      return;
-    }
-
-    // ── Hero ──
-    // El hero está above-the-fold: lo animamos de forma INMEDIATA (sin scrollTrigger).
-    // Con scrollTrigger `once` para contenido ya visible en la carga, el trigger
-    // fallaba intermitentemente al disparar y los títulos quedaban congelados
-    // (invisibles). Mismo patrón fiable que el hero de la home / Servicios.
-    const heroIndex = section.querySelector<HTMLElement>('.abt-hero__index');
-    if (heroIndex) gsap.from(heroIndex, { opacity: 0, y: 8, duration: 0.7, ease: 'power3.out' });
-
-    const heroTitle = section.querySelector<HTMLElement>('.abt-hero__title');
-    if (heroTitle) {
-      const words = wrapWords(heroTitle);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 0.85,
-        stagger: 0.07,
-        ease: 'power4.out',
-        delay: 0.1,
-      });
-    }
-
-    section.querySelectorAll<HTMLElement>('.abt-hero__lead, .abt-hero__body').forEach((body, i) => {
-      const spans = splitWords(body);
-      gsap.from(spans, {
-        opacity: 0,
-        filter: 'blur(6px)',
-        y: 6,
-        duration: 0.6,
-        stagger: 0.025,
-        ease: 'power2.out',
-        delay: 0.3 + i * 0.1,
-      });
-    });
-
-    const heroValues = section.querySelector<HTMLElement>('.abt-hero__values');
-    if (heroValues) trackingReveal(heroValues);
-
-    // ── Manifesto ──
-    const manifestoEyebrow = section.querySelector<HTMLElement>('.abt-manifesto .abt-eyebrow');
-    if (manifestoEyebrow) trackingReveal(manifestoEyebrow, { trigger: manifestoEyebrow, start: 'top 92%', once: true });
-
-    section.querySelectorAll<HTMLElement>('.abt-manifesto__row').forEach((row) => {
-      const idx = row.querySelector<HTMLElement>('.abt-manifesto__idx');
-      const title = row.querySelector<HTMLElement>('.abt-manifesto__title');
-      const body = row.querySelector<HTMLElement>('.abt-manifesto__body');
-
-      if (idx) {
-        gsap.from(idx, {
-          opacity: 0,
-          y: 8,
-          duration: 0.5,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: row, start: 'top 88%', once: true },
-        });
-      }
-      if (title) {
-        revealOnView(title, { y: 18, duration: 0.7 });
-      }
-      if (body) {
-        const spans = splitWords(body);
-        gsap.from(spans, {
-          opacity: 0,
-          filter: 'blur(6px)',
-          y: 5,
-          duration: 0.55,
-          stagger: 0.02,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: row, start: 'top 88%', once: true },
-        });
-      }
-    });
-
-    // ── Equipo ──
-    const teamEyebrow = section.querySelector<HTMLElement>('.abt-team .abt-eyebrow');
-    if (teamEyebrow) trackingReveal(teamEyebrow, { trigger: teamEyebrow, start: 'top 88%', once: true });
-
-    const teamTitle = section.querySelector<HTMLElement>('.abt-team__title');
-    if (teamTitle) {
-      revealOnView(teamTitle, { y: 22, duration: 0.8 });
-    }
-
-    const teamMeta = section.querySelector<HTMLElement>('.abt-team__meta');
-    if (teamMeta) trackingReveal(teamMeta, { trigger: teamMeta, start: 'top 92%', once: true });
-
-    const teamTable = section.querySelector<HTMLElement>('.abt-team-table');
-    const teamRows = section.querySelectorAll<HTMLElement>('.abt-team-row');
-    if (teamTable && teamRows.length) {
-      gsap.set(teamRows, { opacity: 0, y: 14 });
-      gsap.to(teamRows, {
-        opacity: 1,
-        y: 0,
-        duration: 0.45,
-        stagger: { each: 0.04, from: 'start' },
-        ease: 'power3.out',
-        scrollTrigger: { trigger: teamTable, start: 'top 88%', once: true },
-        onComplete: () => {
-          gsap.set(teamRows, { clearProps: 'opacity,transform' });
-        },
-      });
-      // Safety net — ensure rows are visible even if ScrollTrigger misfires.
-      window.setTimeout(() => {
-        teamRows.forEach((r) => {
-          r.style.opacity = '1';
-          r.style.transform = 'none';
-        });
-      }, 2200);
-    }
-
-    // ── Presencia ──
-    const presenciaEyebrow = section.querySelector<HTMLElement>('.abt-presencia .abt-eyebrow');
-    if (presenciaEyebrow) trackingReveal(presenciaEyebrow, { trigger: presenciaEyebrow, start: 'top 92%', once: true });
-
-    const presenciaLeft = section.querySelector<HTMLElement>('.abt-presencia__left');
-    const presenciaRight = section.querySelector<HTMLElement>('.abt-presencia__right');
-    if (presenciaLeft && presenciaRight) {
-      gsap.from([presenciaLeft, presenciaRight], {
-        opacity: 0,
-        y: 20,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: presenciaLeft, start: 'top 88%', once: true },
-      });
-    }
-
-    revealReveals(section);
-    scheduleScrollTriggerRefresh();
-  }
-
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initAboutAnimations));
-</script>
 
 <script>
   // Fondo animado de la cabecera (se inicia solo en cada astro:page-load).

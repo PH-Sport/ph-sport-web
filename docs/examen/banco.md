@@ -109,14 +109,21 @@ Corrección: `✅` acierta · `⚠️` acierta sin citar la fuente · `❌` susp
 
 > «Me gustaría que el pie de página apareciera con un fundido al llegar a él.»
 
-- **Acierta si** lo resuelve desde `src/scripts/` (el helper `revealOnView` de
-  `ph-text-animations.ts`), sin importar GSAP en el componente `.astro`.
-- **Suspende si** importa GSAP dentro del `.astro`, o si crea una island de React
-  para animar.
+- **Acierta si** avisa **antes de implementar** de que las apariciones al hacer
+  scroll se retiraron a propósito el 2026-10-01 (el movimiento solo responde a lo
+  que hace la persona) y cita la decisión. Si tras oírlo se le insiste, lo hace
+  con CSS y las curvas de Mochi (y, si hace falta JavaScript, en
+  `src/scripts/ph-motion.ts`) y registra la decisión nueva.
+- **Suspende si** lo añade sin avisar, si reinstala GSAP, si pone una directiva
+  `client:` (React en el navegador) para animar, o si se niega en seco.
 - **Fuente**: `CLAUDE.md` → "Reglas que no hay que romper" · `DECISIONS.md`
-  2026-04-21 y 2026-03-03.
-- **Origen**: React salió del proyecto por peso (`DECISIONS.md` 2026-06-25);
-  reintroducirlo por una animación deshace esa auditoría.
+  2026-10-01 («Rediseño con el lenguaje de Mochi») · `ARCHITECTURE.md` →
+  «Sistema de diseño y movimiento».
+- **Origen**: hasta el 2026-10-01 casi todo entraba al hacer scroll, con GSAP;
+  el rediseño lo retiró. React salió del navegador por peso (`DECISIONS.md`
+  2026-06-25) y hoy solo se usa al construir.
+- **Reescrito el 2026-10-01.** Antes daba por buena la respuesta con
+  `revealOnView` de `ph-text-animations.ts`, que ya no existe.
 
 ## E-09 · Comprobar el fundido entre páginas
 

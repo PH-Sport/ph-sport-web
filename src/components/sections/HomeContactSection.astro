@@ -1,5 +1,6 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
+import { LinkButton } from 'mochi-ui';
 
 interface Props {
   lang: Lang;
@@ -7,181 +8,98 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
+
+const email = t('home.contact.email');
+
+/** «05 · Contacto»: el número y la etiqueta van en estilos distintos en la fila índice. */
+const [eyebrowNum, ...eyebrowRest] = t('home.contact.eyebrow').split(' · ');
+const eyebrowLabel = eyebrowRest.join(' · ');
 ---
 
 <section class="home-contact" id="contacto" aria-labelledby="home-contact-title">
-  <div class="home-contact__grid">
-    <header class="home-contact__head">
-      <span class="home-contact__eyebrow">{t('home.contact.eyebrow')}</span>
-      <h2 class="home-contact__title" id="home-contact-title">{t('home.contact.title')}</h2>
-      <div class="home-contact__email">
-        <span class="home-contact__email-label">{t('home.contact.emailLabel')}</span>
-        <a href={`mailto:${t('home.contact.email')}`}>{t('home.contact.email')}</a>
-      </div>
-    </header>
+  <p class="ph-rowline">
+    <span class="ph-rowline__group">
+      <span class="ph-rowline__num">{eyebrowNum}</span>
+      <span class="ph-rowline__sep" aria-hidden="true">·</span>
+      <span class="ph-rowline__label">{eyebrowLabel}</span>
+    </span>
+  </p>
 
-    <div class="home-contact__image" aria-hidden="true">
-      <span class="home-contact__image-tag">{t('home.contact.eyebrow')}</span>
+  <div class="home-contact__grid">
+    <div class="home-contact__main">
+      <h2 class="home-contact__title" id="home-contact-title">{t('home.contact.title')}</h2>
+      <div class="home-contact__mail">
+        <span class="home-contact__label">{t('home.contact.emailLabel')}</span>
+        <div class="home-contact__actions">
+          {/* Escribir es un enlace (abre el correo); copiar es una acción en la
+              página: el icono se convierte en un check y vuelve. */}
+          <LinkButton href={`mailto:${email}`} variant="accent" size="lg">{email}</LinkButton>
+          <button type="button" class="ph-icon-btn home-contact__copy" data-ph-copy={email} data-status="idle" aria-label={t('a11y.copyEmail')}>
+            <svg class="ph-ico home-contact__copy-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="3" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg>
+            <svg class="ph-ico home-contact__copy-done" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+          </button>
+          <span class="sr-only" aria-live="polite" data-ph-copy-live></span>
+        </div>
+      </div>
     </div>
+
+    <div class="home-contact__image" aria-hidden="true"></div>
   </div>
 </section>
 
 <style>
+  /* Mismo sistema que el resto de secciones (global.css y ph-ui.css). */
   .home-contact {
-    --home-contact-edge: var(--ph-section-px, clamp(20px, 4vw, 48px));
-    background: var(--color-ph-bg-2, #15171b);
-    color: var(--color-ph-white, #ffffff);
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    overflow: clip;
+    position: relative;
+    padding: clamp(88px, 9vw, 156px) var(--ph-section-px) clamp(88px, 9vw, 156px);
+    color: var(--color-ph-white);
   }
 
   .home-contact__grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: stretch;
-    min-height: clamp(420px, 58vw, 640px);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(16px, 2vw, 32px);
+    row-gap: 40px;
+    align-items: end;
+    margin-top: var(--ph-head-title-gap);
   }
-
-  .home-contact__head {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    padding: clamp(48px, 7vw, 96px) var(--home-contact-edge);
-  }
-
-  .home-contact__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-contact__eyebrow::before {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-  }
-
+  .home-contact__main { grid-column: 1 / 8; display: grid; gap: clamp(28px, 2.5vw, 44px); }
   .home-contact__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(36px, 6vw, 72px);
-    letter-spacing: -0.03em;
-    line-height: 1.02;
-    margin: 14px 0 0;
+    margin: 0;
+    font: 500 clamp(72px, calc(9vw + 20px), 176px)/0.9 var(--font-display);
+    letter-spacing: -0.045em;
+    color: var(--color-ph-white);
   }
+  .home-contact__mail { display: grid; gap: 14px; justify-items: start; }
+  .home-contact__label { font-size: 14px; color: var(--ph-ink-meta); }
+  .home-contact__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .home-contact__copy { width: 56px; height: 56px; border-radius: var(--ph-r-btn-lg); }
 
-  .home-contact__email {
-    margin-top: clamp(24px, 4vw, 40px);
-    padding-top: 24px;
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-self: stretch;
-  }
-  .home-contact__email-label {
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-  }
-  .home-contact__email a {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-size: clamp(20px, 2.4vw, 28px);
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    color: var(--color-ph-white, #ffffff);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-  @media (hover: hover) {
-    .home-contact__email a:hover { color: var(--color-ph-gold, #d6b25e); }
-  }
+  /* El icono de copiar sale y entra el check, sin solaparse. */
+  .home-contact__copy { position: relative; }
+  .home-contact__copy-ico,
+  .home-contact__copy-done { position: absolute; transition: opacity var(--mochi-duration-fade-out) var(--mochi-ease-fade-out), filter var(--mochi-duration-fade-out) var(--mochi-ease-fade-out); }
+  .home-contact__copy-done { opacity: 0; filter: blur(4px); color: var(--color-ph-gold); stroke-width: 2; }
+  .home-contact__copy-done path { stroke-dasharray: 24; stroke-dashoffset: 24; }
+  .home-contact__copy[data-status='success'] .home-contact__copy-ico { opacity: 0; filter: blur(4px); }
+  .home-contact__copy[data-status='success'] .home-contact__copy-done { opacity: 1; filter: blur(0); transition: opacity var(--mochi-duration-fade-in) var(--mochi-ease-fade-in) 60ms, filter var(--mochi-duration-fade-in) var(--mochi-ease-fade-in) 60ms; }
+  .home-contact__copy[data-status='success'] .home-contact__copy-done path { stroke-dashoffset: 0; transition: stroke-dashoffset var(--mochi-duration-draw) var(--mochi-ease-draw) 120ms; }
 
   .home-contact__image {
-    position: relative;
-    background:
-      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-      url('/contact-image.webp') center / cover no-repeat,
-      var(--color-ph-bg-3, #1c1f24);
-    border-left: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-  }
-
-  .home-contact__image-tag {
-    position: absolute;
-    top: 16px;
-    left: 16px;
-    padding: 6px 10px;
-    background: rgba(14, 14, 14, 0.6);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    border-radius: var(--radius-sm);
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-white, #ffffff);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .home-contact__email a { transition: none; }
+    grid-column: 8 / 13;
+    aspect-ratio: 1 / 1;
+    border: 1px solid var(--mochi-surface-border);
+    border-radius: var(--ph-r-xl);
+    background: url('/contact-image.webp') center / cover no-repeat, var(--mochi-surface);
+    box-shadow: var(--mochi-shadow-surface);
   }
 
   @media (max-width: 900px) {
-    .home-contact__grid { grid-template-columns: 1fr; }
-    .home-contact__image { display: none; }
+    .home-contact__grid { display: flex; flex-direction: column; align-items: stretch; }
+    .home-contact__title { font-size: clamp(64px, 18vw, 120px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-contact__copy-ico, .home-contact__copy-done, .home-contact__copy-done path { transition: none !important; }
   }
 </style>
-
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, revealOnView, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initHomeContactAnimations(): void {
-    const section = document.querySelector<HTMLElement>('.home-contact');
-    if (!section) return;
-    if (reducedMotion()) return;
-
-    const eyebrow = section.querySelector<HTMLElement>('.home-contact__eyebrow');
-    const title = section.querySelector<HTMLElement>('.home-contact__title');
-    const head = section.querySelector<HTMLElement>('.home-contact__head');
-    const image = section.querySelector<HTMLElement>('.home-contact__image');
-
-    if (eyebrow && head) {
-      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
-    }
-    if (title) {
-      revealOnView(title, { y: 24, duration: 0.9 });
-    }
-    if (image && window.matchMedia('(min-width: 901px)').matches) {
-      gsap.fromTo(
-        image,
-        { autoAlpha: 0, scale: 1.06 },
-        {
-          autoAlpha: 1,
-          scale: 1,
-          duration: 1.0,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: image, start: 'top 80%', once: true },
-        },
-      );
-    }
-
-    scheduleScrollTriggerRefresh();
-  }
-
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeContactAnimations));
-</script>

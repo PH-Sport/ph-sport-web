@@ -1,6 +1,6 @@
 # ph-sport-web
 
-Web de PHSPORT construida con Astro 5, i18n ES/EN, vídeo de portada y animaciones GSAP.
+Web de PHSPORT construida con Astro 5, i18n ES/EN/IT, vídeo de portada y el sistema de diseño Mochi.
 
 ## Scripts
 
@@ -29,11 +29,11 @@ salida se versiona en `public/`.
 |---|---|
 | `/` | Home — Hero, talentos, servicios, about, contacto |
 | `/talentos/` | Selección del roster en el orden que fija Mario, con filtro y ordenación (cards no clicables) |
-| `/servicios` | 6 pilares del servicio |
+| `/servicios` | Áreas de gestión y los cinco pilares del servicio |
 | `/sobre-nosotros` | Historia, equipo (21 integrantes) y cierre |
 | `/en/*` | Mirror completo en inglés (`/en/talents/`, `/en/services`, `/en/about`) |
 | `/it/*` | Mirror en italiano sin textos legales (`/it/talenti/`, `/it/servizi`, `/it/chi-siamo`). Texto pendiente de revisión nativa |
 
 ## Stack
 
-Astro 5 (SSG + Islands) · Tailwind CSS 4 · GSAP · TypeScript · Vercel
+Astro 5 (SSG, sin islands) · Mochi (`mochi-ui`, React solo al construir) · Tailwind CSS 4 · TypeScript · Vercel

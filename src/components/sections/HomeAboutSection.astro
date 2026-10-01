@@ -1,5 +1,6 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
+import { LinkButton, ArrowRightIcon } from 'mochi-ui';
 
 interface Props {
   lang: Lang;
@@ -12,264 +13,98 @@ const aboutHref = localizePath('/sobre-nosotros/', lang);
 // Países donde opera PHSPORT: sale del texto traducido, la misma fuente que el
 // resto de menciones (ver la nota de `about.team.meta` en es.ts).
 const countriesValue = Number(t('home.about.stats.countries.value'));
+
+/** «04 · Sobre PHSPORT»: el número y la etiqueta van en estilos distintos en la fila índice. */
+const [eyebrowNum, ...eyebrowRest] = t('home.about.eyebrow').split(' · ');
+const eyebrowLabel = eyebrowRest.join(' · ');
 ---
 
 <section class="home-about" id="sobre-nosotros" aria-labelledby="home-about-title">
-  <div class="home-about__inner">
-    <div class="home-about__head">
-      <span class="home-about__eyebrow">{t('home.about.eyebrow')}</span>
-      <h2 class="home-about__title" id="home-about-title">
-        <span>{t('home.about.title')}</span>
-        <em>{t('home.about.titleAccent')}</em>
-      </h2>
-      <p class="home-about__body">{t('home.about.body')}</p>
-      <a class="home-about__cta" href={aboutHref}>
+  <p class="ph-rowline">
+    <span class="ph-rowline__group">
+      <span class="ph-rowline__num">{eyebrowNum}</span>
+      <span class="ph-rowline__sep" aria-hidden="true">·</span>
+      <span class="ph-rowline__label">{eyebrowLabel}</span>
+    </span>
+  </p>
+
+  <div class="home-about__grid">
+    <h2 class="ph-h2 home-about__title" id="home-about-title">
+      <span>{t('home.about.title')}</span>
+      <em>{t('home.about.titleAccent')}</em>
+    </h2>
+
+    <div class="home-about__body">
+      <p class="ph-body">{t('home.about.body')}</p>
+      <LinkButton href={aboutHref} variant="surface">
         {t('home.about.cta')}
-        <span class="home-about__arrow" aria-hidden="true">→</span>
-      </a>
+        <ArrowRightIcon slot="icon" />
+      </LinkButton>
     </div>
 
     <dl class="home-about__stats" aria-label={t('home.about.stats.aria')}>
       <div class="home-about__stat">
-        <dt class="home-about__stat-value" data-counter={countriesValue}>{countriesValue}</dt>
+        <dt class="home-about__stat-value">{countriesValue}</dt>
         <dd class="home-about__stat-label">{t('home.about.stats.countries.label')}</dd>
       </div>
       <div class="home-about__stat">
-        <dt class="home-about__stat-value--service">
-          <span class="home-about__stat-value" data-counter={360}>360</span><span class="home-about__stat-unit" aria-hidden="true">°</span>
-        </dt>
+        <dt class="home-about__stat-value">360<span class="home-about__stat-unit" aria-hidden="true">°</span></dt>
         <dd class="home-about__stat-label">{t('home.about.stats.service.label')}</dd>
       </div>
     </dl>
 
-    <ul class="home-about__values" aria-label={t('home.about.values.aria')} role="list">
-      <li>{t('home.about.values.v1')}</li>
-      <li aria-hidden="true" class="home-about__values-sep">·</li>
-      <li>{t('home.about.values.v2')}</li>
-      <li aria-hidden="true" class="home-about__values-sep">·</li>
-      <li>{t('home.about.values.v3')}</li>
+    <ul class="ph-rowline home-about__values" aria-label={t('home.about.values.aria')} role="list">
+      <li class="ph-rowline__meta">{t('home.about.values.v1')}</li>
+      <li class="ph-rowline__meta">{t('home.about.values.v2')}</li>
+      <li class="ph-rowline__meta">{t('home.about.values.v3')}</li>
     </ul>
   </div>
 </section>
 
 <style>
+  /* Mismo sistema que el resto de secciones (global.css y ph-ui.css). Las cifras
+     se ven tal cual desde el principio: sin contadores que suben desde cero. */
   .home-about {
-    padding: clamp(80px, 12vw, 160px) var(--ph-section-px, clamp(20px, 4vw, 48px));
-    background: var(--color-ph-black, #0d0f12);
-    color: var(--color-ph-white, #ffffff);
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    position: relative;
+    padding: clamp(88px, 9vw, 156px) var(--ph-section-px) 0;
+    color: var(--color-ph-white);
   }
 
-  .home-about__inner {
-    max-width: 880px;
-    margin: 0 auto;
-    text-align: center;
-  }
-
-  .home-about__head {
-    display: block;
-  }
-
-  .home-about__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-about__eyebrow::before,
-  .home-about__eyebrow::after {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-  }
-
-  .home-about__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(32px, 5.5vw, 72px);
-    letter-spacing: -0.03em;
-    line-height: 1.02;
-    margin: 18px 0 0;
-    text-wrap: balance;
-  }
-  .home-about__title span { display: block; }
-  .home-about__title em {
-    display: block;
-    color: var(--color-ph-gold, #d6b25e);
-    font-style: italic;
-    font-weight: 400;
-  }
-
-  .home-about__body {
-    margin: 24px auto 0;
-    max-width: 640px;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 16px;
-    line-height: 1.65;
-  }
-
-  .home-about__cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: clamp(24px, 4vw, 40px);
-    padding: 9px 20px;
-    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 13px;
-    color: var(--color-ph-white, #ffffff);
-    text-decoration: none;
-    transition: border-color 0.2s, color 0.2s;
-  }
-  .home-about__cta:hover {
-    border-color: var(--color-ph-gold, #d6b25e);
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-about__cta:hover .home-about__arrow { transform: translateX(4px); }
-  .home-about__arrow { transition: transform 0.2s; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .home-about__cta,
-    .home-about__arrow { transition: none; }
-  }
-
-  .home-about__stats {
+  .home-about__grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0;
-    margin: clamp(56px, 8vw, 96px) 0 0;
-    padding: 0;
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(16px, 2vw, 32px);
+    row-gap: clamp(28px, 3vw, 48px);
+    margin-top: var(--ph-head-title-gap);
   }
+  .home-about__title { grid-column: 1 / 11; }
+  .home-about__title span,
+  .home-about__title em { display: block; }
 
+  .home-about__body { grid-column: 1 / 6; display: grid; gap: 28px; align-content: start; justify-items: start; }
+
+  .home-about__stats { grid-column: 7 / 13; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 0; }
   .home-about__stat {
-    margin: 0;
-    padding: clamp(24px, 3vw, 40px) 8px;
-    border-right: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    text-align: center;
+    display: grid;
+    gap: 10px;
+    padding: clamp(20px, 1.6vw, 24px);
+    border: 1px solid var(--mochi-surface-border);
+    border-radius: var(--ph-r-lg);
+    background: var(--mochi-surface);
+    box-shadow: var(--mochi-shadow-surface);
   }
-  .home-about__stat:last-child { border-right: none; }
-
   .home-about__stat-value {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(36px, 5vw, 64px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    color: var(--color-ph-gold, #d6b25e);
-    margin: 0;
+    font: 500 clamp(56px, calc(3vw + 40px), 88px)/0.9 var(--font-display);
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ph-white);
   }
+  .home-about__stat-unit { margin-left: 2px; font-size: 0.45em; vertical-align: top; color: var(--color-ph-gold); }
+  .home-about__stat-label { margin: 0; font-size: 14px; color: var(--ph-ink-meta); }
 
-  .home-about__stat-value--service {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0;
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(36px, 5vw, 64px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    color: var(--color-ph-gold, #d6b25e);
-    margin: 0;
-  }
-  .home-about__stat-unit {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(22px, 3vw, 40px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-about__stat-label {
-    margin: 8px 0 0;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-  }
+  .home-about__values { grid-column: 1 / 13; justify-content: flex-start; gap: 6px 32px; margin: 0; list-style: none; }
 
-  .home-about__values {
-    list-style: none;
-    padding: 0;
-    margin: clamp(32px, 5vw, 48px) 0 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 14px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-  }
-  .home-about__values li { margin: 0; }
-  .home-about__values-sep { color: var(--color-ph-gold, #d6b25e); }
-
-  @media (max-width: 560px) {
-    .home-about__stats { grid-template-columns: 1fr; }
-    .home-about__stat {
-      border-right: none;
-      border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    }
-    .home-about__stat:last-child { border-bottom: none; }
+  @media (max-width: 900px) {
+    .home-about__grid { display: flex; flex-direction: column; }
   }
 </style>
-
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, revealOnView, trackingReveal, counterReveal,
-    scheduleScrollTriggerRefresh, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initHomeAboutAnimations(): void {
-    const section = document.querySelector<HTMLElement>('.home-about');
-    if (!section) return;
-    if (reducedMotion()) return;
-
-    const eyebrow = section.querySelector<HTMLElement>('.home-about__eyebrow');
-    const title = section.querySelector<HTMLElement>('.home-about__title');
-    const body = section.querySelector<HTMLElement>('.home-about__body');
-    const head = section.querySelector<HTMLElement>('.home-about__head');
-    const stats = section.querySelector<HTMLElement>('.home-about__stats');
-    const statValues = section.querySelectorAll<HTMLElement>('.home-about__stat-value[data-counter]');
-
-    if (eyebrow && head) {
-      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
-    }
-    if (title) {
-      revealOnView(title, { y: 24, duration: 0.9 });
-    }
-    if (body && head) {
-      gsap.from(body, {
-        opacity: 0,
-        y: 18,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.2,
-        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
-      });
-    }
-    if (statValues.length && stats) {
-      statValues.forEach((el) => {
-        const target = Number(el.dataset.counter ?? el.textContent ?? '0');
-        counterReveal(el, target, { trigger: stats, start: 'top 82%', once: true });
-      });
-    }
-
-    scheduleScrollTriggerRefresh();
-  }
-
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeAboutAnimations));
-</script>

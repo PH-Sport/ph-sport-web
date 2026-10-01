@@ -31,8 +31,6 @@ const socialLabel = (id: SocialId) => {
 ---
 
 <footer class="footer">
-  <div class="footer-gold-rule" aria-hidden="true"></div>
-
   <div class="footer-logo-bg" aria-hidden="true">
     <img
       src="/logo-ph-3d.webp"
@@ -93,13 +91,16 @@ const socialLabel = (id: SocialId) => {
         </div>
 
         <span class="footer-col-label footer-col-label--social">{t('footer.social.heading')}</span>
+        {/* Una sola etiqueta que viaja de un icono a otro (ph-ui.css + ph-motion.ts). */}
+        <div class="ph-tip-group footer-social" data-ph-tip-group>
+        <span class="ph-tip" aria-hidden="true"></span>
         <ul class="footer-social-list" role="list" aria-label={t('footer.social.label')}>
           {
             SOCIAL_LINKS.map((s) => (
               <li>
                 {isSocialPlaceholder(s.href) ? (
                   <span
-                    class="footer-social-link footer-social-link--disabled"
+                    class="ph-icon-btn ph-icon-btn--sm footer-social-link footer-social-link--disabled"
                     aria-disabled="true"
                     title={socialLabel(s.id)}
                   >
@@ -108,10 +109,11 @@ const socialLabel = (id: SocialId) => {
                 ) : (
                   <a
                     href={s.href}
-                    class="footer-social-link"
+                    class="ph-icon-btn ph-icon-btn--sm footer-social-link"
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={socialLabel(s.id)}
+                    data-tip={socialLabel(s.id)}
                   >
                     <FooterSocialIcon id={s.id} />
                   </a>
@@ -120,6 +122,7 @@ const socialLabel = (id: SocialId) => {
             ))
           }
         </ul>
+        </div>
       </div>
     </div>
 
@@ -141,10 +144,13 @@ const socialLabel = (id: SocialId) => {
 </footer>
 
 <style>
+  /* Pie con el mismo sistema que el resto de la web: filas con línea fina,
+     etiquetas legibles y los iconos sociales como botones (ph-ui.css). */
   .footer {
     position: relative;
     z-index: 1;
     overflow: hidden;
+    padding-top: clamp(64px, 7vw, 120px);
   }
 
   .footer-logo-bg {
@@ -157,68 +163,44 @@ const socialLabel = (id: SocialId) => {
     padding-right: 6%;
     opacity: 0.18;
   }
-
   .footer-logo-bg img {
     width: min(70vw, 620px);
     height: auto;
     user-select: none;
   }
-
   .footer > *:not(.footer-logo-bg) {
     position: relative;
     z-index: 1;
   }
-
   @media (max-width: 767px) {
     .footer-logo-bg {
       padding-right: 0;
       justify-content: center;
       opacity: 0.12;
     }
-    .footer-logo-bg img {
-      width: min(90vw, 480px);
-    }
+    .footer-logo-bg img { width: min(90vw, 480px); }
   }
 
-  /* 01 · Gold rule (unchanged from previous version) */
-  .footer-gold-rule {
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      var(--color-ph-gold-muted) 20%,
-      var(--color-ph-gold) 50%,
-      var(--color-ph-gold-muted) 80%,
-      transparent
-    );
-    opacity: 0.4;
-  }
-
-  /* 02 · Sello editorial */
+  /* El lema de la casa, en la voz de los titulares. */
   .footer-sello {
+    max-width: none;
+    margin: 0;
+    padding-block: 0 clamp(28px, 3vw, 44px);
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
-    line-height: 1.15;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    font-size: clamp(32px, calc(2.4vw + 22px), 56px);
+    line-height: 1;
+    letter-spacing: -0.035em;
     color: var(--color-ph-white);
-    margin: 0;
-    padding-block: clamp(2.5rem, 5vw, 3.5rem) clamp(2rem, 4vw, 2.5rem);
   }
+  .footer-sello__accent { color: var(--color-ph-gold); font-style: italic; font-weight: 400; }
 
-  .footer-sello__accent {
-    color: var(--color-ph-gold);
-  }
-
-  /* 03 · 3-col funcional */
   .footer-grid {
     display: grid;
     gap: 2.5rem;
-    padding-block: clamp(2rem, 4vw, 3rem);
-    border-top: 1px solid var(--color-ph-white-10);
+    padding-block: clamp(24px, 3vw, 40px);
+    border-top: 1px solid var(--mochi-surface-border);
   }
-
   @media (min-width: 768px) {
     .footer-grid {
       grid-template-columns: 1fr 1fr 1fr;
@@ -227,124 +209,41 @@ const socialLabel = (id: SocialId) => {
     }
   }
 
-  .footer-brand {
-    display: flex;
-    align-items: flex-start;
-  }
+  .footer-brand { display: flex; align-items: flex-start; }
+  .footer-logo { height: 2.25rem; width: auto; color: var(--color-ph-gold); }
 
-  .footer-logo {
-    height: 2rem;
-    width: auto;
-    color: var(--color-ph-white);
-  }
-
-  .footer-col {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .footer-col-label {
-    font-family: var(--font-display);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold);
-  }
-
-  .footer-col-label--social {
-    margin-top: 1.5rem;
-  }
+  .footer-col { display: flex; flex-direction: column; }
+  .footer-col-label { font-size: 13px; letter-spacing: 0.03em; color: var(--ph-ink-meta); }
+  .footer-col-label--social { margin-top: 1.75rem; }
 
   .footer-nav {
     display: flex;
     flex-direction: column;
-    gap: 0.625rem;
-    margin: 0.875rem 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .footer-link {
-    font-family: var(--font-display);
-    font-size: 0.875rem;
-    font-weight: 400;
-    color: var(--color-ph-white-60);
-    transition: color var(--ph-duration) var(--ease-ph);
-  }
-
-  @media (hover: hover) {
-    .footer-link:hover {
-      color: var(--color-ph-white);
-    }
-  }
-
-  .footer-contact {
-    margin-top: 0.875rem;
-  }
-
-  .footer-email {
-    font-family: var(--font-display);
-    font-size: 0.875rem;
-    color: var(--color-ph-white-60);
-    transition: color var(--ph-duration) var(--ease-ph);
-  }
-
-  @media (hover: hover) {
-    .footer-email:hover {
-      color: var(--color-ph-gold);
-    }
-  }
-
-  .footer-social-list {
-    display: flex;
-    flex-wrap: wrap;
     gap: 0.75rem;
-    margin: 0.875rem 0 0;
+    margin: 1rem 0 0;
     padding: 0;
     list-style: none;
   }
-
-  .footer-social-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: var(--radius-sm);
-    color: var(--color-ph-white-60);
-    border: 1px solid var(--color-ph-white-10);
-    transition:
-      color var(--ph-duration) var(--ease-ph),
-      border-color var(--ph-duration) var(--ease-ph),
-      background var(--ph-duration) var(--ease-ph);
+  .footer-link,
+  .footer-email {
+    width: fit-content;
+    font-family: var(--font-display);
+    font-size: 15px;
+    color: var(--ph-ink-body);
+    transition: color var(--mochi-duration-color) var(--mochi-ease-color);
   }
-
   @media (hover: hover) {
-    .footer-social-link:hover {
-      color: var(--color-ph-gold);
-      border-color: var(--color-ph-gold-muted);
-      background: rgba(214, 178, 94, 0.06);
-    }
+    .footer-link:hover { color: var(--color-ph-white); }
+    .footer-email:hover { color: var(--mochi-accent-strong); }
   }
+  .footer-contact { margin-top: 1rem; }
 
-  .footer-social-link--disabled {
-    opacity: 0.45;
-    pointer-events: none;
-  }
-
-  .footer-social-link svg {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
-
-  /* 04 · Copyright */
-  .footer-bottom {
-    margin-top: clamp(2rem, 4vw, 2.5rem);
-    padding-top: 1.25rem;
-    padding-bottom: 1rem;
-    border-top: 1px solid var(--color-ph-white-10);
-  }
+  .footer-social { margin-top: 1rem; width: fit-content; }
+  .footer-social-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .footer-social-link { color: var(--ph-ink-body); }
+  @media (hover: hover) { .footer-social-link:hover { color: var(--color-ph-white); } }
+  .footer-social-link--disabled { opacity: 0.45; pointer-events: none; }
+  .footer-social-link :global(svg) { width: 18px; height: 18px; }
 
   .footer-bottom {
     display: flex;
@@ -352,39 +251,18 @@ const socialLabel = (id: SocialId) => {
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 0.5rem 1.5rem;
+    margin-top: clamp(16px, 2vw, 24px);
+    padding-top: 18px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--mochi-surface-border);
   }
-
-  .footer-bottom p {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.05em;
-    color: var(--color-ph-white-60);
-    margin: 0;
-  }
-
-  .footer-legal {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
+  .footer-bottom p { margin: 0; font-size: 13px; color: rgba(255, 255, 255, 0.5); }
+  .footer-legal { display: flex; align-items: center; gap: 0.5rem; }
+  .footer-legal-sep { color: rgba(255, 255, 255, 0.3); }
   .footer-legal-link {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.05em;
-    color: var(--color-ph-white-60);
-    transition: color var(--ph-duration) var(--ease-ph);
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.62);
+    transition: color var(--mochi-duration-color) var(--mochi-ease-color);
   }
-
-  @media (hover: hover) {
-    .footer-legal-link:hover {
-      color: var(--color-ph-white);
-    }
-  }
-
-  .footer-legal-sep {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    color: var(--color-ph-white-20);
-  }
+  @media (hover: hover) { .footer-legal-link:hover { color: var(--color-ph-white); } }
 </style>

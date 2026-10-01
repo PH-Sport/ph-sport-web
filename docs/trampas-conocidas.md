@@ -71,25 +71,32 @@ argumentos**, que no admite `behavior`, así que esa restauración se **anima**.
 otras llamadas sí pasan `behavior: 'instant'`; esa no
 (`node_modules/astro/dist/transitions/router.js:143`).
 
+Desde el 2026-10-01 no hay GSAP ni ScrollTrigger (rediseño con Mochi), así que el
+y≈2 de abajo ya no puede repetirse tal cual. **El apagado se queda** porque, sin
+él, la restauración al pulsar atrás se sigue animando: la página llega arriba y se
+desliza hasta donde estabas. Vive al final de `src/scripts/ph-motion.ts`. Lo que
+sigue es la historia de cómo se descubrió, con GSAP todavía en la web.
+
 Con la restauración animada, el `ScrollTrigger.refresh()` que corre ~60 ms después
 —y que hace guardar → ir a 0 → restaurar— fotografía la animación a medio camino y
 deja la página clavada **en y≈2**. Ese era el bug de "atrás no devuelve donde
 estabas" que estuvo abierto de agosto a septiembre de 2026, y durante meses se
 atribuyó al telón y a `QuietScrollHistory`, que no tenían nada que ver.
 
-Por eso `ph-text-animations.ts` apaga el scroll suave en cada `astro:before-swap` y
-lo vuelve a encender tras el refresh. **Si se quita ese apagado, el bug vuelve**, y
-la próxima vez tampoco se va a parecer a lo que es.
+Por eso `ph-text-animations.ts` (borrado el 2026-10-01) apagaba el scroll suave en
+cada `astro:before-swap` y lo volvía a encender tras el refresh; hoy lo hace
+`ph-motion.ts`, que lo vuelve a encender pasado un segundo. **Si se quita ese
+apagado, la restauración vuelve a animarse**, y la próxima vez tampoco se va a
+parecer a lo que es.
 
 Dos detalles que no son adorno:
 
 - El `scroll-behavior: auto` se escribe en el **documento entrante**, no en el
   actual, porque el swap resetea los atributos de `<html>` y el `scrollTo` del
-  router corre después del swap. Mismo motivo que la copia de `.ph-anim`, dos
-  líneas más abajo.
-- El temporizador de `astro:page-load` que lo vuelve a encender existe para
-  `/aviso-legal` y `/privacidad`, que no montan animaciones y por tanto **no piden
-  ningún refresh**: sin él, esas dos páginas se quedarían sin scroll suave.
+  router corre después del swap.
+- El temporizador de `astro:page-load` es lo que lo vuelve a encender. Con GSAP
+  existía solo para `/aviso-legal` y `/privacidad`, que no pedían ningún refresh;
+  hoy es el único camino en todas las páginas.
 
 **Ya se probó `ScrollTrigger.clearScrollMemory()`** —la API que GSAP ofrece justo
 para limpiar la posición guardada al cambiar de ruta— y **no arregla nada**: medido

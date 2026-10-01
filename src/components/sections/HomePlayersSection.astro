@@ -1,5 +1,8 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
+import { buildPlayerDetailPayloadsForLang, getAllRosterEntries } from '@/lib/playerDetail';
+import { nationalTeamBadgeSrc } from '@/lib/nationalTeamBadge';
+import { LinkButton, ArrowRightIcon } from 'mochi-ui';
 
 interface Props {
   lang: Lang;
@@ -9,172 +12,135 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const listHref = localizePath('/talentos/', lang);
+
+/** «02 · Talentos»: el número y la etiqueta van en estilos distintos en la fila índice. */
+const [eyebrowNum, ...eyebrowRest] = t('home.players.eyebrow').split(' · ');
+const eyebrowLabel = eyebrowRest.join(' · ');
+
+/** Los primeros jugadores del roster, en el orden del archivo (el de la lista de
+ *  Mario, ver CLAUDE.md): la portada enseña a quién representa la agencia. */
+const RAIL_SIZE = 10;
+const payloads = await buildPlayerDetailPayloadsForLang(lang);
+const players = getAllRosterEntries()
+  .filter((e) => e.role === 'player')
+  .map((e) => payloads[e.slug])
+  .filter(Boolean)
+  .slice(0, RAIL_SIZE)
+  .map((p) => ({
+    ...p,
+    badges: p.nationalTeamCodes
+      .map((code) => nationalTeamBadgeSrc(code))
+      .filter((src): src is string => src !== null),
+  }));
+
+const photoSizes = '(max-width: 720px) 60vw, 300px';
+const railLabel = `${t('talents.title')}${t('home.players.titleAccent')}`;
 ---
 
 <section class="home-players" id="talentos" aria-labelledby="home-players-title">
-  <div class="home-players__row">
-    <header class="home-players__head">
-      <span class="home-players__eyebrow">{t('home.players.eyebrow')}</span>
-      <h2 class="home-players__title" id="home-players-title">
+  <p class="ph-rowline">
+    <span class="ph-rowline__group">
+      <span class="ph-rowline__num">{eyebrowNum}</span>
+      <span class="ph-rowline__sep" aria-hidden="true">·</span>
+      <span class="ph-rowline__label">{eyebrowLabel}</span>
+    </span>
+  </p>
+
+  <div class="home-players__head">
+    <div class="home-players__titles">
+      <h2 class="ph-h2" id="home-players-title">
         {t('talents.title')}<em>{t('home.players.titleAccent')}</em>.
       </h2>
-      <p class="home-players__lead">{t('home.players.lead')}</p>
-    </header>
-
-    <div class="home-players__cta-wrap">
-      <a class="home-players__cta" href={listHref}>
-        {t('home.players.cta')}
-        <span class="home-players__arrow" aria-hidden="true">→</span>
-      </a>
+      <p class="ph-head-lead">{t('home.players.lead')}</p>
     </div>
+    <div class="home-players__actions">
+      <span class="home-players__arrows">
+        <button type="button" class="ph-icon-btn" data-ph-rail-step="home" data-dir="-1" aria-label={t('a11y.rail.prev')} aria-controls="home-rail">
+          <svg class="ph-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+        </button>
+        <button type="button" class="ph-icon-btn" data-ph-rail-step="home" data-dir="1" aria-label={t('a11y.rail.next')} aria-controls="home-rail">
+          <svg class="ph-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </button>
+      </span>
+      <LinkButton href={listHref} variant="surface">
+        {t('home.players.cta')}
+        <ArrowRightIcon slot="icon" />
+      </LinkButton>
+    </div>
+  </div>
+
+  {/* Raíl que se arrastra con el ratón (en móvil, con el dedo, como un scroll
+      normal). Comportamiento en src/scripts/ph-motion.ts. */}
+  <div class="home-players__rail ph-rail" id="home-rail" data-ph-rail="home" role="region" aria-label={railLabel} tabindex="0">
+    <ul class="ph-rail__track" role="list">
+      {players.map((p) => (
+        <li class="ph-player home-players__card">
+          <div class="ph-player__photo">
+            <picture>
+              {p.photoSrcsetAvif && <source type="image/avif" srcset={p.photoSrcsetAvif} sizes={photoSizes} />}
+              <img
+                src={p.photoSrc}
+                srcset={p.photoSrcset || undefined}
+                sizes={photoSizes}
+                alt={p.name}
+                width="480"
+                height="640"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              />
+            </picture>
+          </div>
+          {p.badges.length > 0 && (
+            <div class="ph-player__badges" aria-hidden="true">
+              {p.badges.map((src) => <img src={src} alt="" width="22" height="22" loading="lazy" decoding="async" draggable="false" />)}
+            </div>
+          )}
+          <div class="ph-player__meta">
+            <span class="ph-player__name">{p.name}</span>
+            {p.subtitle && <span class="ph-player__club">{p.subtitle}</span>}
+          </div>
+        </li>
+      ))}
+    </ul>
   </div>
 </section>
 
 <style>
+  /* Mismo sistema que las cabeceras de sección (global.css: `.ph-rowline`,
+     `.ph-head-*`; ph-ui.css: `.ph-h2`, `.ph-player`, `.ph-rail`). */
   .home-players {
-    padding: clamp(56px, 8vw, 120px) var(--ph-section-px, clamp(20px, 4vw, 48px));
-    background: var(--color-ph-black, #0d0f12);
-    color: var(--color-ph-white, #ffffff);
+    position: relative;
+    padding: clamp(88px, 9vw, 156px) var(--ph-section-px) 0;
+    color: var(--color-ph-white);
   }
 
-  .home-players__row {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(28px, 4vw, 48px);
-    align-items: flex-start;
+  .home-players__head {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(16px, 2vw, 32px);
+    row-gap: 24px;
+    align-items: end;
+    margin-top: var(--ph-head-title-gap);
   }
+  .home-players__titles { grid-column: 1 / 9; display: grid; gap: var(--ph-head-lead-gap); }
+  .home-players__titles .ph-head-lead { margin: 0; }
+  .home-players__actions { grid-column: 9 / 13; justify-self: end; display: flex; align-items: center; gap: 8px; }
+  .home-players__arrows { display: flex; gap: 8px; margin-right: 8px; }
 
-  .home-players__head { max-width: 720px; }
+  /* El raíl va de borde a borde; las tarjetas arrancan en el margen del texto. */
+  .home-players__rail {
+    margin: clamp(28px, 2.5vw, 44px) calc(-1 * var(--ph-section-px)) 0;
+    padding: 18px var(--ph-section-px) 40px;
+    scroll-padding-inline: var(--ph-section-px);
+  }
+  .home-players__rail:focus-visible { outline: 2px solid var(--mochi-focus-ring); outline-offset: -4px; }
+  .home-players__card { flex: none; width: clamp(220px, calc(15vw + 120px), 300px); user-select: none; }
 
-  .home-players__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
+  @media (max-width: 900px) {
+    .home-players__head { display: flex; flex-direction: column; align-items: stretch; }
+    .home-players__actions { justify-self: start; }
+    .home-players__arrows { display: none; }
+    .home-players__card { width: clamp(200px, 58vw, 260px); }
   }
-  .home-players__eyebrow::before {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-  }
-
-  .home-players__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(36px, 6vw, 72px);
-    letter-spacing: -0.03em;
-    line-height: 1.02;
-    margin: 14px 0 0;
-  }
-  .home-players__title em {
-    color: var(--color-ph-gold, #d6b25e);
-    font-style: italic;
-    font-weight: 400;
-  }
-
-  .home-players__lead {
-    margin: 18px 0 0;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 15px;
-    line-height: 1.6;
-    max-width: 520px;
-  }
-
-  .home-players__cta-wrap {
-    display: flex;
-  }
-
-  @media (min-width: 900px) {
-    .home-players__row {
-      flex-direction: row;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: clamp(32px, 5vw, 72px);
-    }
-    .home-players__cta-wrap {
-      flex-shrink: 0;
-      padding-bottom: 6px;
-    }
-  }
-
-  .home-players__cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 20px;
-    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 13px;
-    letter-spacing: 0.01em;
-    color: var(--color-ph-white, #ffffff);
-    text-decoration: none;
-    transition: border-color 0.2s, color 0.2s;
-  }
-  .home-players__cta:hover {
-    border-color: var(--color-ph-gold, #d6b25e);
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-players__cta:hover .home-players__arrow {
-    transform: translateX(4px);
-  }
-  .home-players__arrow { transition: transform 0.2s; }
 </style>
-
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, revealOnView, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initHomePlayersAnimations(): void {
-    const section = document.querySelector<HTMLElement>('.home-players');
-    if (!section) return;
-    if (reducedMotion()) return;
-
-    const eyebrow = section.querySelector<HTMLElement>('.home-players__eyebrow');
-    const title = section.querySelector<HTMLElement>('.home-players__title');
-    const lead = section.querySelector<HTMLElement>('.home-players__lead');
-    const head = section.querySelector<HTMLElement>('.home-players__head');
-    const cta = section.querySelector<HTMLElement>('.home-players__cta-wrap');
-
-    if (eyebrow && head) {
-      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
-    }
-    if (title) {
-      revealOnView(title, { y: 24, duration: 0.9 });
-    }
-    if (lead && head) {
-      gsap.from(lead, {
-        opacity: 0,
-        y: 18,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.2,
-        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
-      });
-    }
-    if (cta) {
-      gsap.from(cta, {
-        opacity: 0,
-        y: 14,
-        duration: 0.7,
-        ease: 'power3.out',
-        delay: 0.3,
-        scrollTrigger: { trigger: cta, start: 'top 90%', once: true },
-      });
-    }
-
-    scheduleScrollTriggerRefresh();
-  }
-
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomePlayersAnimations));
-</script>

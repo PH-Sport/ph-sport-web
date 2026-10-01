@@ -5,6 +5,10 @@ import { SITE_URL } from '@/lib/constants';
 
 const lang: Lang = 'es';
 const t = useTranslations(lang);
+
+// `hasHero`: el hueco de la cabecera flotante lo pone la propia página con
+// `--ph-head-top`, igual que Talentos, Servicios y Sobre nosotros, para que la
+// fila índice caiga en el mismo sitio al pasar de una a otra.
 ---
 
 <BaseLayout
@@ -12,206 +16,216 @@ const t = useTranslations(lang);
   description={t('privacy.description')}
   lang={lang}
   canonical={`${SITE_URL}/privacidad`}
-  hasHero={false}
+  hasHero
 >
-  <div class="ph-section legal-wrap">
-    <header class="legal-header">
-      <span class="legal-kicker">Legal</span>
-      <div class="legal-rule" aria-hidden="true"></div>
-      <h1 class="legal-h1">Política de Privacidad</h1>
-      <p class="legal-updated">Última actualización: junio de 2026</p>
+  <article class="legal" aria-labelledby="legal-title">
+    <header class="legal__head">
+      <p class="ph-rowline">
+        <span class="ph-rowline__group">
+          <span class="ph-rowline__label">Legal</span>
+        </span>
+        <span class="ph-rowline__meta legal__updated">Última actualización: junio de 2026</span>
+      </p>
+      <h1 id="legal-title" class="ph-head-title legal__title">Política de Privacidad</h1>
     </header>
 
-    <div class="legal-body">
+    <div class="legal__body">
 
-      <section class="legal-section">
-        <h2>01. Responsable del tratamiento</h2>
-        <dl class="legal-dl">
-          <div class="legal-dl__row">
+      <section class="legal__section">
+        <h2><span class="legal__num">01.</span> Responsable del tratamiento</h2>
+        <dl class="legal__facts">
+          <div class="legal__fact">
             <dt>Identidad</dt>
             <dd>MANAGEMENTPH REPRESENTACIÓN DE DEPORTISTAS, S.L.</dd>
           </div>
-          <div class="legal-dl__row">
+          <div class="legal__fact">
             <dt>CIF</dt>
             <dd>B02645448</dd>
           </div>
-          <div class="legal-dl__row">
+          <div class="legal__fact">
             <dt>Domicilio</dt>
             <dd>Calle Picasso n.º 13, 28691 Villanueva de la Cañada, Madrid (España)</dd>
           </div>
-          <div class="legal-dl__row">
+          <div class="legal__fact">
             <dt>Email</dt>
-            <dd><a href="mailto:info@phsport.es" class="legal-link">info@phsport.es</a></dd>
+            <dd><a href="mailto:info@phsport.es" class="legal__link">info@phsport.es</a></dd>
           </div>
         </dl>
       </section>
 
-      <section class="legal-section">
-        <h2>02. Datos que recopilamos y finalidad</h2>
+      <section class="legal__section">
+        <h2><span class="legal__num">02.</span> Datos que recopilamos y finalidad</h2>
         <p>Si utilizas el formulario de contacto de este sitio web, recopilamos los datos que facilitas voluntariamente —nombre, dirección de email y mensaje— con la única finalidad de atender tu consulta o solicitud.</p>
         <p>No recopilamos datos a través de cookies de seguimiento, herramientas de analítica ni sistemas de publicidad. Este sitio no instala ninguna cookie que requiera consentimiento.</p>
       </section>
 
-      <section class="legal-section">
-        <h2>03. Base jurídica del tratamiento</h2>
+      <section class="legal__section">
+        <h2><span class="legal__num">03.</span> Base jurídica del tratamiento</h2>
         <p>El tratamiento de tus datos se ampara en el consentimiento que otorgas al facilitarlos voluntariamente para contactar con nosotros, de conformidad con el artículo 6.1.a del Reglamento (UE) 2016/679 (RGPD).</p>
       </section>
 
-      <section class="legal-section">
-        <h2>04. Plazo de conservación</h2>
+      <section class="legal__section">
+        <h2><span class="legal__num">04.</span> Plazo de conservación</h2>
         <p>Conservamos los datos durante el tiempo necesario para responder a tu consulta y el plazo legalmente exigible. Si no se establece ninguna relación contractual, los datos se eliminan en un plazo máximo de 12 meses desde la recepción.</p>
       </section>
 
-      <section class="legal-section">
-        <h2>05. Destinatarios</h2>
+      <section class="legal__section">
+        <h2><span class="legal__num">05.</span> Destinatarios</h2>
         <p>No cedemos tus datos personales a terceros salvo que exista obligación legal. No realizamos transferencias internacionales de datos a países fuera del Espacio Económico Europeo.</p>
       </section>
 
-      <section class="legal-section">
-        <h2>06. Tus derechos</h2>
-        <p>En cualquier momento puedes ejercer los derechos de acceso, rectificación, supresión, portabilidad, oposición y limitación del tratamiento enviando un email a <a href="mailto:info@phsport.es" class="legal-link">info@phsport.es</a> con el asunto <em>«Protección de datos»</em> e indicando el derecho que deseas ejercer. Responderemos en el plazo legalmente establecido.</p>
-        <p>Asimismo, tienes derecho a presentar una reclamación ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es" target="_blank" rel="noopener noreferrer" class="legal-link">aepd.es</a>) si consideras que el tratamiento de tus datos no se ajusta a la normativa vigente.</p>
+      <section class="legal__section">
+        <h2><span class="legal__num">06.</span> Tus derechos</h2>
+        <p>En cualquier momento puedes ejercer los derechos de acceso, rectificación, supresión, portabilidad, oposición y limitación del tratamiento enviando un email a <a href="mailto:info@phsport.es" class="legal__link">info@phsport.es</a> con el asunto <em>«Protección de datos»</em> e indicando el derecho que deseas ejercer. Responderemos en el plazo legalmente establecido.</p>
+        <p>Asimismo, tienes derecho a presentar una reclamación ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es" target="_blank" rel="noopener noreferrer" class="legal__link">aepd.es</a>) si consideras que el tratamiento de tus datos no se ajusta a la normativa vigente.</p>
       </section>
 
     </div>
-  </div>
+  </article>
 </BaseLayout>
 
 <style>
-  .legal-wrap {
-    max-width: 72rem;
+  /* Página de lectura con el lenguaje de las demás: fila índice, titular y una
+     columna de texto cómoda. Los mismos estilos van repetidos en las cuatro
+     páginas legales (aviso y privacidad, en español e inglés) a propósito: son
+     páginas sueltas y así cada una se entiende sin abrir otro archivo. Si se
+     cambia uno, cambiar los cuatro. */
+  .legal {
+    padding: var(--ph-head-top) var(--ph-section-px) clamp(80px, calc(5.7vw + 58px), 140px);
   }
 
-  .legal-header {
-    padding-bottom: clamp(2.5rem, 5vw, 4rem);
-    border-bottom: 1px solid var(--color-ph-white-10);
-    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  /* El dato de la derecha es una frase en minúsculas, no un valor en mayúsculas:
+     sin el espaciado extra de `.ph-rowline__meta`. */
+  .legal__updated {
+    letter-spacing: 0.01em;
   }
 
-  .legal-kicker {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold);
-    display: block;
-    margin-bottom: 1rem;
+  /* Más contenido que las cabeceras de sección: el titular aquí es una etiqueta
+     de documento, no un lema. Cabe en una línea en escritorio. */
+  .legal__title {
+    max-width: 16em;
+    font-size: clamp(40px, calc(3.05vw + 28px), 72px);
+    line-height: 1;
   }
 
-  .legal-rule {
-    width: 2rem;
-    height: 1px;
-    background: var(--color-ph-gold);
-    margin-bottom: 1.25rem;
+  /* Columna de lectura: ~64 caracteres a 16–17 px. El tamaño va en la columna
+     para que `ch` mida con la letra del texto. */
+  .legal__body {
+    max-width: 64ch;
+    margin-top: var(--ph-head-after);
+    font-size: clamp(16px, calc(0.1vw + 15.6px), 17px);
+    line-height: 1.7;
+    color: var(--ph-ink-body);
   }
 
-  .legal-h1 {
+  .legal__section + .legal__section {
+    margin-top: clamp(44px, calc(1.5vw + 38px), 64px);
+  }
+
+  /* Subtítulo: más aire arriba (entre apartados) que abajo (hasta su texto). El
+     número va en mono dorado, como en el resto de la web; el texto del título no
+     cambia, solo se le da estilo a su principio. */
+  .legal__section h2 {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin: 0 0 14px;
     font-family: var(--font-display);
-    font-size: clamp(2.25rem, 5vw, 4rem);
     font-weight: 500;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    font-size: clamp(20px, calc(0.38vw + 18.5px), 24px);
+    line-height: 1.25;
+    letter-spacing: -0.015em;
     color: var(--color-ph-white);
-    margin: 0 0 1rem;
   }
-
-  .legal-updated {
+  .legal__num {
+    flex: none;
     font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.08em;
-    color: var(--color-ph-white-20);
-    margin: 0;
-  }
-
-  .legal-body {
-    max-width: 65ch;
-    display: flex;
-    flex-direction: column;
-    gap: clamp(2.5rem, 5vw, 3.5rem);
-  }
-
-  .legal-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .legal-section h2 {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    font-weight: 400;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-ph-white-60);
-    margin: 0;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--color-ph-white-10);
-  }
-
-  .legal-section p {
-    font-size: 0.9375rem;
-    line-height: 1.75;
-    color: var(--color-ph-white-60);
-    margin: 0;
-  }
-
-  .legal-section em {
-    font-style: normal;
-    color: var(--color-ph-white-80);
-  }
-
-  .legal-dl {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    border: 1px solid var(--color-ph-white-10);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-  }
-
-  .legal-dl__row {
-    display: grid;
-    grid-template-columns: 10rem 1fr;
-    gap: 1rem;
-    padding: 0.875rem 1.25rem;
-    border-bottom: 1px solid var(--color-ph-white-10);
-  }
-
-  .legal-dl__row:last-child {
-    border-bottom: none;
-  }
-
-  .legal-dl dt {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-ph-white-20);
-    padding-top: 0.125rem;
-  }
-
-  .legal-dl dd {
-    font-size: 0.875rem;
-    line-height: 1.6;
-    color: var(--color-ph-white-80);
-    margin: 0;
-  }
-
-  .legal-link {
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
     color: var(--color-ph-gold);
-    transition: opacity var(--ph-duration) var(--ease-ph);
   }
 
+  .legal__section p {
+    max-width: none;
+    margin: 0;
+    color: inherit;
+    text-wrap: pretty;
+  }
+  .legal__section p + p {
+    margin-top: 1em;
+  }
+  /* Citas dentro del texto (el asunto del email en Privacidad): ya llevan
+     comillas, así que sin cursiva; solo un punto más de luz. */
+  .legal__section em {
+    font-style: normal;
+    color: var(--ph-ink-lead);
+  }
+
+  /* Datos de la empresa en una tarjeta, como el resto de superficies de la web. */
+  .legal__facts {
+    margin: 22px 0 0;
+    padding: 4px clamp(18px, calc(0.57vw + 15.8px), 24px);
+    background: var(--mochi-surface);
+    border: 1px solid var(--mochi-surface-border);
+    border-radius: var(--ph-r-lg);
+    box-shadow: var(--mochi-shadow-surface);
+  }
+  .legal__section h2 + .legal__facts {
+    margin-top: 0;
+  }
+  .legal__fact {
+    display: grid;
+    grid-template-columns: 10.5rem minmax(0, 1fr);
+    gap: 4px 20px;
+    padding: 14px 0;
+  }
+  .legal__fact + .legal__fact {
+    border-top: 1px solid var(--mochi-surface-border);
+  }
+  .legal__fact dt {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ph-ink-meta);
+  }
+  .legal__fact dd {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ph-ink-lead);
+    overflow-wrap: anywhere;
+  }
+
+  /* Enlaces subrayados con el subrayado algo separado del texto; al pasar el
+     ratón el subrayado se enciende en vez de cambiar el texto. */
+  .legal__link {
+    color: var(--color-ph-gold);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    text-decoration-color: rgba(214, 178, 94, 0.45);
+    border-radius: 2px;
+    transition: text-decoration-color var(--mochi-duration-color) var(--mochi-ease-color);
+  }
+  .legal__link:focus-visible {
+    outline: 2px solid var(--mochi-focus-ring);
+    outline-offset: 3px;
+  }
   @media (hover: hover) {
-    .legal-link:hover {
-      opacity: 0.75;
+    .legal__link:hover {
+      text-decoration-color: currentColor;
     }
   }
 
   @media (max-width: 540px) {
-    .legal-dl__row {
-      grid-template-columns: 1fr;
-      gap: 0.25rem;
+    .legal__fact {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .legal__link {
+      transition-duration: 1ms;
     }
   }
 </style>

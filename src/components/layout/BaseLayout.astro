@@ -1,5 +1,7 @@
 ---
 import '@/styles/global.css';
+import 'mochi-ui/styles.css';
+import '@/styles/mochi-phsport.css';
 import { ClientRouter } from 'astro:transitions';
 import QuietScrollHistory from './QuietScrollHistory.astro';
 import Header from './Header.astro';
@@ -88,7 +90,7 @@ const organizationJsonLd = {
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={lang} data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     {/* `viewport-fit=cover`: la página se dibuja también bajo la barra de estado y el
@@ -106,11 +108,10 @@ const organizationJsonLd = {
     {/* Dos decisiones que hay que tomar ANTES del primer pintado, en una sola
         pausa del parser:
 
-        1. FOUC guard: marca el documento si vamos a animar (no reduced-motion).
-           El CSS oculta [data-reveal] mientras esté la clase; el init de cada
-           sección los revela cuando GSAP toma el control, evitando el parpadeo
-           entre el pintado y el arranque. Sin JS o con reduced-motion la clase
-           no se añade → visible.
+        1. `ph-js`: con JavaScript, las piezas de ph-ui.css (acordeones,
+           pestañas) arrancan en su estado cerrado sin pintarse antes abiertas.
+           Sin JS se quedan abiertas y todo se lee. Ya no hay nada oculto a la
+           espera de una animación de entrada (2026-10-01).
 
         2. Telón de intro: si ya se vio hace menos de 18 h y el usuario no lo ha
            pedido a propósito (clic en el logo), se marca el documento para que el
@@ -123,9 +124,7 @@ const organizationJsonLd = {
     <script is:inline>
       (function () {
         var raiz = document.documentElement;
-        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          raiz.classList.add('ph-anim');
-        }
+        raiz.classList.add('ph-js');
         if (document.prerendering) return;
         try {
           if (sessionStorage.getItem('ph-logo-reveal-request') === '1') return;
@@ -257,6 +256,11 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
     <Footer />
 
     <script>
+      // Comportamiento de las piezas compartidas (acordeones, pestañas, desplegables…).
+      import '@/scripts/ph-motion';
+    </script>
+
+    <script>
       /* El alto de pantalla se mide una vez y se queda quieto.
        *
        * Ninguna unidad de CSS sirve para esto en los navegadores de iPhone que no
@@ -369,14 +373,6 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
 </html>
 
 <style is:global>
-  /* FOUC guard: el contenido con animación de entrada arranca oculto hasta que
-     GSAP toma el control (ver revealReveals en ph-text-animations.ts). Gateado
-     por .ph-anim (la añade el script inline del head solo si el JS corre y no hay
-     reduced-motion), así sin JS o con reduced-motion el contenido es visible. */
-  html.ph-anim [data-reveal] {
-    visibility: hidden;
-  }
-
   .main--padded {
     /* 5rem reserva la zona del header; +0.875rem el margen superior de la cápsula flotante */
     padding-top: calc(5rem + 0.875rem);
@@ -458,16 +454,19 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
     box-shadow: none;
   }
 
+  /* Al bajar, la isla se vuelve sólida y se estrecha (transición «morph» de Mochi
+     en Header.astro). Arriba del todo es transparente y ancha, alineada con el texto. */
   [data-header].header--solid .header-shell {
-    background-color: rgba(13, 15, 18, 0.88);
-    border-color: var(--ph-glass-border);
-    backdrop-filter: var(--ph-glass-backdrop);
-    -webkit-backdrop-filter: var(--ph-glass-backdrop);
-    box-shadow: var(--ph-glass-highlight);
+    width: min(calc(100% - var(--ph-section-px)), 1200px);
+    background-color: rgba(21, 23, 27, 0.78);
+    border-color: var(--mochi-surface-border);
+    backdrop-filter: blur(18px) saturate(1.15);
+    -webkit-backdrop-filter: blur(18px) saturate(1.15);
+    box-shadow: var(--mochi-shadow-surface);
   }
 
   [data-header].header--scroll-hidden .header-shell {
-    transform: translateY(calc(-100% - 0.875rem));
+    transform: translateY(calc(-100% - 0.75rem));
     pointer-events: none;
   }
 

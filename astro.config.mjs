@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
@@ -10,7 +11,13 @@ export default defineConfig({
    * anotaba 2 de 12 URLs. El hreflang vive en el HTML (BaseLayout), completo y
    * recíproco, que es uno de los tres métodos válidos de Google — basta con ese.
    */
-  integrations: [sitemap()],
+  /**
+   * React solo para fabricar la web: dibuja en el servidor los componentes de Mochi
+   * (`mochi-ui`) al construir. Ninguno lleva directiva `client:`, así que al
+   * visitante no le llega JavaScript de React. Lo interactivo va en
+   * `src/scripts/ph-motion.ts`. Motivo y límites: DECISIONS.md (2026-10-01).
+   */
+  integrations: [sitemap(), react()],
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'hover',

@@ -225,11 +225,12 @@ Por rentabilidad, de mayor a menor:
 
 1. Los diccionarios `i18n` completos viajan en el JS del header para usar **ocho
    cadenas**.
-2. ScrollTrigger se carga en las cuatro páginas cuando `ScrollTrigger.create()` se
-   usa **una sola vez** en todo el sitio.
-3. Tirón de **217-359 ms** al entrar en `/sobre-nosotros` (135 spans animados con
-   `filter: blur()`).
-4. Cuatro imágenes con margen de compresión real.
+2. Cuatro imágenes con margen de compresión real.
+
+Dos puntos de esta lista quedaron sin objeto el 2026-10-01, al retirar GSAP con el
+rediseño: ScrollTrigger cargado en las cuatro páginas para un solo uso, y el tirón
+de 217-359 ms al entrar en `/sobre-nosotros` por los 135 spans que se animaban con
+desenfoque. No se han vuelto a medir las páginas después del cambio.
 
 ### Fuga de listeners de scroll en la home
 
@@ -303,3 +304,37 @@ decisión de Mario (logo centrado; misma fecha). Queda:
   portátil de 2.880 px físicos se pinta a 1,5×. El brillo del neón lo disimula.
   Si hiciera falta, el render admite cualquier tamaño: subir `FORMATS` en
   `scripts/build-hero-neon.mjs` a 2560×1440, a costa de más bytes.
+
+### Mochi: lo que la web ajusta por fuera mientras Mochi no lo trae (2026-10-01)
+
+El rediseño (`DECISIONS.md`, 2026-10-01, «Rediseño con el lenguaje de Mochi») usa
+`mochi-ui` tal cual, fijado a la etiqueta `v0.3.1` del repo
+`RodzCantCode/mochi`. **No se parchea Mochi desde aquí**: lo que le falta se
+compensa en `src/styles/mochi-phsport.css`, en un bloque marcado como
+provisional, y se anota para que lo resuelva Mochi. Al subir de versión, revisar
+uno por uno:
+
+- **El radio de los botones va escrito a mano** (`border-radius: 9999px` en
+  `.mochi-morph`/`.mochi-button`), sin variable. La web pide un rectángulo
+  redondeado, no una píldora, así que lo pisa con `--ph-r-btn*`. Si Mochi cambia
+  esas clases o su especificidad, los botones vuelven a salir en píldora sin que
+  nada falle.
+- **El tono `accent` no tiene sombra propia**: usa la misma que `surface`. La web
+  le pone una sombra dorada (`--ph-sh-gold`) y otra al pasar el ratón.
+- **El peso 520 de las etiquetas** (`--mochi-text-label`, botón grande) no existe
+  en Söhne, que solo trae 400, 600 y 700: el navegador pinta 600, algo más
+  pesado de lo que Mochi diseñó.
+- **Los componentes interactivos de Mochi necesitan una island de React** para
+  funcionar (su README). Como aquí no hay React en el navegador, el
+  comportamiento está reescrito en `src/scripts/ph-motion.ts`: acordeón,
+  pestañas, desplegable, raíl con rebote, etiqueta que viaja y copiar. Son
+  candidatos a volver a Mochi como versión sin React.
+
+### Rediseño: sin probar en un móvil real (2026-10-01)
+
+El rediseño se ha comprobado en Chromium con Playwright, en escritorio y a 390 px
+de ancho: sin desbordes ni errores de consola. **No se ha visto en un iPhone ni en
+un Android reales.** Lo que más puede cambiar allí: el raíl de jugadores de la
+portada (en táctil es un scroll normal, sin el arrastre con rebote del ratón),
+los desenfoques de entrada del contenido (`filter: blur`) en móviles modestos y
+el menú móvil que crece desde la cápsula.

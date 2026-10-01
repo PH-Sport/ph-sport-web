@@ -1,5 +1,6 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
+import { LinkButton, ArrowRightIcon } from 'mochi-ui';
 
 interface Props {
   lang: Lang;
@@ -9,558 +10,188 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const areas = [
-  {
-    title: t('home.services.area.management.title'),
-    body: t('home.services.area.management.body'),
-  },
-  {
-    title: t('home.services.area.career.title'),
-    body: t('home.services.area.career.body'),
-  },
-  {
-    title: t('home.services.area.international.title'),
-    body: t('home.services.area.international.body'),
-  },
-  {
-    title: t('home.services.area.comms.title'),
-    body: t('home.services.area.comms.body'),
-  },
-  {
-    title: t('home.services.area.legal.title'),
-    body: t('home.services.area.legal.body'),
-  },
+  { title: t('home.services.area.management.title'), body: t('home.services.area.management.body') },
+  { title: t('home.services.area.career.title'), body: t('home.services.area.career.body') },
+  { title: t('home.services.area.international.title'), body: t('home.services.area.international.body') },
+  { title: t('home.services.area.comms.title'), body: t('home.services.area.comms.body') },
+  { title: t('home.services.area.legal.title'), body: t('home.services.area.legal.body') },
 ];
 
-const actionPlanSub = [
-  {
-    title: t('home.services.actionPlan.press.title'),
-    bullets: [
-      t('home.services.actionPlan.press.b1'),
-      t('home.services.actionPlan.press.b2'),
-      t('home.services.actionPlan.press.b3'),
-    ],
-  },
-  {
-    title: t('home.services.actionPlan.media.title'),
-    bullets: [
-      t('home.services.actionPlan.media.b1'),
-      t('home.services.actionPlan.media.b2'),
-      t('home.services.actionPlan.media.b3'),
-    ],
-  },
-  {
-    title: t('home.services.actionPlan.psych.title'),
-    bullets: [
-      t('home.services.actionPlan.psych.b1'),
-      t('home.services.actionPlan.psych.b2'),
-      t('home.services.actionPlan.psych.b3'),
-    ],
-  },
-  {
-    title: t('home.services.actionPlan.performance.title'),
-    bullets: [
-      t('home.services.actionPlan.performance.b1'),
-      t('home.services.actionPlan.performance.b2'),
-      t('home.services.actionPlan.performance.b3'),
-    ],
-  },
-  {
-    title: t('home.services.actionPlan.familyOffice.title'),
-    bullets: [
-      t('home.services.actionPlan.familyOffice.b1'),
-      t('home.services.actionPlan.familyOffice.b2'),
-      t('home.services.actionPlan.familyOffice.b3'),
-    ],
-  },
-];
+const actionPlanSub = (['press', 'media', 'psych', 'performance', 'familyOffice'] as const).map((key) => ({
+  title: t(`home.services.actionPlan.${key}.title`),
+  bullets: [
+    t(`home.services.actionPlan.${key}.b1`),
+    t(`home.services.actionPlan.${key}.b2`),
+    t(`home.services.actionPlan.${key}.b3`),
+  ],
+}));
 
 const servicesHref = localizePath('/servicios/', lang);
+
+/** «03 · Servicios»: el número y la etiqueta van en estilos distintos en la fila índice. */
+const [eyebrowNum, ...eyebrowRest] = t('home.services.eyebrow').split(' · ');
+const eyebrowLabel = eyebrowRest.join(' · ');
 ---
 
 <section class="home-services" id="servicios" aria-labelledby="home-services-title">
-  <header class="home-services__head">
-    <span class="home-services__eyebrow">{t('home.services.eyebrow')}</span>
-    <h2 class="home-services__title" id="home-services-title">
-      {t('home.services.title')}
-    </h2>
-    <p class="home-services__lead">{t('home.services.lead')}</p>
-  </header>
+  <p class="ph-rowline">
+    <span class="ph-rowline__group">
+      <span class="ph-rowline__num">{eyebrowNum}</span>
+      <span class="ph-rowline__sep" aria-hidden="true">·</span>
+      <span class="ph-rowline__label">{eyebrowLabel}</span>
+    </span>
+  </p>
 
-  <ol class="home-services__list" role="list">
-    {areas.map((item, idx) => (
-      <li class="home-services__item">
-        <details class="home-services__row" name="home-services">
-          <summary class="home-services__summary">
-            <span class="home-services__num">{String(idx + 1).padStart(2, '0')}</span>
-            <span class="home-services__name">{item.title}</span>
-            <span class="home-services__plus" aria-hidden="true">
-              <span></span><span></span>
-            </span>
-          </summary>
-          <div class="home-services__body">
-            <div class="home-services__body-inner">
-              <p>{item.body}</p>
+  <div class="home-services__head">
+    <div class="home-services__titles">
+      <h2 class="ph-h2" id="home-services-title">{t('home.services.title')}</h2>
+      <p class="ph-head-lead">{t('home.services.lead')}</p>
+    </div>
+    <div class="home-services__cta">
+      <LinkButton href={servicesHref} variant="surface">
+        {t('home.services.cta')}
+        <ArrowRightIcon slot="icon" />
+      </LinkButton>
+    </div>
+  </div>
+
+  <div class="home-services__grid">
+    {/* Cinco áreas: una abierta a la vez; el hueco se abre con «morph» y el texto
+        entra 60 ms después (ph-ui.css + ph-motion.ts). */}
+    <div class="ph-acc home-services__areas" data-ph-accordion>
+      {areas.map((item, idx) => (
+        <div class:list={['ph-acc__item', idx === 0 && 'is-open']}>
+          <h3 class="home-services__area-heading">
+            <button
+              type="button"
+              class="ph-acc__head"
+              id={`hs-area-h-${idx}`}
+              aria-expanded={idx === 0 ? 'true' : 'false'}
+              aria-controls={`hs-area-${idx}`}
+            >
+              <span class="ph-acc__num">{String(idx + 1).padStart(2, '0')}</span>
+              <span class="ph-acc__title">{item.title}</span>
+              <span class="ph-acc__plus" aria-hidden="true"></span>
+            </button>
+          </h3>
+          <div class="ph-acc__body" id={`hs-area-${idx}`} role="region" aria-labelledby={`hs-area-h-${idx}`}>
+            <div class="ph-acc__inner">
+              <p class="ph-acc__content ph-body">{item.body}</p>
             </div>
           </div>
-        </details>
-      </li>
-    ))}
-
-    <li class="home-services__item home-services__item--featured">
-      <details class="home-services__row home-services__row--plan" name="home-services">
-        <summary class="home-services__summary">
-          <span class="home-services__num home-services__num--rombo" aria-hidden="true"></span>
-          <span class="home-services__plan-stack">
-            <span class="home-services__plan-eyebrow">{t('home.services.actionPlan.eyebrow')}</span>
-            <span class="home-services__name">{t('home.services.actionPlan.title')}</span>
-          </span>
-          <span class="home-services__plus" aria-hidden="true">
-            <span></span><span></span>
-          </span>
-        </summary>
-        <div class="home-services__body">
-          <div class="home-services__body-inner home-services__body-inner--plan">
-            <ul class="home-services__plan-grid" role="list">
-              {actionPlanSub.map((card) => (
-                <li class="home-services__plan-card">
-                  <h3 class="home-services__plan-card-title">{card.title}</h3>
-                  <ul class="home-services__plan-card-bullets" role="list">
-                    {card.bullets.map((b) => (
-                      <li>{b}</li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
-      </details>
-    </li>
-  </ol>
+      ))}
+    </div>
 
-  <div class="home-services__cta-wrap">
-    <a class="home-services__cta" href={servicesHref}>
-      {t('home.services.cta')}
-      <span class="home-services__arrow" aria-hidden="true">→</span>
-    </a>
+    {/* Plan de Acción: el indicador se desplaza y el contenido llega desde el lado
+        hacia el que va. */}
+    <div class="home-services__plan" data-ph-tabs>
+      <div class="home-services__plan-head">
+        <span class="home-services__plan-eyebrow">{t('home.services.actionPlan.eyebrow')}</span>
+        <h3 class="home-services__plan-title">{t('home.services.actionPlan.title')}</h3>
+      </div>
+      <div class="ph-seg-scroll">
+        <div class="ph-seg" role="tablist" aria-label={t('home.services.actionPlan.title')}>
+          <span class="ph-seg__thumb" aria-hidden="true"></span>
+          {actionPlanSub.map((card, i) => (
+            <button
+              type="button"
+              class="ph-seg__tab"
+              role="tab"
+              id={`hs-plan-tab-${i}`}
+              aria-controls={`hs-plan-${i}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+            >
+              {card.title}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div class="ph-swap">
+        {actionPlanSub.map((card, i) => (
+          <ul
+            class="home-services__bullets"
+            role="tabpanel"
+            id={`hs-plan-${i}`}
+            aria-labelledby={`hs-plan-tab-${i}`}
+            data-ph-panel
+            data-state={i === 0 ? 'in' : undefined}
+            hidden={i !== 0}
+          >
+            {card.bullets.map((b) => <li>{b}</li>)}
+          </ul>
+        ))}
+      </div>
+    </div>
   </div>
 </section>
 
 <style>
+  /* Mismo sistema que el resto de secciones (global.css: `.ph-rowline`,
+     `.ph-head-*`; ph-ui.css: `.ph-h2`, `.ph-acc`, `.ph-seg`, `.ph-swap`). */
   .home-services {
-    padding: clamp(56px, 8vw, 120px) var(--ph-section-px, clamp(20px, 4vw, 48px));
-    background: var(--color-ph-bg-2, #15171b);
-    color: var(--color-ph-white, #ffffff);
-  }
-
-  .home-services__head { max-width: 720px; margin-bottom: clamp(32px, 5vw, 56px); }
-
-  .home-services__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-services__eyebrow::before {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-  }
-
-  .home-services__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(32px, 5vw, 60px);
-    letter-spacing: -0.03em;
-    line-height: 1.02;
-    margin: 14px 0 0;
-  }
-
-  .home-services__lead {
-    margin: 18px 0 0;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 15px;
-    line-height: 1.6;
-    max-width: 520px;
-  }
-
-  .home-services__list {
-    list-style: none;
-    padding: 0;
-    margin: clamp(32px, 5vw, 56px) 0 0;
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-  }
-
-  .home-services__item { border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12)); }
-
-  /* Plan de Acción como anexo: alineado con los 01-05 pero sin número de
-     secuencia. Un rombo dorado y la micro-eyebrow ("Además de") le dan
-     carácter sin convertirlo en el sexto ítem de la lista. */
-  .home-services__item--featured {
-    margin-top: clamp(12px, 2vw, 24px);
-    border-bottom: none;
-  }
-  /* Rombo hueco dorado como marcador del anexo. La columna del grid en
-     .home-services__summary es fija (20px) para todas las filas, así que el
-     slot tiene el mismo ancho que "01..05" y los títulos alinean. */
-  .home-services__num--rombo {
     position: relative;
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    font-size: 0;
-  }
-  .home-services__num--rombo::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border: 1px solid var(--color-ph-gold, #d6b25e);
-    box-sizing: border-box;
-    transform: rotate(45deg);
-  }
-  .home-services__plan-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    min-width: 0;
-  }
-  .home-services__plan-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
-    white-space: nowrap;
-  }
-  .home-services__plan-eyebrow::before {
-    content: "";
-    width: 20px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-    flex-shrink: 0;
+    padding: clamp(88px, 9vw, 156px) var(--ph-section-px) 0;
+    color: var(--color-ph-white);
   }
 
-  .home-services__row { width: 100%; }
-  .home-services__row > summary { list-style: none; cursor: pointer; }
-  .home-services__row > summary::-webkit-details-marker { display: none; }
-
-  .home-services__summary {
+  .home-services__head {
     display: grid;
-    grid-template-columns: 20px 1fr auto;
-    align-items: center;
-    gap: clamp(16px, 2.5vw, 32px);
-    padding: clamp(20px, 3vw, 32px) 0;
-    transition: color 0.3s;
-    color: var(--color-ph-white, #ffffff);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(16px, 2vw, 32px);
+    row-gap: 24px;
+    align-items: end;
+    margin-top: var(--ph-head-title-gap);
   }
-  .home-services__row:hover .home-services__summary { color: var(--color-ph-gold, #d6b25e); }
-  .home-services__row[open] .home-services__summary { color: var(--color-ph-gold, #d6b25e); }
+  .home-services__titles { grid-column: 1 / 9; display: grid; gap: var(--ph-head-lead-gap); }
+  .home-services__titles .ph-head-lead { margin: 0; }
+  .home-services__cta { grid-column: 10 / 13; justify-self: end; }
 
-  .home-services__row > summary:focus-visible {
-    outline: 2px solid var(--color-ph-gold, #d6b25e);
-    outline-offset: 4px;
-  }
-
-  .home-services__num {
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-
-  .home-services__name {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(22px, 3vw, 36px);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-  }
-
-  .home-services__plus {
-    position: relative;
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-  }
-  .home-services__plus span {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 20px;
-    height: 1px;
-    background: currentColor;
-    transform: translateY(-50%);
-    transition: transform 0.3s;
-  }
-  .home-services__plus span:last-child {
-    transform: translateY(-50%) rotate(90deg);
-  }
-  .home-services__row[open] .home-services__plus span:last-child {
-    transform: translateY(-50%) rotate(0deg);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .home-services__summary,
-    .home-services__plus span { transition: none; }
-  }
-
-  .home-services__body {
-    overflow: hidden;
-    height: 0;
-    opacity: 0;
-  }
-  .home-services__row[open] .home-services__body {
-    height: auto;
-    opacity: 1;
-  }
-  .home-services__body-inner {
-    padding: 0 0 clamp(20px, 3vw, 32px);
-    max-width: 640px;
-  }
-  .home-services__body-inner p {
-    margin: 0;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 15px;
-    line-height: 1.6;
-  }
-
-  /* Plan de Acción: el body se extiende a todo el ancho para albergar el grid. */
-  .home-services__body-inner--plan {
-    max-width: none;
-  }
-
-  .home-services__plan-grid {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .home-services__grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(16px, 2vw, 32px);
+    row-gap: 24px;
+    align-items: start;
+    margin-top: clamp(36px, 3vw, 56px);
+  }
+  .home-services__areas { grid-column: 1 / 8; }
+  .home-services__area-heading { margin: 0; font: inherit; }
+
+  .home-services__plan {
+    grid-column: 8 / 13;
+    display: grid;
+    gap: 20px;
+    padding: clamp(20px, 1.6vw, 24px);
+    border: 1px solid var(--mochi-solid-border);
+    border-radius: var(--ph-r-lg);
+    background: var(--mochi-solid);
+    box-shadow: var(--mochi-shadow-surface);
+  }
+  .home-services__plan-head { display: grid; gap: 6px; }
+  .home-services__plan-eyebrow { font-size: 14px; color: var(--ph-ink-meta); }
+  .home-services__plan-title {
+    margin: 0;
+    font: 500 clamp(26px, calc(1vw + 20px), 34px)/1.05 var(--font-display);
+    letter-spacing: -0.025em;
+    color: var(--color-ph-white);
+  }
+  .home-services__bullets { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+  .home-services__bullets li {
+    display: grid;
+    grid-template-columns: 18px 1fr;
     gap: 12px;
-  }
-  @media (min-width: 640px) {
-    .home-services__plan-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-  }
-  @media (min-width: 960px) {
-    .home-services__plan-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-  }
-
-  .home-services__plan-card {
-    padding: 18px 18px 16px;
-    border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    border-radius: var(--radius-sm);
-    background: rgba(13, 15, 18, 0.4);
-  }
-
-  .home-services__plan-card-title {
-    margin: 0 0 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-
-  .home-services__plan-card-bullets {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .home-services__plan-card-bullets li {
-    position: relative;
-    padding-left: 14px;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 14px;
+    align-items: baseline;
+    font-size: 16px;
     line-height: 1.5;
+    color: var(--ph-ink-body);
   }
-  .home-services__plan-card-bullets li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0.65em;
-    width: 6px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-  }
+  .home-services__bullets li::before { content: ''; width: 18px; height: 1.5px; background: var(--color-ph-gold); translate: 0 -4px; }
 
-  .home-services__cta-wrap {
-    margin-top: clamp(32px, 5vw, 56px);
-    display: flex;
-    justify-content: center;
-  }
-
-  .home-services__cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 20px;
-    background: var(--color-ph-gold, #d6b25e);
-    color: var(--color-ph-black, #0d0f12);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 13px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: background 0.2s;
-  }
-  .home-services__cta:hover { background: var(--color-ph-gold-soft, #e6c682); }
-  .home-services__cta:hover .home-services__arrow { transform: translateX(4px); }
-  .home-services__arrow { transition: transform 0.2s; }
-
-  @media (max-width: 720px) {
-    .home-services__summary { gap: 14px; }
-    .home-services__name { font-size: 20px; }
-    .home-services__plan-card { padding: 16px 16px 14px; }
-    .home-services__plan-card-bullets li { font-size: 13.5px; }
+  @media (max-width: 900px) {
+    .home-services__head,
+    .home-services__grid { display: flex; flex-direction: column; align-items: stretch; }
+    .home-services__cta { justify-self: start; }
   }
 </style>
-
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, revealOnView, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initHomeServicesAnimations(): void {
-    const section = document.querySelector<HTMLElement>('.home-services');
-    if (!section) return;
-    if (reducedMotion()) return;
-
-    const eyebrow = section.querySelector<HTMLElement>('.home-services__eyebrow');
-    const title = section.querySelector<HTMLElement>('.home-services__title');
-    const lead = section.querySelector<HTMLElement>('.home-services__lead');
-    const head = section.querySelector<HTMLElement>('.home-services__head');
-    const list = section.querySelector<HTMLElement>('.home-services__list');
-    const rows = section.querySelectorAll<HTMLElement>('.home-services__row');
-
-    if (eyebrow && head) {
-      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
-    }
-    if (title) {
-      revealOnView(title, { y: 24, duration: 0.9 });
-    }
-    if (lead && head) {
-      gsap.from(lead, {
-        opacity: 0,
-        y: 18,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.2,
-        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
-      });
-    }
-    if (rows.length && list) {
-      gsap.from(rows, {
-        opacity: 0,
-        y: 12,
-        duration: 0.7,
-        ease: 'power3.out',
-        stagger: 0.06,
-        scrollTrigger: { trigger: list, start: 'top 82%', once: true },
-      });
-    }
-
-    scheduleScrollTriggerRefresh();
-  }
-
-  function initHomeServicesAccordion(): void {
-    if (reducedMotion()) return;
-    const details = document.querySelectorAll<HTMLDetailsElement>('.home-services__row');
-    if (!details.length) return;
-
-    const DURATION = 0.5;
-    const EASE = 'power3.out';
-    const active = new WeakMap<HTMLElement, gsap.core.Tween>();
-
-    const animateClose = (d: HTMLDetailsElement): void => {
-      const body = d.querySelector<HTMLElement>('.home-services__body');
-      if (!body) { d.removeAttribute('open'); return; }
-      active.get(body)?.kill();
-      const current = body.offsetHeight;
-      body.style.height = current + 'px';
-      body.style.opacity = '1';
-      const tween = gsap.to(body, {
-        height: 0,
-        opacity: 0,
-        duration: DURATION,
-        ease: EASE,
-        onComplete: () => {
-          d.removeAttribute('open');
-          body.style.height = '';
-          body.style.opacity = '';
-          active.delete(body);
-        },
-      });
-      active.set(body, tween);
-    };
-
-    const animateOpen = (d: HTMLDetailsElement): void => {
-      const body = d.querySelector<HTMLElement>('.home-services__body');
-      const inner = body?.querySelector<HTMLElement>('.home-services__body-inner');
-      if (!body || !inner) { d.setAttribute('open', ''); return; }
-      active.get(body)?.kill();
-      d.setAttribute('open', '');
-      body.style.height = '0px';
-      body.style.opacity = '0';
-      const target = inner.offsetHeight;
-      const tween = gsap.to(body, {
-        height: target,
-        opacity: 1,
-        duration: DURATION,
-        ease: EASE,
-        onComplete: () => {
-          body.style.height = '';
-          body.style.opacity = '';
-          active.delete(body);
-        },
-      });
-      active.set(body, tween);
-    };
-
-    details.forEach((d) => {
-      const summary = d.querySelector<HTMLElement>('summary');
-      if (!summary) return;
-      summary.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (d.hasAttribute('open')) {
-          animateClose(d);
-          return;
-        }
-        const name = d.getAttribute('name');
-        if (name) {
-          document.querySelectorAll<HTMLDetailsElement>(
-            `details[name="${name}"][open]`,
-          ).forEach((other) => {
-            if (other !== d) animateClose(other);
-          });
-        }
-        animateOpen(d);
-      });
-    });
-  }
-
-  document.addEventListener('astro:page-load', () => {
-    afterTransitionPaint(initHomeServicesAnimations);
-    initHomeServicesAccordion();
-  });
-</script>

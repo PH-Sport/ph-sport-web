@@ -11,6 +11,10 @@ const t = useTranslations(lang);
 
 const teamMembers = getTeamMembers(lang);
 
+/** «04 · Sobre nosotros»: el número y la etiqueta van en estilos distintos en la fila índice. */
+const [eyebrowNum, ...eyebrowRest] = t('about.hero.eyebrow').split(' · ');
+const eyebrowLabel = eyebrowRest.join(' · ');
+
 const internationalCountries = [
   { key: 'portugal' as const, iso: 'PT' },
   { key: 'uk' as const,       iso: 'UK' },
@@ -23,26 +27,31 @@ const internationalCountries = [
 ---
 
 <section class="about-section" aria-labelledby="about-hero-title">
-  <!-- 01 HERO: cabecera «Escenario», como Talentos y Servicios. La luz animada
-       la llena entera; titular e introducción se apoyan abajo. -->
-  <div class="abt-hero">
-    <div class="ph-stage-bg" aria-hidden="true">
-      <canvas class="ph-ambient" data-ambient="calidez"></canvas>
-    </div>
-    <div class="abt-hero__grid">
-      <div class="abt-eyebrow abt-hero__eyebrow" data-reveal>{t('about.hero.eyebrow')}</div>
-      <h1 id="about-hero-title" class="abt-hero__title" data-reveal>
-        {t('about.hero.titlePre')}<span class="abt-gold">{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
-      </h1>
-      <p class="abt-hero__body abt-hero__lead" data-reveal>{t('about.hero.body1')}</p>
-    </div>
+  <div class="ph-page-bg" aria-hidden="true">
+    <canvas class="ph-ambient" data-ambient="calidez"></canvas>
   </div>
 
-  <!-- Bajo la línea de la cabecera: valores y pie en una franja, y el resto de la
-       presentación en dos columnas. Mismo texto y mismo orden que antes. -->
-  <div class="abt-hero__rail">
-    <div class="abt-hero__values" data-reveal>{t('about.hero.values')}</div>
-    <div class="abt-hero__caption">{t('about.hero.caption')}</div>
+  <!-- 01 HERO: misma cabecera que Talentos y Servicios (global.css): fila índice,
+       titular y entradilla debajo. -->
+  <div class="abt-hero">
+    <p class="ph-rowline abt-hero__index" data-reveal>
+      <span class="ph-rowline__group">
+        <span class="ph-rowline__num">{eyebrowNum}</span>
+        <span class="ph-rowline__sep" aria-hidden="true">·</span>
+        <span class="ph-rowline__label">{eyebrowLabel}</span>
+      </span>
+    </p>
+    <h1 id="about-hero-title" class="abt-hero__title ph-head-title" data-reveal>
+      {t('about.hero.titlePre')}<span class="abt-gold">{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
+    </h1>
+    <p class="abt-hero__lead ph-head-lead" data-reveal>{t('about.hero.body1')}</p>
+  </div>
+
+  <!-- Valores y pie en una fila índice, y el resto de la presentación en dos
+       columnas. Mismo texto y mismo orden que antes. -->
+  <div class="ph-rowline abt-hero__rail">
+    <span class="ph-rowline__meta abt-hero__values" data-reveal>{t('about.hero.values')}</span>
+    <span class="ph-rowline__meta abt-hero__caption">{t('about.hero.caption')}</span>
   </div>
   <div class="abt-intro">
     <p class="abt-hero__body" data-reveal>{t('about.hero.body2')}</p>
@@ -162,103 +171,41 @@ const internationalCountries = [
     color: var(--abt-gold);
   }
 
-  /* Rótulo de la cabecera: barra dorada de 28px delante, como en Servicios y Talentos. */
-  .about-section .abt-hero__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    grid-column: 1 / -1;
-    justify-self: start;
-    margin-bottom: var(--ph-stage-eyebrow-gap);
-  }
-  .about-section .abt-hero__eyebrow::before {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--abt-gold);
-  }
-
-  /* ── 01 HERO: cabecera «Escenario» (cifras en global.css, `--ph-stage-*`) ── */
+  /* ── 01 HERO: misma cabecera que Talentos y Servicios (estilos y cifras en
+     global.css: `.ph-rowline`, `.ph-head-*`) ── */
   .abt-hero {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    min-height: var(--ph-stage-min-h);
-    padding: var(--ph-stage-pad-top) var(--edge) var(--ph-stage-pad-bottom);
-    border-bottom: 1px solid var(--abt-line);
+    padding: var(--ph-head-top) var(--edge) 0;
   }
-  /* Rejilla de 12 columnas: titular en las 8 primeras, introducción en las 4
-     últimas, con su última línea a la altura de la del titular. */
-  .abt-hero__grid {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--ph-stage-gap);
-    align-items: end;
-    align-items: last baseline;
-  }
-  .abt-hero__title {
-    grid-column: 1 / 9;
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: var(--ph-stage-title-size);
-    letter-spacing: -0.03em;
-    line-height: 0.96;
-    margin: 0;
-    text-wrap: balance;
-  }
-  .abt-hero__body {
-    color: var(--abt-ink-soft);
-    font-size: 16px;
-    line-height: 1.65;
-    max-width: 42ch;
-    margin: 0;
-  }
-  .abt-hero__lead { grid-column: 9 / 13; }
 
-  /* Franja bajo la línea de la cabecera: valores a un lado y pie al otro, en la
-     misma voz mono. */
+  /* Valores y pie en una fila índice, nada más acabar la entradilla. */
   .abt-hero__rail {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 8px 24px;
-    padding: 18px var(--edge);
-    border-bottom: 1px solid var(--abt-line);
-  }
-  .abt-hero__values,
-  .abt-hero__caption {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-ink-faint);
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
+    margin: var(--ph-head-after) var(--edge) 0;
   }
 
-  /* El resto de la presentación, en dos columnas alineadas con la introducción. */
+  /* El resto de la presentación, en dos columnas de lectura cómoda. */
   .abt-intro {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--ph-stage-gap);
-    row-gap: 16px;
-    padding: clamp(48px, 6vw, 88px) var(--edge);
+    column-gap: clamp(16px, 2vw, 32px);
+    row-gap: 18px;
+    margin-top: clamp(24px, calc(1.14vw + 19.5px), 36px);
+    padding: 0 var(--edge) clamp(48px, 6vw, 88px);
     border-bottom: 1px solid var(--abt-line);
   }
-  .abt-intro .abt-hero__body:nth-child(1) { grid-column: 5 / 9; }
-  .abt-intro .abt-hero__body:nth-child(2) { grid-column: 9 / 13; }
+  .abt-hero__body {
+    margin: 0;
+    max-width: 62ch;
+    font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
+    line-height: 1.65;
+    letter-spacing: 0.003em;
+    color: var(--ph-ink-body);
+    text-wrap: pretty;
+  }
+  .abt-intro .abt-hero__body:nth-child(1) { grid-column: 1 / 7; }
+  .abt-intro .abt-hero__body:nth-child(2) { grid-column: 7 / 13; }
 
-  /* Móvil: la luz queda detrás del texto, que se apoya abajo en una sola columna. */
   @media (max-width: 900px) {
-    .abt-hero {
-      min-height: var(--ph-stage-min-h-mobile);
-      padding-top: clamp(110px, 26vw, 150px);
-    }
-    .abt-hero__grid { grid-template-columns: minmax(0, 1fr); row-gap: 18px; }
-    .abt-hero__title,
-    .abt-hero__lead { grid-column: 1 / -1; }
     .abt-intro { grid-template-columns: minmax(0, 1fr); }
     .abt-intro .abt-hero__body:nth-child(1),
     .abt-intro .abt-hero__body:nth-child(2) { grid-column: 1 / -1; }
@@ -586,8 +533,8 @@ const internationalCountries = [
     // Con scrollTrigger `once` para contenido ya visible en la carga, el trigger
     // fallaba intermitentemente al disparar y los títulos quedaban congelados
     // (invisibles). Mismo patrón fiable que el hero de la home / Servicios.
-    const heroEyebrow = section.querySelector<HTMLElement>('.abt-hero .abt-eyebrow');
-    if (heroEyebrow) trackingReveal(heroEyebrow);
+    const heroIndex = section.querySelector<HTMLElement>('.abt-hero__index');
+    if (heroIndex) gsap.from(heroIndex, { opacity: 0, y: 8, duration: 0.7, ease: 'power3.out' });
 
     const heroTitle = section.querySelector<HTMLElement>('.abt-hero__title');
     if (heroTitle) {
@@ -601,7 +548,7 @@ const internationalCountries = [
       });
     }
 
-    section.querySelectorAll<HTMLElement>('.abt-hero__body').forEach((body, i) => {
+    section.querySelectorAll<HTMLElement>('.abt-hero__lead, .abt-hero__body').forEach((body, i) => {
       const spans = splitWords(body);
       gsap.from(spans, {
         opacity: 0,

@@ -11,6 +11,10 @@ const t = useTranslations(lang);
 
 const items = getServicesItems(lang);
 
+/** «03 · Servicios»: el número y la etiqueta van en estilos distintos en la fila índice. */
+const [eyebrowNum, ...eyebrowRest] = t('services.hero.eyebrow').split(' · ');
+const eyebrowLabel = eyebrowRest.join(' · ');
+
 const areas = [
   {
     key: 'management',
@@ -73,30 +77,32 @@ const contactHref = localizePath('/#contacto', lang);
 ---
 
 <section class="srv" aria-labelledby="srv-hero-title">
-  {/* 01 — Hero */}
+  <div class="ph-page-bg" aria-hidden="true">
+    <canvas class="ph-ambient" data-ambient="estructura"></canvas>
+  </div>
+
+  {/* 01 — Hero: misma cabecera que Talentos y Sobre nosotros (global.css). */}
   <div class="srv-hero">
-    <div class="ph-stage-bg" aria-hidden="true">
-      <canvas class="ph-ambient" data-ambient="estructura"></canvas>
-    </div>
-    <div class="srv-hero__eyebrow">
-      <span class="srv-mono">{t('services.hero.eyebrow')}</span>
-    </div>
-    <div class="srv-hero__grid">
-      <h1 class="srv-hero__title" id="srv-hero-title">
-        {t('services.hero.titleLead')}<br />
-        {t('services.hero.titleRest')}<em>{t('services.hero.titleAccent')}</em>.
-      </h1>
-      <p class="srv-hero__lead">{t('services.hero.lead')}</p>
-    </div>
-    <hr class="srv-rule" />
+    <p class="ph-rowline srv-hero__index">
+      <span class="ph-rowline__group">
+        <span class="ph-rowline__num">{eyebrowNum}</span>
+        <span class="ph-rowline__sep" aria-hidden="true">·</span>
+        <span class="ph-rowline__label">{eyebrowLabel}</span>
+      </span>
+    </p>
+    <h1 class="srv-hero__title ph-head-title" id="srv-hero-title">
+      {t('services.hero.titleLead')}<br />
+      {t('services.hero.titleRest')}<em>{t('services.hero.titleAccent')}</em>.
+    </h1>
+    <p class="srv-hero__lead ph-head-lead">{t('services.hero.lead')}</p>
   </div>
 
   {/* 02 — Áreas de gestión (accordion) */}
   <div class="srv-areas">
     <header class="srv-areas__head">
-      <div class="srv-areas__eyebrow" data-reveal>
-        <span class="srv-mono">{t('services.areas.eyebrow')}</span>
-        <span class="srv-areas__kicker srv-mono">{t('services.areas.kicker')}</span>
+      <div class="ph-rowline srv-areas__index" data-reveal>
+        <span class="ph-rowline__label">{t('services.areas.eyebrow')}</span>
+        <span class="ph-rowline__num">{t('services.areas.kicker')}</span>
       </div>
       <h2 class="srv-areas__title" data-reveal>
         {t('services.areas.titleLead')}<em>{t('services.areas.titleAccent1')}</em>{t('services.areas.titleMid')}<em>{t('services.areas.titleAccent2')}</em>{t('services.areas.titleTrail')}
@@ -221,7 +227,8 @@ const contactHref = localizePath('/#contacto', lang);
     --srv-sans: var(--font-body, 'Helvetica Neue', Helvetica, Arial, sans-serif);
 
     position: relative;
-    background: var(--srv-bg);
+    /* Transparente: el fondo es la luz animada de toda la página (`.ph-page-bg`). */
+    background: transparent;
     color: var(--srv-ink);
     font-family: var(--srv-sans);
   }
@@ -241,129 +248,46 @@ const contactHref = localizePath('/#contacto', lang);
     color: var(--srv-ink-faint);
   }
 
-  .srv-rule { border: 0; border-top: 1px solid var(--srv-line); margin: 0; }
-
   /* ── 01 Hero ──────────────────────────────────────────── */
-  /* Cabecera «Escenario», igual en Talentos, Servicios y Sobre nosotros (cifras en
-     global.css, `--ph-stage-*`): la luz animada cubre la cabecera entera, desde
-     detrás del menú hasta la línea que la cierra, y no pasa de ahí. */
+  /* Misma cabecera que Talentos y Sobre nosotros (estilos y cifras en global.css:
+     `.ph-rowline`, `.ph-head-*`): fila índice, titular y entradilla debajo. Aquí
+     solo queda lo propio: el titular y la entradilla arrancan ocultos hasta que
+     GSAP los anima. */
   .srv-hero {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    min-height: var(--ph-stage-min-h);
-    padding: var(--ph-stage-pad-top) var(--srv-edge) 0;
+    padding: var(--ph-head-top) var(--srv-edge) 0;
   }
-  .srv-hero__eyebrow,
-  .srv-hero__grid,
-  .srv-hero .srv-rule { position: relative; z-index: 1; }
-  .srv-hero__eyebrow {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: var(--ph-stage-eyebrow-gap);
-  }
-  .srv-hero__eyebrow::before {
-    content: ""; width: 28px; height: 1px; background: var(--srv-gold);
-  }
-  .srv-hero__eyebrow .srv-mono { color: var(--srv-gold); }
-  /* Rejilla de 12 columnas: titular en las 8 primeras, introducción en las 4
-     últimas, con su última línea a la altura de la del titular. */
-  .srv-hero__grid {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--ph-stage-gap);
-    align-items: end;
-    align-items: last baseline;
-    margin-bottom: var(--ph-stage-pad-bottom);
-  }
-  .srv-hero__title {
-    grid-column: 1 / 9;
-    font-family: var(--srv-display);
-    font-weight: 500;
-    font-size: var(--ph-stage-title-size);
-    letter-spacing: -0.03em;
-    line-height: 0.96;
-    margin: 0;
-    color: var(--srv-ink);
-    visibility: hidden;
-  }
-
+  .srv-hero__title { visibility: hidden; }
+  .srv-hero__lead { visibility: hidden; }
   @media (prefers-reduced-motion: reduce) {
-    .srv-hero__title { visibility: visible; }
+    .srv-hero__title,
+    .srv-hero__lead { visibility: visible; }
   }
   .srv-hero__title em {
     font-style: italic;
     color: var(--srv-gold);
     font-weight: 400;
   }
-  .srv-hero__lead {
-    grid-column: 9 / 13;
-    font-size: 16px;
-    line-height: 1.65;
-    color: var(--srv-ink-soft);
-    max-width: 42ch;
-    margin: 0;
-    visibility: hidden;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .srv-hero__lead { visibility: visible; }
-  }
-
-  /* La línea que cierra la cabecera va de borde a borde y hace de separador con
-     Áreas (que por eso pierde su borde superior, más abajo). Arranca a ancho 0
-     y la dibuja GSAP. */
-  .srv-hero .srv-rule {
-    margin-inline: calc(-1 * var(--srv-edge));
-    transform: scaleX(0);
-    transform-origin: left center;
-  }
-  .srv-hero + .srv-areas { border-top: 0; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .srv-hero .srv-rule { transform: none; }
-  }
-
-  /* Móvil: la luz queda detrás del texto, que se apoya abajo en una sola columna. */
-  @media (max-width: 900px) {
-    .srv-hero {
-      min-height: var(--ph-stage-min-h-mobile);
-      padding-top: clamp(110px, 26vw, 150px);
-    }
-    .srv-hero__grid { grid-template-columns: minmax(0, 1fr); row-gap: 18px; }
-    .srv-hero__title,
-    .srv-hero__lead { grid-column: 1 / -1; }
-  }
 
   /* ── 02 Áreas accordion ──────────────────────────────── */
+  /* Arranca nada más acabar la entradilla, para que se vea ya en la primera
+     pantalla. Su fila índice («Áreas de gestión · 05 disciplinas · 01 equipo») hace
+     de separador, así que la sección no lleva borde propio. */
   .srv-areas {
-    padding: clamp(56px, 8vw, 120px) var(--srv-edge);
-    border-top: 1px solid var(--srv-line);
+    padding: calc(var(--ph-head-after) + 8px) var(--srv-edge) clamp(56px, 8vw, 120px);
   }
   .srv-areas__head {
-    display: grid; grid-template-columns: 1fr 1.6fr; gap: clamp(24px, 4vw, 64px);
-    align-items: start;
-    margin-bottom: clamp(48px, 7vw, 88px);
+    margin-bottom: clamp(28px, calc(1.15vw + 23.5px), 40px);
   }
-  @media (max-width: 900px) {
-    .srv-areas__head { grid-template-columns: 1fr; gap: 20px; }
-  }
-  .srv-areas__eyebrow {
-    display: flex; flex-direction: column; gap: 12px;
-  }
-  .srv-areas__eyebrow .srv-mono:first-child { color: var(--srv-gold); }
-  .srv-areas__eyebrow .srv-mono:first-child::before {
-    content: ""; display: inline-block; width: 28px; height: 1px;
-    background: var(--srv-gold); vertical-align: middle; margin-right: 10px;
-  }
-  .srv-areas__kicker { color: var(--srv-ink-faint); }
   .srv-areas__title {
     font-family: var(--srv-display);
     font-weight: 500;
-    font-size: clamp(32px, 5vw, 64px);
-    letter-spacing: -0.03em;
-    line-height: 1.02;
-    margin: 0;
+    font-size: clamp(30px, calc(2.1vw + 22px), 52px);
+    letter-spacing: -0.025em;
+    line-height: 1.06;
+    margin: clamp(22px, calc(0.95vw + 18.3px), 32px) 0 0;
+    max-width: 17em;
     color: var(--srv-ink);
+    text-wrap: balance;
   }
   .srv-areas__title em { font-style: italic; color: var(--srv-gold); font-weight: 400; }
 
@@ -377,9 +301,9 @@ const contactHref = localizePath('/#contacto', lang);
     all: unset;
     display: grid; grid-template-columns: auto 1fr auto;
     align-items: center;
-    gap: clamp(16px, 2.5vw, 32px);
+    gap: clamp(14px, calc(1.33vw + 8.8px), 28px);
     width: 100%;
-    padding: clamp(22px, 3vw, 32px) 0;
+    padding: clamp(20px, calc(0.76vw + 17px), 28px) 0;
     cursor: pointer;
     color: var(--srv-ink);
     transition: color 0.3s;
@@ -394,15 +318,15 @@ const contactHref = localizePath('/#contacto', lang);
   .srv-area-row__num {
     color: var(--srv-gold);
     font-family: var(--srv-mono);
-    font-size: 11px;
-    letter-spacing: 0.18em;
+    font-size: 12px;
+    letter-spacing: 0.04em;
   }
   .srv-area-row__title {
     font-family: var(--srv-display);
     font-weight: 500;
-    font-size: clamp(24px, 3.2vw, 40px);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    font-size: clamp(22px, calc(1.15vw + 17.5px), 34px);
+    letter-spacing: -0.015em;
+    line-height: 1.15;
   }
   /* Toggle: mismo lenguaje que Home (+ → —, sin caja). 24px en Servicios (20%
      mayor que los 20px del hint de Home) marca la jerarquía de sección dedicada
@@ -901,7 +825,7 @@ const contactHref = localizePath('/#contacto', lang);
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, wrapWords, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint, revealReveals, revealOnView,
+    reducedMotion, wrapWords, scheduleScrollTriggerRefresh, afterTransitionPaint, revealReveals, revealOnView,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -912,9 +836,13 @@ const contactHref = localizePath('/#contacto', lang);
     if (reducedMotion()) return;
 
     // ── Hero block ───────────────────────────────────────
+    const heroIndex = section.querySelector<HTMLElement>('.srv-hero__index');
     const heroTitle = section.querySelector<HTMLElement>('.srv-hero__title');
     const heroLead = section.querySelector<HTMLElement>('.srv-hero__lead');
-    const heroRule = section.querySelector<HTMLElement>('.srv-rule');
+
+    if (heroIndex) {
+      gsap.from(heroIndex, { opacity: 0, y: 8, duration: 0.7, ease: 'power3.out' });
+    }
 
     if (heroTitle) {
       // Reveal from FOUC guard so GSAP owns the first visible frame.
@@ -938,31 +866,19 @@ const contactHref = localizePath('/#contacto', lang);
         delay: 0.45,
       });
     }
-    if (heroRule) {
-      // fromTo y no from: el CSS ya la deja a ancho 0, y un `from` a 0 la dejaba en
-      // 0 para siempre (la línea no llegó a verse nunca).
-      gsap.fromTo(heroRule, { scaleX: 0 }, {
-        scaleX: 1,
-        transformOrigin: 'left center',
-        duration: 1.0,
-        ease: 'expo.out',
-        delay: 0.6,
-      });
-    }
-
     // ── Areas head ───────────────────────────────────────
-    // En desktop queda below-the-fold (scroll-reveal); en móvil entra en el viewport
-    // inicial. Si ya está en pantalla al cargar, animamos INMEDIATO (un scrollTrigger
+    // Con la cabecera compacta suele entrar ya en la primera pantalla; en pantallas
+    // bajas queda por debajo. Si ya está en pantalla al cargar, animamos INMEDIATO (un scrollTrigger
     // `once` cuyo start no se alcanza dejaría el título invisible hasta hacer scroll);
     // si está por debajo, scroll-reveal normal. El guard data-reveal evita el flash
     // en ambos casos.
     const areasHead = section.querySelector<HTMLElement>('.srv-areas__head');
-    const areasEyebrow = section.querySelector<HTMLElement>('.srv-areas__eyebrow .srv-mono');
+    const areasIndex = section.querySelector<HTMLElement>('.srv-areas__index');
     const areasTitle = section.querySelector<HTMLElement>('.srv-areas__title');
     const areasInView = !!areasHead && areasHead.getBoundingClientRect().top < window.innerHeight;
     const areasTrigger = areasInView ? undefined : { trigger: areasHead!, start: 'top 80%', once: true };
-    if (areasEyebrow && areasHead) {
-      trackingReveal(areasEyebrow, areasTrigger);
+    if (areasIndex && areasHead) {
+      gsap.from(areasIndex, { opacity: 0, y: 8, duration: 0.7, ease: 'power3.out', scrollTrigger: areasTrigger });
     }
     if (areasTitle) {
       revealOnView(areasTitle, { y: 24, duration: 0.9, delay: areasInView ? 0.1 : 0 });

@@ -13,7 +13,81 @@ leído el resto.
 
 ---
 
+## 2026-10-01 · Cabecera de sección legible: el contenido empieza en la primera pantalla y la luz es el fondo de toda la página
+
+**Decisión** (de Mario, sobre la cabecera «Escenario» de la entrada siguiente):
+
+- **Lo que pidió:**
+  - No le convencía dónde iban los textos.
+  - Quería que la sección empezara ya en la primera pantalla, sin tener que hacer
+    scroll para ver contenido (en Talentos, que asomen los jugadores).
+  - Quería la animación de fondo «constantemente, nada de solo un trozo arriba y
+    luego fondo negro».
+  - Sobre la versión compacta: «leer los textos tal y como están ahora es
+    horroroso».
+- **Cómo se decidió:** sobre un lienzo de diseño con propuestas, en este orden:
+  1. A · Eje central, todo centrado.
+  2. B · Cartel, titular gigante abajo.
+  3. C · Ficha, el texto a un lado y la luz en un panel.
+  4. B compacta.
+  5. B legible, la elegida.
+- **La cabecera:** fila índice («02 · Talentos») → titular → entradilla debajo →
+  contenido de la página, sin hueco. Descripción completa en `ARCHITECTURE.md`,
+  «Cabecera de sección y fondo animado».
+
+**Por qué se leía mal** (revisión tipográfica y detector, 2026-10-01):
+
+- **No había un tamaño intermedio entre el titular y el texto.** La entradilla iba
+  a 16 px en gris al 72 %, al lado de un titular de más de 100 px. Ahora va a
+  18–22 px en Söhne, casi blanca, justo debajo del titular.
+- **Las etiquetas eran demasiado pequeñas.** Rótulos, clubes y valores iban en
+  mayúsculas monoespaciadas a 10–11 px, con hasta 0,25 em de espaciado; el detector
+  marcaba los clubes por debajo del mínimo legible. Ahora van en letra normal a
+  13–15 px, y la monoespaciada queda solo para números.
+- **El orden de lectura era raro:** la entradilla iba arriba a la derecha, antes
+  del titular.
+- **La luz ensuciaba los párrafos:** pasaba por detrás con la misma fuerza que
+  detrás del titular. Ahora brilla entera solo detrás del titular y baja al 32 % en
+  el resto.
+
+**Qué cambia**:
+
+- **Fondo de toda la página**: el canvas va fijo a la pantalla (`.ph-page-bg`) y
+  el contenido pasa por encima. Las secciones `.talents` y `.srv` pierden su fondo
+  opaco. El shader recibe el scroll y la posición del `<h1>` para saber dónde
+  brillar.
+- **El rótulo deja de ser un «eyebrow».** El rótulo diminuto encima del titular es
+  un patrón que el sistema de diseño de referencia (impeccable) veta. Pasa a ser
+  una fila índice con línea, como un índice de revista, y el texto es el mismo.
+  Esa misma pieza ordena «Áreas de gestión» y la franja de valores.
+- **Titular** a `clamp(46px, 5.6vw + 26px, 106px)`: en escritorio, el mismo tamaño
+  que tenía la web; en móvil, algo mayor. Medido en ES/EN/IT de 360 a 1440 px sin
+  desbordes («Rappresentare» es la palabra más larga).
+- **Servicios**: desaparece la línea que cerraba la cabecera; la fila índice de
+  Áreas hace de separador. El titular de Áreas y las filas del acordeón bajan un
+  poco de tamaño para que el primer servicio asome en escritorio.
+- **Sobre nosotros**: los párrafos 2 y 3 pasan a dos columnas anchas (1-6 y 7-12)
+  a 18 px.
+
+**Alternativas descartadas**: las cuatro del lienzo.
+
+- A centrada: la entradilla larga de Servicios, centrada en cuatro líneas, se lee
+  peor.
+- C con panel: buena lectura, pero no era la dirección que eligió Mario.
+- B tal cual: cabecera alta y contenido debajo de la primera pantalla.
+- B compacta: resolvía el espacio, pero no la lectura.
+
+**Coste**: la luz se dibuja mientras la página está abierta, no solo con la
+cabecera a la vista. No está medido en un móvil real (`docs/hallazgos-abiertos.md`).
+
+---
+
 ## 2026-10-01 · Cabecera «Escenario» para Talentos, Servicios y Sobre nosotros, y logo en la vertical del texto
+
+> ⚠️ **Superada el mismo día** por «Cabecera de sección legible» (entrada
+> anterior): la cabecera alta con los textos abajo y la luz solo en ella se
+> sustituyó por una compacta con la luz en toda la página. Lo del logo en la
+> vertical del texto sigue vigente.
 
 **Decisión** (de Mario, tras ver en el móvil los fondos animados: «hay unos
 difuminados un poco feos en los bordes» y «los textos no están ubicados de manera

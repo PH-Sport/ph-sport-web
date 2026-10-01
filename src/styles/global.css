@@ -89,18 +89,22 @@
   /* Secciones página: transparente para ver el fondo (body / logo parallax) a través de main */
   --ph-section-bg: transparent;
 
-  /* Cabecera «Escenario» de Talentos, Servicios y Sobre nosotros: la luz animada
-     llena toda la cabecera (desde detrás del menú) y los textos se apoyan abajo en
-     una rejilla de 12 columnas que comparten las tres páginas. Las tres usan estas
-     cifras, así que al pasar de una a otra no cambia nada de sitio. Ver
-     ARCHITECTURE.md, «Fondos animados de sección». */
-  --ph-stage-min-h:       clamp(560px, calc(var(--ph-viewport-h) * 0.86), 880px);
-  --ph-stage-min-h-mobile: clamp(420px, calc(var(--ph-viewport-h) * 0.72), 620px);
-  --ph-stage-pad-top:     clamp(140px, calc(10vw + 60px), 200px);
-  --ph-stage-pad-bottom:  clamp(40px, 5vw, 72px);
-  --ph-stage-gap:         clamp(16px, 2vw, 32px);
-  --ph-stage-title-size:  clamp(44px, 7.4vw, 108px);
-  --ph-stage-eyebrow-gap: 24px;
+  /* Cabecera de Talentos, Servicios y Sobre nosotros: fila índice, titular,
+     entradilla debajo y el contenido empieza ya en la primera pantalla. Las tres
+     usan estas cifras, así que al pasar de una a otra no cambia nada de sitio. Van
+     de móvil (390 px) a escritorio (1440 px) en línea recta. Ver ARCHITECTURE.md,
+     «Cabecera de sección y fondo animado». */
+  --ph-head-top:        clamp(76px, calc(3.8vw + 61px), 116px);
+  --ph-head-index-pad:  clamp(14px, calc(0.4vw + 12.5px), 18px);
+  --ph-head-title-gap:  clamp(28px, calc(1.9vw + 20.6px), 48px);
+  --ph-head-title-size: clamp(46px, calc(5.6vw + 26px), 106px);
+  --ph-head-lead-gap:   clamp(16px, calc(0.76vw + 13px), 24px);
+  --ph-head-lead-size:  clamp(18px, calc(0.38vw + 16.5px), 22px);
+  --ph-head-after:      clamp(36px, calc(1.9vw + 28.6px), 56px);
+  /* Tres tonos de texto sobre fondo oscuro: entradilla, texto corrido y datos. */
+  --ph-ink-lead: rgba(255, 255, 255, 0.9);
+  --ph-ink-body: rgba(255, 255, 255, 0.82);
+  --ph-ink-meta: rgba(255, 255, 255, 0.62);
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -389,14 +393,15 @@ strong {
   }
 }
 
-/* ── Cabecera «Escenario»: capa de luz animada (src/scripts/ph-ambient.ts) ──
-   Cubre toda la cabecera, desde detrás del menú hasta la línea que la cierra. Sin
-   máscaras de CSS: los fundidos los hace la propia animación, así no se ve el
-   borde de ninguna caja. */
-.ph-stage-bg {
-  position: absolute;
+/* ── Fondo animado de página (src/scripts/ph-ambient.ts) ──────────────────────
+   Talentos, Servicios y Sobre nosotros: la luz es el fondo de toda la página. Va
+   fija a la pantalla, por detrás de todo el contenido de <main>, y el contenido
+   pasa por encima al hacer scroll. Sin máscaras de CSS: dónde brilla y dónde se
+   atenúa lo decide la propia animación. */
+.ph-page-bg {
+  position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -1;
   overflow: hidden;
   pointer-events: none;
 }
@@ -411,4 +416,76 @@ strong {
    (`is-live`, lo pone el script) desaparece. */
 .ph-ambient:not(.is-live) {
   background: radial-gradient(ellipse at 72% 28%, rgba(214, 178, 94, 0.08) 0%, transparent 60%);
+}
+
+/* ── Cabecera de sección (Talentos, Servicios, Sobre nosotros) ─────────────────
+   Cinco papeles con un tamaño cada uno, para que se distingan sin leerlos:
+   fila índice, titular, entradilla, texto corrido y datos. Cifras en `:root`
+   (`--ph-head-*`). */
+
+/* Fila índice: una línea fina con una etiqueta a la izquierda y un dato a la
+   derecha. Ordena la página: número de sección, «Áreas de gestión», valores. */
+.ph-rowline {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px 24px;
+  margin: 0;
+  /* A veces es un <p>: sin esto heredaría el tope de 65ch de los párrafos y la
+     línea se cortaría a media pantalla. */
+  max-width: none;
+  padding-top: var(--ph-head-index-pad);
+  border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+}
+.ph-rowline__group {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+/* Números (02, 05 disciplinas…): lo único que va en monoespaciada. */
+.ph-rowline__num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--color-ph-gold);
+}
+.ph-rowline__sep {
+  color: rgba(255, 255, 255, 0.3);
+}
+.ph-rowline__label {
+  font-size: clamp(14px, calc(0.1vw + 13.6px), 15px);
+  letter-spacing: 0.005em;
+  color: rgba(255, 255, 255, 0.86);
+}
+/* Datos en mayúsculas (los valores de Sobre nosotros): algo de aire, no más. */
+.ph-rowline__meta {
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  color: var(--ph-ink-meta);
+}
+
+.ph-head-title {
+  margin: var(--ph-head-title-gap) 0 0 -0.05em;
+  max-width: 10em;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--ph-head-title-size);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  color: var(--color-ph-white);
+  text-wrap: balance;
+}
+
+/* Entradilla: puente entre el titular y el texto, en la voz del titular. */
+.ph-head-lead {
+  margin: var(--ph-head-lead-gap) 0 0;
+  max-width: 44ch;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--ph-head-lead-size);
+  line-height: 1.45;
+  letter-spacing: -0.005em;
+  color: var(--ph-ink-lead);
+  text-wrap: balance;
 }

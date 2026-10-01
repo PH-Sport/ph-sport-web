@@ -11,6 +11,10 @@ interface Props {
 const { lang, players } = Astro.props;
 const t = useTranslations(lang);
 
+/** «02 · Talentos»: el número y la etiqueta van en estilos distintos en la fila índice. */
+const [eyebrowNum, ...eyebrowRest] = t('talents.eyebrow').split(' · ');
+const eyebrowLabel = eyebrowRest.join(' · ');
+
 /** Ancho real de la tarjeta en cada grid (2/3/5 columnas); lo comparten AVIF y WebP. */
 const photoSizes = '(max-width: 720px) 50vw, (max-width: 1200px) 33vw, 240px';
 
@@ -26,19 +30,23 @@ const cards = players.map((player) => {
 ---
 
 <section class="talents" aria-labelledby="talents-title">
-  <div class="talents__stage">
-    <div class="ph-stage-bg" aria-hidden="true">
-      <canvas class="ph-ambient" data-ambient="trayectorias"></canvas>
-    </div>
-
-    <header class="talents__head">
-      <span class="talents__eyebrow" data-reveal>{t('talents.eyebrow')}</span>
-      <h1 class="talents__title" id="talents-title" data-reveal>
-        {t('talents.title')}<em>{t('talents.titleAccent')}</em>.
-      </h1>
-      <p class="talents__lead" data-reveal>{t('talents.lead')}</p>
-    </header>
+  <div class="ph-page-bg" aria-hidden="true">
+    <canvas class="ph-ambient" data-ambient="trayectorias"></canvas>
   </div>
+
+  <header class="talents__head">
+    <p class="ph-rowline talents__index" data-reveal>
+      <span class="ph-rowline__group">
+        <span class="ph-rowline__num">{eyebrowNum}</span>
+        <span class="ph-rowline__sep" aria-hidden="true">·</span>
+        <span class="ph-rowline__label">{eyebrowLabel}</span>
+      </span>
+    </p>
+    <h1 class="talents__title ph-head-title" id="talents-title" data-reveal>
+      {t('talents.title')}<em>{t('talents.titleAccent')}</em>.
+    </h1>
+    <p class="talents__lead ph-head-lead" data-reveal>{t('talents.lead')}</p>
+  </header>
 
   <div class="talents__controls" data-talents-controls data-reveal>
     <label class="talents__search" data-talents-search-wrap>
@@ -198,25 +206,10 @@ const cards = players.map((player) => {
 <style>
   .talents {
     position: relative;
-    padding: 0 var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(80px, 12vw, 140px);
-    background: var(--color-ph-black, #0d0f12);
+    padding: var(--ph-head-top) var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(80px, 12vw, 140px);
+    /* Transparente: el fondo es la luz animada de toda la página (`.ph-page-bg`). */
+    background: transparent;
     color: var(--color-ph-white, #ffffff);
-  }
-
-  /* Cabecera «Escenario», igual en Talentos, Servicios y Sobre nosotros (cifras en
-     global.css, `--ph-stage-*`): la luz animada cubre toda la cabecera, desde
-     detrás del menú, y los textos se apoyan abajo. Una línea la cierra; debajo
-     van los controles. Los márgenes negativos la sacan del padding lateral de la
-     sección para que la luz llegue a los bordes de la pantalla. */
-  .talents__stage {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    min-height: var(--ph-stage-min-h);
-    margin: 0 calc(-1 * var(--ph-section-px, clamp(20px, 4vw, 48px))) clamp(16px, 2vw, 24px);
-    padding: var(--ph-stage-pad-top) var(--ph-section-px, clamp(20px, 4vw, 48px)) var(--ph-stage-pad-bottom);
-    border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
   }
 
   .talents__head,
@@ -224,59 +217,13 @@ const cards = players.map((player) => {
   .talents__grid,
   .talents__empty { position: relative; z-index: 1; }
 
-  /* Rejilla de 12 columnas: titular en las 8 primeras, introducción en las 4
-     últimas, con su última línea a la altura de la del titular. */
-  .talents__head {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--ph-stage-gap);
-    align-items: end;
-    align-items: last baseline;
-  }
-
-  .talents__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
-    grid-column: 1 / -1;
-    justify-self: start;
-    margin-bottom: var(--ph-stage-eyebrow-gap);
-  }
-  .talents__eyebrow::before {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-  }
-
-  .talents__title {
-    grid-column: 1 / 9;
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: var(--ph-stage-title-size);
-    letter-spacing: -0.03em;
-    line-height: 0.96;
-    margin: 0;
-    text-wrap: balance;
-  }
+  /* Cabecera igual en Talentos, Servicios y Sobre nosotros (estilos y cifras en
+     global.css: `.ph-rowline`, `.ph-head-*`): fila índice, titular y entradilla
+     debajo. Los controles y las primeras tarjetas caben ya en la primera pantalla. */
   .talents__title em {
     color: var(--color-ph-gold, #d6b25e);
     font-style: italic;
     font-weight: 400;
-  }
-
-  .talents__lead {
-    grid-column: 9 / 13;
-    margin: 0;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 16px;
-    line-height: 1.65;
-    max-width: 42ch;
   }
 
   /* Sticky controls bar */
@@ -287,7 +234,9 @@ const cards = players.map((player) => {
     flex-wrap: wrap;
     gap: 12px;
     padding: 16px 0;
-    margin-bottom: clamp(24px, 4vw, 40px);
+    margin-top: var(--ph-head-after);
+    margin-bottom: clamp(8px, calc(0.76vw + 5px), 16px);
+    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
     background: transparent;
   }
 
@@ -537,17 +486,6 @@ const cards = players.map((player) => {
     .talents__select-arrow { transition: none; }
   }
 
-  /* Móvil: la luz queda detrás del texto, que se apoya abajo en una sola columna. */
-  @media (max-width: 900px) {
-    .talents__stage {
-      min-height: var(--ph-stage-min-h-mobile);
-      padding-top: clamp(110px, 26vw, 150px);
-    }
-    .talents__head { grid-template-columns: minmax(0, 1fr); }
-    .talents__title,
-    .talents__lead { grid-column: 1 / -1; }
-    .talents__lead { margin-top: 18px; max-width: 46ch; }
-  }
 
   /* ── Mobile: collapse search to icon, reveal overlay on tap ── */
   @media (max-width: 720px) {
@@ -766,12 +704,12 @@ const cards = players.map((player) => {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    gap: 4px;
+    gap: 3px;
     background: linear-gradient(
       to top,
-      rgba(13, 15, 18, 0.95) 0%,
-      rgba(13, 15, 18, 0.35) 45%,
-      rgba(13, 15, 18, 0) 70%
+      rgba(13, 15, 18, 0.96) 0%,
+      rgba(13, 15, 18, 0.5) 38%,
+      rgba(13, 15, 18, 0) 64%
     );
     pointer-events: none;
   }
@@ -779,17 +717,17 @@ const cards = players.map((player) => {
     font-family: var(--font-display, 'Inter Tight', sans-serif);
     font-weight: 500;
     font-size: clamp(15px, 1.3vw, 18px);
-    letter-spacing: -0.01em;
-    line-height: 1.15;
+    letter-spacing: -0.005em;
+    line-height: 1.2;
     color: var(--color-ph-white, #ffffff);
     transition: color 0.3s;
   }
+  /* El club en letra normal y a tamaño de lectura: antes iba en mayúsculas de
+     máquina de escribir a 10 px, por debajo de lo legible. */
   .talents__club {
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 10px;
-    letter-spacing: 0.1em;
+    font-size: clamp(12px, calc(0.1vw + 11.6px), 13px);
+    line-height: 1.4;
     color: var(--color-ph-gold, #d6b25e);
-    text-transform: uppercase;
     transition: color 0.3s;
   }
 
@@ -1143,7 +1081,7 @@ const cards = players.map((player) => {
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, wrapWords, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint, revealReveals,
+    reducedMotion, wrapWords, scheduleScrollTriggerRefresh, afterTransitionPaint, revealReveals,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -1153,7 +1091,7 @@ const cards = players.map((player) => {
     if (!section) return;
     if (reducedMotion()) return;
 
-    const eyebrow = section.querySelector<HTMLElement>('.talents__eyebrow');
+    const index = section.querySelector<HTMLElement>('.talents__index');
     const title = section.querySelector<HTMLElement>('.talents__title');
     const lead = section.querySelector<HTMLElement>('.talents__lead');
     const controls = section.querySelector<HTMLElement>('.talents__controls');
@@ -1166,8 +1104,8 @@ const cards = players.map((player) => {
     // el título quedaba congelado en yPercent:115 → invisible. Igual que el hero y
     // el hero de Servicios, la animamos de forma INMEDIATA (sin scrollTrigger), en
     // cascada con delays. Las cards siguen con IntersectionObserver (fiable).
-    if (eyebrow) {
-      trackingReveal(eyebrow);
+    if (index) {
+      gsap.from(index, { opacity: 0, y: 8, duration: 0.7, ease: 'power3.out' });
     }
     if (title) {
       const words = wrapWords(title);
@@ -1243,6 +1181,6 @@ const cards = players.map((player) => {
 </script>
 
 <script>
-  // Fondo animado de la cabecera (se inicia solo en cada astro:page-load).
+  // Fondo animado de la página (se inicia solo en cada astro:page-load).
   import '@/scripts/ph-ambient';
 </script>

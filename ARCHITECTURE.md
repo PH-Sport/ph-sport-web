@@ -105,7 +105,7 @@ ph-sport-web/
 │   │
 │   ├── scripts/                     # Scripts vanilla para interacciones y animaciones
 │   │   ├── dropdown.ts              # SIN USO: nadie lo importa. Talentos monta su combo aparte
-│   │   ├── ph-ambient.ts            # Luz animada de la cabecera «Escenario» (Talentos, Servicios, Sobre nosotros; WebGL2 en directo)
+│   │   ├── ph-ambient.ts            # Luz animada de fondo de Talentos, Servicios y Sobre nosotros (WebGL2 en directo)
 │   │   └── ph-text-animations.ts   # Sistema GSAP de sección (reveals, stagger, refresh coalescido)
 │   │
 │   └── styles/
@@ -335,28 +335,38 @@ Las animaciones de sección están en `src/scripts/ph-text-animations.ts`. El si
 
 **Regla**: GSAP en componentes `.astro` va siempre en un `<script>` inline que importa de `ph-text-animations.ts`. No importar GSAP directamente en el markup de un `.astro`.
 
-### Cabecera «Escenario» y fondos animados
+### Cabecera de sección y fondo animado
 
-Talentos, Servicios y Sobre nosotros comparten una misma cabecera, «Escenario»,
-desde el 2026-10-01 (`DECISIONS.md`, misma fecha):
+Talentos, Servicios y Sobre nosotros comparten la misma cabecera desde el
+2026-10-01 (`DECISIONS.md`, «Cabecera de sección legible»). El objetivo es que el
+contenido empiece ya en la primera pantalla y que todo se lea sin esfuerzo:
 
-- **La luz llena la cabecera entera**, desde detrás del menú (las tres páginas usan
-  `hasHero`, así que empiezan en y=0) hasta la línea que la cierra, y no pasa de
-  ahí. Es un `<div class="ph-stage-bg">` con `inset: 0` dentro de la cabecera.
-- **Los textos se apoyan abajo** en una rejilla de 12 columnas: rótulo arriba,
-  titular en las columnas 1-8 e introducción en las 9-12, con su última línea a la
-  altura de la del titular (`align-items: last baseline`). En móvil, una columna
-  con la luz detrás.
-- **Una línea de borde a borde la cierra.** Debajo va lo propio de cada página: los
-  controles en Talentos; Áreas en Servicios (que por eso no lleva borde superior);
-  en Sobre nosotros, una franja con los valores y el pie, y los párrafos 2 y 3 en
-  dos columnas.
-- **Mismas cifras en las tres**: tamaño del titular, alturas, márgenes y separación
-  entre columnas salen de `--ph-stage-*` en `global.css`. Cambiarlas ahí cambia
-  las tres páginas a la vez.
+- **Fila índice → titular → entradilla.** Arriba, una línea fina con el número y
+  el nombre de la sección («02 · Talentos»); debajo el titular grande y, justo
+  debajo, la entradilla. Después, sin hueco de por medio, lo propio de cada página:
+  los controles y las tarjetas en Talentos; «Áreas de gestión» en Servicios; los
+  valores y la presentación en Sobre nosotros.
+- **Cinco papeles, un tamaño cada uno**, para que se distingan sin leerlos:
+  - Titular: Söhne, 46–106 px.
+  - Entradilla: Söhne, 18–22 px, blanco al 90 %.
+  - Texto corrido: Helvetica, 16–18 px, blanco al 82 %, como mucho 62 caracteres por línea.
+  - Etiquetas: letra normal, 13–15 px.
+  - Números (02, 01–05, «05 disciplinas · 01 equipo»): lo único en monoespaciada.
+- **La fila índice es una pieza reutilizable** (`.ph-rowline` en `global.css`):
+  línea fina, etiqueta a la izquierda y dato a la derecha. La usan el número de
+  sección, «Áreas de gestión» en Servicios y la franja de valores de Sobre
+  nosotros.
+- **Mismas cifras en las tres páginas**: alturas, separaciones y tamaños salen de
+  `--ph-head-*` en `global.css`, y los tonos de texto de `--ph-ink-*`. Los estilos
+  compartidos son `.ph-rowline`, `.ph-head-title` y `.ph-head-lead`. Cambiarlos
+  ahí cambia las tres páginas a la vez.
+- **«02 · Talentos» se parte en el componente** por « · », para dar al número y a
+  la etiqueta estilos distintos. Si un idioma cambiara ese separador en el rótulo,
+  saldría entero como número.
 
-El fondo es un `<canvas class="ph-ambient" data-ambient="<escena>">` que dibuja en
-directo `src/scripts/ph-ambient.ts` con un shader de WebGL2:
+El fondo es un `<canvas class="ph-ambient" data-ambient="<escena>">` dentro de
+`<div class="ph-page-bg">`. Lo dibuja en directo `src/scripts/ph-ambient.ts` con
+un shader de WebGL2:
 
 | Sección | Escena | Qué se ve |
 |---|---|---|
@@ -366,13 +376,24 @@ directo `src/scripts/ph-ambient.ts` con un shader de WebGL2:
 
 Cómo convive con la página, todo dentro del módulo:
 
-- **Los fundidos los hace el shader** (`stageMask`): la luz se apaga bajo el menú,
-  hacia la línea de cierre y, en escritorio, hacia la izquierda, donde va el texto.
-  No hay `mask-image` ni fondo de color en el contenedor: con una caja con
-  fundidos de CSS se veía su borde (la «placa» gris de la primera versión).
-- **Solo dibuja en pantalla**: se pausa fuera de la vista (`IntersectionObserver`) y
-  con la pestaña oculta. Va a la frecuencia de la pantalla.
-- **`prefers-reduced-motion`**: un fotograma fijo, sin animación.
+- **Es el fondo de toda la página**: `.ph-page-bg` va fijo a la pantalla
+  (`position: fixed`, `z-index: -1` dentro de `<main>`) y el contenido pasa por
+  encima al hacer scroll. Por eso las secciones `.talents` y `.srv` tienen el fondo
+  transparente; si una vuelve a llevar fondo opaco, tapa la luz.
+- **Dónde brilla lo decide el shader** (`stageMask`):
+  - La luz está entera solo detrás del titular (el `<h1>` de la sección, medido en
+    px de página).
+  - En el resto de la página baja al 32 % (`OUTSIDE_TITLE`), para que no ensucie
+    los párrafos.
+  - Bajo el menú se apaga siempre.
+  - El shader recibe el scroll en cada fotograma.
+  - No hay `mask-image` ni fondo de color en el contenedor: con una caja con
+    fundidos de CSS se veía su borde (la «placa» gris de la primera versión).
+- **Dibuja mientras la pestaña está visible**, a la frecuencia de la pantalla. Como
+  ocupa la pantalla entera, ya no se pausa al hacer scroll: es el coste de que la
+  luz esté siempre (ver `docs/hallazgos-abiertos.md`).
+- **`prefers-reduced-motion`**: un fotograma fijo, sin animación, que se repinta al
+  hacer scroll porque la zona brillante se mueve con el titular.
 - **Se suma al fondo**: salida premultiplicada, así que no tapa nada.
 - **ClientRouter**: al cambiar de página destruye los contextos de WebGL de la que
   se va (el navegador tiene un tope de contextos vivos).

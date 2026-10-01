@@ -1,5 +1,5 @@
 /**
- * Fondos animados de las cabeceras de Talentos, Servicios y Sobre nosotros.
+ * Fondo animado de Talentos, Servicios y Sobre nosotros.
  *
  * Cada fondo es un `<canvas data-ambient="<escena>">` que se dibuja en directo con
  * un shader de WebGL2: va a la frecuencia de la pantalla (60 o 120 Hz), no pesa
@@ -7,11 +7,15 @@
  * vídeo como el hero: DECISIONS.md (2026-10-01).
  *
  * Reglas de convivencia con la página:
- * - Solo se dibuja mientras el canvas está en pantalla y la pestaña visible.
- * - Con `prefers-reduced-motion` se pinta un fotograma fijo y no se anima.
+ * - Es el fondo de TODA la página: el canvas va fijo a la pantalla (`.ph-page-bg`)
+ *   y el contenido pasa por encima al hacer scroll. La luz brilla entera detrás del
+ *   titular (el `<h1>` de la sección) y baja a un tercio en el resto, para que no
+ *   ensucie la lectura; bajo el menú siempre se apaga (`stageMask`).
+ * - Solo se dibuja con la pestaña visible.
+ * - Con `prefers-reduced-motion` se pinta un fotograma fijo y no se anima (se
+ *   vuelve a pintar al hacer scroll, porque la zona brillante se mueve con él).
  * - La luz se suma al fondo de la página (salida premultiplicada): el canvas no
- *   tapa nada. Cubre toda la cabecera y los fundidos los hace el propio shader
- *   (`stageMask`): sin máscaras de CSS no se ve el borde de ninguna caja.
+ *   tapa nada.
  * - Al navegar con el ClientRouter se destruyen los contextos de la página que se
  *   va, para no acumular contextos de WebGL ni listeners.
  * - Sin WebGL2, el canvas se queda transparente y se ve el halo de CSS de
@@ -40,21 +44,23 @@ precision highp float;
 uniform vec2 uRes;    // px internos del canvas
 uniform float uPx;    // px internos por px CSS
 uniform float uTime;  // segundos
+uniform float uScroll; // px CSS desplazados en la página
+uniform vec3 uBand;   // titular en px CSS de página (arriba, abajo) y la luz fuera de él (0-1)
 out vec4 o;
 const vec3 GOLD = vec3(0.839, 0.698, 0.369);   // --color-ph-gold #D6B25E
 const vec3 WHITE = vec3(1.0);
 float hash11(float p) { p = fract(p * 0.1031); p *= p + 33.33; p *= p + p; return fract(p); }
 float hash12(vec2 p) { vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
-// Dónde puede haber luz. La cabecera es un escenario: la luz se apaga bajo el menú,
-// hacia la línea que cierra la cabecera y, en escritorio, hacia la izquierda, donde
-// van los textos. En vertical (móvil) los textos van abajo, así que manda el fundido
-// inferior. p, W y H en px CSS, con el origen abajo a la izquierda.
+// Dónde hay luz. El canvas es fijo y cubre la pantalla: la luz brilla entera
+// detrás del titular y baja a uBand.z en el resto de la página, así los párrafos se
+// leen limpios; bajo el menú se apaga siempre. p, W y H en px CSS, con el origen
+// abajo a la izquierda.
 float stageMask(vec2 p, float W, float H) {
-  float portrait = step(W, H * 1.1);
-  float top = smoothstep(H * 0.04, H * 0.22, H - p.y);
-  float bottom = mix(smoothstep(H * 0.05, H * 0.55, p.y), smoothstep(H * 0.25, H * 0.85, p.y), portrait);
-  float left = mix(smoothstep(0.2, 0.62, p.x / W), 1.0, portrait);
-  return top * bottom * left;
+  float fromTop = H - p.y;
+  float pageY = uScroll + fromTop;
+  float nav = smoothstep(30.0, W < 768.0 ? 120.0 : 190.0, fromTop);
+  float band = smoothstep(uBand.x - 90.0, uBand.x, pageY) * (1.0 - smoothstep(uBand.y, uBand.y + 70.0, pageY));
+  return nav * mix(uBand.z, 1.0, band);
 }
 // Salida premultiplicada: la luz se suma al fondo de la página, que se ve a través.
 // El tramado evita escalones en degradados tan oscuros.
@@ -158,6 +164,9 @@ const SCENES: Record<SceneName, SceneDef> = {
 /** Tope de densidad de píxeles: más allá no se nota en algo tan tenue y cuesta GPU. */
 const MAX_DPR = 1.5;
 
+/** Intensidad de la luz fuera del titular: detrás de los párrafos, a un tercio. */
+const OUTSIDE_TITLE = 0.32;
+
 interface Instance {
   destroy(): void;
 }
@@ -203,6 +212,20 @@ function create(canvas: HTMLCanvasElement, reduceMotion: boolean): Instance | nu
   const uRes = gl.getUniformLocation(prog, 'uRes');
   const uPx = gl.getUniformLocation(prog, 'uPx');
   const uTime = gl.getUniformLocation(prog, 'uTime');
+  const uScroll = gl.getUniformLocation(prog, 'uScroll');
+  const uBand = gl.getUniformLocation(prog, 'uBand');
+
+  // El titular de la sección: detrás de él la luz brilla entera. Su posición se
+  // guarda en px de página y se vuelve a medir cuando cambia de tamaño.
+  const title = canvas.closest('section')?.querySelector<HTMLElement>('h1') ?? null;
+  let bandTop = 0;
+  let bandBottom = 0;
+  const measureBand = () => {
+    if (!title) return;
+    const r = title.getBoundingClientRect();
+    bandTop = r.top + window.scrollY;
+    bandBottom = r.bottom + window.scrollY;
+  };
 
   let pxRatio = 1;
   let raf = 0;
@@ -214,10 +237,13 @@ function create(canvas: HTMLCanvasElement, reduceMotion: boolean): Instance | nu
     gl.uniform2f(uRes, canvas.width, canvas.height);
     gl.uniform1f(uPx, pxRatio);
     gl.uniform1f(uTime, t);
+    gl.uniform1f(uScroll, window.scrollY);
+    gl.uniform3f(uBand, bandTop, bandBottom - 8, OUTSIDE_TITLE);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   };
 
   const resize = () => {
+    measureBand();
     const rect = canvas.getBoundingClientRect();
     pxRatio = Math.min(window.devicePixelRatio || 1, MAX_DPR) * scene.scale;
     const w = Math.max(1, Math.round(rect.width * pxRatio));
@@ -241,6 +267,19 @@ function create(canvas: HTMLCanvasElement, reduceMotion: boolean): Instance | nu
 
   const ro = new ResizeObserver(resize);
   ro.observe(canvas);
+  if (title) ro.observe(title);
+  document.fonts?.ready.then(resize);
+  // Con movimiento reducido no hay bucle: el fotograma fijo se repinta al hacer
+  // scroll, porque la zona brillante (el titular) se mueve con la página.
+  let stillRaf = 0;
+  const onScroll = () => {
+    if (stillRaf) return;
+    stillRaf = requestAnimationFrame(() => {
+      stillRaf = 0;
+      draw(scene.still);
+    });
+  };
+  if (reduceMotion) window.addEventListener('scroll', onScroll, { passive: true });
   const io = new IntersectionObserver(([entry]) => {
     onScreen = entry.isIntersecting;
     kick();
@@ -261,8 +300,10 @@ function create(canvas: HTMLCanvasElement, reduceMotion: boolean): Instance | nu
   return {
     destroy() {
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(stillRaf);
       raf = 0;
       ro.disconnect();
+      window.removeEventListener('scroll', onScroll);
       io.disconnect();
       document.removeEventListener('visibilitychange', kick);
       canvas.removeEventListener('webglcontextlost', onLost);

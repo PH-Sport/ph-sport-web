@@ -251,10 +251,14 @@ Los fondos en directo de Talentos, Servicios y Sobre nosotros (`DECISIONS.md`,
 con un iPhone 14 y un Pixel 7 emulados: arrancan, se pausan fuera de la vista,
 quedan fijos con movimiento reducido y liberan su contexto al navegar. **No se ha
 medido el coste en un móvil real**: ni batería ni temperatura tras unos minutos
-con la cabecera a la vista, ni si un móvil modesto mantiene la fluidez. Desde la
-cabecera «Escenario» el lienzo ocupa la cabecera entera, más superficie que con
-la franja anterior. Si hiciera falta aligerar, la primera palanca es la resolución
-interna (`scale` de cada escena y `MAX_DPR` en `src/scripts/ph-ambient.ts`).
+con la página abierta, ni si un móvil modesto mantiene la fluidez. Desde la
+cabecera de sección legible (2026-10-01) el lienzo es el fondo de toda la página:
+ocupa la pantalla entera y se dibuja mientras la página está abierta, no solo con
+la cabecera a la vista, así que el coste es mayor que en las versiones anteriores.
+Si hiciera falta aligerar, la primera palanca es la resolución interna (`scale` de
+cada escena y `MAX_DPR` en `src/scripts/ph-ambient.ts`); la segunda, volver a
+pausarlo cuando el titular queda lejos, aunque entonces la luz dejaría de estar
+siempre, que es lo que se pidió.
 
 ### Textos en italiano sin revisión nativa (2026-10-01)
 

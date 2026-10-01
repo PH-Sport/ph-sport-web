@@ -114,27 +114,33 @@ Encargo de Mario, en curso. El 2026-09-03 se actualizó el club de 29 jugadores
 
 **Desde el 2026-09-25 solo se muestra una selección de 51** (`DECISIONS.md`,
 misma fecha): lo pendiente de esta sección solo importa para los que estén
-visibles. De ellos, cuatro no tienen foto ninguna a 2026-09-30 (Fran Manzanara,
-Santi Pallarés, Boston Billups y Álex Domínguez) y el resto va pasando a la serie de
-estudio de abajo.
+visibles. A 2026-10-01 solo Álex Domínguez sigue sin foto ninguna, y todos menos él y
+Pere Haro tienen ya la de la serie de estudio de abajo.
 
 **Desde el 2026-09-25 las fotos son una serie de estudio que prepara Mario**: todas
-con el mismo fondo oscuro, posado de brazos cruzados y la camiseta del club actual.
-Las va entregando por tandas y se sustituyen en el orden del grid. Mientras no
-estén todas, el grid mezcla las de estudio con las antiguas.
+con el mismo fondo oscuro, posado de brazos cruzados y la camiseta del club actual
+(salvo los que se listan más abajo). Las entregó por tandas y se sustituyeron en el
+orden del grid.
 
-**Hechas con la serie de estudio (34)**, las posiciones 1 a 34 del grid a
-2026-10-01: Juan Cruz, Dani Requena, Mati Barzic, Iker Luque, Javi Hernández, Alberto
-Del Moral, Thiago Helguera, Owen Emeka, Salim El-Jebari, Damián Cáceres, Juanjo
-Sánchez, Carlos Guirao, Francisco Dias, Dani Muñoz, Christian Manrique, Dimitar
-Danev, Roberto Olabe, Alessandro Burlamaqui, Axel Montaña, Luis Quintero, Abde
-Raihani, Abdoulaye Keita, Dani Rebollo, Jordi Ferrer, Gonzalo Rodríguez, Lawson
-Sunderland, Rayan Zinebi, Aimar García, Jorge Rajado, Pablo Pascual, Eneko Ortiz,
-Hugo Ríos, Iker Vidal y José Rey. Con ellas se cierran pendientes de la vía anterior:
-la foto de Alberto Del Moral que esperaba visto bueno, la de Mati Barzic, que era
-corta de resolución (619×825), las de Carlos Guirao y Rayan Zinebi, que enseñaban el
-club anterior (Leganés y Granada), y tres jugadores que no tenían ninguna (Abde
-Raihani, Dani Rebollo y Gonzalo Rodríguez).
+**Hechas con la serie de estudio (49 de 51)**, a 2026-10-01: las posiciones 1 a 51
+del grid menos Pere Haro (43) y Álex Domínguez (47), que siguen pendientes (abajo).
+Con ellas se cierran pendientes de la vía anterior: la foto de Alberto Del Moral que
+esperaba visto bueno, la de Mati Barzic, que era corta de resolución (619×825), las de
+Carlos Guirao y Rayan Zinebi, que enseñaban el club anterior (Leganés y Granada), y
+seis jugadores que no tenían ninguna (Abde Raihani, Dani Rebollo, Gonzalo Rodríguez,
+Fran Manzanara, Santi Pallarés y Boston Billups).
+
+**Cinco fotos de estudio no enseñan el club de la ficha**, pendiente de Mario (a
+2026-10-01). Puede que sean cedidos y la foto sea del club dueño de su ficha, pero eso
+no está comprobado:
+
+| Jugador | Ficha | Camiseta de la foto de estudio | Qué se hizo |
+|---|---|---|---|
+| Víctor García | UD Ibiza | Málaga CF | Aplicada: la anterior también era del Málaga |
+| Lucas Macazaga | SD Ponferradina | CD Leganés | Aplicada: la anterior también era del Leganés |
+| Víctor Villote | Gimnàstic de Tarragona | UD Las Palmas | Aplicada: la anterior también era de Las Palmas |
+| Pere Haro | CD Lugo | Granada CF | **No aplicada**: la anterior es del Lugo, la correcta |
+| Álex Domínguez | SD Ponferradina | Real Valladolid (portero) | **No aplicada**: no tenía foto y saldría con otro club |
 
 **Las diez primeras llegaron dos veces.** La primera versión llevaba un resplandor
 dorado muy fuerte detrás; Mario las rehízo más suaves (cinco el 2026-09-28 y las
@@ -167,7 +173,7 @@ Los 29 nombres salen de ese commit; los más visibles son los que cambiaron de a
 Iker Luque (Atlético → Racing), Aimar García y Jorge Rajado (Atlético → Real Madrid),
 Rayan Zinebi (Granada → Real Madrid) y Javi Hernández (Panathinaikos → Cerezo Osaka).
 
-Las fotos viven en `src/assets/images/players/` (113 archivos a 2026-09-30, `nombre-apellido.jpg`
+Las fotos viven en `src/assets/images/players/` (116 archivos a 2026-10-01, `nombre-apellido.jpg`
 o `.jpeg`) y las resuelve `getAllRosterEntries()` en `src/lib/playerDetail.ts`, que
 cae a `avatar-placeholder.svg` cuando no encuentra ninguna. No están en `public/`:
 las procesa el build, así que **sustituir el archivo basta y no hay que tocar código**.
@@ -187,7 +193,8 @@ Ese avatar genérico **no se puede buscar por «avatar-placeholder» en el HTML*
 menos de 4 kB, así que Vite lo incrusta como `data:image/svg+xml`. Para contar cuántas
 fichas se quedan sin foto hay que cruzar `jugadores.json` con el listado de
 `src/assets/images/players/`, no hacer grep sobre `dist/`. A 2026-09-05 eran 13;
-a 2026-09-25, con la selección de 51, eran 7; a 2026-09-30, 4.
+a 2026-09-25, con la selección de 51, eran 7; a 2026-09-30, 4; a 2026-10-01, 1 (Álex
+Domínguez).
 
 No confundir con los otros 16 jugadores de más arriba: ahí lo que está en duda es el
 club, no la foto.
@@ -215,8 +222,33 @@ entre dos de acción gana la del jugador aislado sobre la que tiene un rival enc
 Delgado, Ognjen Teofilovic, Rayan Zinebi y Salim El-Jebari. En todos ellos el material
 es del club anterior. No es que no se hayan buscado: no están. Volver a mirar cuando el
 fotógrafo suba material nuevo. De los siete, a 2026-09-25 están visibles todos
-menos Ognjen Teofilovic. Salim El-Jebari, Carlos Guirao y Rayan Zinebi ya tienen la de
-estudio con la camiseta del club actual.
+menos Ognjen Teofilovic. Salim El-Jebari, Carlos Guirao, Rayan Zinebi, Jesús Bernal y
+Jorge Delgado ya tienen la de estudio con la camiseta del club actual; la de Víctor
+García sigue siendo del Málaga (tabla de arriba).
+
+### Fotos de talentos en AVIF: más lentas con 4G lento (2026-10-01)
+
+Consecuencia medida del paso a AVIF 90 (`DECISIONS.md`, 2026-10-01), pendiente de que
+Mario decida. Simulado en Chrome de escritorio, no en un móvil real: Android de gama
+media (412 px a 2,625×, recibe la variante de 720), CPU ×4, «Slow 4G» de DevTools
+(1,6 Mbps, 150 ms) y bajando por el grid a 400 px por segundo:
+
+| | WebP 85 (antes) | AVIF 90 (ahora) |
+|---|---|---|
+| Primeras cuatro fotos cargadas | 2,2-3,0 s | 4,2-4,6 s |
+| Tarjetas vacías más de 1 s al bajar | 1 de 51 | 23 de 51, y 6 sin cargar al terminar |
+| Espera más larga | 1,5 s | 9,8 s |
+| Fotos descargadas | 2,6 MB | 4,4 MB (sin completar) |
+
+El LCP no cambia (1,7-1,8 s): es el fondo de la cabecera, no una tarjeta. El coste de
+decodificar es parecido (7 frente a 6 ms por foto con CPU ×4), aunque esa emulación no
+frena del todo la decodificación. **El problema es la red, no el procesador.**
+
+Propuesta hecha a Mario, sin aplicar: AVIF 80 solo para la variante de 720. Medido al
+tamaño en que la pinta ese móvil (483 px), AVIF 80 y AVIF 90 quedan casi iguales (SSIM
+cara 0,989 frente a 0,991; pecho 0,971 frente a 0,975; WebP 85: 0,976 y 0,946), y esa
+variante pasaría de ~109 a ~59 KB, lo que pesaba el WebP. Si se aplica, repetir esta
+misma simulación para confirmarlo.
 
 ### Backlog de rendimiento (medido el 2026-08-18)
 

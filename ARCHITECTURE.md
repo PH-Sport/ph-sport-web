@@ -635,7 +635,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
-| Fotos jugadores | ⏳ 47 de los 51 visibles | 34 ya son de la serie de estudio nueva (puestos 1 a 34); las otras 13, antiguas. Sin ninguna: Fran Manzanara, Santi Pallarés, Boston Billups y Álex Domínguez. Detalle en `docs/hallazgos-abiertos.md` (2026-10-01) |
+| Fotos jugadores | ⏳ 50 de los 51 visibles | 49 son de la serie de estudio. Pendientes de Mario: Pere Haro (sigue con la antigua) y Álex Domínguez (sin ninguna), porque la foto de estudio enseña otro club; y tres aplicadas con la camiseta de otro club. Detalle en `docs/hallazgos-abiertos.md` (2026-10-01) |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
 | OG image (1200×630px) | ❌ Pendiente | |
@@ -644,7 +644,7 @@ que ejecutar nada a mano.
 
 | Pendiente | Bloqueado por |
 |---|---|
-| Fotos de la selección visible: 17 por pasar a la serie de estudio, 4 de ellas sin ninguna foto (2026-10-01) | Cliente |
+| Fotos de la selección visible: 5 con la camiseta de otro club que la ficha (2 sin aplicar) (2026-10-01) | Cliente |
 | Revisión nativa de los textos en italiano (2026-10-01) | Alguien que hable italiano |
 | OG image 1200×630px | Diseño |
 | GA4 — Measurement ID | Decisión de si se integra |

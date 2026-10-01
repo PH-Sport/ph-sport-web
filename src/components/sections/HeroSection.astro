@@ -354,6 +354,13 @@ const t = useTranslations(lang);
      * ancho de banda al póster, que es el LCP (medido con el vídeo anterior:
      * retrasaba `load` 504 ms; ver ARCHITECTURE.md, reglas de rendimiento).
      * En navegación SPA el documento ya está cargado y arranca directo. */
+    // Al volver a la home con el ClientRouter, los <video> llegan de un documento
+    // aparte (el de la página nueva) y WebKit los deja sin reproductor: `play()`
+    // no da error pero el vídeo no avanza y se queda el póster apagado. `load()`
+    // repite la elección de fuente y lo arregla; con `preload="none"` no descarga
+    // nada. Medido en WebKit el 2026-10-01; en Chromium no pasa.
+    intro.load();
+    loop.load();
     const start = () => { void intro.play().catch(fallBackToLoop); };
     if (document.readyState === 'complete') start();
     else window.addEventListener('load', start, { once: true });

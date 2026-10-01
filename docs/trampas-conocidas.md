@@ -142,6 +142,32 @@ cambiar de carpeta (`HERO_VERSION` en `src/lib/heroMedia.ts`; `DECISIONS.md`,
 2026-09-22 y 2026-10-01). Entre medias, la foto fija del 2026-09-25 vivía en
 `src/assets/` justo por esto.
 
+## El vídeo del hero: los navegadores congelan la imagen en las uniones
+
+El hero son dos `<video>`: el encendido y el bucle (`ARCHITECTURE.md`, «Hero»).
+En el relevo de uno a otro y en cada vuelta del `loop` nativo, Chromium congela la
+imagen 50-83 ms y se salta un fotograma; WebKit, en el relevo. Medido con
+`requestVideoFrameCallback` el 2026-10-01 en el build. **No se puede quitar desde
+el código**: es cómo el navegador arranca un vídeo y rebobina el bucle.
+
+Lo que sí se controla es qué se ve: la cámara del render **se para en la pose
+frontal**, que es justo donde caen las dos uniones. Con la cámara en marcha en ese
+punto, la congelación se veía como un tirón (el cambio de imagen a través de la
+pausa era el doble que el de un fotograma normal); parada, es menor que un
+fotograma normal. **Si se cambia la coreografía, la pose 0 tiene que seguir quieta**
+(`loopTangent` en `scripts/hero-neon/neon.html`).
+
+## El vídeo del hero se queda parado en WebKit al volver a la home
+
+Con el `ClientRouter`, al volver a la home (atrás o por el menú) los `<video>`
+llegan del documento aparte donde Astro prepara la página nueva. WebKit los deja
+sin reproductor: `play()` no da error, `paused` es `false`, pero `readyState` se
+queda en 0, el tiempo no avanza y se ve el póster apagado. Chromium no lo sufre.
+**El arreglo es llamar a `load()` antes de `play()`** (`initHeroNeon` en
+`HeroSection.astro`): repite la elección de fuente y, con `preload="none"`, no
+descarga nada. Vale para cualquier `<video>` que se reproduzca por script en una
+página a la que se llega con el `ClientRouter`.
+
 ## Bugs de un motor concreto
 
 Medir **en ese motor**, con el dispositivo real. Una página de laboratorio y treinta

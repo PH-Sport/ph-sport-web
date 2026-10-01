@@ -13,6 +13,37 @@ leído el resto.
 
 ---
 
+## 2026-10-01 · El hero: la cámara se para en el plano frontal
+
+**Problema** (Mario, en escritorio): «pega un salto un poco raro». Medido con
+`requestVideoFrameCallback` sobre el build: el vídeo no tiene ningún salto (el
+cambio entre fotogramas en las uniones es como cualquier otro), pero el navegador
+congela la imagen en el relevo del encendido al bucle (Chromium 83 ms, WebKit
+66 ms) y en cada vuelta del `loop` nativo (Chromium 68 ms), saltándose un
+fotograma. Con la deriva casi quieta de la primera versión no se notaba; con la
+coreografía, la cámara pasaba por ahí a unos 5° por segundo y se veía el tirón.
+
+**Decisión**: la cámara se para un instante en la pose frontal (tangente nula en
+la pose 0), que es donde caen las dos uniones. El cambio de imagen a través de la
+congelación baja de 0,60 a 0,29 (media de diferencia, fotogramas desenfocados
+para quitar el grano), por debajo de un fotograma normal a mitad del bucle (0,31).
+La congelación sigue existiendo; ahora cae sobre una imagen quieta. Los pesos
+de los vídeos apenas cambian (±1 % respecto a la entrada de abajo).
+
+**Alternativas no probadas**: arrancar el bucle por script unos fotogramas antes
+de que acabe el encendido, o alternar dos `<video>` del bucle para no depender
+del `loop` nativo. Las dos dependen de tiempos que cada navegador gestiona a su
+manera y arreglarían solo una de las uniones; la parada de cámara cubre las dos
+en todos los navegadores sin código.
+
+**Consecuencia**: cualquier coreografía nueva tiene que dejar quieta la pose 0
+(`docs/trampas-conocidas.md`).
+
+En la misma tanda se arregló que, en WebKit, el vídeo se quedaba parado al volver
+a la home con el `ClientRouter`; el porqué está en `docs/trampas-conocidas.md`.
+
+---
+
 ## 2026-10-01 · El hero: logo centrado, menos brillo y cámara con coreografía
 
 **Decisión** (de Mario, al ver en preview la versión de la entrada de abajo): el

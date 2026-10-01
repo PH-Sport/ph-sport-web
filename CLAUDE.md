@@ -246,6 +246,12 @@ leerlo antes de tocar el fichero que se nombra.
 - **El smoke puede estar midiendo otra web** → si falla de forma masiva y rara, mirar
   primero **qué ocupa el puerto 4322**, no el código.
 - **Bugs de un motor concreto: medir en ese motor**, con el dispositivo real.
+- **Vídeo del hero: la pose frontal de la cámara tiene que estar quieta** → ahí caen
+  el relevo entre vídeos y la vuelta del bucle, donde el navegador congela la imagen
+  50-83 ms; con la cámara en marcha se ve un tirón.
+- **`<video>` en WebKit tras navegar con el `ClientRouter`: `load()` antes de
+  `play()`** → sin él, el vídeo dice estar reproduciéndose pero no avanza y la
+  portada se queda con el rótulo apagado.
 - **Lo que está en `public/` se sirve con 7 días de caché** (`vercel.json`) → un
   archivo nuevo con el mismo nombre sigue siendo el viejo para quien ya visitó la
   web. Para sustituir algo, cambiarle el nombre (el vídeo del hero lleva la versión

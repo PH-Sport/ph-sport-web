@@ -211,7 +211,7 @@ Para cambiar el encuadre, el color o el ritmo, se toca el render y se regenera.
 | Pieza | Qué es | Cómo se reproduce |
 |---|---|---|
 | Encendido (3 s) | El rótulo apagado se enciende mientras la cámara se acerca: la luz recorre el tubo desde la unión de las dos piezas, titubea y se estabiliza | Una vez, a mano tras `load` |
-| Bucle (12 s) | El rótulo encendido, con un zumbido sutil y un fallo breve de la flecha pequeña, mientras la cámara recorre cinco planos: giros a un lado y a otro, picado, contrapicado, inclinaciones y acercamientos. Orbita alrededor del logo, que no sale del centro | En bucle, al acabar el encendido |
+| Bucle (12 s) | El rótulo encendido, con un zumbido sutil y un fallo breve de la flecha pequeña, mientras la cámara recorre cinco planos: giros a un lado y a otro, picado, contrapicado, inclinaciones y acercamientos. Orbita alrededor del logo, que no sale del centro, y se para un instante en el plano frontal, donde caen las uniones (`docs/trampas-conocidas.md`) | En bucle, al acabar el encendido |
 
 El último fotograma del encendido es el primero del bucle, y el último del bucle
 enlaza con su primero: no hay saltos. El bucle se descarga mientras se ve el

@@ -242,6 +242,11 @@ decisión de Mario (logo centrado; misma fecha). Queda:
   de bajo consumo, que bloquea la reproducción automática, se vea el póster
   encendido y no el apagado; y que, mientras carga, el `<video>` sin datos deje
   ver el póster de debajo (la misma duda que tenía el vídeo del 2026-09-22).
+  Tampoco se ha probado **cambiar de pestaña del navegador o de app y volver**:
+  no se puede reproducir con Playwright. Si en el iPhone el rótulo se queda
+  parado así (no al navegar por la web, que ya está arreglado), el sospechoso es
+  que Safari pausa el vídeo al ocultar la página y no lo reanuda, porque no lleva
+  `autoplay`; se arreglaría reanudándolo en `visibilitychange`.
 - **En pantallas retina grandes el apaisado se amplía.** Es de 1920×1080: en un
   portátil de 2.880 px físicos se pinta a 1,5×. El brillo del neón lo disimula.
   Si hiciera falta, el render admite cualquier tamaño: subir `FORMATS` en

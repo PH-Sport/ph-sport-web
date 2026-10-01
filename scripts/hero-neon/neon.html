@@ -220,7 +220,12 @@ function hermite(p0, p1, m0, m1, u, dt) {
   return (2*u3 - 3*u2 + 1)*p0 + (u3 - 2*u2 + u)*dt*m0 + (-2*u3 + 3*u2)*p1 + (u3 - u2)*dt*m1;
 }
 // Tangente de la pose i del bucle (Catmull-Rom con tiempos no uniformes, cerrada).
+// En la pose 0 la cámara se para (tangente nula): ahí están el relevo del vídeo de
+// encendido al bucle y la vuelta del bucle, y los navegadores congelan la imagen
+// 70-80 ms en esos puntos (medido en Chromium; DECISIONS.md, 2026-10-01). Con la
+// cámara en marcha, esa pausa se veía como un tirón; con la cámara quieta, no.
 function loopTangent(i, k) {
+  if (i === 0) return 0;
   const n = SHOTS.length;
   const prev = SHOTS[(i - 1 + n) % n], next = SHOTS[(i + 1) % n];
   const tPrev = i === 0 ? prev.t - LOOP_T : prev.t;

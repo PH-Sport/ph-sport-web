@@ -114,23 +114,23 @@ Encargo de Mario, en curso. El 2026-09-03 se actualizó el club de 29 jugadores
 
 **Desde el 2026-09-25 solo se muestra una selección de 51** (`DECISIONS.md`,
 misma fecha): lo pendiente de esta sección solo importa para los que estén
-visibles. A 2026-10-01 solo Álex Domínguez sigue sin foto ninguna, y todos menos él y
-Pere Haro tienen ya la de la serie de estudio de abajo.
+visibles. Desde el 2026-10-01 ninguno está sin foto, y todos menos Pere Haro tienen ya
+la de la serie de estudio de abajo.
 
 **Desde el 2026-09-25 las fotos son una serie de estudio que prepara Mario**: todas
 con el mismo fondo oscuro, posado de brazos cruzados y la camiseta del club actual
 (salvo los que se listan más abajo). Las entregó por tandas y se sustituyeron en el
 orden del grid.
 
-**Hechas con la serie de estudio (49 de 51)**, a 2026-10-01: las posiciones 1 a 51
-del grid menos Pere Haro (43) y Álex Domínguez (47), que siguen pendientes (abajo).
+**Hechas con la serie de estudio (50 de 51)**, a 2026-10-01: las posiciones 1 a 51
+del grid menos Pere Haro (43), que sigue pendiente (abajo).
 Con ellas se cierran pendientes de la vía anterior: la foto de Alberto Del Moral que
 esperaba visto bueno, la de Mati Barzic, que era corta de resolución (619×825), las de
 Carlos Guirao y Rayan Zinebi, que enseñaban el club anterior (Leganés y Granada), y
-seis jugadores que no tenían ninguna (Abde Raihani, Dani Rebollo, Gonzalo Rodríguez,
-Fran Manzanara, Santi Pallarés y Boston Billups).
+siete jugadores que no tenían ninguna (Abde Raihani, Dani Rebollo, Gonzalo Rodríguez,
+Fran Manzanara, Santi Pallarés, Boston Billups y Álex Domínguez).
 
-**Cinco fotos de estudio no enseñan el club de la ficha**, pendiente de Mario (a
+**Cuatro fotos de estudio no enseñan el club de la ficha**, pendiente de Mario (a
 2026-10-01). Puede que sean cedidos y la foto sea del club dueño de su ficha, pero eso
 no está comprobado:
 
@@ -140,7 +140,6 @@ no está comprobado:
 | Lucas Macazaga | SD Ponferradina | CD Leganés | Aplicada: la anterior también era del Leganés |
 | Víctor Villote | Gimnàstic de Tarragona | UD Las Palmas | Aplicada: la anterior también era de Las Palmas |
 | Pere Haro | CD Lugo | Granada CF | **No aplicada**: la anterior es del Lugo, la correcta |
-| Álex Domínguez | SD Ponferradina | Real Valladolid (portero) | **No aplicada**: no tenía foto y saldría con otro club |
 
 **Las diez primeras llegaron dos veces.** La primera versión llevaba un resplandor
 dorado muy fuerte detrás; Mario las rehízo más suaves (cinco el 2026-09-28 y las
@@ -167,13 +166,16 @@ escudo. En la tanda del 2026-09-30 llegaron así Carlos Guirao con la del Legan�
 club anterior; la ficha dice CD Eldense) y Dimitar Danev con la de la selección de
 Macedonia del Norte (la ficha dice Vardar Skopje). Mario las rehízo con el club
 correcto esa misma noche. Si una no cuadra, se le dice a Mario; no se cambia el club
-de la ficha para que encaje con la foto.
+de la ficha para que encaje con la foto. **El escudo solo puede engañar**: el
+2026-10-01 se dio por Real Valladolid la de portero morada de Álex Domínguez (corona y
+castillo en el escudo), y era de la Ponferradina, como confirmó Mario. El parche de
+competición de la manga (Primera Federación) lo habría descartado: mirarlo también.
 
 Los 29 nombres salen de ese commit; los más visibles son los que cambiaron de acera:
 Iker Luque (Atlético → Racing), Aimar García y Jorge Rajado (Atlético → Real Madrid),
 Rayan Zinebi (Granada → Real Madrid) y Javi Hernández (Panathinaikos → Cerezo Osaka).
 
-Las fotos viven en `src/assets/images/players/` (116 archivos a 2026-10-01, `nombre-apellido.jpg`
+Las fotos viven en `src/assets/images/players/` (117 archivos a 2026-10-01, `nombre-apellido.jpg`
 o `.jpeg`) y las resuelve `getAllRosterEntries()` en `src/lib/playerDetail.ts`, que
 cae a `avatar-placeholder.svg` cuando no encuentra ninguna. No están en `public/`:
 las procesa el build, así que **sustituir el archivo basta y no hay que tocar código**.
@@ -193,8 +195,7 @@ Ese avatar genérico **no se puede buscar por «avatar-placeholder» en el HTML*
 menos de 4 kB, así que Vite lo incrusta como `data:image/svg+xml`. Para contar cuántas
 fichas se quedan sin foto hay que cruzar `jugadores.json` con el listado de
 `src/assets/images/players/`, no hacer grep sobre `dist/`. A 2026-09-05 eran 13;
-a 2026-09-25, con la selección de 51, eran 7; a 2026-09-30, 4; a 2026-10-01, 1 (Álex
-Domínguez).
+a 2026-09-25, con la selección de 51, eran 7; a 2026-09-30, 4; a 2026-10-01, ninguna.
 
 No confundir con los otros 16 jugadores de más arriba: ahí lo que está en duda es el
 club, no la foto.

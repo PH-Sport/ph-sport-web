@@ -8,7 +8,7 @@ export function parseSortParam(value: string | null): SortMode {
 }
 
 function localeForLang(lang: Lang): string {
-  return lang === 'en' ? 'en' : 'es';
+  return lang;
 }
 
 /**

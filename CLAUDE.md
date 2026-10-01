@@ -269,6 +269,9 @@ Lo que hay que saber **antes de tocar nada**:
   alternativas sin hablarlo con Mario**: es decisión suya, no técnica.
 - **El coste del snapshot del `ClientRouter` en `/talentos` está sin hacer a
   propósito**, por riesgo alto. No abordarlo sin que Mario lo supervise.
+- **El italiano no lo ha revisado ningún nativo** (traducido por IA el 2026-10-01).
+  No llevarlo a producción sin esa revisión, y los textos legales no se traducen:
+  es decisión de Mario (`DECISIONS.md`, 2026-10-01).
 - **Los sitelinks ES/EN los elige Google.** El marcado está verificado correcto; no hay
   control directo. No perseguirlo.
 

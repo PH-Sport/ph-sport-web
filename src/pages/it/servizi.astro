@@ -1,0 +1,19 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import ServicesSection from '@/components/sections/ServicesSection.astro';
+import { useTranslations, type Lang } from '@/i18n/utils';
+import { SITE_URL } from '@/lib/constants';
+
+const lang: Lang = 'it';
+const t = useTranslations(lang);
+---
+
+<BaseLayout
+  title={`${t('services.title')} — ${t('site.name')}`}
+  description={t('services.subtitle')}
+  lang={lang}
+  canonical={`${SITE_URL}/it/servizi`}
+  hasHero
+>
+  <ServicesSection lang={lang} />
+</BaseLayout>

@@ -5,7 +5,7 @@ import QuietScrollHistory from './QuietScrollHistory.astro';
 import Header from './Header.astro';
 import Footer from './Footer.astro';
 import LogoReveal from '@/components/LogoReveal.astro';
-import { useTranslations, getAlternateLangUrl, type Lang } from '@/i18n/utils';
+import { useTranslations, getLangUrls, supportedLangs, type Lang } from '@/i18n/utils';
 import { SITE_URL } from '@/lib/constants';
 import { SOCIAL_LINKS, isSocialPlaceholder } from '@/lib/social';
 
@@ -36,9 +36,15 @@ const preloadBreakpoint = preloadIsResponsive ? (preloadImage.mobileMaxWidth ?? 
 const preloadSingle = typeof preloadImage === 'string' ? preloadImage : null;
 const t = useTranslations(lang);
 
-const alternatePath = getAlternateLangUrl(Astro.url);
-const esUrl = lang === 'es' ? canonical : `${SITE_URL}${alternatePath}`;
-const enUrl = lang === 'en' ? canonical : `${SITE_URL}${alternatePath}`;
+// Una etiqueta hreflang por cada idioma en que existe esta página (los textos
+// legales no tienen versión italiana). La propia usa el canonical tal cual.
+const langUrls = getLangUrls(Astro.url.pathname);
+const alternates = supportedLangs
+  .filter((code) => langUrls[code] !== undefined)
+  .map((code) => ({ code, href: code === lang ? canonical : `${SITE_URL}${langUrls[code]}` }));
+const esUrl = alternates.find((a) => a.code === 'es')!.href;
+
+const OG_LOCALES: Record<Lang, string> = { es: 'es_ES', en: 'en_US', it: 'it_IT' };
 
 // OG image: el override (`ogImage`) puede llegar relativo o absoluto.
 // Sin override, fallback al asset por defecto. La spec OG exige URL absoluta.
@@ -155,9 +161,8 @@ const organizationJsonLd = {
     <link rel="canonical" href={canonical} />
     {noIndex && <meta name="robots" content="noindex, nofollow" />}
 
-    <link rel="alternate" hreflang="es" href={esUrl} />
-    <link rel="alternate" hreflang="en" href={enUrl} />
-    {/* x-default: usuarios fuera de es/en (otras regiones/idiomas) ven la versión española. */}
+    {alternates.map((a) => <link rel="alternate" hreflang={a.code} href={a.href} />)}
+    {/* x-default: quien no habla ninguno de los idiomas de la web ve la versión española. */}
     <link rel="alternate" hreflang="x-default" href={esUrl} />
 
     {isHome && <script type="application/ld+json" set:html={JSON.stringify(websiteJsonLd)} />}
@@ -166,7 +171,7 @@ const organizationJsonLd = {
     {/* Open Graph: tarjetas ricas en WhatsApp, iMessage, LinkedIn, Slack, Discord, FB. */}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="PHSPORT" />
-    <meta property="og:locale" content={lang === 'es' ? 'es_ES' : 'en_US'} />
+    <meta property="og:locale" content={OG_LOCALES[lang]} />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

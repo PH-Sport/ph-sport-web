@@ -32,6 +32,7 @@ salida se versiona en `public/`.
 | `/servicios` | 6 pilares del servicio |
 | `/sobre-nosotros` | Historia, equipo (20 integrantes) y cierre |
 | `/en/*` | Mirror completo en inglés (`/en/talents/`, `/en/services`, `/en/about`) |
+| `/it/*` | Mirror en italiano sin textos legales (`/it/talenti/`, `/it/servizi`, `/it/chi-siamo`). Texto pendiente de revisión nativa |
 
 ## Stack
 

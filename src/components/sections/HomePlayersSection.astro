@@ -1,5 +1,5 @@
 ---
-import { useTranslations, type Lang } from '@/i18n/utils';
+import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
 
 interface Props {
   lang: Lang;
@@ -8,7 +8,7 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const listHref = lang === 'en' ? '/en/talents/' : '/talentos/';
+const listHref = localizePath('/talentos/', lang);
 ---
 
 <section class="home-players" id="talentos" aria-labelledby="home-players-title">
@@ -16,7 +16,7 @@ const listHref = lang === 'en' ? '/en/talents/' : '/talentos/';
     <header class="home-players__head">
       <span class="home-players__eyebrow">{t('home.players.eyebrow')}</span>
       <h2 class="home-players__title" id="home-players-title">
-        {lang === 'es' ? 'El ' : 'The '}<em>{t('home.players.titleAccent')}</em>.
+        {t('talents.title')}<em>{t('home.players.titleAccent')}</em>.
       </h2>
       <p class="home-players__lead">{t('home.players.lead')}</p>
     </header>

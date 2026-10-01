@@ -33,8 +33,33 @@ function vigilarConsola(page: Page) {
   return problemas;
 }
 
-test('el build genera las 12 páginas declaradas', () => {
-  expect(RUTAS).toHaveLength(12);
+/** /en/* en inglés, /it/* en italiano, el resto en español. */
+function idiomaDeRuta(ruta: string): 'es' | 'en' | 'it' {
+  if (ruta.startsWith('/en/')) return 'en';
+  if (ruta.startsWith('/it/')) return 'it';
+  return 'es';
+}
+
+/** Los `<link rel="alternate" hreflang>` de la página, sin el x-default. */
+async function leerHreflang(page: Page): Promise<Record<string, string>> {
+  const enlaces = await page
+    .locator('link[rel="alternate"][hreflang]')
+    .evaluateAll((els) => els.map((el) => [el.getAttribute('hreflang')!, el.getAttribute('href')!]));
+  return Object.fromEntries(enlaces.filter(([codigo]) => codigo !== 'x-default'));
+}
+
+/** El grupo de versiones como idioma → ruta normalizada, para comparar entre páginas. */
+function grupoNormalizado(alternas: Record<string, string>): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(alternas).map(([codigo, href]) => [codigo, normalizar(new URL(href).pathname)]),
+  );
+}
+
+// 6 en español, 6 en inglés y 4 en italiano: el aviso legal y la privacidad no
+// se traducen al italiano (DECISIONS.md, 2026-10-01).
+test('el build genera las 16 páginas declaradas', () => {
+  expect(RUTAS).toHaveLength(16);
+  expect(RUTAS.filter((r) => idiomaDeRuta(r) === 'it')).toHaveLength(4);
 });
 
 for (const ruta of RUTAS) {
@@ -48,9 +73,8 @@ for (const ruta of RUTAS) {
       await expect(page).toHaveTitle(/\S/);
 
       // El idioma del documento decide qué voz sintetiza un lector de pantalla
-      // y cómo indexa Google. /en/* en inglés, el resto en español.
-      const esIngles = ruta.startsWith('/en/');
-      await expect(page.locator('html')).toHaveAttribute('lang', esIngles ? 'en' : 'es');
+      // y cómo indexa Google.
+      await expect(page.locator('html')).toHaveAttribute('lang', idiomaDeRuta(ruta));
 
       const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
       expect(canonical, 'falta el canonical').toBeTruthy();
@@ -63,34 +87,63 @@ for (const ruta of RUTAS) {
     test('declara hreflang recíproco', async ({ page }) => {
       await page.goto(ruta);
 
-      const es = await page.locator('link[hreflang="es"]').getAttribute('href');
-      const en = await page.locator('link[hreflang="en"]').getAttribute('href');
+      const alternas = await leerHreflang(page);
       const xDefault = await page.locator('link[hreflang="x-default"]').getAttribute('href');
 
-      expect(es, 'falta hreflang es').toBeTruthy();
-      expect(en, 'falta hreflang en').toBeTruthy();
-      // x-default manda a la versión española para quien no es ni es ni en.
-      expect(xDefault).toBe(es);
+      // Toda página existe en español y en inglés; el italiano, solo donde se
+      // tradujo. Que el grupo sea coherente lo comprueba la ida y vuelta de abajo.
+      expect(alternas.es, 'falta hreflang es').toBeTruthy();
+      expect(alternas.en, 'falta hreflang en').toBeTruthy();
+      // x-default manda a la versión española para quien no habla ninguno de los tres.
+      expect(xDefault).toBe(alternas.es);
 
-      // La alternativa tiene que ser una página que exista de verdad. Cuando una
-      // ruta no está en STATIC_ROUTES, getAlternateLangUrl() devuelve '/' en
-      // silencio (el aviso solo salta en dev): esto lo caza en el build.
-      const propia = ruta.startsWith('/en/') ? en : es;
-      const alterna = ruta.startsWith('/en/') ? es : en;
-      expect(normalizar(new URL(propia!).pathname)).toBe(normalizar(ruta));
+      // Cada página se declara a sí misma. Cuando una ruta no está en
+      // STATIC_ROUTES, getLangUrls() devuelve el grupo de la home en silencio
+      // (el aviso solo salta en dev): esto lo caza en el build.
+      const idioma = idiomaDeRuta(ruta);
+      expect(alternas[idioma], `falta el hreflang de su propio idioma (${idioma})`).toBeTruthy();
+      expect(normalizar(new URL(alternas[idioma]).pathname)).toBe(normalizar(ruta));
 
-      const rutaAlterna = new URL(alterna!).pathname;
-      expect(
-        RUTAS.some((r) => normalizar(r) === normalizar(rutaAlterna)),
-        `${ruta} apunta a ${rutaAlterna}, que no existe en el build`,
-      ).toBe(true);
+      for (const [codigo, href] of Object.entries(alternas)) {
+        const rutaAlterna = new URL(href).pathname;
 
-      // Ida y vuelta: la página alternativa debe señalar de vuelta a esta.
-      await page.goto(rutaAlterna);
-      const deVuelta = ruta.startsWith('/en/')
-        ? await page.locator('link[hreflang="en"]').getAttribute('href')
-        : await page.locator('link[hreflang="es"]').getAttribute('href');
-      expect(normalizar(new URL(deVuelta!).pathname)).toBe(normalizar(ruta));
+        // La alternativa tiene que ser una página que exista de verdad, y en
+        // el idioma que se anuncia.
+        expect(
+          RUTAS.some((r) => normalizar(r) === normalizar(rutaAlterna)),
+          `${ruta} apunta a ${rutaAlterna} (${codigo}), que no existe en el build`,
+        ).toBe(true);
+        expect(idiomaDeRuta(rutaAlterna), `hreflang ${codigo} de ${ruta}`).toBe(codigo);
+
+        if (codigo === idioma) continue;
+
+        // Ida y vuelta: cada versión declara exactamente el mismo grupo. Así
+        // una página española que olvida a su gemela italiana también falla.
+        await page.goto(rutaAlterna);
+        expect(
+          grupoNormalizado(await leerHreflang(page)),
+          `${rutaAlterna} no declara las mismas versiones que ${ruta}`,
+        ).toEqual(grupoNormalizado(alternas));
+      }
+    });
+
+    test('el selector de idioma lleva a esta misma página en cada idioma', async ({ page }) => {
+      await page.goto(ruta);
+      const grupo = grupoNormalizado(await leerHreflang(page));
+
+      // Si la página no existe en un idioma (los textos legales en italiano),
+      // el selector lleva a la home de ese idioma.
+      const homes: Record<string, string> = { es: '/', en: '/en', it: '/it' };
+
+      // La cabecera persiste entre navegaciones y su script reescribe estos
+      // enlaces al cargar: se comprueba lo que queda después, no el HTML servido.
+      for (const codigo of ['es', 'en', 'it']) {
+        const opcion = page.locator(`[data-header] [data-lang-option="${codigo}"]`);
+        await expect(opcion, `opción ${codigo} del selector en ${ruta}`).toHaveAttribute(
+          'href',
+          new RegExp(`^${(grupo[codigo] ?? homes[codigo]).replace(/\/$/, '')}/?$`),
+        );
+      }
     });
 
     test('emite el JSON-LD que le corresponde', async ({ page }) => {
@@ -121,4 +174,48 @@ test('la marca se escribe PHSPORT en el marcado que lee Google', async ({ page }
   for (const bloque of bloques) {
     expect(JSON.parse(bloque).name).toBe('PHSPORT');
   }
+});
+
+test('el desplegable de idioma cambia de idioma sin perder la página', async ({ page }) => {
+  await page.goto('/servicios');
+
+  const boton = page.locator('[data-header] [data-lang-trigger]');
+  const panel = page.locator('[data-header] [data-lang-panel]');
+
+  await expect(boton).toHaveAttribute('aria-expanded', 'false');
+  await expect(panel).toBeHidden();
+
+  await boton.click();
+  await expect(boton).toHaveAttribute('aria-expanded', 'true');
+  await expect(panel).toBeVisible();
+
+  // Escape lo cierra sin navegar.
+  await page.keyboard.press('Escape');
+  await expect(panel).toBeHidden();
+
+  await boton.click();
+
+  // La View Transition fotografía la cabecera antes del cambio de página: si el
+  // panel sigue abierto en ese momento, se ve encima durante toda la transición.
+  // `astro:before-swap` llega con esa foto ya tomada.
+  await page.evaluate(() => {
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        const p = document.querySelector('[data-header] [data-lang-panel]')!;
+        (window as any).__panelAlFotografiar = getComputedStyle(p).visibility;
+      },
+      { once: true },
+    );
+  });
+  await panel.locator('[data-lang-option="it"]').click();
+
+  // Navegación del ClientRouter: la cabecera persiste y su script tiene que
+  // ponerse al día con el idioma nuevo.
+  await expect(page).toHaveURL(/\/it\/servizi\/?$/);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'it');
+  await expect(boton).toContainText('IT');
+  await expect(panel).toBeHidden();
+  expect(await page.evaluate(() => (window as any).__panelAlFotografiar)).toBe('hidden');
+  await expect(panel.locator('[data-lang-option="es"]')).toHaveAttribute('href', /^\/servicios\/?$/);
 });

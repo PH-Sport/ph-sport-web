@@ -13,6 +13,64 @@ leído el resto.
 
 ---
 
+## 2026-10-01 · Italiano como tercer idioma, sin textos legales y con selector desplegable
+
+**Decisión** (pedida por Mario): la web se publica también en italiano, bajo
+`/it/` y con las rutas traducidas como en inglés: `/it/`, `/it/talenti/`,
+`/it/servizi` y `/it/chi-siamo`. Funcionamiento en `ARCHITECTURE.md`, «i18n».
+Cuatro decisiones de Mario, tomadas al plantearlo:
+
+- **Los textos los tradujo un agente de IA desde el español y tiene que
+  revisarlos un nativo antes de producción.** Hasta entonces es un pendiente
+  abierto (`docs/hallazgos-abiertos.md`).
+- **El aviso legal y la privacidad no se traducen.** Siguen en español y en
+  inglés. Traducir texto legal sin revisión jurídica es un riesgo, y el aviso ya
+  dice que rige la ley española.
+- **En escritorio, el selector de idioma pasa a ser un desplegable**: un botón
+  con el idioma actual que abre los tres.
+- **En el menú móvil, los tres idiomas van en lista**, sin desplegable dentro
+  del menú, que ya es un panel que se abre.
+
+Dos detalles que decidió el agente al implementarlo, aceptados por Mario al
+aprobar el diseño:
+
+- **El pie de las páginas italianas enlaza a los textos legales en inglés**, la
+  variante pensada para quien no lee español. Los enlaces lo declaran con
+  `hreflang="en"`.
+- **Desde una página legal, elegir «Italiano» lleva a la home italiana**,
+  porque esa página no existe en italiano.
+
+De ahí salen dos reglas distintas en `src/i18n/utils.ts`. Un enlace dentro del
+contenido cae a la versión inglesa, porque promete esa página. El selector cae a
+la home del idioma elegido, porque quien elige idioma pide leer en él.
+
+**Alternativas descartadas**:
+- *Los tres idiomas en fila en la cabecera* (ES · EN · IT): un clic menos, pero
+  más ancho en la cápsula. Mario eligió el desplegable.
+- *Traducir también los textos legales*: descartado por el riesgo jurídico. Es la
+  única pieza de la web donde un matiz de traducción tiene consecuencias.
+- *Reutilizar `src/scripts/dropdown.ts`* para el desplegable, que era el plan
+  inicial. Importa GSAP y `ph-text-animations.ts`, que registra listeners
+  globales de navegación y scroll. Meterlo en la cabecera, que está en todas las
+  páginas, lo cargaría también en las legales, que hoy no lo cargan, y tocaría
+  la gestión del scroll al navegar (`docs/trampas-conocidas.md`). Se copió su
+  animación en CSS.
+
+**Consecuencias**:
+- **Arregla un fallo que ya existía**: en el aviso legal y la privacidad, el
+  botón de idioma llevaba a la home en vez de a la página equivalente. El script
+  de la cabecera persistente solo conocía las cuatro rutas del menú y pisaba el
+  enlace bueno del servidor. Ahora lee la tabla completa y el smoke comprueba el
+  destino de cada opción en las 16 páginas.
+- El `contactPoint` del JSON-LD sigue declarando `availableLanguage: Spanish,
+  English`. Publicar páginas en italiano no implica que el equipo atienda en
+  italiano; si lo hace, hay que añadirlo.
+- La tipografía Söhne de prueba no trae letras acentuadas, ni italianas ni
+  españolas. No es nuevo ni lo agrava el italiano: el detalle está en
+  `docs/hallazgos-abiertos.md`.
+
+---
+
 ## 2026-10-01 · Fondos animados en directo para Talentos, Servicios y Sobre nosotros
 
 **Decisión** (de Mario: «las fotos se han quedado anticuadas»; pidió animaciones

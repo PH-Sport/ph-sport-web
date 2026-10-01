@@ -1,6 +1,6 @@
 // src/i18n/es.ts
 // Fuente de verdad de todas las cadenas en español.
-// Añadir aquí primero, luego duplicar en en.ts.
+// Añadir aquí primero, luego duplicar en en.ts e it.ts.
 
 const es = {
   // --- SEO / Meta ---
@@ -15,9 +15,7 @@ const es = {
   'nav.about': 'Sobre nosotros',
   'nav.aria.main': 'Navegación principal',
   'nav.aria.mobile': 'Navegación móvil',
-  'nav.lang.switch': 'Switch to English',
-  'nav.lang.label': 'EN',
-  'nav.lang.labelMobile': 'English',
+  'nav.lang.menu': 'Cambiar idioma',
 
   // --- Hero ---
   'hero.claim': 'Las marcas suman, pero las personas marcan',

@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import HeroSection from '@/components/sections/HeroSection.astro';
+import HomePlayersSection from '@/components/sections/HomePlayersSection.astro';
+import HomeServicesSection from '@/components/sections/HomeServicesSection.astro';
+import HomeAboutSection from '@/components/sections/HomeAboutSection.astro';
+import HomeContactSection from '@/components/sections/HomeContactSection.astro';
+import { useTranslations, type Lang } from '@/i18n/utils';
+import { SITE_URL } from '@/lib/constants';
+
+const lang: Lang = 'it';
+const t = useTranslations(lang);
+---
+
+<BaseLayout
+  title={`${t('site.name')} — ${t('site.tagline')}`}
+  description={t('site.description')}
+  lang={lang}
+  canonical={`${SITE_URL}/it/`}
+  hasHero
+  intro
+>
+  <HeroSection lang={lang} sectionId="inicio" />
+  <HomePlayersSection lang={lang} />
+  <HomeServicesSection lang={lang} />
+  <HomeAboutSection lang={lang} />
+  <HomeContactSection lang={lang} />
+</BaseLayout>

@@ -23,6 +23,16 @@ de `public/fonts/sohne/`.
 **No tocar la tipografía ni proponer alternativas sin hablarlo con Mario**: cambiar
 de fuente altera la identidad de marca, y es decisión suya, no técnica.
 
+**Los archivos de prueba no traen letras acentuadas** (medido el 2026-10-01 con
+Chromium, preguntando al navegador qué fuente pinta cada carácter). Solo traen las
+letras sin tilde. Las acentuadas del español y del italiano (á, é, ñ, ó, à, è, ì,
+ò, ù…), el apóstrofo tipográfico, la raya y el símbolo de grado salen en la
+fuente de reserva: Helvetica Neue en Mac, Arial en Windows. En los títulos se nota
+como letras sueltas de otro dibujo (la «ó» del titular «Representar con
+propósito» de `/sobre-nosotros`). Pasa desde que se
+publicó la web y se arregla con la misma compra: los archivos con licencia traen
+el juego completo.
+
 ### Coste del snapshot del `ClientRouter` en páginas pesadas
 
 `/talentos`, 116 tarjetas cuando se midió. **Desde el 2026-09-25 son 51**: las
@@ -237,6 +247,25 @@ medido el coste en un móvil real**: ni batería ni temperatura tras unos minuto
 con la cabecera a la vista, ni si un móvil modesto mantiene la fluidez. Si
 hiciera falta aligerar, la primera palanca es la resolución interna
 (`scale` de cada escena y `MAX_DPR` en `src/scripts/ph-ambient.ts`).
+
+### Textos en italiano sin revisión nativa (2026-10-01)
+
+La versión italiana (`src/i18n/it.ts`, `DECISIONS.md` 2026-10-01) la tradujo
+un agente de IA desde el español, y no la ha leído nadie que hable italiano.
+**Antes de llevarla a producción tiene que revisarla un nativo**: una traducción
+automática puede ser correcta y aun así sonar rara en el sector del fútbol.
+
+Puntos que conviene que mire con atención:
+
+- El claim: «I marchi contano, ma sono le persone a segnare». Juega con
+  *segnare*, que es marcar un gol y dejar huella, como el «marcan» del original.
+- Anglicismos que se dejaron a propósito, como en español: *roster*, *brand
+  personale*, *performance*, *scouting*, *Family Office*.
+- Cargos del equipo: «Dto. Fútbol» pasó a «Area Calcio», como se nombran los
+  departamentos en los clubes italianos.
+
+Al cerrarlo, quitar el aviso de la cabecera de `it.ts`, la nota de `README.md` y
+las de `ARCHITECTURE.md` (i18n, «Páginas» y «Pendientes»).
 
 ### Vídeo del hero: sin probar en un iPhone real (2026-10-01)
 

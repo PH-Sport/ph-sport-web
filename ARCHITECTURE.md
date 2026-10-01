@@ -1,7 +1,7 @@
 # PHSPORT — Architecture Document
 
 > Documento de referencia para el proyecto. Leer antes de cualquier tarea estructural.
-> Última revisión: 2026-08-29
+> Última revisión: 2026-10-01
 > Secciones: Stack · Estructura · i18n · Hero · Motion · Performance · SEO · Sistema de diseño · Tests · Estado del proyecto
 
 ---
@@ -47,7 +47,7 @@ ph-sport-web/
 │   │   ├── LogoReveal.astro         # Intro de la home — animación en CSS, sin GSAP
 │   │   ├── layout/
 │   │   │   ├── BaseLayout.astro     # Layout raíz: meta, fuentes, global CSS
-│   │   │   ├── Header.astro         # Flotante, scroll-hide, selector de idioma
+│   │   │   ├── Header.astro         # Flotante, scroll-hide, desplegable de idioma
 │   │   │   └── Footer.astro         # V3 editorial, social links
 │   │   ├── sections/
 │   │   │   ├── HeroSection.astro        # Vídeo del neón (encendido + bucle), GSAP curtain reveal
@@ -61,13 +61,14 @@ ph-sport-web/
 │   │   └── ui/
 │   │       ├── Button.astro
 │   │       ├── FooterSocialIcon.astro
-│   │       ├── LanguageSwitcher.astro
+│   │       ├── LanguageSwitcher.astro   # VACÍO, sin uso: el selector de idioma vive en Header.astro
 │   │       └── SectionHeader.astro
 │   │
 │   ├── i18n/
-│   │   ├── es.ts
+│   │   ├── es.ts                    # Fuente de las claves; en.ts e it.ts tienen las mismas
 │   │   ├── en.ts
-│   │   └── utils.ts                 # useTranslations, getLangFromUrl, getAlternateLangUrl
+│   │   ├── it.ts                    # Traducido sin revisión nativa (docs/hallazgos-abiertos.md)
+│   │   └── utils.ts                 # useTranslations, STATIC_ROUTES, getLangUrls, getLangSwitchUrl, localizePath
 │   │
 │   ├── lib/                         # Helpers y datos de dominio
 │   │   ├── constants.ts             # SITE_URL y constantes globales
@@ -89,12 +90,18 @@ ph-sport-web/
 │   │   ├── servicios.astro          # /servicios
 │   │   ├── talentos/
 │   │   │   └── index.astro          # /talentos/ (grid no clicable; sin detalle por jugador)
-│   │   └── en/
-│   │       ├── index.astro          # /en/
-│   │       ├── about.astro          # /en/about
-│   │       ├── services.astro       # /en/services
-│   │       └── talents/
-│   │           └── index.astro      # /en/talents/
+│   │   ├── en/
+│   │   │   ├── index.astro          # /en/
+│   │   │   ├── about.astro          # /en/about
+│   │   │   ├── services.astro       # /en/services
+│   │   │   └── talents/
+│   │   │       └── index.astro      # /en/talents/
+│   │   └── it/                      # Sin aviso legal ni privacidad (DECISIONS.md, 2026-10-01)
+│   │       ├── index.astro          # /it/
+│   │       ├── chi-siamo.astro      # /it/chi-siamo
+│   │       ├── servizi.astro        # /it/servizi
+│   │       └── talenti/
+│   │           └── index.astro      # /it/talenti/
 │   │
 │   ├── scripts/                     # Scripts vanilla para interacciones y animaciones
 │   │   ├── dropdown.ts              # SIN USO: nadie lo importa. Talentos monta su combo aparte
@@ -172,13 +179,24 @@ El slug se genera con `slugify(name)` y es la clave común con la foto en `src/a
 
 - **Español** = idioma por defecto → sin prefijo (`prefixDefaultLocale: false`)
 - **Inglés** = prefijo `/en/`
+- **Italiano** = prefijo `/it/` (desde el 2026-10-01)
 
-| Página | ES (defecto) | EN |
-|---|---|---|
-| Inicio | `/` | `/en/` |
-| Talentos | `/talentos/` | `/en/talents/` |
-| Servicios | `/servicios` | `/en/services` |
-| Sobre nosotros | `/sobre-nosotros` | `/en/about` |
+| Página | ES (defecto) | EN | IT |
+|---|---|---|---|
+| Inicio | `/` | `/en/` | `/it/` |
+| Talentos | `/talentos/` | `/en/talents/` | `/it/talenti/` |
+| Servicios | `/servicios` | `/en/services` | `/it/servizi` |
+| Sobre nosotros | `/sobre-nosotros` | `/en/about` | `/it/chi-siamo` |
+| Aviso legal | `/aviso-legal` | `/en/legal-notice` | — |
+| Privacidad | `/privacidad` | `/en/privacy` | — |
+
+**Los textos legales no existen en italiano, a propósito** (`DECISIONS.md`,
+2026-10-01). No es un hueco que rellenar: traducir texto legal es una decisión
+de Mario, no técnica.
+
+Los textos en italiano están **traducidos sin revisión nativa**: antes de
+publicarlos en producción tiene que leerlos alguien que hable italiano
+(`docs/hallazgos-abiertos.md`).
 
 Las rutas `/equipo` y `/en/team` redirigen a `/sobre-nosotros#equipo` y `/en/about#equipo` respectivamente (la sección de equipo fue absorbida por About en V3).
 
@@ -186,7 +204,45 @@ No hay páginas de detalle por jugador: el grid de `/talentos/` es no-clicable p
 
 ### Mapeo de rutas
 
-`getAlternateLangUrl()` en `src/i18n/utils.ts` usa `STATIC_ROUTES` como fuente única de verdad para los alternates. Al añadir una página nueva, declararla en esa lista.
+`STATIC_ROUTES` en `src/i18n/utils.ts` es la **fuente única de verdad**: una fila
+por página con su ruta en cada idioma (sin `it` en las legales). Al añadir una
+página nueva, declararla ahí. De esa tabla salen tres funciones, con dos reglas
+distintas para cuando una página no existe en un idioma:
+
+| Función | Para qué | Si la página no existe en ese idioma |
+|---|---|---|
+| `getLangUrls(path)` | Los `hreflang` de `BaseLayout` | No se declara esa versión |
+| `getLangSwitchUrl(path, lang)` | El selector de idioma | Lleva a la **home** de ese idioma: quien elige idioma pide leer en él |
+| `localizePath(rutaES, lang)` | Enlaces dentro del contenido (`localizePath('/servicios/', lang)`) | Lleva a la versión **inglesa**: el enlace promete esa página. Así el pie italiano enlaza a los textos legales en inglés |
+
+`localizePath()` conserva la barra final y el ancla tal como se escriben, y
+falla en el build si la ruta no está en la tabla. Los menús salen de
+`NAV_ITEMS` (`src/lib/navigation.ts`), que lleva su propia ruta por idioma.
+
+### Selector de idioma
+
+Vive en `Header.astro`. **En escritorio es un desplegable**: el botón muestra el
+idioma actual (bandera y código) y abre los tres. Es un botón que despliega
+enlaces (patrón *disclosure*), no un `role="menu"`. El estado lo lleva
+`aria-expanded` y el CSS abre el panel a partir de él. La animación copia la de
+`src/scripts/dropdown.ts` pero en CSS: ese módulo arrastra GSAP y
+`ph-text-animations.ts`, con efectos globales, a páginas que hoy no los cargan,
+como las legales. **En el menú móvil van los tres en lista**, sin desplegable
+dentro del menú.
+
+**Trampa: la cabecera persiste entre navegaciones** (`transition:persist`). Su
+HTML es el de la primera página cargada, así que el script del Header reescribe
+en cada navegación todo lo que depende del idioma: menú, logo, botón y destino
+de cada opción. Un enlace que solo se calcule en el servidor queda mal después
+de navegar. Así estuvo el selector antiguo en los textos legales: llevaba a la
+home en lugar de a la página equivalente. El smoke comprueba los destinos
+después de cargar, no en el HTML servido.
+
+**Al navegar, el panel se cierra en seco** (`astro:before-preparation`, sin
+animación). La View Transition fotografía la cabecera antes del cambio y deja esa
+foto fija toda la transición (`::view-transition-old(ph-header)` va sin
+animación). Cerrado en `after-swap` o con su fundido, el panel abierto se veía
+encima ~0,4 s después de elegir idioma.
 
 ---
 
@@ -335,7 +391,7 @@ Para tocar una escena: su shader está en el mismo archivo. Se ve en directo con
 - `<title>` único y descriptivo
 - `<meta name="description">` entre 120-160 caracteres
 - `<link rel="canonical">` apuntando a la URL canónica
-- `<link rel="alternate" hreflang="es">` y `hreflang="en"` en todas las páginas
+- `<link rel="alternate" hreflang>` por cada idioma en que existe la página (`es` y `en` siempre, `it` salvo en las legales), más `x-default` a la española
 - `@astrojs/sitemap` genera `sitemap.xml` automáticamente en build
 
 ### Reglas de dominio (no romper)
@@ -383,6 +439,8 @@ El dominio canónico es el **apex** `phsport.es`; `www` redirige con 308. Ver DE
 
 **Söhne**: fuente de pago — licencia en https://klim.co.nz/retail-fonts/sohne/
 Archivos `.woff2` en `/public/fonts/sohne/`. Nombre de familia en código: `Sohne` (sin umlaut).
+Son los de prueba de Klim y **no traen letras acentuadas**: á, ñ, è… salen en la
+fuente de reserva (`docs/hallazgos-abiertos.md`).
 
 ### Escala tipográfica
 
@@ -435,7 +493,7 @@ No superar `0.75rem`. La marca no es redondeada.
 
 Un único smoke E2E con **Playwright**, en `tests/e2e/`. Se lanza con
 `npm run test:e2e`: construye, levanta `astro preview` en el **4322** y prueba
-las 12 páginas del build.
+las 16 páginas del build.
 
 **Corre contra `dist/`, no contra el dev server**, porque lo que importa es lo
 que se sube a Vercel. El puerto 4322 es deliberado: el 4321 tiene `strictPort`,
@@ -450,7 +508,9 @@ Qué cubre, y por qué justo esto:
 |---|---|
 | 200, `<title>`, `lang`, canonical | La página deja de construirse o de identificarse |
 | Consola sin errores y sin respuestas ≥400 | Un asset renombrado, un script que revienta |
-| `hreflang` recíproco y apuntando a páginas que existen | Una ruta nueva olvidada en `STATIC_ROUTES`: `getAlternateLangUrl()` devuelve `/` en silencio y el aviso **solo salta en dev** |
+| `hreflang` recíproco, en el idioma que anuncia y apuntando a páginas que existen | Una ruta nueva olvidada en `STATIC_ROUTES`: `getLangUrls()` devuelve el grupo de la home en silencio y el aviso **solo salta en dev**. Cada versión debe declarar el mismo grupo, así que también falla una española que olvide a su gemela italiana |
+| El selector de idioma de cada página lleva a esa página en cada idioma | Que el script de la cabecera persistente deje un destino equivocado al navegar |
+| El desplegable abre, cierra con Escape y cambia de idioma sin perder la página | Que la cabecera no se ponga al día tras una navegación del `ClientRouter`, o que el panel salga en la foto de la View Transition |
 | `WebSite` JSON-LD **solo** en `/` | La regla que costó 4 meses de "phsport" en minúsculas en la SERP (`DECISIONS.md`, 2026-08-11) |
 | La marca se escribe `PHSPORT` | Que vuelva a colarse "PH Sport" en el marcado que lee Google |
 
@@ -495,7 +555,7 @@ que ejecutar nada a mano.
 | Componente | Estado | Notas |
 |---|---|---|
 | `BaseLayout.astro` | ✅ Completo | SEO, hreflang, preload fuentes, ClientRouter |
-| `Header.astro` | ✅ Completo | Flotante, scroll-hide, i18n, mobile accesible |
+| `Header.astro` | ✅ Completo | Flotante, scroll-hide, desplegable de idioma, mobile accesible |
 | `Footer.astro` | ✅ Completo | V3 editorial, social links, i18n |
 | `LogoReveal.astro` | ✅ Completo | Animación en CSS, sin JS. Una vez cada 18 h |
 | `HeroSection.astro` | ✅ Completo | Vídeo del neón (encendido y bucle) con encuadre apaisado y vertical, curtain reveal GSAP |
@@ -523,6 +583,7 @@ que ejecutar nada a mano.
 | `/en/about` | ✅ Funcional | Mirror de ES |
 | `/en/talents/` | ✅ Funcional | Mirror de ES |
 | `/en/services` | ✅ Funcional | Mirror de ES |
+| `/it/`, `/it/talenti/`, `/it/servizi`, `/it/chi-siamo` | ⏳ Funcional, texto sin revisar | Mirror de ES sin textos legales. Pendiente de revisión nativa |
 
 ### Assets y contenido
 
@@ -532,7 +593,7 @@ que ejecutar nada a mano.
 | Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
 | Fotos jugadores | ⏳ 47 de los 51 visibles | 34 ya son de la serie de estudio nueva (puestos 1 a 34); las otras 13, antiguas. Sin ninguna: Fran Manzanara, Santi Pallarés, Boston Billups y Álex Domínguez. Detalle en `docs/hallazgos-abiertos.md` (2026-10-01) |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
-| Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia |
+| Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
 | OG image (1200×630px) | ❌ Pendiente | |
 
 ### Pendientes
@@ -540,6 +601,7 @@ que ejecutar nada a mano.
 | Pendiente | Bloqueado por |
 |---|---|
 | Fotos de la selección visible: 17 por pasar a la serie de estudio, 4 de ellas sin ninguna foto (2026-10-01) | Cliente |
+| Revisión nativa de los textos en italiano (2026-10-01) | Alguien que hable italiano |
 | OG image 1200×630px | Diseño |
 | GA4 — Measurement ID | Decisión de si se integra |
 | ⚠️ Söhne `.woff2` con licencia de producción — **sigue sin comprar a 2026-08-11**, y la web está publicada desde abril con los archivos de prueba | Compra de licencia (Mario) |

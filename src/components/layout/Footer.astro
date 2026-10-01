@@ -1,5 +1,5 @@
 ---
-import { useTranslations, getLangFromUrl } from '@/i18n/utils';
+import { useTranslations, getLangFromUrl, localizePath } from '@/i18n/utils';
 import { NAV_ITEMS } from '@/lib/navigation';
 import { SOCIAL_LINKS, isSocialPlaceholder, type SocialId } from '@/lib/social';
 import FooterSocialIcon from '@/components/ui/FooterSocialIcon.astro';
@@ -12,6 +12,17 @@ const nav = NAV_ITEMS.map((item) => ({
   href: item.href[lang],
   label: t(item.labelKey),
 }));
+
+// Los textos legales no existen en italiano: desde /it/ llevan a la versión
+// inglesa (DECISIONS.md, 2026-10-01). Cuando el destino está en otro idioma, el
+// enlace lo declara con hreflang.
+const legalLinks = [
+  { href: localizePath('/aviso-legal', lang), label: t('footer.legal.notice') },
+  { href: localizePath('/privacidad', lang), label: t('footer.legal.privacy') },
+].map((link) => {
+  const targetLang = getLangFromUrl(new URL(link.href, Astro.url));
+  return { ...link, hreflang: targetLang === lang ? undefined : targetLang };
+});
 
 const socialLabel = (id: SocialId) => {
   const key = id === 'instagram' ? 'footer.social.instagram' : 'footer.social.linkedin';
@@ -116,13 +127,14 @@ const socialLabel = (id: SocialId) => {
     <div class="footer-bottom">
       <p>&copy; {year} {t('site.name')}. {t('footer.rights')}</p>
       <nav class="footer-legal" aria-label={t('footer.legal.label')}>
-        <a href={lang === 'en' ? '/en/legal-notice' : '/aviso-legal'} class="footer-legal-link">
-          {t('footer.legal.notice')}
-        </a>
-        <span class="footer-legal-sep" aria-hidden="true">·</span>
-        <a href={lang === 'en' ? '/en/privacy' : '/privacidad'} class="footer-legal-link">
-          {t('footer.legal.privacy')}
-        </a>
+        {legalLinks.map((link, i) => (
+          <>
+            {i > 0 && <span class="footer-legal-sep" aria-hidden="true">·</span>}
+            <a href={link.href} hreflang={link.hreflang} class="footer-legal-link">
+              {link.label}
+            </a>
+          </>
+        ))}
       </nav>
     </div>
   </div>

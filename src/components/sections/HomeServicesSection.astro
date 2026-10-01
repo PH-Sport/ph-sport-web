@@ -1,5 +1,5 @@
 ---
-import { useTranslations, type Lang } from '@/i18n/utils';
+import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
 
 interface Props {
   lang: Lang;
@@ -74,7 +74,7 @@ const actionPlanSub = [
   },
 ];
 
-const servicesHref = lang === 'en' ? '/en/services/' : '/servicios/';
+const servicesHref = localizePath('/servicios/', lang);
 ---
 
 <section class="home-services" id="servicios" aria-labelledby="home-services-title">

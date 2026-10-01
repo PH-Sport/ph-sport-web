@@ -1,11 +1,24 @@
 ---
-import { useTranslations, getLangFromUrl, getAlternateLangUrl } from '@/i18n/utils';
+import {
+  useTranslations,
+  getLangFromUrl,
+  getLangSwitchUrl,
+  getHomePath,
+  supportedLangs,
+  LANG_NAMES,
+  LANG_FLAGS,
+} from '@/i18n/utils';
 import { NAV_ITEMS } from '@/lib/navigation';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const alternateLangUrl = getAlternateLangUrl(Astro.url);
-const isEn = lang === 'en';
+const langOptions = supportedLangs.map((code) => ({
+  code,
+  name: LANG_NAMES[code],
+  flag: LANG_FLAGS[code],
+  href: getLangSwitchUrl(Astro.url.pathname, code),
+  current: code === lang,
+}));
 const currentPath = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/$/, '');
 
 const nav = NAV_ITEMS.map((item) => ({
@@ -22,7 +35,7 @@ const isActive = (href: string): boolean => {
 <header data-header transition:persist>
   <div class="header-shell">
     <div class="header-inner">
-      <a href={isEn ? '/en/' : '/'} class="header-logo" aria-label={t('a11y.logo')}>
+      <a href={getHomePath(lang)} class="header-logo" aria-label={t('a11y.logo')}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 259.8 206.1" fill="currentColor" aria-hidden="true">
           <polygon points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" />
           <polygon points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" />
@@ -44,24 +57,50 @@ const isActive = (href: string): boolean => {
                 </a>
               </li>
             ))}
-            <li>
-              {/* hreflang = idioma del destino, no el de esta página: declara la
-                  frontera entre las dos versiones a buscadores y lectores de pantalla. */}
-              <a
-                href={alternateLangUrl}
-                hreflang={isEn ? 'es' : 'en'}
+            <li class="lang-menu" data-lang-menu>
+              {/* Desplegable de idioma: el botón muestra el idioma actual y abre los
+                  tres. Es un botón que despliega enlaces normales (patrón
+                  "disclosure"), no un role="menu": cada opción es navegación. */}
+              <button
+                type="button"
                 class="lang-switch"
-                aria-label={t('nav.lang.switch')}
+                data-lang-trigger
+                aria-expanded="false"
+                aria-controls="lang-panel"
+                aria-label={`${t('nav.lang.menu')}: ${LANG_NAMES[lang]}`}
               >
                 <img
-                  src={isEn ? '/icons/flag-es.svg' : '/icons/flag-uk.svg'}
+                  src={LANG_FLAGS[lang]}
                   alt=""
                   width="20"
                   height="15"
                   class="lang-flag"
+                  data-lang-current-flag
                 />
-                <span class="lang-label">{t('nav.lang.label')}</span>
-              </a>
+                <span class="lang-label" data-lang-current-label>{lang.toUpperCase()}</span>
+                <svg class="lang-chevron" viewBox="0 0 10 6" width="10" height="6" aria-hidden="true">
+                  <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+              <ul id="lang-panel" class="lang-panel" data-lang-panel>
+                {langOptions.map((option) => (
+                  <li>
+                    {/* hreflang = idioma del destino, no el de esta página: declara la
+                        frontera entre versiones a buscadores y lectores de pantalla. */}
+                    <a
+                      href={option.href}
+                      hreflang={option.code}
+                      lang={option.code}
+                      class="lang-option"
+                      data-lang-option={option.code}
+                      aria-current={option.current ? 'true' : undefined}
+                    >
+                      <img src={option.flag} alt="" width="20" height="15" class="lang-flag" />
+                      <span>{option.name}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </li>
           </ul>
         </div>
@@ -118,22 +157,26 @@ const isActive = (href: string): boolean => {
 
     <div class="ph-divider"></div>
 
-    <a
-      href={alternateLangUrl}
-      hreflang={isEn ? 'es' : 'en'}
-      data-mobile-link
-      class="lang-switch lang-switch--mobile"
-      aria-label={t('nav.lang.switch')}
-    >
-      <img
-        src={isEn ? '/icons/flag-es.svg' : '/icons/flag-uk.svg'}
-        alt=""
-        width="24"
-        height="18"
-        class="lang-flag"
-      />
-      <span class="lang-label">{t('nav.lang.labelMobile')}</span>
-    </a>
+    {/* En móvil no hay desplegable dentro del menú: el menú ya es el panel que se
+        abre, así que los tres idiomas van en lista, con el actual marcado. */}
+    <ul class="lang-list--mobile" aria-label={t('nav.lang.menu')}>
+      {langOptions.map((option) => (
+        <li>
+          <a
+            href={option.href}
+            hreflang={option.code}
+            lang={option.code}
+            data-mobile-link
+            data-lang-option={option.code}
+            aria-current={option.current ? 'true' : undefined}
+            class="lang-switch lang-switch--mobile"
+          >
+            <img src={option.flag} alt="" width="24" height="18" class="lang-flag" />
+            <span class="lang-label">{option.name}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
   </div>
 </div>
 
@@ -276,14 +319,126 @@ const isActive = (href: string): boolean => {
     padding: 0.3rem 0.625rem;
     border: 1px solid var(--color-ph-white-10);
     border-radius: var(--radius-sm);
+    background-color: transparent;
+    cursor: pointer;
     transition:
       border-color var(--ph-duration) var(--ease-ph),
       background-color var(--ph-duration) var(--ease-ph);
   }
 
-  .lang-switch:hover {
+  .lang-switch:hover,
+  .lang-switch[aria-expanded='true'] {
     border-color: var(--color-ph-white-20);
     background-color: var(--color-ph-white-10);
+  }
+
+  /* ── Desplegable de idioma (escritorio) ──
+     El estado lo lleva `aria-expanded` del botón: el CSS abre el panel a partir
+     de él, así no hay dos fuentes de verdad. Misma animación que el desplegable
+     de src/scripts/dropdown.ts (entra 220 ms, sale 160 ms), en CSS para no
+     cargar GSAP en todas las páginas por la cabecera. */
+  .lang-menu {
+    position: relative;
+  }
+
+  .lang-chevron {
+    display: block;
+    color: var(--color-ph-white-60);
+    transition: transform var(--ph-duration) var(--ease-ph);
+  }
+
+  .lang-switch[aria-expanded='true'] .lang-chevron {
+    transform: rotate(180deg);
+  }
+
+  .lang-panel {
+    position: absolute;
+    top: calc(100% + 0.625rem);
+    right: 0;
+    z-index: 1;
+    min-width: 10rem;
+    padding: 0.375rem;
+    list-style: none;
+    background-color: rgba(13, 15, 18, 0.94);
+    border: 1px solid var(--ph-glass-border);
+    border-radius: var(--radius-sm);
+    backdrop-filter: var(--ph-glass-backdrop);
+    -webkit-backdrop-filter: var(--ph-glass-backdrop);
+    box-shadow: var(--ph-glass-highlight), 0 16px 40px rgba(0, 0, 0, 0.45);
+    transform-origin: top right;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition:
+      opacity 0.16s ease-in,
+      transform 0.16s ease-in,
+      visibility 0s linear 0.16s;
+  }
+
+  .lang-switch[aria-expanded='true'] + .lang-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    pointer-events: auto;
+    transition:
+      opacity 0.22s ease-out,
+      transform 0.22s ease-out,
+      visibility 0s linear 0s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lang-panel,
+    .lang-switch[aria-expanded='true'] + .lang-panel,
+    .lang-chevron {
+      transition: none;
+    }
+  }
+
+  /* Al navegar se cierra en seco. La View Transition fotografía la cabecera antes
+     del cambio de página y mantiene esa foto toda la transición: con el panel a
+     medio fundir, se vería encima ~0,4 s. Lo comprueba el smoke. */
+  .lang-menu.is-closing-instantly .lang-switch,
+  .lang-menu.is-closing-instantly .lang-panel,
+  .lang-menu.is-closing-instantly .lang-chevron {
+    transition: none;
+  }
+
+  .lang-option {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0.625rem;
+    border-radius: calc(var(--radius-sm) - 2px);
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--color-ph-white-60);
+    transition:
+      color var(--ph-duration) var(--ease-ph),
+      background-color var(--ph-duration) var(--ease-ph);
+  }
+
+  .lang-option:hover,
+  .lang-option:focus-visible {
+    color: var(--color-ph-white);
+    background-color: var(--color-ph-white-10);
+  }
+
+  /* El idioma en que se está leyendo: texto pleno y el punto dorado del indicador
+     de la navegación. */
+  .lang-option[aria-current='true'] {
+    color: var(--color-ph-white);
+  }
+
+  .lang-option[aria-current='true']::after {
+    content: '';
+    width: 0.3125rem;
+    height: 0.3125rem;
+    margin-left: auto;
+    border-radius: 50%;
+    background: var(--color-ph-gold);
   }
 
   .lang-flag {
@@ -301,9 +456,25 @@ const isActive = (href: string): boolean => {
     color: var(--color-ph-white-60);
   }
 
-  .lang-switch--mobile {
+  .lang-list--mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     width: fit-content;
+    list-style: none;
+  }
+
+  .lang-switch--mobile {
+    width: 100%;
     padding: 0.5rem 0.875rem;
+  }
+
+  .lang-switch--mobile[aria-current='true'] {
+    border-color: var(--color-ph-white-20);
+  }
+
+  .lang-switch--mobile[aria-current='true'] .lang-label {
+    color: var(--color-ph-white);
   }
 
   .lang-switch--mobile .lang-flag {
@@ -546,7 +717,7 @@ const isActive = (href: string): boolean => {
   }
 
   .mobile-menu-inner nav,
-  .mobile-menu-inner .lang-switch--mobile {
+  .mobile-menu-inner .lang-list--mobile {
     pointer-events: auto;
   }
 
@@ -632,7 +803,7 @@ const isActive = (href: string): boolean => {
     transition-duration: 0.2s;
   }
 
-  .mobile-menu.is-open.mobile-menu--closing .lang-switch--mobile {
+  .mobile-menu.is-open.mobile-menu--closing .lang-list--mobile {
     opacity: 0;
     transform: translateY(0.35rem);
     transition-delay: 0.18s;
@@ -644,7 +815,7 @@ const isActive = (href: string): boolean => {
   }
 
   .mobile-menu.mobile-menu--closing .mobile-menu-inner nav,
-  .mobile-menu.mobile-menu--closing .mobile-menu-inner .lang-switch--mobile {
+  .mobile-menu.mobile-menu--closing .mobile-menu-inner .lang-list--mobile {
     pointer-events: none;
   }
 
@@ -662,7 +833,7 @@ const isActive = (href: string): boolean => {
     transition-delay: 0.34s;
   }
 
-  .mobile-menu .lang-switch--mobile {
+  .mobile-menu .lang-list--mobile {
     opacity: 0;
     transform: translateY(0.35rem);
     transition:
@@ -670,7 +841,7 @@ const isActive = (href: string): boolean => {
       transform 0.38s var(--ease-ph);
   }
 
-  .mobile-menu.is-open .lang-switch--mobile {
+  .mobile-menu.is-open .lang-list--mobile {
     opacity: 1;
     transform: translateY(0);
     transition-delay: 0.38s;
@@ -694,9 +865,9 @@ const isActive = (href: string): boolean => {
     .mobile-menu .ph-divider,
     .mobile-menu.is-open .ph-divider,
     .mobile-menu.is-open.mobile-menu--closing .ph-divider,
-    .mobile-menu .lang-switch--mobile,
-    .mobile-menu.is-open .lang-switch--mobile,
-    .mobile-menu.is-open.mobile-menu--closing .lang-switch--mobile {
+    .mobile-menu .lang-list--mobile,
+    .mobile-menu.is-open .lang-list--mobile,
+    .mobile-menu.is-open.mobile-menu--closing .lang-list--mobile {
       opacity: 1;
       transform: none;
       transition: none;
@@ -816,47 +987,37 @@ const isActive = (href: string): boolean => {
   }
 
   // ── Rutas derivadas de la fuente central (src/lib/navigation.ts) ────────
+  // La cabecera persiste entre navegaciones (`transition:persist`): su HTML es el
+  // de la primera página que se cargó, así que todo lo que depende del idioma o
+  // de la página se reescribe aquí en cada navegación.
   import { NAV_ITEMS } from '@/lib/navigation';
-  import es from '@/i18n/es';
-  import en from '@/i18n/en';
-
-  const translations = { es, en } as const;
-
-  const NAV_HREFS = {
-    es: NAV_ITEMS.map((i) => i.href.es),
-    en: NAV_ITEMS.map((i) => i.href.en),
-  };
-
-  const NAV_LABELS = {
-    es: NAV_ITEMS.map((i) => translations.es[i.labelKey]),
-    en: NAV_ITEMS.map((i) => translations.en[i.labelKey]),
-  };
-
-  const STATIC_ROUTE_PAIRS = NAV_ITEMS.map((i) => i.href);
+  import {
+    useTranslations,
+    getLangFromUrl,
+    getLangSwitchUrl,
+    getHomePath,
+    LANG_NAMES,
+    LANG_FLAGS,
+    type Lang,
+  } from '@/i18n/utils';
 
   function norm(p: string): string {
     return p === '/' ? '/' : p.replace(/\/+$/, '');
   }
 
-  function getAlternateUrl(pathname: string): string {
-    const p = norm(pathname);
-    for (const r of STATIC_ROUTE_PAIRS) {
-      if (p === norm(r.es)) return r.en;
-      if (p === norm(r.en)) return r.es;
-    }
-    return '/';
-  }
-
   function syncHeaderToCurrentPage() {
-    const isEn = window.location.pathname.startsWith('/en');
-    const lang = isEn ? 'en' : 'es';
-    const currentPath = norm(window.location.pathname);
+    const pathname = window.location.pathname;
+    const lang = getLangFromUrl(new URL(window.location.href));
+    const t = useTranslations(lang);
+    const currentPath = norm(pathname);
+    const navHrefs = NAV_ITEMS.map((i) => i.href[lang]);
+    const navLabels = NAV_ITEMS.map((i) => t(i.labelKey));
 
     // Actualizar hrefs, labels e is-active de los enlaces de escritorio
     desktopLinks.forEach((link, i) => {
-      const href = NAV_HREFS[lang][i] ?? link.href;
+      const href = navHrefs[i] ?? link.href;
       link.href = href;
-      link.textContent = NAV_LABELS[lang][i] ?? link.textContent;
+      link.textContent = navLabels[i] ?? link.textContent;
       link.classList.toggle('is-active', norm(href) === currentPath);
     });
 
@@ -864,8 +1025,8 @@ const isActive = (href: string): boolean => {
     document
       .querySelectorAll<HTMLAnchorElement>('.mobile-nav-list .mobile-link')
       .forEach((link, i) => {
-        const href = NAV_HREFS[lang][i];
-        const label = NAV_LABELS[lang][i];
+        const href = navHrefs[i];
+        const label = navLabels[i];
         if (href) link.href = href;
         link.classList.toggle('mobile-link--active', norm(href ?? '') === currentPath);
         // Preservar el span numerador y actualizar solo el texto del label
@@ -878,26 +1039,27 @@ const isActive = (href: string): boolean => {
 
     // Logo
     const logo = document.querySelector<HTMLAnchorElement>('a.header-logo');
-    if (logo) logo.href = isEn ? '/en/' : '/';
+    if (logo) logo.href = getHomePath(lang);
 
-    // Href del selector de idioma
-    const altUrl = getAlternateUrl(window.location.pathname);
-    document.querySelectorAll<HTMLAnchorElement>('.lang-switch').forEach((el) => {
-      el.href = altUrl;
+    // Selector de idioma: el botón muestra el idioma actual…
+    setLangMenuOpen(false);
+    const trigger = getLangTrigger();
+    if (trigger) {
+      trigger.setAttribute('aria-label', `${t('nav.lang.menu')}: ${LANG_NAMES[lang]}`);
+      const flag = trigger.querySelector<HTMLImageElement>('[data-lang-current-flag]');
+      if (flag) flag.src = LANG_FLAGS[lang];
+      const label = trigger.querySelector<HTMLElement>('[data-lang-current-label]');
+      if (label) label.textContent = lang.toUpperCase();
+    }
+
+    // …y cada opción lleva a esta misma página en su idioma (o a la home de ese
+    // idioma si la página no existe en él).
+    document.querySelectorAll<HTMLAnchorElement>('[data-lang-option]').forEach((option) => {
+      const code = option.dataset.langOption as Lang;
+      option.setAttribute('href', getLangSwitchUrl(pathname, code));
+      if (code === lang) option.setAttribute('aria-current', 'true');
+      else option.removeAttribute('aria-current');
     });
-
-    // Flag (muestra la bandera del idioma DESTINO)
-    const targetLang = isEn ? 'es' : 'en';
-    document.querySelectorAll<HTMLImageElement>('.lang-flag').forEach((img) => {
-      img.src = targetLang === 'en' ? '/icons/flag-uk.svg' : '/icons/flag-es.svg';
-    });
-
-    // Label del selector — desktop: 'EN'/'ES' · móvil: 'English'/'Español'
-    const desktopLangSwitch = document.querySelector<HTMLElement>('.lang-switch:not(.lang-switch--mobile) .lang-label');
-    if (desktopLangSwitch) desktopLangSwitch.textContent = targetLang === 'en' ? 'EN' : 'ES';
-
-    const mobileLangLabel = document.querySelector<HTMLElement>('.lang-switch--mobile .lang-label');
-    if (mobileLangLabel) mobileLangLabel.textContent = targetLang === 'en' ? 'English' : 'Español';
   }
 
   if (wrap && indicator && desktopLinks.length > 0) {
@@ -955,6 +1117,86 @@ const isActive = (href: string): boolean => {
       if (activeLink) setIndicatorToLink(activeLink);
     });
   }
+
+  // ── Desplegable de idioma (escritorio) ───────────────────────────────────
+  // El estado vive en `aria-expanded` del botón y el CSS abre el panel a partir
+  // de él. El botón está en la cabecera persistente: se reconsulta cada vez en
+  // lugar de cachear el nodo, igual que el menú móvil.
+  function getLangTrigger() {
+    return document.querySelector<HTMLButtonElement>('[data-header] [data-lang-trigger]');
+  }
+
+  function isLangMenuOpen(): boolean {
+    return getLangTrigger()?.getAttribute('aria-expanded') === 'true';
+  }
+
+  function setLangMenuOpen(open: boolean) {
+    getLangTrigger()?.setAttribute('aria-expanded', String(open));
+  }
+
+  /**
+   * Mismo esquema que src/scripts/dropdown.ts: abre en `pointerup`, que iOS
+   * Safari despacha de forma fiable al primer toque incluso cuando ignora el
+   * `click` (iPad usa esta cabecera de escritorio). `click` queda para teclado y
+   * lectores de pantalla, y se descarta si el puntero ya lo gestionó.
+   */
+  let langToggledByPointer = false;
+
+  document.addEventListener('pointerup', (e) => {
+    const target = e.target as Element | null;
+    if (!target?.closest('[data-lang-trigger]')) return;
+    e.preventDefault();
+    setLangMenuOpen(!isLangMenuOpen());
+    langToggledByPointer = true;
+    requestAnimationFrame(() => {
+      langToggledByPointer = false;
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    const target = e.target as Element | null;
+    if (!target?.closest('[data-lang-trigger]') || langToggledByPointer) return;
+    setLangMenuOpen(!isLangMenuOpen());
+  });
+
+  // Se cierra al tocar fuera, al sacar el foco con el tabulador y al hacer
+  // scroll (la cápsula se esconde al bajar y se llevaría el panel abierto).
+  document.addEventListener('pointerdown', (e) => {
+    if (!isLangMenuOpen()) return;
+    const target = e.target as Element | null;
+    if (target?.closest('[data-lang-menu]')) return;
+    setLangMenuOpen(false);
+  });
+
+  document.addEventListener('focusout', (e) => {
+    if (!isLangMenuOpen()) return;
+    const menu = (e.target as Element | null)?.closest('[data-lang-menu]');
+    if (menu && !menu.contains(e.relatedTarget as Node | null)) setLangMenuOpen(false);
+  });
+
+  document.addEventListener(
+    'scroll',
+    () => {
+      if (isLangMenuOpen()) setLangMenuOpen(false);
+    },
+    { passive: true },
+  );
+
+  // Al empezar cualquier navegación (una opción del panel, atrás, otro enlace),
+  // cerrarlo sin animación antes de que la View Transition fotografíe la
+  // cabecera. Ver `.is-closing-instantly` en el CSS.
+  document.addEventListener('astro:before-preparation', () => {
+    if (!isLangMenuOpen()) return;
+    const menu = document.querySelector<HTMLElement>('[data-header] [data-lang-menu]');
+    menu?.classList.add('is-closing-instantly');
+    setLangMenuOpen(false);
+  });
+
+  document.addEventListener('astro:page-load', () => {
+    document
+      .querySelector<HTMLElement>('[data-header] [data-lang-menu]')
+      ?.classList.remove('is-closing-instantly');
+  });
 
   // ── Menú móvil ───────────────────────────────────────────────────────────
   // El overlay [data-mobile-menu] está fuera del <header transition:persist> y se
@@ -1123,7 +1365,12 @@ const isActive = (href: string): boolean => {
   document.addEventListener('astro:page-load', () => finalizeMobileMenuClose());
 
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') setMobileMenuOpen(false);
+    if (event.key !== 'Escape') return;
+    setMobileMenuOpen(false);
+    if (isLangMenuOpen()) {
+      setLangMenuOpen(false);
+      getLangTrigger()?.focus();
+    }
   });
 
   window.addEventListener('resize', () => {

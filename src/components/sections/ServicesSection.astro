@@ -1,6 +1,6 @@
 ---
 import { getServicesItems } from '@/lib/servicesItems';
-import { useTranslations, type Lang } from '@/i18n/utils';
+import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
 
 interface Props {
   lang: Lang;
@@ -69,7 +69,7 @@ const areas = [
   },
 ];
 
-const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
+const contactHref = localizePath('/#contacto', lang);
 ---
 
 <section class="srv" aria-labelledby="srv-hero-title">

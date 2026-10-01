@@ -17,9 +17,7 @@ const en: Record<TranslationKey, string> = {
   'nav.about': 'About',
   'nav.aria.main': 'Main navigation',
   'nav.aria.mobile': 'Mobile navigation',
-  'nav.lang.switch': 'Cambiar a español',
-  'nav.lang.label': 'ES',
-  'nav.lang.labelMobile': 'Español',
+  'nav.lang.menu': 'Change language',
 
   // --- Hero ---
   'hero.claim': 'Brands add up, but people make the mark',

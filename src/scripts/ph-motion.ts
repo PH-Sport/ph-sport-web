@@ -381,7 +381,18 @@ function destroy() {
 
 document.addEventListener('astro:page-load', init);
 document.addEventListener('astro:before-swap', destroy);
-document.addEventListener('astro:after-swap', () => document.documentElement.classList.add('ph-js'));
+
+// ── `ph-js` en el documento ENTRANTE, antes del swap ─────────────────────────
+// El swap resetea los atributos de <html> a los de la página nueva, que no trae
+// `ph-js` (la pone el script inline del <head> solo en la primera carga). Si se
+// añade después (en `after-swap`), la página se pinta un instante sin ella, con
+// los acordeones abiertos (`html:not(.ph-js)`), y luego se cierran animándose:
+// medio segundo de página que encoge, y al pulsar atrás el scroll acaba ~30-130 px
+// más arriba de donde estabas. Medido en la preview de Vercel el 2026-10-01.
+document.addEventListener('astro:before-swap', (e) => {
+  const newDoc = (e as Event & { newDocument?: Document }).newDocument;
+  newDoc?.documentElement.classList.add('ph-js');
+});
 
 // ── Scroll suave apagado durante la navegación ────────────────────────────────
 // global.css pone `scroll-behavior: smooth` en <html>. Al pulsar atrás, el
@@ -390,7 +401,7 @@ document.addEventListener('astro:after-swap', () => document.documentElement.cla
 // documento ENTRANTE (el swap resetea los atributos de <html> y el `scrollTo` del
 // router corre después) y se vuelve a encender pasado un segundo. Vivía en
 // ph-text-animations.ts junto al refresh de ScrollTrigger; el porqué largo está en
-// docs/trampas-conocidas.md. Quitarlo devuelve el bug.
+// docs/trampas-conocidas.md. Quitarlo vuelve a animar la restauración.
 document.addEventListener('astro:before-swap', (e) => {
   const newDoc = (e as Event & { newDocument?: Document }).newDocument;
   if (newDoc) newDoc.documentElement.style.scrollBehavior = 'auto';

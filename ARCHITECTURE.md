@@ -384,7 +384,10 @@ hero, la intro del logo (`LogoReveal`), el fundido entre páginas y las luces de
 fondo de Talentos, Servicios y Sobre nosotros.
 
 **Sin JavaScript todo se lee**: `html:not(.ph-js)` deja abiertos acordeones y
-paneles. La clase `ph-js` la pone el script inline del `<head>`.
+paneles. La clase `ph-js` la pone el script inline del `<head>` en la primera
+carga y, al navegar, `ph-motion.ts` la copia al documento entrante **antes** del
+swap. Si se pone después, la página llega con los acordeones abiertos, se cierran
+animándose y el scroll al pulsar atrás acaba decenas de píxeles desplazado.
 
 **El scroll suave se apaga durante la navegación** (al final de `ph-motion.ts`).
 Antes vivía en el módulo de GSAP; si se quita, al pulsar atrás la restauración

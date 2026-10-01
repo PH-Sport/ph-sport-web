@@ -13,7 +13,59 @@ leído el resto.
 
 ---
 
+## 2026-10-01 · El hero: logo centrado, menos brillo y cámara con coreografía
+
+**Decisión** (de Mario, al ver en preview la versión de la entrada de abajo): el
+logo pasa al centro de la pantalla, el resplandor baja y la cámara deja la deriva
+casi quieta por una coreografía. Lo demás de esa entrada sigue igual: dos piezas
+por pantalla, pósters, códecs y arranque.
+
+**La cámara.** El encendido se acerca desde un plano más abierto y algo girado.
+El bucle recorre cinco poses (`SHOTS` en `scripts/hero-neon/neon.html`): giros
+de hasta 18° a un lado y a otro, picado, contrapicado, inclinaciones de hasta
+3,5° y acercamientos, con un pulso leve de cámara en mano. Las une una curva
+Catmull-Rom cerrada, sin esquinas, y el encendido llega a la primera pose con su
+misma velocidad: el bucle y el relevo entre vídeos siguen sin saltos. La cámara
+orbita alrededor del centro del logo, por eso este no sale del centro aunque
+gire.
+
+**El brillo.** Bajan el halo cercano (−34 %), el velo amplio (−42 %), la luz
+sobre la pared (−20 %), el bloom (−30 %) y la emisión del tubo (−20 %). **Rodeo:**
+el primer ajuste bajó más (halo −48 %, pared −31 %) y la pared perdió casi toda
+la luz cálida, que es lo que hace que se lea como un rótulo real. Se quedó en el
+punto intermedio.
+
+**Lo que se acepta al centrar.** El encuadre de la entrada de abajo ponía el logo
+arriba a la derecha para que el titular no lo pisara. Centrado, en portátiles
+16:10, la parte baja del logo pasa por detrás del titular en los planos más
+cercanos; el degradado oscuro de abajo lo suaviza. Decisión de Mario.
+
+**Cifras** (mismos CRF; SSIM contra referencia casi sin pérdida):
+
+| Archivo | HEVC | H.264 | SSIM HEVC / H.264 |
+|---|---:|---:|---|
+| Encendido apaisado (3 s) | 151 KB | 492 KB | 0,981 / 0,980 |
+| Bucle apaisado (12 s) | 433 KB | 1.323 KB | 0,981 / 0,980 |
+| Encendido vertical (3 s) | 144 KB | 441 KB | 0,980 / 0,979 |
+| Bucle vertical (12 s) | 411 KB | 1.198 KB | 0,981 / 0,980 |
+
+Más movimiento de cámara es menos parecido entre fotogramas: el bucle en HEVC
+pesa un 70 % más que con la deriva quieta, y en H.264 un 20 %. Un iPhone baja
+unos 565 KB y un Android unos 1,65 MB (escritorio: 590 KB en Safari, 1,8 MB en
+Chrome).
+
+**Por qué la carpeta sigue siendo `2026-10`** aunque cambian los archivos: los
+anteriores no llegaron a producción. Solo estuvieron en un despliegue de preview,
+y cada despliegue de Vercel tiene su propia URL, así que nadie tiene en caché la
+versión vieja con la dirección nueva.
+
+---
+
 ## 2026-10-01 · El hero vuelve a ser vídeo: el rótulo de neón, renderizado, que se enciende una vez y queda encendido
+
+> ⚠️ **Encuadre, brillo y cámara SUPERADOS el mismo día** por la entrada de
+> arriba (logo centrado, menos brillo, coreografía de cámara). Las cifras de
+> peso de esta entrada son de la primera versión. El resto sigue vigente.
 
 **Decisión** (de Mario): la foto fija del 2026-09-25 se sustituye por un vídeo
 del mismo motivo —el logo como rótulo de neón LED sobre metacrilato, en la pared

@@ -197,14 +197,65 @@ function timeline(tAbs) {
   return { t, prog, I: [I, IB], head, pre };
 }
 
-function camera(tAbs, base) {
-  const w = 2 * Math.PI * tAbs / LOOP_T;
+// Coreografía de cámara. La cámara orbita alrededor del centro del logo, así que
+// el logo se queda en el centro de la pantalla mientras cambia el ángulo.
+// Poses: giro (yaw), picado (+) o contrapicado (−) (pitch) e inclinación (roll) en
+// grados; distancia relativa (1 = encuadre base; menos, más cerca); paneo (px, py)
+// en unidades del mundo. El bucle es cerrado: tras la última pose vuelve a la
+// primera, y las curvas que las unen (Catmull-Rom) no tienen esquinas.
+const SHOTS = [
+  { t: 0.0,  yaw: 0,   pitch: 0,  roll: 0,    dist: 1.00, px: 0,   py: 0 },
+  { t: 2.6,  yaw: -17, pitch: 7,  roll: 2.5,  dist: 0.93, px: -50, py: 10 },
+  { t: 5.2,  yaw: -5,  pitch: -9, roll: -1.5, dist: 0.82, px: 30,  py: 40 },
+  { t: 7.8,  yaw: 18,  pitch: 3,  roll: -3.5, dist: 0.94, px: 50,  py: -20 },
+  { t: 10.2, yaw: 7,   pitch: 8,  roll: 1.2,  dist: 1.07, px: 0,   py: -25 },
+];
+// El encendido arranca más lejos y algo girado, y se acerca hasta la primera pose
+// del bucle llegando con su misma velocidad: el relevo entre vídeos no se nota.
+const INTRO_POSE = { yaw: -9, pitch: 5, roll: 1.5, dist: 1.22, px: 0, py: 0 };
+const POSE_KEYS = ['yaw', 'pitch', 'roll', 'dist', 'px', 'py'];
+
+function hermite(p0, p1, m0, m1, u, dt) {
+  const u2 = u*u, u3 = u2*u;
+  return (2*u3 - 3*u2 + 1)*p0 + (u3 - 2*u2 + u)*dt*m0 + (-2*u3 + 3*u2)*p1 + (u3 - u2)*dt*m1;
+}
+// Tangente de la pose i del bucle (Catmull-Rom con tiempos no uniformes, cerrada).
+function loopTangent(i, k) {
+  const n = SHOTS.length;
+  const prev = SHOTS[(i - 1 + n) % n], next = SHOTS[(i + 1) % n];
+  const tPrev = i === 0 ? prev.t - LOOP_T : prev.t;
+  const tNext = i === n - 1 ? next.t + LOOP_T : next.t;
+  return (next[k] - prev[k]) / (tNext - tPrev);
+}
+function poseAt(tAbs) {
+  const pose = {};
+  if (tAbs < INTRO_T) {
+    const u = tAbs / INTRO_T;
+    for (const k of POSE_KEYS) pose[k] = hermite(INTRO_POSE[k], SHOTS[0][k], 0, loopTangent(0, k), u, INTRO_T);
+    return pose;
+  }
+  const t = localTime(tAbs) - INTRO_T;
+  const n = SHOTS.length;
+  let i = n - 1;
+  for (let j = 0; j < n; j++) if (t >= SHOTS[j].t) i = j;
+  const a = SHOTS[i], b = SHOTS[(i + 1) % n];
+  const tb = i === n - 1 ? LOOP_T : b.t;
+  const dt = tb - a.t, u = (t - a.t) / dt;
+  for (const k of POSE_KEYS) pose[k] = hermite(a[k], b[k], loopTangent(i, k), loopTangent((i + 1) % n, k), u, dt);
+  return pose;
+}
+
+function camera(tAbs) {
+  const p = poseAt(tAbs);
   const rad = Math.PI / 180;
-  const yaw = 4.2*rad*Math.sin(w) + 0.25*rad*Math.sin(3*w + 0.7);
-  const pitch = 1.8*rad*Math.cos(w) + 0.6*rad*Math.sin(2*w + 1.1);
-  const roll = 0.35*rad*Math.sin(w + 0.4) + 0.05*rad*Math.sin(5*w);
-  const D = 2400 * (1 - 0.045 * (0.5 - 0.5*Math.cos(w)));
-  const tg = [base[0] + 12*Math.sin(w + 0.3), base[1] + 8*Math.sin(2*w), 0];
+  // Pulso de cámara en mano, muy leve; frecuencias múltiplo de 1/LOOP_T para que el
+  // bucle cierre.
+  const w = 2 * Math.PI * tAbs / LOOP_T;
+  const yaw = (p.yaw + 0.22*Math.sin(5*w + 0.7) + 0.12*Math.sin(11*w + 2.1)) * rad;
+  const pitch = (p.pitch + 0.18*Math.sin(6*w + 1.3) + 0.10*Math.sin(13*w)) * rad;
+  const roll = (p.roll + 0.10*Math.sin(7*w + 0.4)) * rad;
+  const D = 2400 * p.dist;
+  const tg = [p.px, p.py, 0];
   const C = [tg[0] + D*Math.sin(yaw)*Math.cos(pitch), tg[1] - D*Math.sin(pitch), D*Math.cos(yaw)*Math.cos(pitch)];
   const f = norm3(sub3(tg, C));
   const U = [0, -1, 0];
@@ -400,7 +451,7 @@ void main(){
 
   vec3 amb = ambientIrr(pW);
   float ambDir = 0.65 + 0.5*dot(nW, normalize(AMB_DIR));
-  vec3 col = feltAlb*ao*(NEON*Ew*75.0 + amb*ambDir);
+  vec3 col = feltAlb*ao*(NEON*Ew*60.0 + amb*ambDir);
 
   // --- Metacrilato: transmisión, dispersión interna, reflejo y canto pulido ---
   float sdF = sdPlate(pP);
@@ -410,7 +461,7 @@ void main(){
   float cosv = -rd.z;
   float fres = 0.04 + 0.96*pow(1.0 - cosv, 5.0);
   vec3 refl = env(reflect(rd, vec3(0,0,1)));
-  vec3 plateCol = col*0.90 + NEON*halo*0.8 + refl*fres;
+  vec3 plateCol = col*0.90 + NEON*halo*0.6 + refl*fres;
   col = mix(col, plateCol, inF);
   float edgeLine = 1.0 - smoothstep(0.35, 0.35 + 1.4*pw, abs(sdF + 0.3));
   float side = ((sdF > 0.0) != (sdB > 0.0)) ? 1.0 : 0.0;
@@ -454,14 +505,14 @@ void main(){
   vec3 nTube = normalize(vec3(pdir*xr, sqrt(max(1.0 - xr*xr, 0.0))));
   float prof = 0.55 + 0.45*sqrt(max(1.0 - xr*xr, 0.0));
   vec3 core = mix(NEON, vec3(1.0), 0.45);
-  vec3 emit = core*15.0*Il*litF*(1.0 + boost)*prof;
+  vec3 emit = core*12.0*Il*litF*(1.0 + boost)*prof;
   float fT = 0.04 + 0.96*pow(1.0 - max(dot(-rd, nTube), 0.0), 5.0);
   vec3 body = vec3(0.80, 0.78, 0.74)*(amb*(0.55 + 0.6*max(dot(nTube, normalize(AMB_DIR)), 0.0)) + NEON*halo*4.0)
             + env(reflect(rd, nTube))*fT*0.6;
   col = mix(col, emit + body, covT);
 
   // --- Halo cercano (dispersión en el aire y el difusor) ---
-  col += NEON*(halo*5.0 + haloW*0.12);
+  col += NEON*(halo*3.3 + haloW*0.07);
   col += sparkCol;
 
   fragColor = vec4(col, 1.0);
@@ -616,16 +667,13 @@ function renderFrame(tAbs, frameIdx) {
   gl.bindTexture(gl.TEXTURE_2D, segTex);
   gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, NSEG, 3, gl.RGBA, gl.FLOAT, segData);
 
-  // Encuadre. El logo mide 1144 × 908 unidades. En apaisado ocupa el 54 % del alto
-  // con el centro en (58 %, 37 %): queda por encima y a la derecha del titular, que
-  // vive abajo a la izquierda. En vertical ocupa el 84 % del ancho con el centro al
-  // 40 % del alto, por encima del titular. Las cuentas del `object-position` de
-  // HeroSection.astro salen de estas cifras: si cambian aquí, hay que rehacerlas.
-  const F = FRAME === 'portrait'
-    ? { cx: 0.50, cy: 0.40, scale: 0.84 * W / 1144 }
-    : { cx: 0.58, cy: 0.37, scale: 0.54 * H / 908 };
-  const focal = 2400 * F.scale;
-  const cam = camera(tAbs, [-(F.cx - 0.5) * W / F.scale, -(F.cy - 0.5) * H / F.scale]);
+  // Encuadre base (pose con distancia 1), con el logo en el centro. El logo mide
+  // 1144 × 908 unidades: en apaisado ocupa el 48 % del alto; en vertical, el 70 %
+  // del ancho. Con el acercamiento más fuerte de la coreografía (0,82) llega al
+  // 59 % y al 85 %: el margen está pensado para que nunca se salga del encuadre.
+  const scale = FRAME === 'portrait' ? 0.70 * W / 1144 : 0.48 * H / 908;
+  const focal = 2400 * scale;
+  const cam = camera(tAbs);
 
   const sparks = new Float32Array(20);
   let si = 0;
@@ -690,7 +738,7 @@ function renderFrame(tAbs, frameIdx) {
   bindTex(1, targets.mips[0].tex, P_COMP.u.uBloom);
   gl.uniform2f(P_COMP.u.uRes, W, H);
   gl.uniform1f(P_COMP.u.uFrame, frameIdx);
-  gl.uniform1f(P_COMP.u.uBloomK, 0.04);
+  gl.uniform1f(P_COMP.u.uBloomK, 0.028);
   gl.uniform1f(P_COMP.u.uExposure, 0.75);
   gl.uniform1f(P_COMP.u.uGrain, GRAIN);
   draw(P_COMP, null);

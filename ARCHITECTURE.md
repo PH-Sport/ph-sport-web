@@ -210,8 +210,8 @@ Para cambiar el encuadre, el color o el ritmo, se toca el render y se regenera.
 
 | Pieza | Qué es | Cómo se reproduce |
 |---|---|---|
-| Encendido (3 s) | El rótulo apagado se enciende: la luz recorre el tubo desde la unión de las dos piezas, titubea y se estabiliza | Una vez, a mano tras `load` |
-| Bucle (12 s) | El rótulo encendido, con un zumbido sutil, un fallo breve de la flecha pequeña y un movimiento lento de cámara | En bucle, al acabar el encendido |
+| Encendido (3 s) | El rótulo apagado se enciende mientras la cámara se acerca: la luz recorre el tubo desde la unión de las dos piezas, titubea y se estabiliza | Una vez, a mano tras `load` |
+| Bucle (12 s) | El rótulo encendido, con un zumbido sutil y un fallo breve de la flecha pequeña, mientras la cámara recorre cinco planos: giros a un lado y a otro, picado, contrapicado, inclinaciones y acercamientos. Orbita alrededor del logo, que no sale del centro | En bucle, al acabar el encendido |
 
 El último fotograma del encendido es el primero del bucle, y el último del bucle
 enlaza con su primero: no hay saltos. El bucle se descarga mientras se ve el
@@ -222,13 +222,14 @@ estrecha que 9:10):
 
 | Pantalla | Archivo | Encuadre |
 |---|---|---|
-| Horizontal, o casi | 1920×1080 | Logo al 54 % del alto, centrado en (58 %, 37 %): arriba a la derecha, libre del titular también en portátiles 16:10 |
-| Vertical | 886×1920 (9:19,5) | Logo al 84 % del ancho, centrado al 40 % del alto, por encima del titular |
+| Horizontal, o casi | 1920×1080 | Logo centrado, al 48 % del alto en el plano base y hasta ~59 % en el más cercano |
+| Vertical | 886×1920 (9:19,5) | Logo centrado, al 70 % del ancho en el plano base y hasta ~85 % en el más cercano |
 
 El vertical es 9:19,5 porque es la proporción más estrecha de los móviles: con
 `object-fit: cover`, en pantallas menos alargadas sobra pared por arriba y por
-abajo, nunca logo. El `object-position` de `HeroSection.astro` sale de estas
-cifras; si cambia el encuadre del render, hay que rehacerlo.
+abajo, nunca logo. La coreografía (`SHOTS` en el render) y estos tamaños están
+pensados para que el logo no se salga nunca del encuadre: si se cambian, hay que
+mirar los planos más cercanos en los dos formatos.
 
 **Lo que se ve antes y en lugar del vídeo** son pósters: fotogramas exactos con el
 mismo encuadre.

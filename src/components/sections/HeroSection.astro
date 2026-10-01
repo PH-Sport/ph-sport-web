@@ -96,13 +96,13 @@ const t = useTranslations(lang);
       var(--ph-section-bg, #0d0f12);
   }
 
-  /* Póster y vídeos llenan el hero con `cover`. Los vídeos están encuadrados
-     para la web (scripts/hero-neon/neon.html): en el apaisado el logo ocupa el
-     54 % del alto con el centro en (58 %, 37 %), arriba a la derecha y libre del
-     titular también en portátiles 16:10. `object-position` decide qué se recorta
-     cuando la pantalla no es 16:9: con 64 % el logo cabe entero hasta la
-     proporción 9:10, y con 37 % en vertical cabe hasta 21:9. Si se cambia el
-     encuadre del render, hay que rehacer estas cuentas. */
+  /* Póster y vídeos llenan el hero con `cover`, centrados. El render
+     (scripts/hero-neon/neon.html) pone el logo en el centro del encuadre y la
+     cámara orbita a su alrededor, así que sigue en el centro aunque gire. En el
+     apaisado, en su plano más cercano, el logo ocupa el ~45 % del ancho: cabe
+     entero hasta la proporción 9:10, donde pasa al encuadre vertical (9:19,5,
+     con el logo al 70 % del ancho): en pantallas menos alargadas que ese,
+     `cover` recorta pared por arriba y por abajo, nunca logo. */
   .hero-poster,
   .hero-video {
     position: absolute;
@@ -110,16 +110,7 @@ const t = useTranslations(lang);
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 64% 37%;
-  }
-
-  /* En vertical (más estrecha que 9:10, igual que `HERO_PORTRAIT_MEDIA` en
-     heroMedia.ts) llega el encuadre vertical, 9:19,5: el logo ocupa el 84 % del
-     ancho con el centro al 40 % del alto, por encima del titular. En pantallas
-     menos alargadas, `cover` recorta pared por arriba y por abajo, nunca logo. */
-  @media (max-aspect-ratio: 9/10) {
-    .hero-poster,
-    .hero-video { object-position: 50% 40%; }
+    object-position: 50% 50%;
   }
 
   .hero-poster { z-index: 1; }

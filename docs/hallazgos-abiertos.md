@@ -229,9 +229,10 @@ Uno nuevo por visita: `initHeroScrollCue` registra una función nueva en cada
 
 ### Vídeo del hero: sin probar en un iPhone real (2026-10-01)
 
-El vídeo renderizado del neón sustituyó a la foto (`DECISIONS.md`, 2026-10-01) y
-con él se cerraron los dos hallazgos de la foto: el titular ya no cae sobre el
-logo y la resolución ya no depende de un original. Queda:
+El vídeo renderizado del neón sustituyó a la foto (`DECISIONS.md`, 2026-10-01):
+la resolución ya no depende de un original. El titular sí vuelve a compartir
+sitio con la parte baja del logo en los planos cercanos de pantallas 16:10, por
+decisión de Mario (logo centrado; misma fecha). Queda:
 
 - **Nada se ha visto en un iPhone real.** Comprobado en Chromium y en WebKit (el
   motor de Safari) con Playwright, en escritorio a 1440×900 y con un Pixel 7 y

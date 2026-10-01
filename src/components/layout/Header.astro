@@ -182,8 +182,13 @@ const isActive = (href: string): boolean => {
 
 <style>
   /* ── Cápsula flotante (glass / sólido / hide-on-scroll en BaseLayout global) ── */
+  /* Margen exterior y relleno interior a medias (½ del margen de sección cada uno):
+     así el logo y la última opción del menú caen en la misma vertical que los
+     textos de las páginas (que van a 1 margen del borde), y la cápsula sobresale
+     un poco a cada lado. Antes eran un margen completo cada uno y el logo quedaba
+     el doble de metido que el texto. */
   .header-shell {
-    width: calc(100% - 2 * var(--ph-section-px));
+    width: calc(100% - var(--ph-section-px));
     margin-inline: auto;
     /* Con `viewport-fit=cover` el `top: 0` del header queda debajo de la barra de
        estado: se le suma la zona segura para que la cápsula siga cayendo por debajo.
@@ -212,7 +217,7 @@ const isActive = (href: string): boolean => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-inline: var(--ph-section-px);
+    padding-inline: calc(var(--ph-section-px) / 2);
     padding-block: 1.25rem;
   }
 

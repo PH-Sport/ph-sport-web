@@ -13,6 +13,67 @@ leído el resto.
 
 ---
 
+## 2026-10-01 · Cabecera «Escenario» para Talentos, Servicios y Sobre nosotros, y logo en la vertical del texto
+
+**Decisión** (de Mario, tras ver en el móvil los fondos animados: «hay unos
+difuminados un poco feos en los bordes» y «los textos no están ubicados de manera
+atractiva»; pidió el mismo texto con una organización más profesional): las tres
+cabeceras pasan a un sistema común, «Escenario». La luz animada llena toda la
+cabecera, desde detrás del menú hasta una línea que la cierra, y se apaga sola
+hacia el texto. Los textos se apoyan abajo en una rejilla de 12 columnas, con el
+titular a la izquierda y la introducción a la derecha. Descripción completa en
+`ARCHITECTURE.md`, «Cabecera «Escenario» y fondos animados».
+
+**Qué se midió antes de decidir** (revisión de diseño y detector, 2026-10-01):
+
+- **Los «difuminados feos» eran una placa.** Los contenedores de la versión
+  anterior conservaban el fondo de respaldo de las fotos: `#15171b` opaco más un
+  halo dorado que se pintaba siempre. Dentro de la caja la luminancia era 24-33
+  frente a 14,8 de la página: se veía un rectángulo más claro, de esquinas
+  redondeadas por los dos `mask-image` cruzados, con un «techo» a 70 px del menú.
+- **La caja iba por el alto de la pantalla, no por el contenido.** En Servicios, a
+  1920×1080, acababa 359 px por debajo de la cabecera y cruzaba la línea divisoria
+  y el titular de Áreas. En Talentos se metía entre las tarjetas. En Sobre nosotros,
+  el punto más brillante de la luz lo cortaba en seco el borde inferior.
+- **Tres sistemas distintos**: titulares de 112, 108 y 84 px, separaciones y
+  estructuras diferentes, y el logo del menú el doble de metido que el texto.
+
+**Qué cambia**:
+
+- Los fundidos pasan al shader (`stageMask`); el contenedor ya no tiene fondo ni
+  máscaras, así que no hay borde de caja que ver. El halo de CSS queda solo para
+  cuando no hay WebGL2.
+- Mismas cifras en las tres (`--ph-stage-*` en `global.css`); titular a
+  `clamp(44px, 7.4vw, 108px)`.
+- **Sobre nosotros** deja las dos columnas (texto y foto). El primer párrafo es la
+  introducción; valores y pie forman una franja bajo la línea (el pie pierde su
+  etiqueta flotante); los párrafos 2 y 3 van debajo, en dos columnas. Mismo texto
+  y mismo orden.
+- **Talentos**: el buscador, que medía más de 1.000 px para 51 nombres, se queda
+  en 520 px en escritorio, con los filtros a la derecha.
+- **Servicios**: la línea que cierra la cabecera no se había visto nunca (el CSS la
+  deja a ancho 0 y GSAP la animaba `from` 0, de 0 a 0). Ahora se dibuja de borde a
+  borde y hace de separador con Áreas, que pierde su borde superior para no
+  duplicarla.
+- **Logo**: la cápsula del menú se aparta medio margen del borde y deja medio
+  margen de relleno, así el logo cae en la vertical del texto en toda la web
+  (antes, un margen completo cada uno).
+
+**Alternativas consideradas** (se le propusieron a Mario con capturas y medidas):
+
+- *«Vitrina»*: la animación en un marco limpio a la derecha, sin fundidos. Más
+  segura, pero pierde la atmósfera que justificaba el cambio de las fotos.
+- *«Índice editorial»*: columna estrecha con número y sección, y una columna de
+  luz a la derecha. Aire de revista; la más arriesgada y la que más se aleja del
+  resto de la web.
+
+**Lo que no se toca**: los textos y la tipografía (Söhne; su licencia es una
+decisión pendiente de Mario). Al revisar se vio que las cursivas de los titulares
+son sintéticas, porque no hay archivo de Söhne cursiva: queda anotado en
+`docs/hallazgos-abiertos.md`.
+
+---
+
 ## 2026-10-01 · PHSPORT opera en Italia: los países pasan de 6 a 7
 
 **Decisión** (de Mario): con la entrada de Tommaso Armari en el equipo, en el
@@ -92,6 +153,11 @@ la home del idioma elegido, porque quien elige idioma pide leer en él.
 ---
 
 ## 2026-10-01 · Fondos animados en directo para Talentos, Servicios y Sobre nosotros
+
+> ⚠️ **Composición SUPERADA el mismo día** por la entrada «Cabecera «Escenario»…»
+> (arriba): el fondo ya no va en el contenedor de las fotos, sino en toda la
+> cabecera, y los fundidos los hace el shader. Las escenas, el motivo de hacerlo
+> en directo y lo que se retira siguen vigentes.
 
 **Decisión** (de Mario: «las fotos se han quedado anticuadas»; pidió animaciones
 en bucle, de alta tasa de refresco, que acompañen sin quitar atención y con la

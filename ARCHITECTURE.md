@@ -47,7 +47,7 @@ ph-sport-web/
 │   │   ├── LogoReveal.astro         # Intro de la home — animación en CSS, sin GSAP
 │   │   ├── layout/
 │   │   │   ├── BaseLayout.astro     # Layout raíz: meta, fuentes, global CSS
-│   │   │   ├── Header.astro         # Flotante, scroll-hide, desplegable de idioma
+│   │   │   ├── Header.astro         # Flotante, scroll-hide, desplegable de idioma; logo en la vertical del texto
 │   │   │   └── Footer.astro         # V3 editorial, social links
 │   │   ├── sections/
 │   │   │   ├── HeroSection.astro        # Vídeo del neón (encendido + bucle), GSAP curtain reveal
@@ -105,7 +105,7 @@ ph-sport-web/
 │   │
 │   ├── scripts/                     # Scripts vanilla para interacciones y animaciones
 │   │   ├── dropdown.ts              # SIN USO: nadie lo importa. Talentos monta su combo aparte
-│   │   ├── ph-ambient.ts            # Fondos animados de Talentos, Servicios y Sobre nosotros (WebGL2 en directo)
+│   │   ├── ph-ambient.ts            # Luz animada de la cabecera «Escenario» (Talentos, Servicios, Sobre nosotros; WebGL2 en directo)
 │   │   └── ph-text-animations.ts   # Sistema GSAP de sección (reveals, stagger, refresh coalescido)
 │   │
 │   └── styles/
@@ -335,13 +335,28 @@ Las animaciones de sección están en `src/scripts/ph-text-animations.ts`. El si
 
 **Regla**: GSAP en componentes `.astro` va siempre en un `<script>` inline que importa de `ph-text-animations.ts`. No importar GSAP directamente en el markup de un `.astro`.
 
-### Fondos animados de sección
+### Cabecera «Escenario» y fondos animados
 
-Las cabeceras de Talentos, Servicios y Sobre nosotros llevan un fondo animado en
-lugar de foto desde el 2026-10-01 (`DECISIONS.md`, misma fecha). Cada uno es un
-`<canvas class="ph-ambient" data-ambient="<escena>">` dentro del contenedor de
-fondo de siempre (mismo tamaño, posición y fundidos), y lo dibuja en directo
-`src/scripts/ph-ambient.ts` con un shader de WebGL2.
+Talentos, Servicios y Sobre nosotros comparten una misma cabecera, «Escenario»,
+desde el 2026-10-01 (`DECISIONS.md`, misma fecha):
+
+- **La luz llena la cabecera entera**, desde detrás del menú (las tres páginas usan
+  `hasHero`, así que empiezan en y=0) hasta la línea que la cierra, y no pasa de
+  ahí. Es un `<div class="ph-stage-bg">` con `inset: 0` dentro de la cabecera.
+- **Los textos se apoyan abajo** en una rejilla de 12 columnas: rótulo arriba,
+  titular en las columnas 1-8 e introducción en las 9-12, con su última línea a la
+  altura de la del titular (`align-items: last baseline`). En móvil, una columna
+  con la luz detrás.
+- **Una línea de borde a borde la cierra.** Debajo va lo propio de cada página: los
+  controles en Talentos; Áreas en Servicios (que por eso no lleva borde superior);
+  en Sobre nosotros, una franja con los valores y el pie, y los párrafos 2 y 3 en
+  dos columnas.
+- **Mismas cifras en las tres**: tamaño del titular, alturas, márgenes y separación
+  entre columnas salen de `--ph-stage-*` en `global.css`. Cambiarlas ahí cambia
+  las tres páginas a la vez.
+
+El fondo es un `<canvas class="ph-ambient" data-ambient="<escena>">` que dibuja en
+directo `src/scripts/ph-ambient.ts` con un shader de WebGL2:
 
 | Sección | Escena | Qué se ve |
 |---|---|---|
@@ -351,20 +366,28 @@ fondo de siempre (mismo tamaño, posición y fundidos), y lo dibuja en directo
 
 Cómo convive con la página, todo dentro del módulo:
 
+- **Los fundidos los hace el shader** (`stageMask`): la luz se apaga bajo el menú,
+  hacia la línea de cierre y, en escritorio, hacia la izquierda, donde va el texto.
+  No hay `mask-image` ni fondo de color en el contenedor: con una caja con
+  fundidos de CSS se veía su borde (la «placa» gris de la primera versión).
 - **Solo dibuja en pantalla**: se pausa fuera de la vista (`IntersectionObserver`) y
   con la pestaña oculta. Va a la frecuencia de la pantalla.
 - **`prefers-reduced-motion`**: un fotograma fijo, sin animación.
-- **Se suma al fondo**: salida premultiplicada, así que no tapa nada y hereda los
-  `mask-image` del contenedor.
+- **Se suma al fondo**: salida premultiplicada, así que no tapa nada.
 - **ClientRouter**: al cambiar de página destruye los contextos de WebGL de la que
   se va (el navegador tiene un tope de contextos vivos).
-- **Sin WebGL2**: el canvas queda transparente y se ve un halo dorado de CSS en el
-  contenedor.
-- **Densidad**: resolución interna con tope de 1,5 px por px CSS (y al 60 % en
+- **Sin WebGL2**: el canvas queda transparente y se ve un halo dorado de CSS
+  (`.ph-ambient:not(.is-live)`); con la animación en marcha lleva `is-live` y el
+  halo desaparece.
+- **Densidad**: resolución interna con tope de 1,5 px por px CSS (y al 75 % en
   `calidez`, que es suave). Más no se nota en algo tan tenue y cuesta GPU.
 
 Para tocar una escena: su shader está en el mismo archivo. Se ve en directo con
 `npm run dev`.
+
+**El logo del menú cae en la misma vertical que los textos.** La cápsula del
+menú se aparta medio margen de sección del borde y deja medio margen de relleno
+(`Header.astro`), así el logo queda a un margen completo, como los textos.
 
 **No hay islands de React en el proyecto** — cero archivos `.tsx`, y `@astrojs/react` no está en `astro.config.mjs`. La última (`LogoReveal`) se migró a vanilla el 2026-06-25. Si alguna vez hiciera falta una, sería una decisión nueva a registrar en `DECISIONS.md`, no la aplicación de un patrón existente.
 

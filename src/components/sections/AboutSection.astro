@@ -23,26 +23,30 @@ const internationalCountries = [
 ---
 
 <section class="about-section" aria-labelledby="about-hero-title">
-  <!-- 01 HERO SPLIT -->
+  <!-- 01 HERO: cabecera «Escenario», como Talentos y Servicios. La luz animada
+       la llena entera; titular e introducción se apoyan abajo. -->
   <div class="abt-hero">
-    <div class="abt-hero__left">
-      <div>
-        <div class="abt-eyebrow" data-reveal>{t('about.hero.eyebrow')}</div>
-        <h1 id="about-hero-title" class="abt-hero__title" data-reveal>
-          {t('about.hero.titlePre')}<span class="abt-gold">{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
-        </h1>
-        <p class="abt-hero__body" data-reveal>{t('about.hero.body1')}</p>
-        <p class="abt-hero__body" data-reveal>{t('about.hero.body2')}</p>
-        <p class="abt-hero__body" data-reveal>{t('about.hero.body3')}</p>
-      </div>
-      <div class="abt-hero__values" data-reveal>{t('about.hero.values')}</div>
+    <div class="ph-stage-bg" aria-hidden="true">
+      <canvas class="ph-ambient" data-ambient="calidez"></canvas>
     </div>
-    <div class="abt-hero__right">
-      <div class="abt-hero__visual" aria-hidden="true">
-        <canvas class="ph-ambient" data-ambient="calidez"></canvas>
-      </div>
-      <div class="abt-hero__caption">{t('about.hero.caption')}</div>
+    <div class="abt-hero__grid">
+      <div class="abt-eyebrow abt-hero__eyebrow" data-reveal>{t('about.hero.eyebrow')}</div>
+      <h1 id="about-hero-title" class="abt-hero__title" data-reveal>
+        {t('about.hero.titlePre')}<span class="abt-gold">{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
+      </h1>
+      <p class="abt-hero__body abt-hero__lead" data-reveal>{t('about.hero.body1')}</p>
     </div>
+  </div>
+
+  <!-- Bajo la línea de la cabecera: valores y pie en una franja, y el resto de la
+       presentación en dos columnas. Mismo texto y mismo orden que antes. -->
+  <div class="abt-hero__rail">
+    <div class="abt-hero__values" data-reveal>{t('about.hero.values')}</div>
+    <div class="abt-hero__caption">{t('about.hero.caption')}</div>
+  </div>
+  <div class="abt-intro">
+    <p class="abt-hero__body" data-reveal>{t('about.hero.body2')}</p>
+    <p class="abt-hero__body" data-reveal>{t('about.hero.body3')}</p>
   </div>
 
   <!-- 02 MANIFESTO (Now. Next. Forever Football. — explicado por bloques) -->
@@ -158,137 +162,106 @@ const internationalCountries = [
     color: var(--abt-gold);
   }
 
-  /* Page-hero eyebrow: barra dorada 28px como prefijo, alineada con el patrón de Servicios/Talentos. */
-  .about-section .abt-hero__left .abt-eyebrow {
+  /* Rótulo de la cabecera: barra dorada de 28px delante, como en Servicios y Talentos. */
+  .about-section .abt-hero__eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 10px;
+    grid-column: 1 / -1;
+    justify-self: start;
+    margin-bottom: var(--ph-stage-eyebrow-gap);
   }
-  .about-section .abt-hero__left .abt-eyebrow::before {
+  .about-section .abt-hero__eyebrow::before {
     content: "";
     width: 28px;
     height: 1px;
     background: var(--abt-gold);
   }
 
-  /* ── 01 HERO SPLIT ── */
+  /* ── 01 HERO: cabecera «Escenario» (cifras en global.css, `--ph-stage-*`) ── */
   .abt-hero {
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    /* Hero a viewport completo como en Home: la página usa `hasHero` → sin `main--padded`,
-       el grid llega al top y el header pill flota encima. Alto de pantalla congelado
-       (ver `--ph-viewport-h` en global.css), igual que el hero de Home. */
-    min-height: 100vh;
-    min-height: var(--ph-viewport-h);
-    border-bottom: 1px solid var(--abt-line);
     position: relative;
-  }
-  .abt-hero__left {
-    /* padding-top replica el inicio de Servicios: clamp(96px, 14vw, 180px) + 93px de main--padded */
-    padding: clamp(189px, calc(14vw + 93px), 273px) var(--edge) clamp(60px, 8vw, 100px);
     display: flex;
     flex-direction: column;
-    gap: 28px;
-    justify-content: space-between;
-    /* Encima de la imagen extendida: el fade cruza la frontera de columna y el texto se mantiene legible por delante. */
+    justify-content: flex-end;
+    min-height: var(--ph-stage-min-h);
+    padding: var(--ph-stage-pad-top) var(--edge) var(--ph-stage-pad-bottom);
+    border-bottom: 1px solid var(--abt-line);
+  }
+  /* Rejilla de 12 columnas: titular en las 8 primeras, introducción en las 4
+     últimas, con su última línea a la altura de la del titular. */
+  .abt-hero__grid {
     position: relative;
-    z-index: 2;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--ph-stage-gap);
+    align-items: end;
+    align-items: last baseline;
   }
   .abt-hero__title {
+    grid-column: 1 / 9;
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(40px, 6vw, 84px);
-    letter-spacing: -0.02em;
-    line-height: 1.02;
-    margin: 18px 0 24px;
+    font-size: var(--ph-stage-title-size);
+    letter-spacing: -0.03em;
+    line-height: 0.96;
+    margin: 0;
+    text-wrap: balance;
   }
   .abt-hero__body {
     color: var(--abt-ink-soft);
     font-size: 16px;
-    line-height: 1.7;
-    max-width: 480px;
-    margin: 0 0 14px;
+    line-height: 1.65;
+    max-width: 42ch;
+    margin: 0;
   }
-  .abt-hero__values {
+  .abt-hero__lead { grid-column: 9 / 13; }
+
+  /* Franja bajo la línea de la cabecera: valores a un lado y pie al otro, en la
+     misma voz mono. */
+  .abt-hero__rail {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px 24px;
+    padding: 18px var(--edge);
+    border-bottom: 1px solid var(--abt-line);
+  }
+  .abt-hero__values,
+  .abt-hero__caption {
     font-family: var(--font-mono);
     font-size: 11px;
     color: var(--abt-ink-faint);
     letter-spacing: 0.25em;
     text-transform: uppercase;
   }
-  .abt-hero__right {
-    position: relative;
-    /* overflow visible para que la imagen se desborde a la columna izquierda.
-       El parallax queda tapado por el `background` sólido del `.abt-hero`. */
-    overflow: visible;
-  }
-  .abt-hero__visual {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    /* Se extiende hacia la izquierda ~120px para que el fade cruce la frontera entre
-       columnas y se funda con el texto (en vez de cortarse en el borde del grid cell). */
-    width: calc(100% + clamp(80px, 10vw, 160px));
-    height: 100%;
-    /* Reserva sin WebGL2: el canvas se queda transparente y se ve este halo. */
-    background: radial-gradient(ellipse at 62% 30%, rgba(214, 178, 94, 0.10) 0%, transparent 60%);
-    /* Fundido: el 20% más izquierdo es transparente→opaco. Esa zona cae dentro de la
-       columna de texto, así que el borde de la imagen desaparece visualmente. */
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 20%);
-    mask-image: linear-gradient(to right, transparent 0%, #000 20%);
-    pointer-events: none;
-  }
-  /* Lienzo del fondo animado (src/scripts/ph-ambient.ts). */
-  .ph-ambient {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-  .abt-hero__caption {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--abt-ink);
-    letter-spacing: 0.2em;
-    background: rgba(14, 14, 14, 0.65);
-    padding: 6px 10px;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-  }
 
+  /* El resto de la presentación, en dos columnas alineadas con la introducción. */
+  .abt-intro {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--ph-stage-gap);
+    row-gap: 16px;
+    padding: clamp(48px, 6vw, 88px) var(--edge);
+    border-bottom: 1px solid var(--abt-line);
+  }
+  .abt-intro .abt-hero__body:nth-child(1) { grid-column: 5 / 9; }
+  .abt-intro .abt-hero__body:nth-child(2) { grid-column: 9 / 13; }
+
+  /* Móvil: la luz queda detrás del texto, que se apoya abajo en una sola columna. */
   @media (max-width: 900px) {
     .abt-hero {
-      grid-template-columns: 1fr;
-      /* En mobile: imagen (row 1, altura fija por aspect-ratio) + texto (row 2) rellenando
-         el resto del viewport. `grid-template-rows: auto 1fr` garantiza que el texto
-         expanda hasta tocar el bottom del hero de 100dvh. */
-      grid-template-rows: auto 1fr;
+      min-height: var(--ph-stage-min-h-mobile);
+      padding-top: clamp(110px, 26vw, 150px);
     }
-    .abt-hero__right {
-      aspect-ratio: var(--ph-hero-img-aspect);
-      border-bottom: none;
-      order: -1;
-      overflow: hidden;
-      /* Reglas compartidas Talents/About/Services: aire contra el header-pill
-         + fundido arriba y abajo (definidos en global.css). */
-      margin-top: var(--ph-hero-img-gap-top);
-    }
-    .abt-hero__visual {
-      /* Reset del desborde lateral de desktop. */
-      left: 0;
-      right: 0;
-      width: 100%;
-      -webkit-mask-image: var(--ph-hero-img-fade-mobile);
-      mask-image: var(--ph-hero-img-fade-mobile);
-    }
-    .abt-hero__left {
-      padding-top: 24px;
-    }
+    .abt-hero__grid { grid-template-columns: minmax(0, 1fr); row-gap: 18px; }
+    .abt-hero__title,
+    .abt-hero__lead { grid-column: 1 / -1; }
+    .abt-intro { grid-template-columns: minmax(0, 1fr); }
+    .abt-intro .abt-hero__body:nth-child(1),
+    .abt-intro .abt-hero__body:nth-child(2) { grid-column: 1 / -1; }
   }
 
   /* ── 02 MANIFESTO (Now. Next. Forever Football.) ── */

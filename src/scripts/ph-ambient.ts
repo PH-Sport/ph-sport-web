@@ -10,11 +10,13 @@
  * - Solo se dibuja mientras el canvas está en pantalla y la pestaña visible.
  * - Con `prefers-reduced-motion` se pinta un fotograma fijo y no se anima.
  * - La luz se suma al fondo de la página (salida premultiplicada): el canvas no
- *   tapa nada y hereda los fundidos (`mask-image`) de su contenedor.
+ *   tapa nada. Cubre toda la cabecera y los fundidos los hace el propio shader
+ *   (`stageMask`): sin máscaras de CSS no se ve el borde de ninguna caja.
  * - Al navegar con el ClientRouter se destruyen los contextos de la página que se
  *   va, para no acumular contextos de WebGL ni listeners.
- * - Sin WebGL2, el canvas se queda transparente y se ve el degradado de CSS del
- *   contenedor.
+ * - Sin WebGL2, el canvas se queda transparente y se ve el halo de CSS de
+ *   `.ph-ambient:not(.is-live)` (global.css). Con la animación en marcha lleva
+ *   `is-live` y el halo desaparece.
  */
 
 type SceneName = 'trayectorias' | 'estructura' | 'calidez';
@@ -43,6 +45,17 @@ const vec3 GOLD = vec3(0.839, 0.698, 0.369);   // --color-ph-gold #D6B25E
 const vec3 WHITE = vec3(1.0);
 float hash11(float p) { p = fract(p * 0.1031); p *= p + 33.33; p *= p + p; return fract(p); }
 float hash12(vec2 p) { vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
+// Dónde puede haber luz. La cabecera es un escenario: la luz se apaga bajo el menú,
+// hacia la línea que cierra la cabecera y, en escritorio, hacia la izquierda, donde
+// van los textos. En vertical (móvil) los textos van abajo, así que manda el fundido
+// inferior. p, W y H en px CSS, con el origen abajo a la izquierda.
+float stageMask(vec2 p, float W, float H) {
+  float portrait = step(W, H * 1.1);
+  float top = smoothstep(H * 0.04, H * 0.22, H - p.y);
+  float bottom = mix(smoothstep(H * 0.05, H * 0.55, p.y), smoothstep(H * 0.25, H * 0.85, p.y), portrait);
+  float left = mix(smoothstep(0.2, 0.62, p.x / W), 1.0, portrait);
+  return top * bottom * left;
+}
 // Salida premultiplicada: la luz se suma al fondo de la página, que se ve a través.
 // El tramado evita escalones en degradados tan oscuros.
 void emit(vec3 c) {
@@ -78,7 +91,7 @@ void main() {
   float l1 = layer(p, 34.0, 120.0, 150.0, 0.35, 1.0, b1);
   float l2 = layer(p + vec2(13.0, 0.0), 21.0, 70.0, 90.0, 0.25, 7.0, b2);
   vec3 c = WHITE * (b1 * 0.030 + b2 * 0.016) + GOLD * (l1 * 0.55 + l2 * 0.28);
-  emit(c);
+  emit(c * stageMask(p, uRes.x / uPx, uRes.y / uPx));
 }`;
 
 // Servicios — «Estructura»: la retícula a 45° con la que se construye el logo, casi
@@ -102,7 +115,7 @@ void main() {
   float light = exp(-pow((diag - x1) / 220.0, 2.0)) + 0.5 * exp(-pow((diag - x2) / 340.0, 2.0));
   float tw = 0.5 + 0.5 * sin(uTime * 1.3 + hash12(floor(q / S + 0.5)) * 6.2832);
   vec3 c = WHITE * lines * 0.022 + GOLD * (lines * light * 0.32 + node * light * tw * 0.9);
-  emit(c);
+  emit(c * stageMask(p, W, H));
 }`;
 
 // Sobre nosotros — «Calidez»: un haz de luz cálida que se mece despacio, con motas
@@ -112,10 +125,10 @@ void main() {
   vec2 p = gl_FragCoord.xy / uPx;
   float W = uRes.x / uPx, H = uRes.y / uPx;
   float sway = sin(uTime * 0.21) * 0.05 + sin(uTime * 0.13 + 1.7) * 0.03;
-  vec2 d = p - vec2(W * 0.62, H + 40.0);
+  float portrait = step(W, H * 1.1);
+  vec2 d = p - vec2(W * mix(0.72, 0.62, portrait), H + 40.0);
   float depth = max(-d.y, 1.0);
   float beam = exp(-pow((d.x / depth - sway) / 0.33, 2.0)) * exp(-depth / (H * 1.1));
-  float pool = exp(-pow((p.x - (W * 0.62 + sway * H)) / (W * 0.28), 2.0)) * exp(-p.y / (H * 0.12));
   float dust = 0.0;
   for (int k = 0; k < 3; k++) {
     float fk = float(k);
@@ -132,14 +145,14 @@ void main() {
     float m = smoothstep(r * 1.8, r * 0.2, length(f - off * 0.7)) * step(0.55, h);
     dust += m * (0.6 + 0.4 * sin(uTime * (0.8 + h) + h * 20.0)) * mix(0.9, 0.5, fk * 0.5);
   }
-  vec3 c = GOLD * (beam * 0.20 + pool * 0.06) + mix(GOLD, WHITE, 0.4) * dust * (0.08 + beam * 0.9);
-  emit(c);
+  vec3 c = GOLD * beam * 0.22 + mix(GOLD, WHITE, 0.4) * dust * (0.08 + beam * 0.9);
+  emit(c * stageMask(p, W, H));
 }`;
 
 const SCENES: Record<SceneName, SceneDef> = {
   trayectorias: { fs: TRAYECTORIAS, scale: 1, still: 6 },
   estructura: { fs: ESTRUCTURA, scale: 1, still: 9 },
-  calidez: { fs: CALIDEZ, scale: 0.6, still: 4 },
+  calidez: { fs: CALIDEZ, scale: 0.75, still: 4 },
 };
 
 /** Tope de densidad de píxeles: más allá no se nota en algo tan tenue y cuesta GPU. */
@@ -234,10 +247,16 @@ function create(canvas: HTMLCanvasElement, reduceMotion: boolean): Instance | nu
   });
   io.observe(canvas);
   document.addEventListener('visibilitychange', kick);
-  const onLost = (e: Event) => { e.preventDefault(); cancelAnimationFrame(raf); raf = 0; };
+  const onLost = (e: Event) => {
+    e.preventDefault();
+    cancelAnimationFrame(raf);
+    raf = 0;
+    canvas.classList.remove('is-live');
+  };
   canvas.addEventListener('webglcontextlost', onLost);
 
   resize();
+  canvas.classList.add('is-live');
 
   return {
     destroy() {

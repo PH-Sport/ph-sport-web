@@ -26,17 +26,19 @@ const cards = players.map((player) => {
 ---
 
 <section class="talents" aria-labelledby="talents-title">
-  <div class="talents__hero-bg" aria-hidden="true">
-    <canvas class="ph-ambient" data-ambient="trayectorias"></canvas>
-  </div>
+  <div class="talents__stage">
+    <div class="ph-stage-bg" aria-hidden="true">
+      <canvas class="ph-ambient" data-ambient="trayectorias"></canvas>
+    </div>
 
-  <header class="talents__head">
-    <span class="talents__eyebrow" data-reveal>{t('talents.eyebrow')}</span>
-    <h1 class="talents__title" id="talents-title" data-reveal>
-      {t('talents.title')}<em>{t('talents.titleAccent')}</em>.
-    </h1>
-    <p class="talents__lead" data-reveal>{t('talents.lead')}</p>
-  </header>
+    <header class="talents__head">
+      <span class="talents__eyebrow" data-reveal>{t('talents.eyebrow')}</span>
+      <h1 class="talents__title" id="talents-title" data-reveal>
+        {t('talents.title')}<em>{t('talents.titleAccent')}</em>.
+      </h1>
+      <p class="talents__lead" data-reveal>{t('talents.lead')}</p>
+    </header>
+  </div>
 
   <div class="talents__controls" data-talents-controls data-reveal>
     <label class="talents__search" data-talents-search-wrap>
@@ -196,40 +198,25 @@ const cards = players.map((player) => {
 <style>
   .talents {
     position: relative;
-    /* padding-top replica el inicio de Servicios: clamp(96px, 14vw, 180px) + 93px de main--padded */
-    padding: clamp(189px, calc(14vw + 93px), 273px) var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(80px, 12vw, 140px);
+    padding: 0 var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(80px, 12vw, 140px);
     background: var(--color-ph-black, #0d0f12);
     color: var(--color-ph-white, #ffffff);
   }
 
-  /* Hero background image: desktop = 70vw a la derecha, fundido a la izquierda;
-     mobile = bloque 16/9 a pantalla completa sobre el head. */
-  .talents__hero-bg {
-    position: absolute;
-    top: clamp(140px, calc(8vw + 40px), 220px);
-    right: 0;
-    width: 70vw;
-    height: clamp(520px, 80vh, 860px);
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 0;
-    background:
-      radial-gradient(ellipse at 75% 35%, rgba(214, 178, 94, 0.10) 0%, transparent 60%),
-      var(--color-ph-bg-2, #15171b);
-    -webkit-mask-image: var(--ph-hero-img-fade-desktop-h), var(--ph-hero-img-fade-desktop-v);
-    mask-image: var(--ph-hero-img-fade-desktop-h), var(--ph-hero-img-fade-desktop-v);
-    -webkit-mask-composite: source-in;
-    mask-composite: intersect;
-  }
-
-  /* Lienzo del fondo animado (src/scripts/ph-ambient.ts). Sin WebGL2 se queda
-     transparente y se ve el degradado del contenedor. */
-  .ph-ambient {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
+  /* Cabecera «Escenario», igual en Talentos, Servicios y Sobre nosotros (cifras en
+     global.css, `--ph-stage-*`): la luz animada cubre toda la cabecera, desde
+     detrás del menú, y los textos se apoyan abajo. Una línea la cierra; debajo
+     van los controles. Los márgenes negativos la sacan del padding lateral de la
+     sección para que la luz llegue a los bordes de la pantalla. */
+  .talents__stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: var(--ph-stage-min-h);
+    margin: 0 calc(-1 * var(--ph-section-px, clamp(20px, 4vw, 48px))) clamp(16px, 2vw, 24px);
+    padding: var(--ph-stage-pad-top) var(--ph-section-px, clamp(20px, 4vw, 48px)) var(--ph-stage-pad-bottom);
+    border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
   }
 
   .talents__head,
@@ -237,8 +224,15 @@ const cards = players.map((player) => {
   .talents__grid,
   .talents__empty { position: relative; z-index: 1; }
 
-  /* Hero header */
-  .talents__head { max-width: 840px; margin-bottom: clamp(32px, 5vw, 56px); }
+  /* Rejilla de 12 columnas: titular en las 8 primeras, introducción en las 4
+     últimas, con su última línea a la altura de la del titular. */
+  .talents__head {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--ph-stage-gap);
+    align-items: end;
+    align-items: last baseline;
+  }
 
   .talents__eyebrow {
     display: inline-flex;
@@ -249,6 +243,9 @@ const cards = players.map((player) => {
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--color-ph-gold, #d6b25e);
+    grid-column: 1 / -1;
+    justify-self: start;
+    margin-bottom: var(--ph-stage-eyebrow-gap);
   }
   .talents__eyebrow::before {
     content: "";
@@ -258,12 +255,13 @@ const cards = players.map((player) => {
   }
 
   .talents__title {
+    grid-column: 1 / 9;
     font-family: var(--font-display, 'Inter Tight', sans-serif);
     font-weight: 500;
-    font-size: clamp(44px, 8vw, 112px);
+    font-size: var(--ph-stage-title-size);
     letter-spacing: -0.03em;
-    line-height: 0.98;
-    margin: 18px 0 0;
+    line-height: 0.96;
+    margin: 0;
     text-wrap: balance;
   }
   .talents__title em {
@@ -273,11 +271,12 @@ const cards = players.map((player) => {
   }
 
   .talents__lead {
-    margin: 22px 0 0;
+    grid-column: 9 / 13;
+    margin: 0;
     color: var(--color-ph-ink-soft, #b5b7bb);
     font-size: 16px;
     line-height: 1.65;
-    max-width: 560px;
+    max-width: 42ch;
   }
 
   /* Sticky controls bar */
@@ -306,6 +305,12 @@ const cards = players.map((player) => {
     border-radius: var(--radius-sm);
     box-shadow: var(--ph-glass-highlight);
     transition: border-color 0.2s, background 0.2s;
+  }
+  /* Escritorio: el buscador con un ancho razonable para 51 nombres y los filtros a
+     la derecha. En móvil el buscador se pliega a un icono (más abajo). */
+  @media (min-width: 721px) {
+    .talents__search { max-width: 520px; }
+    .talents__controls > .talents__combo:first-of-type { margin-left: auto; }
   }
   .talents__search:focus-within {
     border-color: var(--color-ph-gold, #d6b25e);
@@ -532,30 +537,16 @@ const cards = players.map((player) => {
     .talents__select-arrow { transition: none; }
   }
 
-  /* Mobile: hero-bg pasa a ser bloque 16/9 full-bleed sobre el head. */
+  /* Móvil: la luz queda detrás del texto, que se apoya abajo en una sola columna. */
   @media (max-width: 900px) {
-    .talents { padding-top: 0; }
-    .talents__hero-bg {
-      position: relative;
-      top: auto;
-      right: auto;
-      width: calc(100% + 2 * var(--ph-section-px, clamp(20px, 4vw, 48px)));
-      height: auto;
-      aspect-ratio: var(--ph-hero-img-aspect);
-      margin: var(--ph-hero-img-gap-top)
-              calc(-1 * var(--ph-section-px, clamp(20px, 4vw, 48px)))
-              var(--ph-hero-img-gap-bottom);
-      background:
-        radial-gradient(ellipse at 75% 35%, rgba(214, 178, 94, 0.10) 0%, transparent 60%),
-        var(--color-ph-bg-2, #15171b);
+    .talents__stage {
+      min-height: var(--ph-stage-min-h-mobile);
+      padding-top: clamp(110px, 26vw, 150px);
     }
-    .talents__hero-bg {
-      -webkit-mask-image: var(--ph-hero-img-fade-mobile);
-      mask-image: var(--ph-hero-img-fade-mobile);
-      -webkit-mask-composite: source-over;
-      mask-composite: add;
-    }
-    .talents__head { padding-top: 8px; }
+    .talents__head { grid-template-columns: minmax(0, 1fr); }
+    .talents__title,
+    .talents__lead { grid-column: 1 / -1; }
+    .talents__lead { margin-top: 18px; max-width: 46ch; }
   }
 
   /* ── Mobile: collapse search to icon, reveal overlay on tap ── */

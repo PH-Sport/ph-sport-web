@@ -73,12 +73,11 @@ const contactHref = localizePath('/#contacto', lang);
 ---
 
 <section class="srv" aria-labelledby="srv-hero-title">
-  <div class="srv-hero-bg" aria-hidden="true">
-    <canvas class="ph-ambient" data-ambient="estructura"></canvas>
-  </div>
-
   {/* 01 — Hero */}
   <div class="srv-hero">
+    <div class="ph-stage-bg" aria-hidden="true">
+      <canvas class="ph-ambient" data-ambient="estructura"></canvas>
+    </div>
     <div class="srv-hero__eyebrow">
       <span class="srv-mono">{t('services.hero.eyebrow')}</span>
     </div>
@@ -227,37 +226,6 @@ const contactHref = localizePath('/#contacto', lang);
     font-family: var(--srv-sans);
   }
 
-  /* Hero background image (patrón compartido con Talents): desktop = 70vw a la
-     derecha, fundido a la izquierda; mobile = bloque 16/9 full-bleed sobre el hero. */
-  .srv-hero-bg {
-    position: absolute;
-    top: clamp(140px, calc(8vw + 40px), 220px);
-    right: 0;
-    width: 70vw;
-    height: clamp(520px, 80vh, 860px);
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 0;
-    background:
-      radial-gradient(ellipse at 75% 35%, rgba(214, 178, 94, 0.10) 0%, transparent 60%),
-      var(--srv-bg-2, #15171b);
-    -webkit-mask-image: var(--ph-hero-img-fade-desktop-h), var(--ph-hero-img-fade-desktop-v);
-    mask-image: var(--ph-hero-img-fade-desktop-h), var(--ph-hero-img-fade-desktop-v);
-    -webkit-mask-composite: source-in;
-    mask-composite: intersect;
-  }
-
-  /* Lienzo del fondo animado (src/scripts/ph-ambient.ts). Sin WebGL2 se queda
-     transparente y se ve el degradado del contenedor. */
-  .ph-ambient {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-
-  /* Texto sobre la imagen: z-index > 0 para flotar sobre el fade. */
   .srv-hero,
   .srv-areas,
   .srv-model,
@@ -276,29 +244,44 @@ const contactHref = localizePath('/#contacto', lang);
   .srv-rule { border: 0; border-top: 1px solid var(--srv-line); margin: 0; }
 
   /* ── 01 Hero ──────────────────────────────────────────── */
-  /* padding-top replica el patrón Talents: clamp(96px, 14vw, 180px) de hero + 93px del header-pill ahora que la página usa hasHero. */
+  /* Cabecera «Escenario», igual en Talentos, Servicios y Sobre nosotros (cifras en
+     global.css, `--ph-stage-*`): la luz animada cubre la cabecera entera, desde
+     detrás del menú hasta la línea que la cierra, y no pasa de ahí. */
   .srv-hero {
-    padding: clamp(189px, calc(14vw + 93px), 273px) var(--srv-edge) clamp(40px, 6vw, 72px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: var(--ph-stage-min-h);
+    padding: var(--ph-stage-pad-top) var(--srv-edge) 0;
   }
+  .srv-hero__eyebrow,
+  .srv-hero__grid,
+  .srv-hero .srv-rule { position: relative; z-index: 1; }
   .srv-hero__eyebrow {
     display: flex; align-items: center; gap: 10px;
-    margin-bottom: clamp(24px, 4vw, 40px);
+    margin-bottom: var(--ph-stage-eyebrow-gap);
   }
   .srv-hero__eyebrow::before {
     content: ""; width: 28px; height: 1px; background: var(--srv-gold);
   }
   .srv-hero__eyebrow .srv-mono { color: var(--srv-gold); }
+  /* Rejilla de 12 columnas: titular en las 8 primeras, introducción en las 4
+     últimas, con su última línea a la altura de la del titular. */
   .srv-hero__grid {
-    display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(32px, 5vw, 80px);
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--ph-stage-gap);
     align-items: end;
-    margin-bottom: clamp(40px, 6vw, 80px);
+    align-items: last baseline;
+    margin-bottom: var(--ph-stage-pad-bottom);
   }
   .srv-hero__title {
+    grid-column: 1 / 9;
     font-family: var(--srv-display);
     font-weight: 500;
-    font-size: clamp(48px, 8vw, 108px);
+    font-size: var(--ph-stage-title-size);
     letter-spacing: -0.03em;
-    line-height: 0.98;
+    line-height: 0.96;
     margin: 0;
     color: var(--srv-ink);
     visibility: hidden;
@@ -313,10 +296,11 @@ const contactHref = localizePath('/#contacto', lang);
     font-weight: 400;
   }
   .srv-hero__lead {
-    font-size: 15px;
-    line-height: 1.7;
+    grid-column: 9 / 13;
+    font-size: 16px;
+    line-height: 1.65;
     color: var(--srv-ink-soft);
-    max-width: 420px;
+    max-width: 42ch;
     margin: 0;
     visibility: hidden;
   }
@@ -325,41 +309,29 @@ const contactHref = localizePath('/#contacto', lang);
     .srv-hero__lead { visibility: visible; }
   }
 
+  /* La línea que cierra la cabecera va de borde a borde y hace de separador con
+     Áreas (que por eso pierde su borde superior, más abajo). Arranca a ancho 0
+     y la dibuja GSAP. */
   .srv-hero .srv-rule {
+    margin-inline: calc(-1 * var(--srv-edge));
     transform: scaleX(0);
     transform-origin: left center;
   }
+  .srv-hero + .srv-areas { border-top: 0; }
 
   @media (prefers-reduced-motion: reduce) {
     .srv-hero .srv-rule { transform: none; }
   }
 
+  /* Móvil: la luz queda detrás del texto, que se apoya abajo en una sola columna. */
   @media (max-width: 900px) {
-    .srv-hero__grid { grid-template-columns: 1fr; gap: 32px; }
-
-    /* Mobile: hero-bg full-bleed 16/9 sobre el hero (patrón compartido). */
-    .srv-hero-bg {
-      position: relative;
-      top: auto;
-      right: auto;
-      width: 100%;
-      height: auto;
-      aspect-ratio: var(--ph-hero-img-aspect);
-      margin: var(--ph-hero-img-gap-top) 0 var(--ph-hero-img-gap-bottom);
-      background:
-        radial-gradient(ellipse at 75% 35%, rgba(214, 178, 94, 0.10) 0%, transparent 60%),
-        var(--srv-bg-2, #15171b);
-    }
-    .srv-hero-bg {
-      -webkit-mask-image: var(--ph-hero-img-fade-mobile);
-      mask-image: var(--ph-hero-img-fade-mobile);
-      -webkit-mask-composite: source-over;
-      mask-composite: add;
-    }
-    /* Reducir padding-top del hero cuando la imagen ya aporta el aire superior. */
     .srv-hero {
-      padding-top: 0;
+      min-height: var(--ph-stage-min-h-mobile);
+      padding-top: clamp(110px, 26vw, 150px);
     }
+    .srv-hero__grid { grid-template-columns: minmax(0, 1fr); row-gap: 18px; }
+    .srv-hero__title,
+    .srv-hero__lead { grid-column: 1 / -1; }
   }
 
   /* ── 02 Áreas accordion ──────────────────────────────── */
@@ -967,8 +939,10 @@ const contactHref = localizePath('/#contacto', lang);
       });
     }
     if (heroRule) {
-      gsap.from(heroRule, {
-        scaleX: 0,
+      // fromTo y no from: el CSS ya la deja a ancho 0, y un `from` a 0 la dejaba en
+      // 0 para siempre (la línea no llegó a verse nunca).
+      gsap.fromTo(heroRule, { scaleX: 0 }, {
+        scaleX: 1,
         transformOrigin: 'left center',
         duration: 1.0,
         ease: 'expo.out',

@@ -33,6 +33,13 @@ propósito» de `/sobre-nosotros`). Pasa desde que se
 publicó la web y se arregla con la misma compra: los archivos con licencia traen
 el juego completo.
 
+**Las cursivas de los titulares son sintéticas** (visto el 2026-10-01 al revisar
+las cabeceras de Talentos, Servicios y Sobre nosotros). No hay ningún
+`@font-face` de Söhne cursiva, así que «roster», «campo» o «Representar» son la
+redonda inclinada por el navegador, no una cursiva dibujada. Con la compra,
+añadir el peso cursivo que se use (Buch Kursiv) y declararlo con
+`font-style: italic`.
+
 ### Coste del snapshot del `ClientRouter` en páginas pesadas
 
 `/talentos`, 116 tarjetas cuando se midió. **Desde el 2026-09-25 son 51**: las
@@ -244,9 +251,10 @@ Los fondos en directo de Talentos, Servicios y Sobre nosotros (`DECISIONS.md`,
 con un iPhone 14 y un Pixel 7 emulados: arrancan, se pausan fuera de la vista,
 quedan fijos con movimiento reducido y liberan su contexto al navegar. **No se ha
 medido el coste en un móvil real**: ni batería ni temperatura tras unos minutos
-con la cabecera a la vista, ni si un móvil modesto mantiene la fluidez. Si
-hiciera falta aligerar, la primera palanca es la resolución interna
-(`scale` de cada escena y `MAX_DPR` en `src/scripts/ph-ambient.ts`).
+con la cabecera a la vista, ni si un móvil modesto mantiene la fluidez. Desde la
+cabecera «Escenario» el lienzo ocupa la cabecera entera, más superficie que con
+la franja anterior. Si hiciera falta aligerar, la primera palanca es la resolución
+interna (`scale` de cada escena y `MAX_DPR` en `src/scripts/ph-ambient.ts`).
 
 ### Textos en italiano sin revisión nativa (2026-10-01)
 

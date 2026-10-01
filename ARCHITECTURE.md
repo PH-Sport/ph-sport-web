@@ -30,13 +30,11 @@ ph-sport-web/
 │   ├── fonts/                       # Söhne (3 pesos: Buch 400, Halbfett 600, Dreiviertelfett 700) — self-hosted
 │   ├── icons/
 │   ├── national-team-badges/        # Escudos de selecciones nacionales
-│   ├── about-equipo.webp / *-sm.webp
+│   ├── about-equipo.webp            # Ya no se muestra: es el origen de og-image.jpg (npm run assets:favicons)
 │   ├── favicon.svg
 │   ├── hero/2026-10b/               # Vídeos y pósters del hero (npm run assets:hero). La versión va en la ruta por la caché de 7 días
 │   ├── logo-ph-3d.webp / *-sm.webp
-│   ├── logo.svg
-│   ├── services-hero.webp / *-sm.webp
-│   └── talents-hero.webp / *-sm.webp
+│   └── logo.svg
 │
 ├── assets/
 │   └── source-media/                  # Fuentes originales para scripts de build (NO se sirven)
@@ -100,6 +98,7 @@ ph-sport-web/
 │   │
 │   ├── scripts/                     # Scripts vanilla para interacciones y animaciones
 │   │   ├── dropdown.ts              # SIN USO: nadie lo importa. Talentos monta su combo aparte
+│   │   ├── ph-ambient.ts            # Fondos animados de Talentos, Servicios y Sobre nosotros (WebGL2 en directo)
 │   │   └── ph-text-animations.ts   # Sistema GSAP de sección (reveals, stagger, refresh coalescido)
 │   │
 │   └── styles/
@@ -279,6 +278,37 @@ Las animaciones de sección están en `src/scripts/ph-text-animations.ts`. El si
 - Respeta `prefers-reduced-motion` — todos los efectos se desactivan si el usuario lo ha configurado.
 
 **Regla**: GSAP en componentes `.astro` va siempre en un `<script>` inline que importa de `ph-text-animations.ts`. No importar GSAP directamente en el markup de un `.astro`.
+
+### Fondos animados de sección
+
+Las cabeceras de Talentos, Servicios y Sobre nosotros llevan un fondo animado en
+lugar de foto desde el 2026-10-01 (`DECISIONS.md`, misma fecha). Cada uno es un
+`<canvas class="ph-ambient" data-ambient="<escena>">` dentro del contenedor de
+fondo de siempre (mismo tamaño, posición y fundidos), y lo dibuja en directo
+`src/scripts/ph-ambient.ts` con un shader de WebGL2.
+
+| Sección | Escena | Qué se ve |
+|---|---|---|
+| Talentos | `trayectorias` | Líneas finas a 45° (la diagonal del logo) por las que suben destellos dorados |
+| Servicios | `estructura` | La retícula a 45° del logo, casi invisible, que barre una luz lenta encendiendo sus cruces |
+| Sobre nosotros | `calidez` | Un haz de luz cálida que se mece, con motas de polvo dentro |
+
+Cómo convive con la página, todo dentro del módulo:
+
+- **Solo dibuja en pantalla**: se pausa fuera de la vista (`IntersectionObserver`) y
+  con la pestaña oculta. Va a la frecuencia de la pantalla.
+- **`prefers-reduced-motion`**: un fotograma fijo, sin animación.
+- **Se suma al fondo**: salida premultiplicada, así que no tapa nada y hereda los
+  `mask-image` del contenedor.
+- **ClientRouter**: al cambiar de página destruye los contextos de WebGL de la que
+  se va (el navegador tiene un tope de contextos vivos).
+- **Sin WebGL2**: el canvas queda transparente y se ve un halo dorado de CSS en el
+  contenedor.
+- **Densidad**: resolución interna con tope de 1,5 px por px CSS (y al 60 % en
+  `calidez`, que es suave). Más no se nota en algo tan tenue y cuesta GPU.
+
+Para tocar una escena: su shader está en el mismo archivo. Se ve en directo con
+`npm run dev`.
 
 **No hay islands de React en el proyecto** — cero archivos `.tsx`, y `@astrojs/react` no está en `astro.config.mjs`. La última (`LogoReveal`) se migró a vanilla el 2026-06-25. Si alguna vez hiciera falta una, sería una decisión nueva a registrar en `DECISIONS.md`, no la aplicación de un patrón existente.
 

@@ -73,7 +73,9 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
 ---
 
 <section class="srv" aria-labelledby="srv-hero-title">
-  <div class="srv-hero-bg" aria-hidden="true"></div>
+  <div class="srv-hero-bg" aria-hidden="true">
+    <canvas class="ph-ambient" data-ambient="estructura"></canvas>
+  </div>
 
   {/* 01 — Hero */}
   <div class="srv-hero">
@@ -237,13 +239,22 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
     pointer-events: none;
     z-index: 0;
     background:
-      linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)),
-      url('/services-hero.webp') center / cover no-repeat,
+      radial-gradient(ellipse at 75% 35%, rgba(214, 178, 94, 0.10) 0%, transparent 60%),
       var(--srv-bg-2, #15171b);
     -webkit-mask-image: var(--ph-hero-img-fade-desktop-h), var(--ph-hero-img-fade-desktop-v);
     mask-image: var(--ph-hero-img-fade-desktop-h), var(--ph-hero-img-fade-desktop-v);
     -webkit-mask-composite: source-in;
     mask-composite: intersect;
+  }
+
+  /* Lienzo del fondo animado (src/scripts/ph-ambient.ts). Sin WebGL2 se queda
+     transparente y se ve el degradado del contenedor. */
+  .ph-ambient {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
   }
 
   /* Texto sobre la imagen: z-index > 0 para flotar sobre el fade. */
@@ -336,8 +347,7 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
       aspect-ratio: var(--ph-hero-img-aspect);
       margin: var(--ph-hero-img-gap-top) 0 var(--ph-hero-img-gap-bottom);
       background:
-        linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)),
-        url('/services-hero-sm.webp') center / cover no-repeat,
+        radial-gradient(ellipse at 75% 35%, rgba(214, 178, 94, 0.10) 0%, transparent 60%),
         var(--srv-bg-2, #15171b);
     }
     .srv-hero-bg {
@@ -1040,4 +1050,9 @@ const contactHref = lang === 'en' ? '/en/#contacto' : '/#contacto';
   }
 
   document.addEventListener('astro:page-load', () => afterTransitionPaint(initServicesAnimations));
+</script>
+
+<script>
+  // Fondo animado de la cabecera (se inicia solo en cada astro:page-load).
+  import '@/scripts/ph-ambient';
 </script>

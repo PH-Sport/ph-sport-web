@@ -13,6 +13,44 @@ leído el resto.
 
 ---
 
+## 2026-10-01 · Fondos animados en directo para Talentos, Servicios y Sobre nosotros
+
+**Decisión** (de Mario: «las fotos se han quedado anticuadas»; pidió animaciones
+en bucle, de alta tasa de refresco, que acompañen sin quitar atención y con la
+paleta de la marca): las fotos de cabecera de esas tres páginas
+(`talents-hero`, `services-hero` y `about-equipo`, interiores generados por
+ordenador) se sustituyen por fondos abstractos dibujados en directo con WebGL2
+(`src/scripts/ph-ambient.ts`). Cada página tiene su escena —`trayectorias`,
+`estructura` y `calidez`—, todas con el lenguaje del logo (la diagonal a 45°) y
+en dorado sobre negro. Funcionamiento en `ARCHITECTURE.md`, «Fondos animados de
+sección».
+
+**Por qué en directo y no en vídeo, como el hero.** «Alta tasa de refresco»: un
+vídeo va a 30 fps (60 duplicaría el peso) y una pantalla de 120 Hz lo nota; un
+shader va a la frecuencia de la pantalla. Además pesa unos KB de código en lugar
+de 100-150 KB de foto (o más de vídeo), y se ve nítido a cualquier tamaño. En el
+hero manda lo contrario: es una escena realista y costosa (luz integrada por
+tramo, bloom en varias pasadas) que no conviene calcular en un móvil.
+
+**Alternativa considerada — CSS puro** (degradados y formas animadas con
+`transform`). Cero JavaScript, pero no da para líneas finas con destellos que
+recorren su trazo ni para partículas sin cientos de elementos, y animar
+`stroke-dashoffset` en SVG repinta en cada fotograma.
+
+**Lo que cuesta.** Mientras la cabecera está en pantalla, la GPU trabaja a la
+frecuencia de la pantalla. Para acotarlo: se pausa fuera de la vista y con la
+pestaña oculta, resolución interna con tope, contexto `low-power` y fotograma
+fijo con movimiento reducido. **No se ha medido en un móvil real**
+(`docs/hallazgos-abiertos.md`).
+
+**Lo que se retira**: `talents-hero.webp` y `services-hero.webp` con sus `-sm`,
+`about-equipo-sm.webp` y la precarga de la foto de Talentos. **Se queda
+`about-equipo.webp`**: ya no se muestra, pero es el origen de `og-image.jpg`
+(`npm run assets:favicons`). Para recuperar las fotos: el commit anterior a este,
+sobre esas rutas y las tres secciones.
+
+---
+
 ## 2026-10-01 · Los vídeos del hero pasan a `public/hero/2026-10b/`
 
 **Decisión**: la carpeta de versión del hero cambia de `2026-10` a `2026-10b`, sin

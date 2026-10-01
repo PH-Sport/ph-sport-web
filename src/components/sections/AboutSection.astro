@@ -37,18 +37,9 @@ const internationalCountries = [
       <div class="abt-hero__values" data-reveal>{t('about.hero.values')}</div>
     </div>
     <div class="abt-hero__right">
-      <img
-        class="abt-hero__image"
-        src="/about-equipo.webp"
-        srcset="/about-equipo-sm.webp 960w, /about-equipo.webp 1920w"
-        sizes="(max-width: 900px) 100vw, 50vw"
-        alt={t('about.hero.imageAlt')}
-        width="1920"
-        height="1080"
-        loading="eager"
-        fetchpriority="high"
-        decoding="async"
-      />
+      <div class="abt-hero__visual" aria-hidden="true">
+        <canvas class="ph-ambient" data-ambient="calidez"></canvas>
+      </div>
       <div class="abt-hero__caption">{t('about.hero.caption')}</div>
     </div>
   </div>
@@ -230,7 +221,7 @@ const internationalCountries = [
        El parallax queda tapado por el `background` sólido del `.abt-hero`. */
     overflow: visible;
   }
-  .abt-hero__image {
+  .abt-hero__visual {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -239,13 +230,21 @@ const internationalCountries = [
        columnas y se funda con el texto (en vez de cortarse en el borde del grid cell). */
     width: calc(100% + clamp(80px, 10vw, 160px));
     height: 100%;
-    object-fit: cover;
-    object-position: right center;
+    /* Reserva sin WebGL2: el canvas se queda transparente y se ve este halo. */
+    background: radial-gradient(ellipse at 62% 30%, rgba(214, 178, 94, 0.10) 0%, transparent 60%);
     /* Fundido: el 20% más izquierdo es transparente→opaco. Esa zona cae dentro de la
        columna de texto, así que el borde de la imagen desaparece visualmente. */
     -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 20%);
     mask-image: linear-gradient(to right, transparent 0%, #000 20%);
     pointer-events: none;
+  }
+  /* Lienzo del fondo animado (src/scripts/ph-ambient.ts). */
+  .ph-ambient {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
   }
   .abt-hero__caption {
     position: absolute;
@@ -278,12 +277,11 @@ const internationalCountries = [
          + fundido arriba y abajo (definidos en global.css). */
       margin-top: var(--ph-hero-img-gap-top);
     }
-    .abt-hero__image {
+    .abt-hero__visual {
       /* Reset del desborde lateral de desktop. */
       left: 0;
       right: 0;
       width: 100%;
-      object-position: center center;
       -webkit-mask-image: var(--ph-hero-img-fade-mobile);
       mask-image: var(--ph-hero-img-fade-mobile);
     }
@@ -738,4 +736,9 @@ const internationalCountries = [
   }
 
   document.addEventListener('astro:page-load', () => afterTransitionPaint(initAboutAnimations));
+</script>
+
+<script>
+  // Fondo animado de la cabecera (se inicia solo en cada astro:page-load).
+  import '@/scripts/ph-ambient';
 </script>

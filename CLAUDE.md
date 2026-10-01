@@ -279,8 +279,8 @@ Lo que hay que saber **antes de tocar nada**:
 
 Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: fotos de jugadores
 con la camiseta del club anterior, backlog de rendimiento del 2026-08-18, fuga de
-listeners de scroll en la home, SEO P1/P2 y el vídeo del hero sin probar en un
-iPhone real (2026-10-01).
+listeners de scroll en la home, SEO P1/P2, y el vídeo del hero y los fondos
+animados de sección sin probar en un móvil real (2026-10-01).
 
 ## Convenciones
 

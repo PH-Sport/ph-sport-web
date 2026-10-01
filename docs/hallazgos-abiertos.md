@@ -227,6 +227,17 @@ Uno nuevo por visita: `initHeroScrollCue` registra una función nueva en cada
 - Una página `/faq` con preguntas y respuestas literales.
 - Auditar los `alt=""` de Header, Footer y Hero para confirmar que son decorativos.
 
+### Fondos animados de sección: sin medir en un móvil real (2026-10-01)
+
+Los fondos en directo de Talentos, Servicios y Sobre nosotros (`DECISIONS.md`,
+2026-10-01) están comprobados en Chromium y WebKit con Playwright, en escritorio y
+con un iPhone 14 y un Pixel 7 emulados: arrancan, se pausan fuera de la vista,
+quedan fijos con movimiento reducido y liberan su contexto al navegar. **No se ha
+medido el coste en un móvil real**: ni batería ni temperatura tras unos minutos
+con la cabecera a la vista, ni si un móvil modesto mantiene la fluidez. Si
+hiciera falta aligerar, la primera palanca es la resolución interna
+(`scale` de cada escena y `MAX_DPR` en `src/scripts/ph-ambient.ts`).
+
 ### Vídeo del hero: sin probar en un iPhone real (2026-10-01)
 
 El vídeo renderizado del neón sustituyó a la foto (`DECISIONS.md`, 2026-10-01):

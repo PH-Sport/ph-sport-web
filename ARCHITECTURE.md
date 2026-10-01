@@ -32,6 +32,7 @@ ph-sport-web/
 │   ├── national-team-badges/        # Escudos de selecciones nacionales
 │   ├── about-equipo.webp / *-sm.webp
 │   ├── favicon.svg
+│   ├── hero/2026-10/                # Vídeos y pósters del hero (npm run assets:hero). La versión va en la ruta por la caché de 7 días
 │   ├── logo-ph-3d.webp / *-sm.webp
 │   ├── logo.svg
 │   ├── services-hero.webp / *-sm.webp
@@ -43,7 +44,6 @@ ph-sport-web/
 │
 ├── src/
 │   ├── assets/images/players/       # Fotos de jugadores (procesadas por astro:assets)
-│   ├── assets/images/hero/portada.png  # Foto del hero, original 1672×941 (procesada por astro:assets)
 │   │
 │   ├── components/
 │   │   ├── LogoReveal.astro         # Intro de la home — animación en CSS, sin GSAP
@@ -52,7 +52,7 @@ ph-sport-web/
 │   │   │   ├── Header.astro         # Flotante, scroll-hide, selector de idioma
 │   │   │   └── Footer.astro         # V3 editorial, social links
 │   │   ├── sections/
-│   │   │   ├── HeroSection.astro        # Foto fija (astro:assets), GSAP curtain reveal
+│   │   │   ├── HeroSection.astro        # Vídeo del neón (encendido + bucle), GSAP curtain reveal
 │   │   │   ├── HomePlayersSection.astro
 │   │   │   ├── HomeServicesSection.astro   # CSS accordion + GSAP
 │   │   │   ├── HomeAboutSection.astro
@@ -74,7 +74,7 @@ ph-sport-web/
 │   ├── lib/                         # Helpers y datos de dominio
 │   │   ├── constants.ts             # SITE_URL y constantes globales
 │   │   ├── countryLabels.ts         # Etiquetas de selecciones nacionales
-│   │   ├── heroMedia.ts             # Fuente de verdad de la foto del hero (imagen, anchos, calidad, sizes)
+│   │   ├── heroMedia.ts             # Fuente de verdad del vídeo del hero (versión, fuentes por pantalla, pósters)
 │   │   ├── nationalTeamBadge.ts     # Resuelve escudo PNG por código ISO 3166-1 alpha-2
 │   │   ├── navigation.ts            # Items de navegación
 │   │   ├── playerDetail.ts          # Payloads de talentos para el grid (nombre, club, foto, códigos)
@@ -109,6 +109,10 @@ ph-sport-web/
 ├── data/
 │   ├── jugadores.json               # Roster principal. "hidden": true oculta sin borrar
 │   └── entrenadores.json            # Cuerpo técnico
+│
+├── scripts/
+│   ├── hero-neon/neon.html          # Render del vídeo del hero (WebGL). No lo sirve la web
+│   └── build-hero-neon.mjs          # Lo graba fotograma a fotograma y lo codifica (npm run assets:hero)
 │
 ├── tests/e2e/                       # Smoke sobre el build (Playwright)
 │   ├── comprobar-servidor.ts        # Aborta si el puerto lo ocupa OTRO proyecto
@@ -187,34 +191,58 @@ No hay páginas de detalle por jugador: el grid de `/talentos/` es no-clicable p
 
 ---
 
-## Hero — Foto + Logo Reveal
+## Hero — Vídeo del neón + Logo Reveal
 
-### Foto
+### Vídeo
 
-Desde el 2026-09-25 el hero es una **foto fija**: el logo PH en neón sobre la
-pared oscura (`src/assets/images/hero/portada.png`, 1672×941). Antes fue un
-vídeo; el porqué del cambio y lo que se midió, en `DECISIONS.md` (misma fecha).
+Desde el 2026-10-01 el hero es un **vídeo renderizado**: el logo de PHSPORT como
+rótulo de neón LED sobre metacrilato, en una pared de fieltro. Antes fue una foto
+fija de ese mismo rótulo, y antes un vídeo de oficina; el porqué de cada cambio,
+en `DECISIONS.md`.
 
-Se sirve con `<Image>` de `astro:assets` en WebP calidad 90, en cuatro anchos
-(640, 960, 1280 y 1672: el original no da para más). `src/lib/heroMedia.ts`
-reúne la imagen, los anchos, la calidad y el `sizes`.
+**No hay metraje: el vídeo se renderiza.** `scripts/hero-neon/neon.html` dibuja la
+escena en WebGL con la geometría de `public/logo.svg`, y
+`scripts/build-hero-neon.mjs` (`npm run assets:hero`) la abre en un Chrome sin
+ventana, la graba fotograma a fotograma y la codifica en `public/hero/<versión>/`.
+Para cambiar el encuadre, el color o el ritmo, se toca el render y se regenera.
 
-**Dos encuadres, con la misma imagen**, que decide el CSS de `HeroSection.astro`:
+**Dos piezas por pantalla**, que encadena el script de `HeroSection.astro`:
 
-| Pantalla | Cómo se pinta | Por qué |
+| Pieza | Qué es | Cómo se reproduce |
 |---|---|---|
-| Horizontal, o casi (proporción ≥ 9:10) | `object-fit: cover` centrado en el logo | La foto llena el hero |
-| Vertical (móviles y tablets) | Franja al 192 % del ancho, con el logo ocupando el 88 % y los bordes de arriba y abajo fundidos con el fondo | Con `cover`, un móvil vería solo el centro del logo, ampliado 2,7× |
+| Encendido (3 s) | El rótulo apagado se enciende: la luz recorre el tubo desde la unión de las dos piezas, titubea y se estabiliza | Una vez, a mano tras `load` |
+| Bucle (12 s) | El rótulo encendido, con un zumbido sutil, un fallo breve de la flecha pequeña y un movimiento lento de cámara | En bucle, al acabar el encendido |
 
-**Las cifras del encuadre vertical son de esta foto** (posición y tamaño del
-logo, medidos sobre los píxeles del neón). Si se cambia la foto, hay que volver
-a medirlas, y el `sizes` de `heroMedia.ts` tiene que seguir diciendo a qué
-ancho se pinta de verdad: si no, el navegador elige una variante pequeña y la
-amplía.
+El último fotograma del encendido es el primero del bucle, y el último del bucle
+enlaza con su primero: no hay saltos. El bucle se descarga mientras se ve el
+encendido.
 
-Cambiar la foto es sustituir el archivo: `astro:assets` le da un nombre con
-hash, así que no le afecta la caché de 7 días de `public/`
-(`docs/trampas-conocidas.md`).
+**Dos encuadres**, elegidos por `<source media>` con `HERO_PORTRAIT_MEDIA` (más
+estrecha que 9:10):
+
+| Pantalla | Archivo | Encuadre |
+|---|---|---|
+| Horizontal, o casi | 1920×1080 | Logo al 54 % del alto, centrado en (58 %, 37 %): arriba a la derecha, libre del titular también en portátiles 16:10 |
+| Vertical | 886×1920 (9:19,5) | Logo al 84 % del ancho, centrado al 40 % del alto, por encima del titular |
+
+El vertical es 9:19,5 porque es la proporción más estrecha de los móviles: con
+`object-fit: cover`, en pantallas menos alargadas sobra pared por arriba y por
+abajo, nunca logo. El `object-position` de `HeroSection.astro` sale de estas
+cifras; si cambia el encuadre del render, hay que rehacerlo.
+
+**Lo que se ve antes y en lugar del vídeo** son pósters: fotogramas exactos con el
+mismo encuadre.
+
+| Caso | Se ve |
+|---|---|
+| Hasta que arranca el vídeo | El rótulo apagado (primer fotograma del encendido). Es el LCP |
+| `prefers-reduced-motion` | El rótulo encendido, fijo. No se reproduce nada |
+| Sin JavaScript, error del vídeo o autoplay bloqueado (modo de bajo consumo en iPhone) | El rótulo encendido, fijo. Si era autoplay bloqueado, al primer gesto arranca el bucle |
+
+Cada vídeo va en HEVC (Safari, iOS y equipos que lo decodifican por hardware) y en
+H.264 (todo lo demás); el parámetro `codecs` del `type` hace que el navegador elija
+sin bajarse el que no puede reproducir. La versión va en la ruta porque
+`vercel.json` sirve `public/` con 7 días de caché: un vídeo nuevo, carpeta nueva.
 
 ### Logo Reveal
 
@@ -265,7 +293,7 @@ Las animaciones de sección están en `src/scripts/ph-text-animations.ts`. El si
 | Fuentes self-hosted desde `/public/fonts/` | Elimina round-trips externos |
 | `font-display: swap` en `@font-face` | Sin FOIT |
 | `<Image loading="eager" fetchpriority="high">` solo en primer fold | El resto: lazy |
-| Si vuelve un vídeo al hero: `preload="none"` y `play()` a mano tras `load` | `preload="metadata"` **no basta**: con `autoplay`, Chrome se lo salta y descarga el vídeo igual. Medido en agosto: retrasaba el evento `load` 504 ms y el póster —que era el LCP real— medio segundo. Hoy el hero es una foto fija |
+| Vídeo del hero: `preload="none"` y `play()` a mano tras `load` | `preload="metadata"` **no basta**: con `autoplay`, Chrome se lo salta y descarga el vídeo igual. Medido en agosto: retrasaba el evento `load` 504 ms y el póster —que era el LCP real— medio segundo |
 | El telón de intro, en CSS y nunca dependiendo del JS | Un overlay opaco que solo se quita por JavaScript deja la portada en negro si el JS falla |
 | Hover prefetch en links de navegación | Precarga la siguiente página en hover |
 
@@ -439,7 +467,7 @@ que ejecutar nada a mano.
 | `Header.astro` | ✅ Completo | Flotante, scroll-hide, i18n, mobile accesible |
 | `Footer.astro` | ✅ Completo | V3 editorial, social links, i18n |
 | `LogoReveal.astro` | ✅ Completo | Animación en CSS, sin JS. Una vez cada 18 h |
-| `HeroSection.astro` | ✅ Completo | Foto fija con encuadre horizontal y vertical, curtain reveal GSAP |
+| `HeroSection.astro` | ✅ Completo | Vídeo del neón (encendido y bucle) con encuadre apaisado y vertical, curtain reveal GSAP |
 | `HomePlayersSection.astro` | ✅ Completo | Stagger + scale GSAP |
 | `HomeServicesSection.astro` | ✅ Completo | CSS accordion + GSAP |
 | `HomeAboutSection.astro` | ✅ Completo | Head + counters GSAP |
@@ -470,7 +498,7 @@ que ejecutar nada a mano.
 | Item | Estado | Notas |
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
-| Foto hero | ✅ `src/assets/images/hero/portada.png` | Logo en neón, 1672×941. Se ve algo blanda en pantallas retina grandes: falta un original más grande (`docs/hallazgos-abiertos.md`) |
+| Vídeo hero | ✅ `public/hero/2026-10/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
 | Fotos jugadores | ⏳ 47 de los 51 visibles | 34 ya son de la serie de estudio nueva (puestos 1 a 34); las otras 13, antiguas. Sin ninguna: Fran Manzanara, Santi Pallarés, Boston Billups y Álex Domínguez. Detalle en `docs/hallazgos-abiertos.md` (2026-10-01) |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia |

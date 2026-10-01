@@ -136,9 +136,11 @@ el navegador aprovecha el `stale-while-revalidate`.
 
 Para sustituir algo de `public/`, cambiarle el nombre (y actualizar quien lo
 cite). Lo que pasa por `astro:assets` no tiene el problema: sale en `_astro/`
-con un hash en el nombre que cambia con el contenido. Por eso la foto del hero
-vive en `src/assets/` desde el 2026-09-25; el vídeo anterior, que sí estaba en
-`public/`, necesitaba una carpeta con versión (`DECISIONS.md`, 2026-09-22).
+con un hash en el nombre que cambia con el contenido. Los vídeos no pasan por
+ahí, así que el del hero vive en `public/hero/<versión>/` y cambiar de vídeo es
+cambiar de carpeta (`HERO_VERSION` en `src/lib/heroMedia.ts`; `DECISIONS.md`,
+2026-09-22 y 2026-10-01). Entre medias, la foto fija del 2026-09-25 vivía en
+`src/assets/` justo por esto.
 
 ## Bugs de un motor concreto
 

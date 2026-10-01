@@ -76,7 +76,7 @@ que sigue está verificado, no estimado):
 - **Tirón de 217-359 ms al entrar en `/sobre-nosotros`.** Perfilado: 292 ms de self-time en GSAP. Causa: `splitWords` parte tres párrafos del hero y tres del manifiesto en **135 spans** y los anima con `filter: blur(6px)`. Animar un desenfoque obliga a rasterizar cada span en cada fotograma. Quitar el blur y dejar `opacity` + `y`.
 - **Fuga de listeners en la home**: los de `scroll` sobre `document` van de 3 → 4 → 6 tras tres visitas. `initHeroScrollCue` registra una función nueva en cada `astro:page-load` sin quitar la anterior, y las viejas apuntan a nodos desconectados.
 - **Tres imágenes con margen, recomprimidas de verdad**: `contact-image.webp` 76 → 16 KB a 800w (no tiene variante móvil y se sirve la de 1600), `logo-ph-3d.webp` 427 → 199 KB en AVIF, `talents-hero.webp` 142 → 94 KB a q72 sin cambiar dimensiones. (El póster del hero también estaba en esta lista, 142 → 53 KB; quedó sin objeto el 2026-09-25, cuando el hero pasó a una foto fija servida por `astro:assets` en cuatro anchos.)
-- ~~**Vídeo del hero a CRF 30**~~ — superado el 2026-09-22 por un vídeo nuevo, y desde el 2026-09-25 el hero no tiene vídeo: es una foto fija. Cifras de las dos cosas en `DECISIONS.md`.
+- ~~**Vídeo del hero a CRF 30**~~ — superado el 2026-09-22 por un vídeo nuevo; del 2026-09-25 al 2026-10-01 el hero fue una foto fija, y hoy es un vídeo renderizado con sus propios ajustes. Cifras de cada cosa en `DECISIONS.md`.
 - **Código muerto**: `src/scripts/dropdown.ts` (4,3 KB, no lo importa nadie), y `clipPathReveal` + `magneticHover` en `ph-text-animations.ts` (cero usos).
 
 ## Método (esto es lo reutilizable)

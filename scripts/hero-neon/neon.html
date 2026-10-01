@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero Neon Render</title>
+<style>
+  :root { --bg: #000; }
+  html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+  body.render canvas { width: auto; height: auto; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+"use strict";
+// Generador del vídeo del hero: el logo de PHSPORT como rótulo de neón LED sobre
+// metacrilato, en una pared de fieltro. No lo sirve la web: lo abre
+// scripts/build-hero-neon.mjs en un Chrome sin ventana, captura los fotogramas y
+// los codifica. Por qué es un vídeo y no esto mismo en directo: DECISIONS.md
+// (2026-10-01).
+//
+// Todo se dibuja en un shader. La luz que llega a la pared se integra
+// analíticamente a lo largo de cada tramo de tubo (no es un desenfoque pegado
+// encima), así el resplandor sigue al encendido tramo a tramo.
+//
+// Parámetros de la URL:
+//   render&w=…&h=…            modo captura: expone window.renderAt(t, frame)
+//   frame=landscape|portrait  encuadre (por defecto, landscape)
+//   grain=0.014               intensidad del grano de película
+// Abierto sin parámetros, reproduce en directo el encendido y el bucle.
+
+const params = new URLSearchParams(location.search);
+const RENDER = params.has('render');
+const FRAME = params.get('frame') === 'portrait' ? 'portrait' : 'landscape';
+const GRAIN = params.has('grain') ? +params.get('grain') : 0.014;
+// El vídeo son dos piezas: el encendido (INTRO_T s, se ve una vez) y el bucle
+// encendido (LOOP_T s). La cámara tiene periodo LOOP_T, así que el último
+// fotograma del bucle enlaza con el primero, y el del encendido con el bucle.
+const INTRO_T = 3;
+const LOOP_T = 12;
+
+// ---------------------------------------------------------------------------
+// Geometría: los dos polígonos de public/logo.svg (viewBox 259.8 × 206.1), los mismos
+// que dibuja LogoReveal.astro.
+// El tubo sigue el contorno del logo. Se escala a «unidades de mundo» (≈ px de la foto
+// original del rótulo) porque el grosor del tubo, los márgenes del metacrilato y las
+// alturas de la escena están ajustados en esas unidades.
+const SVG_A = [[0,206.1],[58.2,206.1],[57.9,145.5],[158.1,45.4],[112.7,0],[0,0],[0,52.6],[76.9,52.6],[0,128.7]];
+const SVG_B = [[122.6,206.1],[200.1,206.1],[152.2,157.8],[173,137.1],[182.4,146.4],[259.8,146.4],
+               [169.6,55.6],[130.5,94.2],[131.8,95.6],[141.1,105.4],[120.3,125.8],[109.8,115.4],[70.8,153.9]];
+// Franja entre la diagonal de A y el borde escalonado de B: el metacrilato es una sola pieza.
+const SVG_C = [[158.1,45.4],[60.2,143.3],[70.8,153.9],[109.8,115.4],[120.3,125.8],[141.1,105.4],
+               [131.8,95.6],[130.5,94.2],[169.6,55.6]];
+// Punto de alimentación: el puente que une ambas piezas (de ahí arranca la luz).
+const FEED_A = { seg: 2, p: [138.39, 65.09] };
+const FEED_B = { seg: 6, p: [149.13, 75.83] };
+const STANDOFFS_SVG = [[-3.9,24.8],[27.2,96.2],[112.7,-3.9],[160,210],[265.3,146.4],[-3.9,204.4],[169.6,50.8]];
+const SVG_SCALE = 907.7 / 206.1;
+const SVG_CENTER = [129.9, 103.05];
+const ctr = (p) => [(p[0] - SVG_CENTER[0]) * SVG_SCALE, (p[1] - SVG_CENTER[1]) * SVG_SCALE];
+const RAW_A = SVG_A, RAW_B = SVG_B, RAW_C = SVG_C, STANDOFFS = STANDOFFS_SVG;
+
+const sub = (a, b) => [a[0]-b[0], a[1]-b[1]];
+const add = (a, b) => [a[0]+b[0], a[1]+b[1]];
+const mul = (a, s) => [a[0]*s, a[1]*s];
+const len = (a) => Math.hypot(a[0], a[1]);
+const norm = (a) => { const l = len(a); return [a[0]/l, a[1]/l]; };
+
+// Redondea las esquinas de una polilínea con arcos (curvatura del tubo).
+function fillet(pts, radius, closed, step) {
+  const out = [];
+  const n = pts.length;
+  for (let i = 0; i < n; i++) {
+    const isEnd = !closed && (i === 0 || i === n - 1);
+    if (isEnd) { out.push(pts[i]); continue; }
+    const P = pts[(i - 1 + n) % n], V = pts[i], N = pts[(i + 1) % n];
+    const d1 = norm(sub(V, P)), d2 = norm(sub(N, V));
+    const cosPhi = Math.max(-1, Math.min(1, d1[0]*d2[0] + d1[1]*d2[1]));
+    const phi = Math.acos(cosPhi);
+    if (phi < 1e-3) { out.push(V); continue; }
+    let tl = radius * Math.tan(phi / 2);
+    const maxTl = 0.45 * Math.min(len(sub(V, P)), len(sub(N, V)));
+    let r = radius;
+    if (tl > maxTl) { tl = maxTl; r = tl / Math.tan(phi / 2); }
+    const P1 = sub(V, mul(d1, tl));
+    const cross = d1[0]*d2[1] - d1[1]*d2[0];
+    const n1 = cross > 0 ? [-d1[1], d1[0]] : [d1[1], -d1[0]];
+    const C = add(P1, mul(n1, r));
+    const a1 = Math.atan2(P1[1]-C[1], P1[0]-C[0]);
+    const sweep = cross > 0 ? phi : -phi;
+    const k = Math.max(2, Math.ceil(phi / step));
+    for (let j = 0; j <= k; j++) {
+      const a = a1 + sweep * j / k;
+      out.push([C[0] + r*Math.cos(a), C[1] + r*Math.sin(a)]);
+    }
+  }
+  return out;
+}
+
+// Convierte un bucle en polilínea abierta que empieza y acaba en el punto de alimentación.
+function buildLoop(raw, feed) {
+  const n = raw.length, k = feed.seg;
+  const pts = [ctr(feed.p)];
+  for (let i = 1; i <= n; i++) pts.push(ctr(raw[(k + i) % n]));
+  pts.push(ctr(feed.p));
+  return fillet(pts, 13, false, Math.PI / 10);
+}
+
+const loops = [buildLoop(RAW_A, FEED_A), buildLoop(RAW_B, FEED_B)];
+const segs = [];
+const loopLen = [];
+loops.forEach((pts, li) => {
+  let s = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const l = len(sub(pts[i+1], pts[i]));
+    if (l < 1e-4) continue;
+    segs.push({ a: pts[i], b: pts[i+1], s0: s, len: l, loop: li });
+    s += l;
+  }
+  loopLen.push(s);
+});
+// Puente físico entre las dos piezas (tubo apagado, solo cuerpo).
+{
+  const a = ctr(FEED_A.p), b = ctr(FEED_B.p), d = norm(sub(b, a));
+  const a2 = add(a, mul(d, 9)), b2 = sub(b, mul(d, 9));
+  segs.push({ a: a2, b: b2, s0: 0, len: len(sub(b2, a2)), loop: 2 });
+}
+const NSEG = segs.length;
+
+function pointAt(li, s) {
+  for (const g of segs) {
+    if (g.loop !== li) continue;
+    if (s <= g.s0 + g.len) {
+      const t = Math.max(0, s - g.s0) / g.len;
+      return [g.a[0] + (g.b[0]-g.a[0])*t, g.a[1] + (g.b[1]-g.a[1])*t];
+    }
+  }
+  const last = segs.filter(g => g.loop === li).pop();
+  return last.b;
+}
+
+// Ranuras decorativas del fieltro (como las de la pared original).
+function grooveSegs() {
+  const paths = [
+    [[-860,-2400],[-860,-210],[-690,-210],[-690,2400]],
+    [[-520,-2400],[-520,-525],[-140,-525],[-140,2400]],
+    [[830,-2400],[830,-130],[990,-130],[990,2400]],
+  ];
+  const out = [];
+  for (const p of paths) {
+    const f = fillet(p, 85, false, Math.PI / 12);
+    for (let i = 0; i < f.length - 1; i++) out.push(f[i][0], f[i][1], f[i+1][0], f[i+1][1]);
+  }
+  return out;
+}
+const GROOVES = grooveSegs();
+const SEAMS = [-1110,-985,-605,-470,-35,95,470,600,1060,1185];
+
+// ---------------------------------------------------------------------------
+// Guion temporal: encendido (0 → INTRO_T) y bucle siempre encendido después.
+const clamp01 = (x) => Math.max(0, Math.min(1, x));
+const smooth = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+function stepKeys(keys, t, def) { let v = def; for (const [k, val] of keys) if (t >= k) v = val; return v; }
+const IG0 = 0.32, IG1 = 1.55;
+// Arranque titubeante: cada valor se mantiene hasta la clave siguiente (≥ 2 fotogramas a 30 fps).
+const KEYS_STRIKE = [[1.55,1],[1.62,0.2],[1.69,1],[1.79,0.07],[1.89,0.92],[1.99,0.4],[2.06,1]];
+// Un único fallo breve de la flecha pequeña por vuelta del bucle, en tiempo local del bucle.
+const KEYS_GLITCH_B = [[7.30,0.45],[7.37,1],[7.47,0.3],[7.54,0.9],[7.61,1]];
+
+function localTime(tAbs) {
+  if (tAbs < INTRO_T) return tAbs;
+  const u = tAbs - INTRO_T;
+  return INTRO_T + (u - Math.floor(u / LOOP_T) * LOOP_T);
+}
+
+function timeline(tAbs) {
+  const t = localTime(tAbs);
+  const x = clamp01((t - IG0) / (IG1 - IG0));
+  const prog = x <= 0 ? 0 : 1 - Math.pow(1 - x, 1.7);
+  let I;
+  if (t < IG0) I = 0;
+  else if (t < 1.55) I = 0.9;
+  else if (t < 2.06) I = stepKeys(KEYS_STRIKE, t, 1);
+  else if (t < INTRO_T) I = 1 + 0.09 * Math.exp(-(t - 2.06) / 0.18);
+  else I = 1;
+  // Zumbido: frecuencias múltiplo de 1/LOOP_T para que el bucle cierre exacto.
+  if (t >= IG0) I *= 1 + 0.010*Math.sin(2*Math.PI*73*t/LOOP_T) + 0.006*Math.sin(2*Math.PI*208*t/LOOP_T + 1.3);
+  let IB = I;
+  if (t >= INTRO_T) IB = I * stepKeys(KEYS_GLITCH_B, t - INTRO_T, 1);
+  const head = t < IG0 ? 0 : 2.4 * (1 - smooth(0.82, 1.0, x));
+  // Chispazos previos en el punto de alimentación.
+  let pre = 0;
+  if (t >= 0.10 && t < 0.145) pre = 1.3;
+  if (t >= 0.20 && t < 0.235) pre = 0.8;
+  return { t, prog, I: [I, IB], head, pre };
+}
+
+function camera(tAbs, base) {
+  const w = 2 * Math.PI * tAbs / LOOP_T;
+  const rad = Math.PI / 180;
+  const yaw = 4.2*rad*Math.sin(w) + 0.25*rad*Math.sin(3*w + 0.7);
+  const pitch = 1.8*rad*Math.cos(w) + 0.6*rad*Math.sin(2*w + 1.1);
+  const roll = 0.35*rad*Math.sin(w + 0.4) + 0.05*rad*Math.sin(5*w);
+  const D = 2400 * (1 - 0.045 * (0.5 - 0.5*Math.cos(w)));
+  const tg = [base[0] + 12*Math.sin(w + 0.3), base[1] + 8*Math.sin(2*w), 0];
+  const C = [tg[0] + D*Math.sin(yaw)*Math.cos(pitch), tg[1] - D*Math.sin(pitch), D*Math.cos(yaw)*Math.cos(pitch)];
+  const f = norm3(sub3(tg, C));
+  const U = [0, -1, 0];
+  let r = norm3(cross3(U, f));
+  let d = cross3(r, f);
+  const cr = Math.cos(roll), sr = Math.sin(roll);
+  const r2 = [r[0]*cr + d[0]*sr, r[1]*cr + d[1]*sr, r[2]*cr + d[2]*sr];
+  const d2 = [d[0]*cr - r[0]*sr, d[1]*cr - r[1]*sr, d[2]*cr - r[2]*sr];
+  return { C, f, r: r2, d: d2 };
+}
+function sub3(a, b) { return [a[0]-b[0], a[1]-b[1], a[2]-b[2]]; }
+function cross3(a, b) { return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]; }
+function norm3(a) { const l = Math.hypot(a[0], a[1], a[2]); return [a[0]/l, a[1]/l, a[2]/l]; }
+
+// ---------------------------------------------------------------------------
+// Shaders
+const VS = `#version 300 es
+out vec2 vUv;
+void main(){ vec2 p = vec2(float((gl_VertexID<<1)&2), float(gl_VertexID&2)); vUv = p; gl_Position = vec4(p*2.0-1.0, 0.0, 1.0); }`;
+
+const FS_SCENE = `#version 300 es
+precision highp float;
+precision highp int;
+precision highp sampler2D;
+uniform vec2 uRes;
+uniform vec3 uCamPos, uCamF, uCamR, uCamD;
+uniform float uFocal;
+uniform sampler2D uSeg;
+uniform int uNSeg;
+uniform vec2 uPolyA[9];
+uniform vec2 uPolyB[13];
+uniform vec2 uPolyC[9];
+uniform vec4 uLoop[2];   // x: longitud, y: radio encendido, z: cabeza, w: intensidad
+uniform vec4 uSpark[5];  // xy: posición, z: intensidad
+uniform float uRoom;
+uniform vec4 uGroove[64];
+uniform int uNGroove;
+uniform float uSeam[12];
+uniform int uNSeam;
+uniform vec2 uStand[8];
+uniform int uNStand;
+out vec4 fragColor;
+
+const float Z_T = 43.0;
+const float Z_PF = 36.0;
+const float Z_PB = 30.0;
+const float Z_SC = 38.5;
+const float R_T = 7.0;
+const float PLATE_OFF = 31.0;
+const vec3 NEON = vec3(1.0, 0.77, 0.55);
+const vec3 AMB_DIR = vec3(-0.45, -0.55, 0.70);
+
+float hash12(vec2 p){ vec3 p3 = fract(vec3(p.xyx)*0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y)*p3.z); }
+float vnoise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);
+  return mix(mix(hash12(i), hash12(i+vec2(1,0)), u.x), mix(hash12(i+vec2(0,1)), hash12(i+vec2(1,1)), u.x), u.y); }
+float feltH(vec2 p){ return 0.55*vnoise(p/6.0) + 0.30*vnoise(p/2.7 + 17.0) + 1.6*vnoise(p/140.0 + 3.0); }
+
+float sdPolyA(vec2 p){
+  float d = dot(p-uPolyA[0], p-uPolyA[0]); float s = 1.0;
+  for (int i = 0, j = 8; i < 9; j = i, i++) {
+    vec2 e = uPolyA[j] - uPolyA[i]; vec2 w = p - uPolyA[i];
+    vec2 b = w - e*clamp(dot(w,e)/dot(e,e), 0.0, 1.0); d = min(d, dot(b,b));
+    bvec3 c = bvec3(p.y >= uPolyA[i].y, p.y < uPolyA[j].y, e.x*w.y > e.y*w.x);
+    if (all(c) || all(not(c))) s *= -1.0;
+  }
+  return s*sqrt(d);
+}
+float sdPolyB(vec2 p){
+  float d = dot(p-uPolyB[0], p-uPolyB[0]); float s = 1.0;
+  for (int i = 0, j = 12; i < 13; j = i, i++) {
+    vec2 e = uPolyB[j] - uPolyB[i]; vec2 w = p - uPolyB[i];
+    vec2 b = w - e*clamp(dot(w,e)/dot(e,e), 0.0, 1.0); d = min(d, dot(b,b));
+    bvec3 c = bvec3(p.y >= uPolyB[i].y, p.y < uPolyB[j].y, e.x*w.y > e.y*w.x);
+    if (all(c) || all(not(c))) s *= -1.0;
+  }
+  return s*sqrt(d);
+}
+float sdPolyC(vec2 p){
+  float d = dot(p-uPolyC[0], p-uPolyC[0]); float s = 1.0;
+  for (int i = 0, j = 8; i < 9; j = i, i++) {
+    vec2 e = uPolyC[j] - uPolyC[i]; vec2 w = p - uPolyC[i];
+    vec2 b = w - e*clamp(dot(w,e)/dot(e,e), 0.0, 1.0); d = min(d, dot(b,b));
+    bvec3 c = bvec3(p.y >= uPolyC[i].y, p.y < uPolyC[j].y, e.x*w.y > e.y*w.x);
+    if (all(c) || all(not(c))) s *= -1.0;
+  }
+  return s*sqrt(d);
+}
+float smin(float a, float b, float k){ float h = max(k - abs(a-b), 0.0)/k; return min(a,b) - h*h*k*0.25; }
+float sdPlate(vec2 p){ return min(smin(sdPolyA(p), sdPolyB(p), 26.0), sdPolyC(p)) - PLATE_OFF; }
+
+vec3 env(vec3 d){
+  vec3 c = vec3(0.010, 0.0095, 0.009)*(0.7 + 0.6*clamp(-d.y, 0.0, 1.0));
+  vec3 sb = normalize(vec3(-0.50, -0.58, 0.64));
+  float k = dot(d, sb);
+  c += vec3(1.0, 0.93, 0.84)*2.2*smoothstep(0.962, 0.988, k);
+  c += vec3(0.32, 0.17, 0.07)*0.5*smoothstep(0.25, 0.85, d.x);
+  return c;
+}
+
+vec3 ambientIrr(vec2 p){
+  vec3 base = vec3(0.024, 0.0235, 0.023);
+  float k = exp(-length(p - vec2(-900.0, -900.0))/1400.0);
+  vec3 warm = vec3(0.050, 0.028, 0.012)*smoothstep(700.0, 1400.0, p.x);
+  return base*(0.5 + 1.7*k) + warm + uRoom*NEON*0.022;
+}
+
+void main(){
+  vec2 px = gl_FragCoord.xy - 0.5*uRes;
+  vec3 rd = normalize(uCamF*uFocal + uCamR*px.x - uCamD*px.y);
+  vec3 ro = uCamPos;
+  float sW = -ro.z/rd.z;           vec2 pW = (ro + sW*rd).xy;
+  float sT = (Z_T - ro.z)/rd.z;    vec2 pT = (ro + sT*rd).xy;
+  float sP = (Z_PF - ro.z)/rd.z;   vec2 pP = (ro + sP*rd).xy;
+  float sPb = (Z_PB - ro.z)/rd.z;  vec2 pPb = (ro + sPb*rd).xy;
+  float sS = (Z_SC - ro.z)/rd.z;   vec2 pS = (ro + sS*rd).xy;
+  float pxw = sT/uFocal;
+  float pxW = sW/uFocal;
+
+  // --- Pared de fieltro: microrrelieve, ranuras y juntas ---
+  float e = 0.9;
+  float h0 = feltH(pW);
+  vec2 grad = vec2(feltH(pW + vec2(e,0)) - h0, feltH(pW + vec2(0,e)) - h0)/e;
+  vec3 nW = vec3(-grad*0.55, 1.0);
+  float ao = 1.0;
+  float gd = 1e9; vec2 gdir = vec2(0);
+  for (int i = 0; i < 64; i++) {
+    if (i >= uNGroove) break;
+    vec4 g = uGroove[i]; vec2 a = g.xy, ab = g.zw - g.xy;
+    vec2 w = pW - a; float t = clamp(dot(w,ab)/dot(ab,ab), 0.0, 1.0);
+    vec2 dv = w - ab*t; float d = length(dv);
+    if (d < gd) { gd = d; gdir = dv/max(d, 1e-4); }
+  }
+  for (int i = 0; i < 12; i++) {
+    if (i >= uNSeam) break;
+    float d = abs(pW.x - uSeam[i]);
+    if (d < gd) { gd = d; gdir = vec2(sign(pW.x - uSeam[i]), 0.0); }
+  }
+  float gw = 2.4;
+  float gin = 1.0 - smoothstep(gw - pxW, gw + pxW, gd);
+  nW.xy += -gdir*0.45*gin;
+  ao *= mix(1.0, 0.22 + 0.2*smoothstep(0.0, gw, gd), gin);
+  nW = normalize(nW);
+  for (int i = 0; i < 8; i++) {
+    if (i >= uNStand) break;
+    float d = length(pW - uStand[i]);
+    ao *= 1.0 - 0.45*exp(-d*d/(2.0*11.0*11.0));
+  }
+  float feltAlb = 0.048*(0.86 + 0.28*vnoise(pW/38.0 + 7.0));
+
+  // --- Tubo: distancia y luz integrada analíticamente por tramo ---
+  float dT2 = 1e18; int nI = 0; float nT = 0.0; vec2 nDv = vec2(0);
+  float halo = 0.0, haloW = 0.0, Ew = 0.0;
+  for (int i = 0; i < 1024; i++) {
+    if (i >= uNSeg) break;
+    vec4 g = texelFetch(uSeg, ivec2(i,0), 0);
+    vec4 m = texelFetch(uSeg, ivec2(i,1), 0);
+    vec2 a = g.xy; float L = m.y; vec2 u = (g.zw - a)/L;
+    vec2 w = pT - a; float tq = dot(w,u); float tc = clamp(tq, 0.0, L);
+    vec2 dv = w - u*tc; float d2 = dot(dv,dv);
+    if (d2 < dT2) { dT2 = d2; nI = i; nT = tc; nDv = dv; }
+    float I = m.w;
+    if (I <= 0.0) continue;
+    vec4 lit = texelFetch(uSeg, ivec2(i,2), 0);
+    vec2 perp = w - u*tq; float pd2 = dot(perp,perp);
+    float rt2 = pd2 + 49.0;          // halo cercano: núcleo 1/d^3 (cae rápido)
+    float r2 = sqrt(pd2 + 900.0);    // velo amplio: núcleo 1/d^2
+    vec2 ww = pW - a; float tw = dot(ww,u); vec2 ap = u*tw - ww; float rw2 = dot(ap,ap) + Z_T*Z_T;
+    float nz = nW.z*Z_T + dot(nW.xy, ap); float nu = dot(nW.xy, u);
+    for (int k = 0; k < 2; k++) {
+      vec2 iv = k == 0 ? lit.xy : lit.zw;
+      if (iv.y <= iv.x) continue;
+      float t0 = iv.x - tq, t1 = iv.y - tq;
+      halo  += I*7.0*(t1/sqrt(rt2 + t1*t1) - t0/sqrt(rt2 + t0*t0))/rt2;
+      haloW += I*(atan(t1/r2) - atan(t0/r2))/r2;
+      float u0 = iv.x - tw, u1 = iv.y - tw;
+      float q0 = sqrt(rw2 + u0*u0), q1 = sqrt(rw2 + u1*u1);
+      Ew += I*(nz*(u1/q1 - u0/q0)/rw2 + nu*(1.0/q0 - 1.0/q1));
+    }
+  }
+  float dT = sqrt(dT2);
+  vec3 sparkCol = vec3(0.0);
+  for (int i = 0; i < 5; i++) {
+    vec4 s = uSpark[i];
+    if (s.z <= 0.0) continue;
+    vec2 dv = pT - s.xy; float d2 = dot(dv,dv);
+    halo  += s.z*40.0*7.0/pow(d2 + 49.0, 1.5);
+    haloW += s.z*40.0/(d2 + 900.0);
+    vec3 Lv = vec3(s.xy - pW, Z_T); float dl = length(Lv);
+    Ew += s.z*40.0*max(dot(nW, Lv), 0.0)/(dl*dl*dl);
+    sparkCol += vec3(1.0, 0.92, 0.82)*s.z*(60.0*exp(-d2/(2.0*3.5*3.5)) + 6.0*exp(-d2/(2.0*14.0*14.0)));
+  }
+  Ew = max(Ew, 0.0);
+
+  vec3 amb = ambientIrr(pW);
+  float ambDir = 0.65 + 0.5*dot(nW, normalize(AMB_DIR));
+  vec3 col = feltAlb*ao*(NEON*Ew*75.0 + amb*ambDir);
+
+  // --- Metacrilato: transmisión, dispersión interna, reflejo y canto pulido ---
+  float sdF = sdPlate(pP);
+  float sdB = sdPlate(pPb);
+  float pw = sP/uFocal;
+  float inF = 1.0 - smoothstep(-pw, pw, sdF);
+  float cosv = -rd.z;
+  float fres = 0.04 + 0.96*pow(1.0 - cosv, 5.0);
+  vec3 refl = env(reflect(rd, vec3(0,0,1)));
+  vec3 plateCol = col*0.90 + NEON*halo*0.8 + refl*fres;
+  col = mix(col, plateCol, inF);
+  float edgeLine = 1.0 - smoothstep(0.35, 0.35 + 1.4*pw, abs(sdF + 0.3));
+  float side = ((sdF > 0.0) != (sdB > 0.0)) ? 1.0 : 0.0;
+  float edge = max(edgeLine, side*0.9);
+  vec3 edgeCol = NEON*haloW*4.0 + refl*0.35 + amb*1.4;
+  col = mix(col, edgeCol, edge*0.8);
+
+  // --- Separadores metálicos ---
+  for (int i = 0; i < 8; i++) {
+    if (i >= uNStand) break;
+    vec2 dv = pS - uStand[i]; float d = length(dv);
+    float rc = 7.5;
+    float cov = 1.0 - smoothstep(rc - pw, rc + pw, d);
+    if (cov <= 0.0) continue;
+    float x = clamp(d/rc, 0.0, 1.0);
+    vec3 n = normalize(vec3(dv/rc*0.55, sqrt(1.0 - 0.3*x*x)));
+    vec3 capR = env(reflect(rd, n));
+    vec3 capCol = vec3(0.50, 0.49, 0.47)*(amb*1.4 + NEON*haloW*3.5) + capR*0.55 + NEON*halo*0.5;
+    capCol *= 1.0 - 0.45*smoothstep(0.75, 1.0, x);
+    col = mix(col, capCol, cov);
+  }
+
+  // --- Tubo de neón LED (silicona difusa) ---
+  vec4 mN = texelFetch(uSeg, ivec2(nI,1), 0);
+  int loopId = int(mN.z + 0.5);
+  float litF = 0.0, boost = 0.0, Il = 0.0;
+  if (loopId < 2) {
+    vec4 L = loopId == 0 ? uLoop[0] : uLoop[1];
+    float s = mN.x + nT, rho = L.y, Lt = L.x;
+    float f1 = 1.0 - smoothstep(rho - 3.0, rho + 1.0, s);
+    float f2 = smoothstep(Lt - rho - 1.0, Lt - rho + 3.0, s);
+    litF = max(f1, f2);
+    float db1 = rho - s, db2 = s - (Lt - rho);
+    float db = min(db1 >= 0.0 ? db1 : 1e9, db2 >= 0.0 ? db2 : 1e9);
+    boost = L.z*exp(-db/55.0);
+    Il = L.w;
+  }
+  float covT = 1.0 - smoothstep(R_T - pxw, R_T + pxw, dT);
+  float xr = clamp(dT/R_T, 0.0, 1.0);
+  vec2 pdir = nDv/max(dT, 1e-4);
+  vec3 nTube = normalize(vec3(pdir*xr, sqrt(max(1.0 - xr*xr, 0.0))));
+  float prof = 0.55 + 0.45*sqrt(max(1.0 - xr*xr, 0.0));
+  vec3 core = mix(NEON, vec3(1.0), 0.45);
+  vec3 emit = core*15.0*Il*litF*(1.0 + boost)*prof;
+  float fT = 0.04 + 0.96*pow(1.0 - max(dot(-rd, nTube), 0.0), 5.0);
+  vec3 body = vec3(0.80, 0.78, 0.74)*(amb*(0.55 + 0.6*max(dot(nTube, normalize(AMB_DIR)), 0.0)) + NEON*halo*4.0)
+            + env(reflect(rd, nTube))*fT*0.6;
+  col = mix(col, emit + body, covT);
+
+  // --- Halo cercano (dispersión en el aire y el difusor) ---
+  col += NEON*(halo*5.0 + haloW*0.12);
+  col += sparkCol;
+
+  fragColor = vec4(col, 1.0);
+}`;
+
+const FS_DOWN = `#version 300 es
+precision highp float;
+uniform sampler2D uTex; uniform vec2 uTexel;
+in vec2 vUv; out vec4 o;
+void main(){
+  vec2 h = uTexel;
+  vec3 s = texture(uTex, vUv).rgb*4.0;
+  s += texture(uTex, vUv + vec2(-h.x,-h.y)).rgb;
+  s += texture(uTex, vUv + vec2( h.x,-h.y)).rgb;
+  s += texture(uTex, vUv + vec2(-h.x, h.y)).rgb;
+  s += texture(uTex, vUv + vec2( h.x, h.y)).rgb;
+  o = vec4(s/8.0, 1.0);
+}`;
+
+const FS_UP = `#version 300 es
+precision highp float;
+uniform sampler2D uTex; uniform vec2 uTexel;
+in vec2 vUv; out vec4 o;
+void main(){
+  vec2 h = uTexel;
+  vec3 s = texture(uTex, vUv + vec2(-2.0*h.x, 0.0)).rgb;
+  s += texture(uTex, vUv + vec2(-h.x, h.y)).rgb*2.0;
+  s += texture(uTex, vUv + vec2(0.0, 2.0*h.y)).rgb;
+  s += texture(uTex, vUv + vec2(h.x, h.y)).rgb*2.0;
+  s += texture(uTex, vUv + vec2(2.0*h.x, 0.0)).rgb;
+  s += texture(uTex, vUv + vec2(h.x, -h.y)).rgb*2.0;
+  s += texture(uTex, vUv + vec2(0.0, -2.0*h.y)).rgb;
+  s += texture(uTex, vUv + vec2(-h.x, -h.y)).rgb*2.0;
+  o = vec4(s/12.0, 1.0);
+}`;
+
+const FS_COMP = `#version 300 es
+precision highp float;
+uniform sampler2D uScene, uBloom;
+uniform vec2 uRes; uniform float uFrame, uBloomK, uExposure, uGrain;
+in vec2 vUv; out vec4 o;
+float hash12(vec2 p){ vec3 p3 = fract(vec3(p.xyx)*0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y)*p3.z); }
+vec3 aces(vec3 x){ return clamp((x*(2.51*x + 0.03))/(x*(2.43*x + 0.59) + 0.14), 0.0, 1.0); }
+void main(){
+  vec2 uv = vUv; vec2 c = uv - 0.5;
+  float ca = 0.0022;
+  vec3 col;
+  col.r = texture(uScene, uv - c*ca).r;
+  col.g = texture(uScene, uv).g;
+  col.b = texture(uScene, uv + c*ca).b;
+  col += texture(uBloom, uv).rgb*uBloomK*vec3(1.0, 0.90, 0.80);
+  col *= uExposure;
+  float v = length(c*vec2(uRes.x/uRes.y, 1.0));
+  col *= mix(1.0, 0.5, smoothstep(0.30, 1.05, v));
+  col = aces(col);
+  col = pow(col, vec3(1.0/2.2));
+  vec2 q = uv*uRes;
+  float n = hash12(q + fract(uFrame*0.6180339)*977.0) + hash12(q*1.37 + fract(uFrame*0.3771)*311.0) - 1.0;
+  col += n*uGrain*(1.0 - 0.65*col);
+  o = vec4(col, 1.0);
+}`;
+
+// ---------------------------------------------------------------------------
+// WebGL
+const canvas = document.getElementById('c');
+const gl = canvas.getContext('webgl2', { antialias: false, alpha: false, preserveDrawingBuffer: RENDER, powerPreference: 'high-performance' });
+if (!gl) throw new Error('WebGL2 not available');
+if (!gl.getExtension('EXT_color_buffer_float')) throw new Error('EXT_color_buffer_float not available');
+
+function compile(type, src) {
+  const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+function program(fs) {
+  const p = gl.createProgram();
+  gl.attachShader(p, compile(gl.VERTEX_SHADER, VS)); gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const u = {};
+  const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+  for (let i = 0; i < n; i++) { const info = gl.getActiveUniform(p, i); const name = info.name.replace(/\[0\]$/, ''); u[name] = gl.getUniformLocation(p, info.name); }
+  return { p, u };
+}
+const P_SCENE = program(FS_SCENE), P_DOWN = program(FS_DOWN), P_UP = program(FS_UP), P_COMP = program(FS_COMP);
+gl.bindVertexArray(gl.createVertexArray());
+
+// Textura de datos de tramos: fila 0 geometría, fila 1 (s0, longitud, bucle, intensidad), fila 2 tramos encendidos.
+const segData = new Float32Array(NSEG * 4 * 3);
+segs.forEach((g, i) => {
+  segData.set([g.a[0], g.a[1], g.b[0], g.b[1]], i*4);
+  segData.set([g.s0, g.len, g.loop, 0], (NSEG + i)*4);
+});
+const segTex = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D, segTex);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, NSEG, 3, 0, gl.RGBA, gl.FLOAT, segData);
+
+function makeTarget(w, h) {
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, w, h, 0, gl.RGBA, gl.HALF_FLOAT, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  const fb = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+  return { tex, fb, w, h };
+}
+let targets = null;
+const BLOOM_LEVELS = 7;
+function resize(w, h) {
+  canvas.width = w; canvas.height = h;
+  if (targets) for (const t of [targets.scene, ...targets.mips]) { gl.deleteTexture(t.tex); gl.deleteFramebuffer(t.fb); }
+  const mips = [];
+  for (let i = 1; i <= BLOOM_LEVELS; i++) mips.push(makeTarget(Math.max(1, w >> i), Math.max(1, h >> i)));
+  targets = { scene: makeTarget(w, h), mips };
+}
+
+function draw(prog, target) {
+  gl.bindFramebuffer(gl.FRAMEBUFFER, target ? target.fb : null);
+  gl.viewport(0, 0, target ? target.w : canvas.width, target ? target.h : canvas.height);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+}
+function bindTex(unit, tex, loc) { gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, tex); gl.uniform1i(loc, unit); }
+
+const polyA = new Float32Array(RAW_A.flatMap(ctr));
+const polyB = new Float32Array(RAW_B.flatMap(ctr));
+const polyC = new Float32Array(RAW_C.flatMap(ctr));
+const standData = new Float32Array(STANDOFFS.flatMap(ctr));
+
+function renderFrame(tAbs, frameIdx) {
+  const W = canvas.width, H = canvas.height;
+  const st = timeline(tAbs);
+  // Tramos encendidos por bucle: [0, rho] y [L - rho, L].
+  for (let i = 0; i < NSEG; i++) {
+    const g = segs[i];
+    let I = 0, a0 = 0, a1 = 0, b0 = 0, b1 = 0;
+    if (g.loop < 2) {
+      const L = loopLen[g.loop], rho = Math.min(st.prog * L / 2, L / 2);
+      I = st.I[g.loop];
+      a0 = Math.max(g.s0, 0); a1 = Math.min(g.s0 + g.len, rho);
+      b0 = Math.max(g.s0, L - rho, L / 2); b1 = Math.min(g.s0 + g.len, L);
+      a0 -= g.s0; a1 -= g.s0; b0 -= g.s0; b1 -= g.s0;
+    }
+    segData[(NSEG + i)*4 + 3] = I;
+    segData.set([a0, a1, b0, b1], (2*NSEG + i)*4);
+  }
+  gl.bindTexture(gl.TEXTURE_2D, segTex);
+  gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, NSEG, 3, gl.RGBA, gl.FLOAT, segData);
+
+  // Encuadre. El logo mide 1144 × 908 unidades. En apaisado ocupa el 54 % del alto
+  // con el centro en (58 %, 37 %): queda por encima y a la derecha del titular, que
+  // vive abajo a la izquierda. En vertical ocupa el 84 % del ancho con el centro al
+  // 40 % del alto, por encima del titular. Las cuentas del `object-position` de
+  // HeroSection.astro salen de estas cifras: si cambian aquí, hay que rehacerlas.
+  const F = FRAME === 'portrait'
+    ? { cx: 0.50, cy: 0.40, scale: 0.84 * W / 1144 }
+    : { cx: 0.58, cy: 0.37, scale: 0.54 * H / 908 };
+  const focal = 2400 * F.scale;
+  const cam = camera(tAbs, [-(F.cx - 0.5) * W / F.scale, -(F.cy - 0.5) * H / F.scale]);
+
+  const sparks = new Float32Array(20);
+  let si = 0;
+  if (st.prog > 0 && st.prog < 1 && st.head > 0) {
+    for (let li = 0; li < 2; li++) {
+      const L = loopLen[li], rho = st.prog * L / 2;
+      for (const s of [rho, L - rho]) {
+        const p = pointAt(li, s);
+        sparks.set([p[0], p[1], st.head * 0.55 * st.I[li], 0], si*4); si++;
+      }
+    }
+  }
+  if (st.pre > 0) {
+    const p = ctr(FEED_A.p), q = ctr(FEED_B.p);
+    sparks.set([(p[0]+q[0])/2, (p[1]+q[1])/2, st.pre, 0], si*4); si++;
+  }
+  const lit = st.prog;
+  const room = lit * (st.I[0]*loopLen[0] + st.I[1]*loopLen[1]) / (loopLen[0] + loopLen[1]);
+
+  const S = P_SCENE;
+  gl.useProgram(S.p);
+  gl.uniform2f(S.u.uRes, W, H);
+  gl.uniform3fv(S.u.uCamPos, cam.C); gl.uniform3fv(S.u.uCamF, cam.f);
+  gl.uniform3fv(S.u.uCamR, cam.r); gl.uniform3fv(S.u.uCamD, cam.d);
+  gl.uniform1f(S.u.uFocal, focal);
+  bindTex(0, segTex, S.u.uSeg);
+  gl.uniform1i(S.u.uNSeg, NSEG);
+  gl.uniform2fv(S.u.uPolyA, polyA); gl.uniform2fv(S.u.uPolyB, polyB); gl.uniform2fv(S.u.uPolyC, polyC);
+  gl.uniform4fv(S.u.uLoop, new Float32Array([
+    loopLen[0], st.prog*loopLen[0]/2, st.head, st.I[0],
+    loopLen[1], st.prog*loopLen[1]/2, st.head, st.I[1]]));
+  gl.uniform4fv(S.u.uSpark, sparks);
+  gl.uniform1f(S.u.uRoom, room);
+  gl.uniform4fv(S.u.uGroove, new Float32Array(GROOVES));
+  gl.uniform1i(S.u.uNGroove, GROOVES.length / 4);
+  gl.uniform1fv(S.u.uSeam, new Float32Array(SEAMS));
+  gl.uniform1i(S.u.uNSeam, SEAMS.length);
+  gl.uniform2fv(S.u.uStand, standData);
+  gl.uniform1i(S.u.uNStand, STANDOFFS.length);
+  draw(S, targets.scene);
+
+  // Bloom (cadena de reducciones y ampliaciones).
+  gl.useProgram(P_DOWN.p);
+  let src = targets.scene;
+  for (const m of targets.mips) {
+    bindTex(0, src.tex, P_DOWN.u.uTex);
+    gl.uniform2f(P_DOWN.u.uTexel, 1 / src.w, 1 / src.h);
+    draw(P_DOWN, m); src = m;
+  }
+  gl.useProgram(P_UP.p);
+  gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+  for (let i = targets.mips.length - 2; i >= 0; i--) {
+    const lo = targets.mips[i + 1];
+    bindTex(0, lo.tex, P_UP.u.uTex);
+    gl.uniform2f(P_UP.u.uTexel, 1 / lo.w, 1 / lo.h);
+    draw(P_UP, targets.mips[i]);
+  }
+  gl.disable(gl.BLEND);
+
+  gl.useProgram(P_COMP.p);
+  bindTex(0, targets.scene.tex, P_COMP.u.uScene);
+  bindTex(1, targets.mips[0].tex, P_COMP.u.uBloom);
+  gl.uniform2f(P_COMP.u.uRes, W, H);
+  gl.uniform1f(P_COMP.u.uFrame, frameIdx);
+  gl.uniform1f(P_COMP.u.uBloomK, 0.04);
+  gl.uniform1f(P_COMP.u.uExposure, 0.75);
+  gl.uniform1f(P_COMP.u.uGrain, GRAIN);
+  draw(P_COMP, null);
+}
+
+if (RENDER) {
+  document.body.classList.add('render');
+  const W = +params.get('w') || 1920, H = +params.get('h') || 1080;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  resize(W, H);
+  window.renderAt = (t, frameIdx) => { renderFrame(t, frameIdx); gl.finish(); return true; };
+  window.ready = true;
+} else {
+  const fitCanvas = () => {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let w = Math.round(innerWidth * dpr), h = Math.round(innerHeight * dpr);
+    const maxPx = 3.7e6;
+    if (w * h > maxPx) { const k = Math.sqrt(maxPx / (w * h)); w = Math.round(w * k); h = Math.round(h * k); }
+    resize(w, h);
+  };
+  fitCanvas();
+  addEventListener('resize', fitCanvas);
+  const t0 = performance.now();
+  let f = 0;
+  const loop = (now) => { renderFrame((now - t0) / 1000, f++); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+}
+</script>
+</body>
+</html>

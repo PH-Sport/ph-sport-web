@@ -1,7 +1,8 @@
 ---
-import { Image } from 'astro:assets';
 import { useTranslations, type Lang } from '@/i18n/utils';
-import { HERO_IMAGE, HERO_IMAGE_QUALITY, HERO_IMAGE_SIZES, HERO_IMAGE_WIDTHS } from '@/lib/heroMedia';
+import {
+  HERO_INTRO_SOURCES, HERO_LOOP_SOURCES, HERO_PORTRAIT_MEDIA, HERO_POSTER, HERO_SIZE,
+} from '@/lib/heroMedia';
 
 interface Props {
   lang: Lang;
@@ -18,18 +19,34 @@ const t = useTranslations(lang);
 >
   <div class="hero-media" aria-hidden="true">
     <div class="hero-backdrop" />
-    <Image
-      class="hero-image"
-      src={HERO_IMAGE}
-      widths={HERO_IMAGE_WIDTHS}
-      sizes={HERO_IMAGE_SIZES}
-      format="webp"
-      quality={HERO_IMAGE_QUALITY}
-      alt=""
-      loading="eager"
-      fetchpriority="high"
-      decoding="async"
-    />
+    {/* El póster es un fotograma exacto del vídeo con el mismo encuadre: apagado
+        mientras el vídeo no arranca, encendido con movimiento reducido. Los
+        <video> no llevan atributo `poster` a propósito: el navegador lo
+        descarga nada más crear el elemento. Sin datos ni póster, un <video> es
+        transparente y se ve esta imagen de debajo. */}
+    <picture>
+      <source srcset={HERO_POSTER.on.portrait} media={`${HERO_PORTRAIT_MEDIA} and (prefers-reduced-motion: reduce)`} width={HERO_SIZE.portrait.width} height={HERO_SIZE.portrait.height} />
+      <source srcset={HERO_POSTER.on.landscape} media="(prefers-reduced-motion: reduce)" width={HERO_SIZE.landscape.width} height={HERO_SIZE.landscape.height} />
+      <source srcset={HERO_POSTER.off.portrait} media={HERO_PORTRAIT_MEDIA} width={HERO_SIZE.portrait.width} height={HERO_SIZE.portrait.height} />
+      <img class="hero-poster" data-hero-poster src={HERO_POSTER.off.landscape} alt="" width={HERO_SIZE.landscape.width} height={HERO_SIZE.landscape.height} loading="eager" fetchpriority="high" decoding="async" />
+    </picture>
+    {/* Sin JavaScript nadie arrancaría el vídeo: el rótulo se queda encendido. */}
+    <noscript>
+      <picture>
+        <source srcset={HERO_POSTER.on.portrait} media={HERO_PORTRAIT_MEDIA} />
+        <img class="hero-poster hero-poster--noscript" src={HERO_POSTER.on.landscape} alt="" width={HERO_SIZE.landscape.width} height={HERO_SIZE.landscape.height} />
+      </picture>
+    </noscript>
+    <video class="hero-video hero-video--loop" data-hero-loop muted loop playsinline preload="none">
+      {HERO_LOOP_SOURCES.map((s) => (
+        <source src={s.src} type={s.type} media={s.media} />
+      ))}
+    </video>
+    <video class="hero-video hero-video--intro" data-hero-intro muted playsinline preload="none">
+      {HERO_INTRO_SOURCES.map((s) => (
+        <source src={s.src} type={s.type} media={s.media} />
+      ))}
+    </video>
   </div>
 
   <div class="hero-overlay" aria-hidden="true"></div>
@@ -67,8 +84,7 @@ const t = useTranslations(lang);
     overflow: hidden;
   }
 
-  /* Fondo bajo la foto: se ve mientras carga y, en vertical, por encima y por
-     debajo de la franja de la foto. */
+  /* Fondo bajo el póster: se ve mientras carga. */
   .hero-backdrop {
     position: absolute;
     inset: 0;
@@ -80,44 +96,45 @@ const t = useTranslations(lang);
       var(--ph-section-bg, #0d0f12);
   }
 
-  /* En horizontal, la foto llena el hero. `object-position` es el centro del
-     logo de neón en la foto (53,1 % × 50,8 %, medido sobre los píxeles del
-     neón): si `cover` recorta, recorta alrededor del logo. */
-  .hero-image {
+  /* Póster y vídeos llenan el hero con `cover`. Los vídeos están encuadrados
+     para la web (scripts/hero-neon/neon.html): en el apaisado el logo ocupa el
+     54 % del alto con el centro en (58 %, 37 %), arriba a la derecha y libre del
+     titular también en portátiles 16:10. `object-position` decide qué se recorta
+     cuando la pantalla no es 16:9: con 64 % el logo cabe entero hasta la
+     proporción 9:10, y con 37 % en vertical cabe hasta 21:9. Si se cambia el
+     encuadre del render, hay que rehacer estas cuentas. */
+  .hero-poster,
+  .hero-video {
     position: absolute;
     inset: 0;
-    z-index: 1;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 53.1% 50.8%;
+    object-position: 64% 37%;
   }
 
-  /* En vertical (móviles y tablets), `cover` ajustaría la foto al alto y solo
-     se vería el centro del logo, ampliado 2,7× en un iPhone. Se pinta en una
-     franja en la que el logo entero ocupa el 88 % del ancho: la foto al 192 %
-     del ancho (el logo es el 45,7 % de ella), con el centro del logo en el
-     42 % del alto, por encima del titular. Los bordes de arriba y abajo se
-     funden con el fondo; el logo va del 7,8 % al 93,9 % del alto de la foto,
-     así que el fundido no lo toca.
-
-     Todas estas cifras son de ESTA foto. Si se cambia por otra, hay que volver
-     a medir el logo. El 9/10 es el punto en el que `cover` ya no cabe el
-     logo; debe coincidir con `HERO_IMAGE_SIZES` en `heroMedia.ts`. */
+  /* En vertical (más estrecha que 9:10, igual que `HERO_PORTRAIT_MEDIA` en
+     heroMedia.ts) llega el encuadre vertical, 9:19,5: el logo ocupa el 84 % del
+     ancho con el centro al 40 % del alto, por encima del titular. En pantallas
+     menos alargadas, `cover` recorta pared por arriba y por abajo, nunca logo. */
   @media (max-aspect-ratio: 9/10) {
-    .hero-image {
-      inset: auto;
-      top: 42%;
-      left: 50%;
-      width: 192%;
-      /* El preflight de Tailwind pone `max-width: 100%` a todo `img`. */
-      max-width: none;
-      height: auto;
-      transform: translate(-53.1%, -50.8%);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 7%, #000 93%, transparent 100%);
-      mask-image: linear-gradient(to bottom, transparent 0%, #000 7%, #000 93%, transparent 100%);
-    }
+    .hero-poster,
+    .hero-video { object-position: 50% 40%; }
   }
+
+  .hero-poster { z-index: 1; }
+  .hero-poster--noscript { z-index: 2; }
+
+  /* Los vídeos aparecen cuando ya están pintando (`is-on`, desde el script de
+     abajo): hasta entonces se ve el póster. El encendido va encima del bucle y
+     se retira cuando el bucle ya se ve; como su último fotograma es el primero
+     del bucle, el relevo no se nota. */
+  .hero-video {
+    z-index: 2;
+    opacity: 0;
+  }
+  .hero-video--intro { z-index: 3; }
+  .hero-video.is-on { opacity: 1; }
 
   /* Dark gradient overlay for legibility of the claim over the photo */
   .hero-overlay {
@@ -283,7 +300,78 @@ const t = useTranslations(lang);
     document.addEventListener('scroll', toggle, { passive: true });
   }
 
-  document.addEventListener('astro:page-load', initHeroScrollCue);
+  /* El rótulo se enciende una vez (vídeo de encendido) y luego queda encendido en
+   * bucle (otro vídeo). Si algo impide reproducir, la portada pasa al póster
+   * encendido: nunca se queda con el rótulo apagado. */
+  function initHeroNeon(): void {
+    const hero = document.querySelector<HTMLElement>('.hero--home');
+    const intro = document.querySelector<HTMLVideoElement>('[data-hero-intro]');
+    const loop = document.querySelector<HTMLVideoElement>('[data-hero-loop]');
+    if (!hero || !intro || !loop) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    // El póster encendido sustituye al apagado (mismo encuadre, mismo fotograma
+    // que el arranque del bucle).
+    const showLitPoster = () => {
+      hero.querySelectorAll<HTMLSourceElement | HTMLImageElement>('picture > source, [data-hero-poster]').forEach((el) => {
+        if (el instanceof HTMLSourceElement) el.srcset = el.srcset.replace('/off-', '/on-');
+        else el.src = el.src.replace('/off-', '/on-');
+      });
+    };
+
+    const playLoop = () => {
+      loop.addEventListener('playing', () => {
+        loop.classList.add('is-on');
+        intro.classList.remove('is-on');
+      }, { once: true });
+      void loop.play().catch(() => {});
+    };
+
+    // Autoplay bloqueado (p. ej., modo de bajo consumo en iPhone): rótulo
+    // encendido fijo y, al primer gesto, el bucle directamente. Empieza en el
+    // mismo fotograma que el póster encendido, así que no hay salto.
+    const fallBackToLoop = () => {
+      showLitPoster();
+      const stop = () => {
+        window.removeEventListener('pointerdown', retry);
+        window.removeEventListener('touchstart', retry);
+        window.removeEventListener('scroll', retry);
+      };
+      const retry = () => { stop(); playLoop(); };
+      window.addEventListener('pointerdown', retry, { passive: true });
+      window.addEventListener('touchstart', retry, { passive: true });
+      window.addEventListener('scroll', retry, { passive: true });
+      // Al navegar a otra página, estos elementos dejan de existir.
+      document.addEventListener('astro:before-swap', stop, { once: true });
+    };
+
+    // Si ninguna fuente sirve, el error salta en la última `<source>`, no en el `<video>`.
+    for (const video of [intro, loop]) {
+      video.addEventListener('error', showLitPoster);
+      video.querySelector('source:last-of-type')?.addEventListener('error', showLitPoster);
+    }
+    intro.addEventListener('playing', () => {
+      intro.classList.add('is-on');
+      // El bucle se baja mientras se ve el encendido, para tenerlo listo al acabar.
+      loop.preload = 'auto';
+      loop.load();
+    }, { once: true });
+    intro.addEventListener('ended', playLoop, { once: true });
+
+    /* Los vídeos se arrancan a mano tras `load`, no con `autoplay`: con
+     * `autoplay` el navegador se baja el archivo nada más encontrarlo y le quita
+     * ancho de banda al póster, que es el LCP (medido con el vídeo anterior:
+     * retrasaba `load` 504 ms; ver ARCHITECTURE.md, reglas de rendimiento).
+     * En navegación SPA el documento ya está cargado y arranca directo. */
+    const start = () => { void intro.play().catch(fallBackToLoop); };
+    if (document.readyState === 'complete') start();
+    else window.addEventListener('load', start, { once: true });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    initHeroScrollCue();
+    initHeroNeon();
+  });
 </script>
 
 <script>

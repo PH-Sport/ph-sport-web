@@ -150,10 +150,12 @@ npm run preview  # previsualización del build
 # así que convive con `npm run dev` abierto en el 4321.
 npm run test:e2e
 
-# Regeneración de assets — a mano, solo al cambiar un original de assets/source-media/.
+# Regeneración de assets — a mano, solo al cambiar un original de assets/source-media/
+# (o, para el hero, su render: scripts/hero-neon/neon.html).
 # La salida se versiona en public/, así que NO forman parte del build.
 npm run assets:badges    # escudos PNG -> WebP 128x128
 npm run assets:favicons  # favicons, apple-touch-icon y og-image.jpg
+npm run assets:hero      # vídeo del hero (renderizado; ~10 min, necesita los navegadores de Playwright)
 ```
 
 Despliegue: **Vercel** (proyecto `ph-sport-web`, equipo `rodz-dev`), push a `main`
@@ -246,8 +248,8 @@ leerlo antes de tocar el fichero que se nombra.
 - **Bugs de un motor concreto: medir en ese motor**, con el dispositivo real.
 - **Lo que está en `public/` se sirve con 7 días de caché** (`vercel.json`) → un
   archivo nuevo con el mismo nombre sigue siendo el viejo para quien ya visitó la
-  web. Para sustituir algo, cambiarle el nombre. Lo que pasa por `astro:assets`
-  (como la foto del hero) lleva hash y no lo sufre.
+  web. Para sustituir algo, cambiarle el nombre (el vídeo del hero lleva la versión
+  en la carpeta por eso). Lo que pasa por `astro:assets` lleva hash y no lo sufre.
 
 ## Hallazgos abiertos
 
@@ -271,8 +273,8 @@ Lo que hay que saber **antes de tocar nada**:
 
 Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: fotos de jugadores
 con la camiseta del club anterior, backlog de rendimiento del 2026-08-18, fuga de
-listeners de scroll en la home, SEO P1/P2 y la foto del hero: original corto de
-resolución y titular sobre el logo (2026-09-25).
+listeners de scroll en la home, SEO P1/P2 y el vídeo del hero sin probar en un
+iPhone real (2026-10-01).
 
 ## Convenciones
 

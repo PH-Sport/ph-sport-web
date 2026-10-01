@@ -13,6 +13,89 @@ leído el resto.
 
 ---
 
+## 2026-10-01 · El hero vuelve a ser vídeo: el rótulo de neón, renderizado, que se enciende una vez y queda encendido
+
+**Decisión** (de Mario): la foto fija del 2026-09-25 se sustituye por un vídeo
+del mismo motivo —el logo como rótulo de neón LED sobre metacrilato, en la pared
+de fieltro—, generado por ordenador y no filmado. Dos piezas por pantalla: el
+encendido (3 s: la luz recorre el tubo desde la unión de las dos piezas, titubea
+y se estabiliza), que se ve una vez, y el rótulo encendido en bucle (12 s), con
+un zumbido sutil, un fallo breve de la flecha pequeña y un movimiento lento de
+cámara. Funcionamiento en `ARCHITECTURE.md`, «Hero».
+
+**Qué cambia respecto al 2026-09-25.** Aquel día se pasó a la foto porque Mario
+la pidió en lugar del vídeo de oficina; el motivo no era técnico, y se le avisó
+antes de empezar de que esto lo deshacía. El vídeo es del mismo rótulo de la
+foto y cierra los dos hallazgos que esta dejó: el titular ya no cae sobre el
+trazo inferior (el render encuadra el logo arriba a la derecha) y la nitidez ya
+no depende de un original de 1672 px.
+
+**Por qué renderizado.** `scripts/hero-neon/neon.html` dibuja la escena en
+WebGL con la geometría de `public/logo.svg`, y `scripts/build-hero-neon.mjs` la
+graba fotograma a fotograma. Encuadre, color, ritmo o resolución se cambian
+tocando un parámetro y regenerando (unos 7 minutos en un Mac con GPU), sin
+volver a filmar. Nació de la foto del rótulo real, rectificada; la geometría se
+pasó al SVG porque la medida en la foto salía un 2-3 % más estrecha.
+
+**Alternativa considerada — dibujarlo en directo en la página, con WebGL.**
+Unos 30 KB de JS y nitidez a cualquier tamaño, pero tira de la GPU del móvil
+todo el tiempo que la portada está a la vista (batería, calor), no se ha medido
+en un iPhone y no hay fallback tan simple como un póster. Mario eligió el vídeo:
+rendimiento predecible y las reglas de vídeo en portada ya medidas en septiembre.
+
+**Alternativa considerada — el ciclo completo del prototipo** (encendido, fallo
+y apagado cada 10 s). Deja el titular sobre negro 1,6 s de cada 10. Descartada.
+
+**Alternativa considerada — un solo vídeo con el encendido dentro, saltando
+atrás al acabar.** No se probó: un salto (`currentTime`) en un MP4 progresivo
+puede congelar fotogramas en cada vuelta, y el `loop` nativo del segundo vídeo
+no tiene ese riesgo. Coste: un archivo más por pantalla.
+
+**Por qué el póster es el rótulo apagado.** Con el póster encendido, el
+encendido arrancaría sobre un rótulo ya encendido: se vería apagarse de golpe y
+volver a encenderse. Para que el apagado no se quede fijo, todos los casos en
+que el vídeo no va a arrancar usan el póster encendido: movimiento reducido
+(por `<source media>`), sin JavaScript (`<noscript>`), error del vídeo y autoplay
+bloqueado (por script).
+
+**Cifras** (CRF 24 en HEVC y 22 en H.264, los del vídeo del 2026-09-22; SSIM
+contra una referencia casi sin pérdida):
+
+| Archivo | HEVC | H.264 | SSIM HEVC / H.264 |
+|---|---:|---:|---|
+| Encendido apaisado (1920×1080, 3 s) | 154 KB | 533 KB | 0,981 / 0,980 |
+| Bucle apaisado (12 s) | 256 KB | 1.090 KB | 0,982 / 0,980 |
+| Encendido vertical (886×1920, 3 s) | 160 KB | 485 KB | 0,981 / 0,980 |
+| Bucle vertical (12 s) | 256 KB | 996 KB | 0,982 / 0,980 |
+
+Con los pósters (9-10 KB apagados, 22 KB encendidos), un iPhone baja unos
+425 KB y un Android unos 1,5 MB (en escritorio, 420 KB en Safari y 1,6 MB en
+Chrome); el vídeo anterior eran ~1 MB en móvil. El SSIM
+queda por debajo del 0,989 de septiembre por el grano: es ruido distinto en cada
+fotograma y el compresor se come parte (el HEVC más). Mirado con el contraste
+multiplicado por 3,2 sobre el halo: sin escalones, y los niveles se conservan
+(7,75 → 7,74 en la pared más oscura). El grano del render va al 1,4 %, menos
+que en el prototipo (3 %), para que comprima: el prototipo, 10 s a 1080p en
+H.264 con CRF 20, pesaba 11 MB (no es una comparación en igualdad de ajustes).
+
+**Diagnóstico falso, para no repetirlo.** Al comparar fotogramas extraídos con
+ffmpeg, el vídeo parecía 2 niveles más oscuro en todo el rango. No era el vídeo:
+el paso rápido de YUV a RGB de ffmpeg redondea hacia abajo. Extrayendo con
+`scale=…:flags=accurate_rnd+full_chroma_int` los niveles coinciden. Los
+navegadores no usan ese camino.
+
+**Lo que se retira**: `src/assets/images/hero/portada.png`. **Para recuperar la
+foto**: `git checkout 3ad0d88 --` sobre ella, `src/lib/heroMedia.ts` y
+`src/components/sections/HeroSection.astro`. `ffmpeg-static` vuelve a tener uso
+(lo usa el script).
+
+**Consecuencias.** La portada se ve con el rótulo apagado hasta `load` más el
+arranque del vídeo; en la primera visita lo tapa el telón de `LogoReveal`
+(1,26 s). El LCP es ese póster apagado (9-10 KB). Sin probar en un iPhone real
+(`docs/hallazgos-abiertos.md`).
+
+---
+
 ## 2026-10-01 · Fotos de las tarjetas de talentos en AVIF 90, con WebP 85 de reserva
 
 **Decisión**: las fotos del grid de `/talentos` se sirven en un `<picture>` con
@@ -77,6 +160,12 @@ que es exactamente el mismo archivo que se servía antes.
   contra `.talents__photo`, como antes.
 
 ## 2026-09-25 · El hero pasa de vídeo a foto fija, servida por `astro:assets`
+
+> ⚠️ **SUPERADA el 2026-10-01**: el hero es un vídeo renderizado del mismo
+> rótulo (ver esa entrada). La foto se borró del árbol y se recupera del commit
+> `3ad0d88` (`src/assets/images/hero/portada.png`, con `src/lib/heroMedia.ts` y
+> `src/components/sections/HeroSection.astro`). Las mediciones de formato de
+> imagen siguen valiendo para fotos con textura.
 
 **Decisión**: la portada deja el vídeo montado el 2026-09-22 y muestra una foto
 fija: el logo PH en neón sobre una pared oscura de fieltro

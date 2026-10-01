@@ -227,21 +227,21 @@ Uno nuevo por visita: `initHeroScrollCue` registra una función nueva en cada
 - Una página `/faq` con preguntas y respuestas literales.
 - Auditar los `alt=""` de Header, Footer y Hero para confirmar que son decorativos.
 
-### Foto del hero: original corto de resolución y titular sobre el logo (2026-09-25)
+### Vídeo del hero: sin probar en un iPhone real (2026-10-01)
 
-Dos cosas que se ven con la foto de portada puesta y que no se arreglan en el
-código (decisión y medidas en `DECISIONS.md`, 2026-09-25):
+El vídeo renderizado del neón sustituyó a la foto (`DECISIONS.md`, 2026-10-01) y
+con él se cerraron los dos hallazgos de la foto: el titular ya no cae sobre el
+logo y la resolución ya no depende de un original. Queda:
 
-- **El original mide 1672×941.** En un portátil retina (2.880 px físicos de
-  ancho) se pinta ampliado 1,7×, y en un iPhone 1,3×. El brillo del neón lo
-  disimula, pero la textura de la pared se ve blanda a tamaño real. El arreglo
-  es pedir el original a más resolución (3.840 px de ancho o más) y sustituir
-  `src/assets/images/hero/portada.png`; si el encuadre es el mismo, no hay que
-  tocar nada más. Ampliarla en el build no sirve: añade bytes, no detalle.
-- **En pantallas horizontales, el titular cae sobre la parte baja del logo.**
-  «Forever Football.» pasa por delante del trazo inferior del neón. Se lee
-  gracias al degradado oscuro, pero compiten. Mover el titular o reencuadrar la
-  foto es decisión de diseño de Mario, no técnica; no se ha tocado.
-
-Comprobado con capturas en Chromium y en WebKit (el motor de Safari) a siete
-tamaños, de un iPhone apaisado a un 1920×1080. **No en un iPhone real.**
+- **Nada se ha visto en un iPhone real.** Comprobado en Chromium y en WebKit (el
+  motor de Safari) con Playwright, en escritorio a 1440×900 y con un Pixel 7 y
+  un iPhone 14 emulados: cada motor elige su códec (H.264 y HEVC) y su encuadre,
+  el encendido da paso al bucle a los 3 s y, con movimiento reducido, se queda
+  el póster encendido sin descargar vídeo. Falta en el dispositivo: que en modo
+  de bajo consumo, que bloquea la reproducción automática, se vea el póster
+  encendido y no el apagado; y que, mientras carga, el `<video>` sin datos deje
+  ver el póster de debajo (la misma duda que tenía el vídeo del 2026-09-22).
+- **En pantallas retina grandes el apaisado se amplía.** Es de 1920×1080: en un
+  portátil de 2.880 px físicos se pinta a 1,5×. El brillo del neón lo disimula.
+  Si hiciera falta, el render admite cualquier tamaño: subir `FORMATS` en
+  `scripts/build-hero-neon.mjs` a 2560×1440, a costa de más bytes.

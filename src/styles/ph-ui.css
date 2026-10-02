@@ -13,8 +13,11 @@
   margin: 0;
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: clamp(40px, calc(4.2vw + 22px), 96px);
-  line-height: 0.92;
+  /* Un escalón por debajo del titular de página (`.ph-head-title`, hasta 106 px) y
+     del cierre de la portada («Hablemos.»): así cada página tiene un momento que
+     manda y las secciones no compiten entre sí al mismo tamaño. */
+  font-size: clamp(36px, calc(3.4vw + 20px), 76px);
+  line-height: 0.94;
   letter-spacing: -0.04em;
   color: var(--color-ph-white);
   text-wrap: balance;
@@ -69,7 +72,9 @@
   letter-spacing: -0.005em;
   color: var(--color-ph-white);
 }
-.ph-player__club { font-size: clamp(12px, calc(0.1vw + 11.6px), 13px); line-height: 1.4; color: var(--color-ph-gold); }
+/* El club en blanco tenue: en la rejilla serían 51 dorados; el oro se reserva para
+   la palabra destacada y un solo botón por pantalla. */
+.ph-player__club { font-size: clamp(12px, calc(0.1vw + 11.6px), 13px); line-height: 1.4; color: var(--ph-ink-meta); }
 .ph-player__badges { position: absolute; top: 12px; right: 12px; display: flex; gap: 4px; pointer-events: none; }
 .ph-player__badges img { display: block; width: 22px; height: 22px; object-fit: contain; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55)); }
 @media (hover: hover) {
@@ -88,7 +93,7 @@
   border-radius: var(--ph-r-lg); cursor: pointer; color: var(--color-ph-white);
 }
 .ph-acc__head:focus-visible { outline: 2px solid var(--mochi-focus-ring); outline-offset: -2px; }
-.ph-acc__num { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--color-ph-gold); font-variant-numeric: tabular-nums; }
+.ph-acc__num { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--ph-ink-meta); font-variant-numeric: tabular-nums; }
 .ph-acc__title { font: 500 clamp(19px, calc(0.6vw + 16px), 24px)/1.2 var(--font-display); letter-spacing: -0.012em; transition: color var(--mochi-duration-color) var(--mochi-ease-color); }
 @media (hover: hover) { .ph-acc__head:hover .ph-acc__title { color: var(--mochi-accent-strong); } }
 .ph-acc__plus { position: relative; width: 20px; height: 20px; }

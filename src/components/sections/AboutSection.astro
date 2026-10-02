@@ -19,13 +19,14 @@ const eyebrowLabel = eyebrowRest.join(' · ');
 const [presenciaNum, ...presenciaRest] = t('about.presencia.eyebrow').split(' · ');
 const presenciaLabel = presenciaRest.join(' · ');
 
-/* Los tres bloques se leen de izquierda a derecha como el lema de la marca
+/* Los tres bloques se leen de arriba abajo como el lema de la marca
    («Now. Next. Forever Football.»), así que el último lleva el mismo acento
-   que el lema en la portada y el pie: oro e itálica. */
+   que el lema en la portada y el pie: oro e itálica. Sin número delante
+   (`…blocks.*.idx` sigue en el i18n, sin usar): el orden ya lo da el lema. */
 const manifestoBlocks = [
-  { idx: t('about.manifesto.blocks.now.idx'),     title: t('about.manifesto.blocks.now.title'),     body: t('about.manifesto.blocks.now.body'),     accent: false },
-  { idx: t('about.manifesto.blocks.next.idx'),    title: t('about.manifesto.blocks.next.title'),    body: t('about.manifesto.blocks.next.body'),    accent: false },
-  { idx: t('about.manifesto.blocks.forever.idx'), title: t('about.manifesto.blocks.forever.title'), body: t('about.manifesto.blocks.forever.body'), accent: true },
+  { title: t('about.manifesto.blocks.now.title'),     body: t('about.manifesto.blocks.now.body'),     accent: false },
+  { title: t('about.manifesto.blocks.next.title'),    body: t('about.manifesto.blocks.next.body'),    accent: false },
+  { title: t('about.manifesto.blocks.forever.title'), body: t('about.manifesto.blocks.forever.body'), accent: true },
 ];
 
 const internationalCountries = [
@@ -83,8 +84,7 @@ const internationalCountries = [
 
     <ol class="abt-manifesto__blocks" role="list">
       {manifestoBlocks.map((block) => (
-        <li class="abt-manifesto__card">
-          <span class="abt-manifesto__idx">{block.idx}</span>
+        <li class="abt-manifesto__row">
           <h3 class:list={['abt-manifesto__title', block.accent && 'is-accent']}>{block.title}</h3>
           <p class="abt-manifesto__body">{block.body}</p>
         </li>
@@ -106,7 +106,6 @@ const internationalCountries = [
     <ol class="abt-team__list" role="list">
       {teamMembers.map((m) => (
         <li class="abt-team__row" data-id={m.id}>
-          <span class="abt-team__idx">{m.index}</span>
           <span class="abt-team__name">{m.name}</span>
           <span class="abt-team__role">{m.role}</span>
           {/* El país va en mayúsculas como antes: `team.defaultLocation` viene
@@ -118,7 +117,7 @@ const internationalCountries = [
     </ol>
   </section>
 
-  <!-- 04 PRESENCIA: la sede y la red internacional, en dos tarjetas. -->
+  <!-- 04 PRESENCIA: una sola lista sobre el fondo, con Madrid como encabezado. -->
   <section class="abt-block abt-presencia" id="presencia" aria-labelledby="about-presencia-title">
     <div class="ph-rowline">
       <h2 id="about-presencia-title" class="ph-rowline__group abt-index-heading">
@@ -128,23 +127,19 @@ const internationalCountries = [
       </h2>
     </div>
 
-    <div class="abt-presencia__grid">
-      <div class="abt-presencia__card abt-presencia__hq">
-        <h3 class="abt-presencia__madrid">{t('about.presencia.madridTitle')}</h3>
-        <p class="abt-presencia__label">{t('about.presencia.madridLabel')}</p>
-      </div>
-      <div class="abt-presencia__card abt-presencia__intl">
-        <p class="abt-presencia__label">{t('about.presencia.internationalLabel')}</p>
-        <ul class="abt-presencia__countries" role="list">
-          {internationalCountries.map((c) => (
-            <li class="abt-presencia__country">
-              <span>{t(`about.presencia.country.${c.key}` as const)}</span>
-              <span class="abt-presencia__iso">{c.iso}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <div class="abt-presencia__hq">
+      <h3 class="abt-presencia__madrid">{t('about.presencia.madridTitle')}</h3>
+      <p class="abt-presencia__label">{t('about.presencia.madridLabel')}</p>
     </div>
+    <p class="abt-presencia__label abt-presencia__intl-label">{t('about.presencia.internationalLabel')}</p>
+    <ul class="abt-presencia__countries" role="list">
+      {internationalCountries.map((c) => (
+        <li class="abt-presencia__country">
+          <span>{t(`about.presencia.country.${c.key}` as const)}</span>
+          <span class="abt-presencia__iso">{c.iso}</span>
+        </li>
+      ))}
+    </ul>
   </section>
 
 </section>
@@ -216,8 +211,10 @@ const internationalCountries = [
   .abt-block {
     padding: var(--abt-block-gap) var(--edge) 0;
   }
+  /* Abajo menos aire que entre bloques: el pie trae el suyo, y sumados dejaban un
+     hueco de casi 300 px antes del lema. */
   .abt-block:last-of-type {
-    padding-bottom: var(--abt-block-gap);
+    padding-bottom: clamp(48px, 4vw, 88px);
   }
   /* Cuando la fila índice es el encabezado de la sección, el h2 no impone su
      letra: manda la de la fila (`.ph-rowline__label` y compañía). */
@@ -231,43 +228,30 @@ const internationalCountries = [
     margin-top: var(--ph-head-title-gap);
   }
 
-  /* ── 02 FILOSOFÍA: tres tarjetas que se leen como el lema ── */
+  /* ── 02 FILOSOFÍA: el lema puesto en filas, sin cajas ──
+     Cada palabra del lema a la izquierda, en grande, y su texto a la derecha:
+     se lee de arriba abajo como «Now. Next. Forever Football.». */
   .abt-manifesto__blocks {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    /* Tres pistas compartidas (número, titular, texto) para que los textos
-       arranquen a la misma altura aunque «Forever Football.» ocupe dos líneas. */
-    grid-template-rows: auto auto 1fr;
-    column-gap: clamp(12px, 1.2vw, 18px);
-    row-gap: 0;
     margin: var(--ph-head-title-gap) 0 0;
     padding: 0;
     list-style: none;
   }
-  .abt-manifesto__card {
-    grid-row: span 3;
+  .abt-manifesto__row {
     display: grid;
-    grid-template-rows: subgrid;
-    row-gap: 0;
-    padding: clamp(22px, 2vw, 32px);
-    border: 1px solid var(--mochi-surface-border);
-    border-radius: var(--ph-r-lg);
-    background: var(--mochi-surface);
-    box-shadow: var(--mochi-shadow-surface);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(16px, 2vw, 32px);
+    row-gap: 14px;
+    align-items: baseline;
+    padding-block: clamp(28px, calc(2vw + 20px), 48px);
+    border-top: 1px solid var(--abt-line);
   }
-  .abt-manifesto__idx {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    color: var(--abt-gold);
-    font-variant-numeric: tabular-nums;
-  }
+  .abt-manifesto__row:last-child { border-bottom: 1px solid var(--abt-line); }
   .abt-manifesto__title {
-    align-self: end;
-    margin: clamp(48px, 5vw, 88px) 0 0;
+    grid-column: 1 / 7;
+    margin: 0;
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(40px, calc(2.4vw + 18px), 64px);
+    font-size: clamp(44px, calc(3vw + 30px), 88px);
     line-height: 0.95;
     letter-spacing: -0.04em;
     color: var(--color-ph-white);
@@ -280,25 +264,18 @@ const internationalCountries = [
     color: var(--abt-gold);
   }
   .abt-manifesto__body {
-    margin: clamp(18px, 1.4vw, 24px) 0 0;
-    max-width: 42ch;
-    font-size: clamp(16px, calc(0.1vw + 15.6px), 17px);
+    grid-column: 7 / 13;
+    margin: 0;
+    max-width: 46ch;
+    font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
     line-height: 1.6;
     color: var(--ph-ink-body);
     text-wrap: pretty;
   }
 
   @media (max-width: 900px) {
-    .abt-manifesto__blocks {
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-rows: none;
-      row-gap: 12px;
-    }
-    .abt-manifesto__card {
-      grid-row: auto;
-      grid-template-rows: auto;
-    }
-    .abt-manifesto__title { margin-top: 36px; }
+    .abt-manifesto__title,
+    .abt-manifesto__body { grid-column: 1 / -1; }
   }
 
   /* ── 03 EQUIPO: tabla de filas limpias con línea fina ── */
@@ -313,7 +290,7 @@ const internationalCountries = [
     position: relative;
     isolation: isolate;
     display: grid;
-    grid-template-columns: 48px minmax(0, 1.3fr) minmax(0, 1.2fr) minmax(110px, auto);
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.2fr) minmax(110px, auto);
     column-gap: clamp(16px, 2vw, 32px);
     align-items: baseline;
     padding-block: clamp(16px, 1.4vw, 22px);
@@ -334,13 +311,6 @@ const internationalCountries = [
   }
   @media (hover: hover) {
     .abt-team__row:hover::before { opacity: 1; }
-  }
-  .abt-team__idx {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    color: var(--abt-gold);
-    font-variant-numeric: tabular-nums;
   }
   .abt-team__name {
     font-family: var(--font-display);
@@ -368,51 +338,31 @@ const internationalCountries = [
   @media (max-width: 900px) {
     .abt-team__row {
       --abt-row-bleed: 10px;
-      grid-template-columns: 32px minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr) auto;
       column-gap: 12px;
       row-gap: 6px;
       padding-block: 16px;
     }
-    .abt-team__idx { grid-area: 1 / 1; }
-    .abt-team__name { grid-area: 1 / 2; }
-    .abt-team__place { grid-area: 1 / 3; }
-    .abt-team__role { grid-area: 2 / 2 / 3 / 4; font-size: 14px; }
+    .abt-team__name { grid-area: 1 / 1; }
+    .abt-team__place { grid-area: 1 / 2; }
+    .abt-team__role { grid-area: 2 / 1 / 3 / 3; font-size: 14px; }
   }
 
-  /* ── 04 PRESENCIA: sede y red internacional en dos tarjetas ── */
-  .abt-presencia__grid {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: clamp(12px, 1.2vw, 18px);
-    row-gap: 12px;
-    margin-top: var(--ph-head-title-gap);
-  }
-  .abt-presencia__card {
-    padding: clamp(22px, 2vw, 32px);
-    border: 1px solid var(--mochi-surface-border);
-    border-radius: var(--ph-r-lg);
-    background: var(--mochi-surface);
-    box-shadow: var(--mochi-shadow-surface);
-  }
+  /* ── 04 PRESENCIA: una lista sobre el fondo, con Madrid de encabezado ── */
   .abt-presencia__hq {
-    grid-column: 1 / 7;
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: baseline;
     justify-content: space-between;
-    gap: 40px;
-  }
-  .abt-presencia__intl {
-    grid-column: 7 / 13;
-    display: grid;
-    gap: 14px;
-    align-content: start;
+    gap: 12px 32px;
+    margin-top: var(--ph-head-title-gap);
   }
   .abt-presencia__madrid {
     margin: 0;
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(48px, calc(4vw + 26px), 104px);
-    line-height: 0.92;
+    font-size: clamp(40px, calc(2.6vw + 28px), 72px);
+    line-height: 0.95;
     letter-spacing: -0.04em;
     color: var(--color-ph-white);
   }
@@ -425,8 +375,14 @@ const internationalCountries = [
     color: var(--ph-ink-meta);
     text-wrap: balance;
   }
+  .abt-presencia__intl-label {
+    margin-top: clamp(40px, calc(2vw + 32px), 64px);
+  }
   .abt-presencia__countries {
-    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: clamp(16px, 2vw, 32px);
+    margin: 14px 0 0;
     padding: 0;
     list-style: none;
   }
@@ -435,25 +391,21 @@ const internationalCountries = [
     justify-content: space-between;
     align-items: baseline;
     gap: 16px;
-    padding-block: 12px;
-    font-size: 16px;
+    padding-block: 14px;
+    border-top: 1px solid var(--abt-line);
+    font-size: 17px;
     line-height: 1.3;
     color: var(--color-ph-white);
   }
-  .abt-presencia__country + .abt-presencia__country {
-    border-top: 1px solid var(--mochi-surface-border);
-  }
-  .abt-presencia__country:last-child { padding-bottom: 0; }
   .abt-presencia__iso {
     font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.04em;
-    color: var(--abt-gold);
+    color: var(--ph-ink-meta);
   }
 
   @media (max-width: 900px) {
-    .abt-presencia__hq,
-    .abt-presencia__intl { grid-column: 1 / -1; }
+    .abt-presencia__countries { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 
   /* «Reducir movimiento»: el resalte de la fila aparece sin transición. */

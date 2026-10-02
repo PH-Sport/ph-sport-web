@@ -13,7 +13,108 @@ leído el resto.
 
 ---
 
+## 2026-10-02 · Contra el aspecto de plantilla: fuera las ilustraciones de IA, tarjeta solo en lo que se toca, menos oro
+
+**Decisión** (de Mario, tras una revisión de «AI slop», es decir, de patrones que
+delatan un diseño generado por IA, sobre el rediseño de la entrada siguiente):
+
+- **Cómo se revisó:** con la skill de diseño impeccable (`critique`), en dos
+  pasadas independientes:
+  - una revisión de diseño, sin ver el detector;
+  - el detector automático, sobre el código y sobre las páginas pintadas en
+    escritorio y móvil.
+- **El veredicto:** lo propio de la marca (neón, logo de cristal, fotos de estudio)
+  está hecho para PHSPORT; el esqueleto alrededor era una plantilla. Casi cada
+  bloque seguía la misma receta:
+  - fila con número dorado;
+  - titular con una palabra dorada;
+  - entradilla;
+  - tarjeta con sombra.
+
+  Nota de usabilidad: 19/32.
+- **Lo que eligió Mario:**
+  - las ilustraciones fuera, «pero deja el hueco para sustituirlas», sin que se
+    vea vacío;
+  - empezar por tarjetas y ritmo;
+  - abordar los tres primeros problemas;
+  - sombra neutra en los botones dorados.
+
+**Qué cambia**:
+
+- **Ilustraciones generadas por IA:** se quitan las de los cinco pilares de
+  Servicios y la de Contacto (eran de abril). El código deja el sitio preparado
+  (`pillarArt` y `contactImage`), con instrucciones en el comentario. Los archivos
+  salen de `public/`; siguen en el historial de Git.
+  - **Para las fotos reales, nombres nuevos:** `public/` se sirve con 7 días de
+    caché, así que con el mismo nombre quien ya visitó la web seguiría viendo la
+    ilustración vieja.
+- **Tarjeta solo en lo que se toca:** acordeones, pestañas, desplegables y tarjetas
+  de jugador. Lo que solo se lee pasa a ir sobre el fondo, con líneas finas:
+  - **Servicios:** los pilares, en filas; el manifiesto, en grande y sin caja.
+  - **Sobre nosotros:**
+    - Filosofía, en tres filas: la palabra del lema a la izquierda y su texto a la
+      derecha;
+    - Presencia, en una lista con Madrid de encabezado.
+  - **Portada:** las cifras pasan de dos cajas a una línea («7 Países · 360°
+    Acompañamiento»).
+  - **Textos legales:** los datos de la empresa, en lista.
+- **Ritmo:** los titulares de sección (`.ph-h2`) bajan de hasta 96 a hasta 76 px,
+  para que cada página tenga un momento que manda (el titular de página arriba, y
+  «Hablemos.» o el manifiesto al cerrar). También se recortan los huecos antes del
+  pie en la portada y en Sobre nosotros.
+- **Oro y números:**
+  - Pasan a blanco tenue:
+    - el club de cada tarjeta (eran 51 dorados en Talentos);
+    - los números de los acordeones y de los textos legales;
+    - los códigos de país;
+    - las rayas de las viñetas;
+    - la flecha del botón «Scroll».
+  - Se quitan:
+    - la numeración de las 21 personas del equipo, que parecía una clasificación;
+    - los números de Filosofía;
+    - la etiqueta «I / V» de los pilares;
+    - el subrayado dorado del menú, que marcaba dos veces la página actual;
+    - el dorado del enlace activo en el menú móvil.
+  - El oro queda para el logo, la palabra destacada y un solo botón.
+- **Sombra del botón dorado:** filo de luz arriba y sombra oscura
+  (`--ph-sh-accent`), en lugar del halo dorado (`--ph-sh-gold`, retirado). El
+  detector lo marcaba en todas las páginas.
+
+**Alternativas descartadas**:
+
+- **Dejar las ilustraciones hasta tener fotos:** son lo que más delata «hecho con
+  IA» en una web cuya credibilidad son personas reales.
+- **Un hueco visible y discreto en su lugar:** se lo ofrecí a Mario y prefirió que
+  no se vea ninguna caja vacía.
+- **Mantener el halo dorado:** fue mío, por las «sombras estratégicas» que pidió
+  Mario. La revisión y el detector coincidieron en que se lee como brillo de
+  plantilla.
+
+**Lo que queda fuera de esta ronda, ya medido**:
+
+- En Talentos, los botones «Ver» y «Orden» no muestran el filtro elegido.
+- «Entrenadores» siempre da 0 resultados, porque el único entrenador está
+  `on-hold`.
+- En móvil, las pestañas del Plan de acción se cortan.
+
+Eran así antes del rediseño. Están en `docs/hallazgos-abiertos.md`.
+
+**Lo que no se tocó**:
+
+- **Textos:** decisión de los jefes. Hay incoherencias que debe resolver Mario:
+  - los textos dicen «seis pilares» y hay cinco;
+  - al titular en inglés del modelo operativo le falta el sustantivo.
+- **El halo dorado de fondo del hero:** es de abril, y la foto lo tapa en cuanto
+  carga.
+
+---
+
 ## 2026-10-01 · Rediseño con el lenguaje de Mochi: esquinas redondeadas, movimiento solo como respuesta, sin GSAP
+
+> **Matizada el 2026-10-02** («Contra el aspecto de plantilla», entrada anterior):
+> los pilares de Servicios y Contacto ya no llevan ilustración, lo que solo se lee
+> va sin tarjeta, las cifras de la portada pasan a una línea, el botón dorado
+> lleva sombra oscura y el menú pierde el subrayado dorado. El resto sigue vigente.
 
 **Decisión** (de Mario, a petición de los jefes):
 

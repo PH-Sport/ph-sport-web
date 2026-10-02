@@ -143,7 +143,7 @@ const t = useTranslations(lang);
     font-size: 12px;
     letter-spacing: 0.04em;
     font-variant-numeric: tabular-nums;
-    color: var(--color-ph-gold);
+    color: var(--ph-ink-meta);
   }
 
   .legal__section p {
@@ -163,13 +163,13 @@ const t = useTranslations(lang);
   }
 
   /* Datos de la empresa en una tarjeta, como el resto de superficies de la web. */
+  /* Los datos de la empresa, como una lista con líneas finas sobre el fondo: es
+     texto para leer, no algo que se toca, así que no va en tarjeta. */
   .legal__facts {
     margin: 22px 0 0;
-    padding: 4px clamp(18px, calc(0.57vw + 15.8px), 24px);
-    background: var(--mochi-surface);
-    border: 1px solid var(--mochi-surface-border);
-    border-radius: var(--ph-r-lg);
-    box-shadow: var(--mochi-shadow-surface);
+    padding: 0;
+    border-top: 1px solid var(--mochi-surface-border);
+    border-bottom: 1px solid var(--mochi-surface-border);
   }
   .legal__section h2 + .legal__facts {
     margin-top: 0;

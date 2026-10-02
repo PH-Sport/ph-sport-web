@@ -53,7 +53,7 @@ ph-sport-web/
 │   │   │   ├── HeroSection.astro        # Vídeo del neón (encendido + bucle) y claim fijo
 │   │   │   ├── HomePlayersSection.astro    # Raíl arrastrable con los 10 primeros jugadores
 │   │   │   ├── HomeServicesSection.astro   # Acordeón de áreas + Plan de acción en pestañas
-│   │   │   ├── HomeAboutSection.astro      # Cifras en tarjetas, sin contadores
+│   │   │   ├── HomeAboutSection.astro      # Titular, texto y las cifras en una línea, sin contadores
 │   │   │   ├── HomeContactSection.astro    # «Hablemos.», botón de email y copiar
 │   │   │   ├── AboutSection.astro          # Filosofía, equipo y presencia — absorbe /equipo
 │   │   │   ├── ServicesSection.astro       # Áreas en acordeón, cinco pilares y manifiesto
@@ -443,8 +443,8 @@ vuelve a animarse (`docs/trampas-conocidas.md`).
 **La cabecera** (`Header.astro`) es una cápsula flotante que, al bajar, se
 estrecha y se vuelve sólida. Lleva:
 
-- Un indicador bajo el enlace activo: una cápsula con un subrayado dorado que
-  sigue al ratón y vuelve al activo.
+- Un indicador bajo el enlace activo: una cápsula que sigue al ratón y vuelve
+  al activo. Sin subrayado dorado desde el 2026-10-02.
 - El selector de idioma.
 - Un botón dorado de contacto que lleva a `#contacto` de la portada.
 
@@ -653,8 +653,15 @@ lenguaje de Mochi»). Tokens en `src/styles/mochi-phsport.css`:
 - **Movimiento**: solo como respuesta a lo que hace la persona, con muelles de
   rebote mínimo y las curvas de Mochi. Nada entra al cargar ni al hacer scroll
   («Sistema de diseño y movimiento»).
-- **Sombras**: despegan tarjetas y botones del fondo; el botón dorado proyecta luz
-  cálida (`--ph-sh-gold`) en vez de sombra negra.
+- **Tarjetas solo en lo que se toca** (2026-10-02): acordeones, pestañas,
+  desplegables y tarjetas de jugador. Lo que solo se lee (Filosofía, Presencia,
+  pilares, cifras, manifiesto, datos legales) va sobre el fondo, con líneas finas.
+  Una caja en todo se lee como plantilla.
+- **Oro**: el logo, la palabra destacada del titular y un solo botón por pantalla.
+  Clubes, números, códigos de país y rayas de viñeta van en blanco tenue.
+- **Sombras**: despegan tarjetas y botones del fondo, siempre oscuras. El botón
+  dorado lleva un filo de luz arriba y sombra oscura (`--ph-sh-accent`), sin halo
+  dorado.
 - **Fotografía**: high-contrast sobre fondo oscuro. Ratio portrait `3:4` para jugadores.
 
 ---
@@ -731,10 +738,10 @@ que ejecutar nada a mano.
 | `HeroSection.astro` | ✅ Completo | Vídeo del neón (encendido y bucle) con encuadre apaisado y vertical; claim fijo, sin entrada animada |
 | `HomePlayersSection.astro` | ✅ Completo | Raíl arrastrable con los 10 primeros jugadores del roster, en su orden |
 | `HomeServicesSection.astro` | ✅ Completo | Acordeón de las cinco áreas + Plan de acción en pestañas |
-| `HomeAboutSection.astro` | ✅ Completo | Titular, texto y cifras en tarjetas (sin contadores) |
-| `HomeContactSection.astro` | ✅ Completo | «Hablemos.», botón de email y botón de copiar; imagen cuadrada |
-| `AboutSection.astro` | ✅ Completo | Cabecera, Filosofía en tres tarjetas (Now. Next. Forever Football.), equipo en tabla (21 integrantes) y Presencia en dos tarjetas |
-| `ServicesSection.astro` | ✅ Completo | Cabecera, áreas de gestión en acordeón, modelo operativo con cinco pilares en tarjetas con foto y manifiesto |
+| `HomeAboutSection.astro` | ✅ Completo | Titular, texto y las cifras en una sola línea (sin cajas ni contadores) |
+| `HomeContactSection.astro` | ✅ Completo | «Hablemos.», botón de email y botón de copiar. Sitio preparado para una foto real (`contactImage`), hoy vacío |
+| `AboutSection.astro` | ✅ Completo | Cabecera, Filosofía en filas (Now. Next. Forever Football.), equipo en tabla sin numerar (21 integrantes) y Presencia como lista con Madrid de encabezado |
+| `ServicesSection.astro` | ✅ Completo | Cabecera, áreas de gestión en acordeón, modelo operativo con cinco pilares en filas y manifiesto. Sitio preparado para fotos reales de los pilares (`pillarArt`), hoy vacío |
 | `TalentsSection.astro` | ✅ Completo | Buscador (en móvil, icono que se despliega), desplegables Ver y Orden (`.ph-select`) y grid 3:4 no clicable con escudos de selección siempre visibles |
 | `Button.astro` | ⚠️ Sin uso | Nadie lo importa. Los botones son `LinkButton` de Mochi (2026-10-01) |
 | `SectionHeader.astro` | ✅ Completo | |
@@ -765,6 +772,7 @@ que ejecutar nada a mano.
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
 | OG image (1200×630px) | ❌ Pendiente | |
+| Fotos de Servicios y Contacto | ❌ Pendientes | Las ilustraciones generadas por IA se quitaron el 2026-10-02. Sitio preparado en el código; cómo poner una foto, en el comentario de `pillarArt` y `contactImage` |
 
 ### Pendientes
 
@@ -772,6 +780,7 @@ que ejecutar nada a mano.
 |---|---|
 | Revisión nativa de los textos en italiano (2026-10-01) | Alguien que hable italiano |
 | OG image 1200×630px | Diseño |
+| Fotos reales de la agencia para los cinco pilares de Servicios y para Contacto (2026-10-02) | Cliente (Mario) |
 | GA4 — Measurement ID | Decisión de si se integra |
 | ⚠️ Söhne `.woff2` con licencia de producción — **sigue sin comprar a 2026-08-11**, y la web está publicada desde abril con los archivos de prueba | Compra de licencia (Mario) |
 

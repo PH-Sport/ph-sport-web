@@ -42,14 +42,17 @@ const eyebrowLabel = eyebrowRest.join(' · ');
       </LinkButton>
     </div>
 
-    <dl class="home-about__stats" aria-label={t('home.about.stats.aria')}>
-      <div class="home-about__stat">
-        <dt class="home-about__stat-value">{countriesValue}</dt>
-        <dd class="home-about__stat-label">{t('home.about.stats.countries.label')}</dd>
+    {/* Las dos cifras como una sola línea de texto, no como dos cajas de
+        «número grande + etiqueta»: se leen como una frase. */}
+    <dl class="home-about__figures" aria-label={t('home.about.stats.aria')}>
+      <div class="home-about__figure">
+        <dt>{countriesValue}</dt>
+        <dd>{t('home.about.stats.countries.label')}</dd>
       </div>
-      <div class="home-about__stat">
-        <dt class="home-about__stat-value">360<span class="home-about__stat-unit" aria-hidden="true">°</span></dt>
-        <dd class="home-about__stat-label">{t('home.about.stats.service.label')}</dd>
+      <span class="home-about__figure-sep" aria-hidden="true">·</span>
+      <div class="home-about__figure">
+        <dt>360°</dt>
+        <dd>{t('home.about.stats.service.label')}</dd>
       </div>
     </dl>
 
@@ -63,7 +66,8 @@ const eyebrowLabel = eyebrowRest.join(' · ');
 
 <style>
   /* Mismo sistema que el resto de secciones (global.css y ph-ui.css). Las cifras
-     se ven tal cual desde el principio: sin contadores que suben desde cero. */
+     se ven tal cual desde el principio: sin contadores que suben desde cero, y sin
+     caja. */
   .home-about {
     position: relative;
     padding: clamp(88px, 9vw, 156px) var(--ph-section-px) 0;
@@ -83,24 +87,22 @@ const eyebrowLabel = eyebrowRest.join(' · ');
 
   .home-about__body { grid-column: 1 / 6; display: grid; gap: 28px; align-content: start; justify-items: start; }
 
-  .home-about__stats { grid-column: 7 / 13; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 0; }
-  .home-about__stat {
-    display: grid;
-    gap: 10px;
-    padding: clamp(20px, 1.6vw, 24px);
-    border: 1px solid var(--mochi-surface-border);
-    border-radius: var(--ph-r-lg);
-    background: var(--mochi-surface);
-    box-shadow: var(--mochi-shadow-surface);
-  }
-  .home-about__stat-value {
-    font: 500 clamp(56px, calc(3vw + 40px), 88px)/0.9 var(--font-display);
-    letter-spacing: -0.04em;
-    font-variant-numeric: tabular-nums;
+  .home-about__figures {
+    grid-column: 7 / 13;
+    align-self: start;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 18px;
+    margin: 0;
+    font: 500 clamp(28px, calc(1.4vw + 22px), 44px)/1.1 var(--font-display);
+    letter-spacing: -0.03em;
     color: var(--color-ph-white);
   }
-  .home-about__stat-unit { margin-left: 2px; font-size: 0.45em; vertical-align: top; color: var(--color-ph-gold); }
-  .home-about__stat-label { margin: 0; font-size: 14px; color: var(--ph-ink-meta); }
+  .home-about__figure { display: flex; align-items: baseline; gap: 0.3em; }
+  .home-about__figure dt { font-variant-numeric: tabular-nums; }
+  .home-about__figure dd { margin: 0; color: var(--ph-ink-lead); }
+  .home-about__figure-sep { color: var(--ph-ink-meta); }
 
   .home-about__values { grid-column: 1 / 13; justify-content: flex-start; gap: 6px 32px; margin: 0; list-style: none; }
 

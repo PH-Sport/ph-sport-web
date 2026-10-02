@@ -262,8 +262,9 @@ const isActive = (href: string): boolean => {
   .nav-link.is-active { color: var(--color-ph-white); }
 
   /* Pastilla que se desliza bajo el enlace (al pasar el ratón y al cambiar de
-     página), con el subrayado dorado de la página en la que estás. Se coloca con
-     `translateX` + ancho desde el script. */
+     página). Se coloca con `translateX` + ancho desde el script. Sin subrayado
+     dorado (2026-10-02): marcaba dos veces la página actual y era un dorado más
+     en la cabecera, que ya lleva el logo y el botón de contacto. */
   .nav-indicator {
     position: absolute;
     top: 4px;
@@ -282,18 +283,6 @@ const isActive = (href: string): boolean => {
     view-transition-name: ph-nav-indicator;
   }
   .nav-indicator.is-visible { opacity: 1; }
-  .nav-indicator::after {
-    content: '';
-    position: absolute;
-    left: 14px;
-    right: 14px;
-    bottom: -6px;
-    height: 1.5px;
-    border-radius: 1px;
-    background: var(--color-ph-gold);
-    transform: scaleX(var(--u, 1));
-    transition: transform var(--mochi-duration-snappy) var(--mochi-ease-snappy);
-  }
   .nav-indicator.is-animated {
     transition:
       transform var(--mochi-duration-morph) var(--mochi-ease-morph),
@@ -301,7 +290,7 @@ const isActive = (href: string): boolean => {
       opacity var(--mochi-duration-fade-in) var(--mochi-ease-fade-in);
   }
   @media (prefers-reduced-motion: reduce) {
-    .nav-indicator.is-animated, .nav-indicator::after { transition: none; }
+    .nav-indicator.is-animated { transition: none; }
   }
 
   /* ── Extremo derecho: idioma y contacto ── */
@@ -569,7 +558,9 @@ const isActive = (href: string): boolean => {
     transition: color var(--mochi-duration-color) var(--mochi-ease-color), background-color var(--mochi-duration-color) var(--mochi-ease-color);
   }
   .mobile-link:active { background: rgba(255, 255, 255, 0.05); }
-  .mobile-link--active { color: var(--color-ph-gold); }
+  /* La página actual, como en escritorio: blanco pleno sobre una superficie
+     suave, sin dorado (el dorado del panel es el botón de contacto). */
+  .mobile-link--active { color: var(--color-ph-white); background: rgba(255, 255, 255, 0.06); }
 
   .mobile-menu-foot {
     display: flex;
@@ -657,15 +648,13 @@ const isActive = (href: string): boolean => {
 
   let indicatorReady = false;
 
-  // La pastilla se coloca con translateX + ancho (variables --x y --w del CSS). El
-  // subrayado dorado (--u) solo se ve sobre el enlace de la página en la que estás.
+  // La pastilla se coloca con translateX + ancho (variables --x y --w del CSS).
   function setIndicatorToLink(link: HTMLElement) {
     if (!wrap || !indicator || !link) return;
     const wrapRect = wrap.getBoundingClientRect();
     const linkRect = link.getBoundingClientRect();
     indicator.style.setProperty('--x', `${linkRect.left - wrapRect.left}px`);
     indicator.style.setProperty('--w', `${linkRect.width}px`);
-    indicator.style.setProperty('--u', link.classList.contains('is-active') ? '1' : '0');
     indicator.classList.add('is-visible');
   }
 

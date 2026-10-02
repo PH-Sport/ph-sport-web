@@ -71,18 +71,24 @@ const areas = [
   },
 ];
 
-/** Numeral e imagen de cada pilar, en el mismo orden que `getServicesItems`. Cada
-    imagen tiene dos tamaños en `public/`: `-sm` (800 px) para móvil y la grande
-    (1600 px). */
-const pillarArt = [
-  { roman: 'I', img: 'pillar-press' },
-  { roman: 'II', img: 'pillar-performance' },
-  { roman: 'III', img: 'pillar-media' },
-  { roman: 'IV', img: 'pillar-family-office' },
-  { roman: 'V', img: 'pillar-psychology' },
+/** Numeral y foto de cada pilar, en el mismo orden que `getServicesItems`.
+
+    **Sin fotos a propósito** (2026-10-02): las ilustraciones que había eran
+    generadas por IA y se quitaron hasta tener fotos reales de la agencia
+    (`DECISIONS.md`). Sin foto, el pilar es una fila de texto completa, sin hueco.
+    Para poner una: dejar en `public/` el archivo grande (1600 px de ancho) y su
+    versión `-sm` (800 px) con un nombre NUEVO —no reutilizar los `pillar-*.webp`
+    antiguos: `public/` se sirve con 7 días de caché y quien ya visitó la web
+    seguiría viendo la ilustración vieja— y escribir aquí su nombre sin extensión,
+    p. ej. `img: 'servicios/2026-11/prensa'`. La foto aparece debajo del texto. */
+const pillarArt: { roman: string; img: string | null }[] = [
+  { roman: 'I', img: null },
+  { roman: 'II', img: null },
+  { roman: 'III', img: null },
+  { roman: 'IV', img: null },
+  { roman: 'V', img: null },
 ];
 const pillars = getServicesItems(lang).map((item, i) => ({ ...item, ...pillarArt[i] }));
-const pillarCount = pillarArt[pillarArt.length - 1].roman;
 ---
 
 <section class="srv" aria-labelledby="srv-hero-title">
@@ -172,51 +178,51 @@ const pillarCount = pillarArt[pillarArt.length - 1].roman;
     <p class="ph-body srv-model__lead">{t('services.model.lead')}</p>
   </div>
 
-  {/* 04 — Pilares: una tarjeta por pilar con la foto enmarcada dentro. La foto
-      alterna de lado en escritorio y va arriba en móvil. Todo se ve al cargar:
-      nada aparece al hacer scroll. */}
-  <div class="srv-pillars">
-    {pillars.map((pillar, idx) => (
-      <article class:list={['srv-pillar', { 'srv-pillar--flip': idx % 2 === 1 }]}>
+  {/* 04 — Pilares: filas de texto sobre el fondo, separadas por una línea fina,
+      sin tarjeta: no se tocan, así que no necesitan caja. Numeral, título y, a la
+      derecha, el texto y sus etiquetas. Si un pilar tiene foto, va debajo. */}
+  <ol class="srv-pillars" role="list">
+    {pillars.map((pillar) => (
+      <li class:list={['srv-pillar', { 'has-media': pillar.img }]}>
+        <span class="srv-pillar__roman" aria-hidden="true">{pillar.roman}</span>
+        <h3 class="srv-pillar__title">{pillar.title}</h3>
         <div class="srv-pillar__text">
-          <span class="srv-pillar__roman">{pillar.roman}</span>
-          <h3 class="srv-pillar__title">{pillar.title}</h3>
           <p class="ph-body">{pillar.body}</p>
           <ul class="srv-pillar__tags" role="list">
             {pillar.tags.map((tag) => <li>{tag}</li>)}
           </ul>
         </div>
-        <div class="srv-pillar__media" aria-hidden="true">
-          <img
-            src={`/${pillar.img}.webp`}
-            srcset={`/${pillar.img}-sm.webp 800w, /${pillar.img}.webp 1600w`}
-            sizes="(max-width: 900px) 92vw, 46vw"
-            width="1600"
-            height="1000"
-            alt=""
-            loading="lazy"
-            decoding="async"
-          />
-          <span class="srv-pillar__chip">{pillar.roman} / {pillarCount}</span>
-        </div>
-      </article>
+        {pillar.img && (
+          <div class="srv-pillar__media" aria-hidden="true">
+            <img
+              src={`/${pillar.img}.webp`}
+              srcset={`/${pillar.img}-sm.webp 800w, /${pillar.img}.webp 1600w`}
+              sizes="(max-width: 900px) 92vw, 80vw"
+              width="1600"
+              height="700"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        )}
+      </li>
     ))}
-  </div>
+  </ol>
 
-  {/* 05 — Manifiesto: cierre de la página en una tarjeta sólida. */}
+  {/* 05 — Manifiesto: el cierre de la página, en grande y sin caja: es la frase
+      que se queda, no un bloque más. */}
   <div class="srv-manifest">
     <p class="ph-rowline">
       <span class="ph-rowline__meta">{t('services.manifest.eyebrow')}</span>
     </p>
-    <div class="srv-manifest__card">
-      {/* Dos renglones como bloques propios: así el segundo se equilibra solo y no
-          deja una palabra suelta debajo (con un <br> el equilibrado no puede, porque
-          el primer renglón fija el ancho). */}
-      <p class="srv-manifest__body">
-        <span class="srv-manifest__line">{t('services.manifest.bodyLead')}</span>
-        <span class="srv-manifest__line"><em>{t('services.manifest.bodyAccent')}</em>{t('services.manifest.bodyTrail')}</span>
-      </p>
-    </div>
+    {/* Dos renglones como bloques propios: así el segundo se equilibra solo y no
+        deja una palabra suelta debajo (con un <br> el equilibrado no puede, porque
+        el primer renglón fija el ancho). */}
+    <p class="srv-manifest__body">
+      <span class="srv-manifest__line">{t('services.manifest.bodyLead')}</span>
+      <span class="srv-manifest__line"><em>{t('services.manifest.bodyAccent')}</em>{t('services.manifest.bodyTrail')}</span>
+    </p>
   </div>
 </section>
 
@@ -228,9 +234,6 @@ const pillarCount = pillarArt[pillarArt.length - 1].roman;
     --srv-edge: var(--ph-section-px, clamp(20px, 4vw, 48px));
     /* Aire entre bloques: el mismo que entre secciones de la portada. */
     --srv-gap: clamp(88px, 9vw, 156px);
-    /* Marco de las tarjetas de pilar: la foto queda dentro con la esquina
-       concéntrica a la de la tarjeta. */
-    --srv-frame: clamp(8px, calc(0.38vw + 6.5px), 12px);
 
     position: relative;
     /* Transparente: el fondo es la luz animada de toda la página (`.ph-page-bg`). */
@@ -326,11 +329,13 @@ const pillarCount = pillarArt[pillarArt.length - 1].roman;
     line-height: 1.5;
     color: var(--ph-ink-body);
   }
+  /* La raya de cada viñeta, en blanco tenue: el oro se reserva para la palabra
+     destacada del titular. */
   .srv-acc__bullets li::before {
     content: '';
     width: 18px;
     height: 1.5px;
-    background: var(--color-ph-gold);
+    background: rgba(255, 255, 255, 0.32);
     translate: 0 -4px;
   }
   @media (max-width: 900px) {
@@ -359,48 +364,49 @@ const pillarCount = pillarArt[pillarArt.length - 1].roman;
   }
 
   /* ── 04 Pilares ──────────────────────────────────────── */
+  /* Filas sobre el fondo, como un índice: el numeral y el título a la izquierda,
+     el texto a la derecha. Poco aire dentro de cada fila y bastante entre filas,
+     marcado por la línea fina. */
   .srv-pillars {
-    display: grid;
-    gap: clamp(16px, 1.6vw, 24px);
-    padding: clamp(36px, calc(1.9vw + 28.6px), 56px) var(--srv-edge) 0;
+    margin: clamp(36px, calc(1.9vw + 28.6px), 56px) var(--srv-edge) 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid var(--mochi-surface-border);
   }
-
   .srv-pillar {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    padding: var(--srv-frame);
-    border: 1px solid var(--mochi-surface-border);
-    border-radius: var(--ph-r-xl);
-    background: var(--mochi-surface);
-    box-shadow: var(--mochi-shadow-surface);
-  }
-  /* Uno sí y otro no, la foto pasa a la izquierda. */
-  .srv-pillar--flip .srv-pillar__media { order: -1; }
-
-  .srv-pillar__text {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: clamp(14px, calc(0.57vw + 11.8px), 20px);
-    padding: clamp(24px, calc(3.8vw + 9px), 64px);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(16px, 2vw, 32px);
+    row-gap: clamp(20px, 2vw, 28px);
+    align-items: baseline;
+    padding: clamp(32px, calc(2.3vw + 23px), 56px) 0;
+    border-top: 1px solid var(--mochi-surface-border);
   }
   .srv-pillar__roman {
-    font: italic 400 clamp(44px, calc(2.85vw + 33px), 74px)/1 var(--font-display);
-    letter-spacing: -0.03em;
-    color: var(--color-ph-gold);
+    grid-column: 1 / 2;
+    font: 400 clamp(20px, calc(0.6vw + 17.6px), 28px)/1 var(--font-display);
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ph-ink-meta);
   }
   .srv-pillar__title {
+    grid-column: 2 / 7;
     margin: 0;
-    font: 500 clamp(36px, calc(2.85vw + 25px), 66px)/1 var(--font-display);
+    font: 500 clamp(32px, calc(2vw + 24px), 56px)/1 var(--font-display);
     letter-spacing: -0.035em;
     color: var(--color-ph-white);
+  }
+  .srv-pillar__text {
+    grid-column: 7 / 13;
+    display: grid;
+    gap: 18px;
+    justify-items: start;
   }
   .srv-pillar__tags {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin: 6px 0 0;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
@@ -408,88 +414,49 @@ const pillarCount = pillarArt[pillarArt.length - 1].roman;
     padding: 7px 12px;
     border: 1px solid var(--mochi-surface-border-strong);
     border-radius: var(--ph-r-sm);
-    background: rgba(255, 255, 255, 0.03);
     font-size: 13px;
     line-height: 1.2;
     color: var(--ph-ink-body);
   }
 
-  /* La foto, enmarcada dentro de la tarjeta: un <img> normal, sin fundidos ni
-     capas a opacidad cero. Va en `lazy` porque está por debajo del primer
-     pantallazo (regla de performance de ARCHITECTURE.md); en una captura de
-     página completa sin hacer scroll puede salir el hueco vacío, y eso no es un
-     fallo. Un velo oscuro suave la asienta en la paleta y deja leer la etiqueta
-     «I / V». */
+  /* Foto (cuando la haya): debajo del texto, desde la columna del título. Va en
+     `lazy` porque cae por debajo del primer pantallazo (regla de performance de
+     ARCHITECTURE.md). */
   .srv-pillar__media {
-    position: relative;
+    grid-column: 2 / 13;
     overflow: hidden;
-    min-height: clamp(320px, 32vw, 520px);
-    border-radius: calc(var(--ph-r-xl) - var(--srv-frame));
+    aspect-ratio: 16 / 7;
+    border-radius: var(--ph-r-lg);
     background: var(--mochi-solid);
   }
   .srv-pillar__media img {
-    position: absolute;
-    inset: 0;
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
-  .srv-pillar__media::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(13, 15, 18, 0.22);
-    pointer-events: none;
-  }
-  .srv-pillar__chip {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    z-index: 1;
-    padding: 6px 10px;
-    border: 1px solid var(--mochi-surface-border-strong);
-    border-radius: var(--ph-r-sm);
-    background: rgba(13, 15, 18, 0.72);
-    font-family: var(--font-mono);
-    font-size: 12px;
-    line-height: 1.2;
-    letter-spacing: 0.04em;
-    font-variant-numeric: tabular-nums;
-    color: var(--color-ph-white);
-  }
 
   @media (max-width: 900px) {
-    .srv-pillar { grid-template-columns: minmax(0, 1fr); }
-    /* En móvil la foto va siempre arriba. */
-    .srv-pillar__media,
-    .srv-pillar--flip .srv-pillar__media {
-      order: -1;
-      min-height: 0;
-      aspect-ratio: 16 / 10;
-    }
-    .srv-pillar__text {
-      padding: clamp(20px, 5vw, 28px) clamp(12px, 3vw, 20px) clamp(16px, 4vw, 24px);
-    }
+    .srv-pillar { row-gap: 14px; }
+    .srv-pillar__roman { grid-column: 1 / -1; }
+    .srv-pillar__title,
+    .srv-pillar__text,
+    .srv-pillar__media { grid-column: 1 / -1; }
+    .srv-pillar__media { aspect-ratio: 16 / 10; }
   }
 
   /* ── 05 Manifiesto ───────────────────────────────────── */
+  /* El cierre de la página: la frase más grande después del titular de arriba, y
+     el único sitio donde el oro dice algo más que «palabra destacada». */
   .srv-manifest {
     /* Abajo poco aire: el pie de página ya trae el suyo. */
-    padding: var(--srv-gap) var(--srv-edge) clamp(40px, calc(3vw + 28px), 72px);
-  }
-  .srv-manifest__card {
-    margin-top: clamp(24px, calc(1.15vw + 19.5px), 36px);
-    padding: clamp(32px, calc(5.3vw + 11px), 88px) clamp(24px, calc(6.1vw + 0px), 88px);
-    border: 1px solid var(--mochi-solid-border);
-    border-radius: var(--ph-r-xl);
-    background: var(--mochi-solid);
-    box-shadow: var(--mochi-shadow-surface);
+    padding: var(--srv-gap) var(--srv-edge) clamp(56px, calc(4vw + 40px), 112px);
   }
   .srv-manifest__body {
-    margin: 0;
-    max-width: 19em;
-    font: 500 clamp(30px, calc(3.2vw + 17.5px), 64px)/1.08 var(--font-display);
-    letter-spacing: -0.03em;
+    margin: clamp(28px, calc(1.5vw + 22px), 44px) 0 0;
+    max-width: 17em;
+    font: 500 clamp(34px, calc(3.6vw + 20px), 80px)/1.04 var(--font-display);
+    letter-spacing: -0.035em;
     color: var(--color-ph-white);
   }
   .srv-manifest__line {

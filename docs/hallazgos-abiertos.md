@@ -232,7 +232,8 @@ uno por uno:
   esas clases o su especificidad, los botones vuelven a salir en píldora sin que
   nada falle.
 - **El tono `accent` no tiene sombra propia**: usa la misma que `surface`. La web
-  le pone una sombra dorada (`--ph-sh-gold`) y otra al pasar el ratón.
+  le pone la suya (`--ph-sh-accent`: filo de luz arriba y sombra oscura) y otra
+  más profunda al pasar el ratón.
 - **El peso 520 de las etiquetas** (`--mochi-text-label`, botón grande) no existe
   en Söhne, que solo trae 400, 600 y 700: el navegador pinta 600, algo más
   pesado de lo que Mochi diseñó.
@@ -250,3 +251,20 @@ un Android reales.** Lo que más puede cambiar allí: el raíl de jugadores de l
 portada (en táctil es un scroll normal, sin el arrastre con rebote del ratón),
 los desenfoques de entrada del contenido (`filter: blur`) en móviles modestos y
 el menú móvil que crece desde la cápsula.
+
+### Filtros de Talentos y detalles de móvil: pendientes de la revisión del 2026-10-02
+
+La revisión de diseño del 2026-10-02 (`DECISIONS.md`, «Contra el aspecto de
+plantilla») dejó esto para la ronda siguiente, a petición de Mario. Comprobado
+con Playwright; ya pasaba antes del rediseño:
+
+- **Los desplegables de Talentos no dicen qué filtro hay puesto.** Tras elegir
+  «Jugadores» u ordenar de la Z a la A, los botones siguen diciendo «Ver» y
+  «Orden». Propuesta: mostrar el valor («Ver · Jugadores»).
+- **«Entrenadores» da siempre 0 resultados**: el único entrenador está `on-hold`.
+  El aviso dice «No hay resultados para tu búsqueda» aunque no se haya buscado
+  nada. Propuesta: ocultar la opción mientras no haya ninguno visible. Un aviso
+  distinto sería texto nuevo y necesita el visto bueno de Mario.
+- **En móvil, las pestañas del Plan de acción de la portada se cortan**
+  («Rendimie…») sin señal de que se deslizan. Propuesta: partirlas en dos filas o
+  usar el desplegable (`.ph-select`).

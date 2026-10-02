@@ -65,6 +65,8 @@ logo-reveal-test.png
 .claude/
 .design-ref/
 .impeccable.md
+# Espacio de trabajo de la skill de diseño Impeccable (críticas, sesiones, caché)
+.impeccable/
 
 # Superpowers brainstorming companion sessions
 .superpowers/

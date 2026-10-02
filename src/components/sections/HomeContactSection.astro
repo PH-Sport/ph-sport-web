@@ -1,6 +1,6 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
-import { LinkButton } from 'mochi-ui';
+import Button from '@/components/ui/Button.astro';
 
 interface Props {
   lang: Lang;
@@ -31,7 +31,7 @@ const contactImage: string | null = null;
         <div class="home-contact__actions">
           {/* Escribir es un enlace (abre el correo); copiar es una acción en la
               página: el icono se convierte en un check y vuelve. */}
-          <LinkButton href={`mailto:${email}`} variant="accent" size="lg">{email}</LinkButton>
+          <Button href={`mailto:${email}`} variant="accent" size="lg">{email}</Button>
           <button type="button" class="ph-icon-btn home-contact__copy" data-ph-copy={email} data-status="idle" aria-label={t('a11y.copyEmail')}>
             <svg class="ph-ico home-contact__copy-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="3" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg>
             <svg class="ph-ico home-contact__copy-done" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
@@ -78,19 +78,19 @@ const contactImage: string | null = null;
   /* El icono de copiar sale y entra el check, sin solaparse. */
   .home-contact__copy { position: relative; }
   .home-contact__copy-ico,
-  .home-contact__copy-done { position: absolute; transition: opacity var(--mochi-duration-fade-out) var(--mochi-ease-fade-out), filter var(--mochi-duration-fade-out) var(--mochi-ease-fade-out); }
+  .home-contact__copy-done { position: absolute; transition: opacity var(--ph-duration-fade-out) var(--ph-ease-fade-out), filter var(--ph-duration-fade-out) var(--ph-ease-fade-out); }
   .home-contact__copy-done { opacity: 0; filter: blur(4px); color: var(--color-ph-gold); stroke-width: 2; }
   .home-contact__copy-done path { stroke-dasharray: 24; stroke-dashoffset: 24; }
   .home-contact__copy[data-status='success'] .home-contact__copy-ico { opacity: 0; filter: blur(4px); }
-  .home-contact__copy[data-status='success'] .home-contact__copy-done { opacity: 1; filter: blur(0); transition: opacity var(--mochi-duration-fade-in) var(--mochi-ease-fade-in) 60ms, filter var(--mochi-duration-fade-in) var(--mochi-ease-fade-in) 60ms; }
-  .home-contact__copy[data-status='success'] .home-contact__copy-done path { stroke-dashoffset: 0; transition: stroke-dashoffset var(--mochi-duration-draw) var(--mochi-ease-draw) 120ms; }
+  .home-contact__copy[data-status='success'] .home-contact__copy-done { opacity: 1; filter: blur(0); transition: opacity var(--ph-duration-fade-in) var(--ph-ease-fade-in) 60ms, filter var(--ph-duration-fade-in) var(--ph-ease-fade-in) 60ms; }
+  .home-contact__copy[data-status='success'] .home-contact__copy-done path { stroke-dashoffset: 0; transition: stroke-dashoffset var(--ph-duration-draw) var(--ph-ease-draw) 120ms; }
 
   .home-contact__image {
     grid-column: 8 / 13;
     overflow: hidden;
     aspect-ratio: 1 / 1;
     border-radius: var(--ph-r-xl);
-    background: var(--mochi-surface);
+    background: var(--ph-surface);
   }
   /* El hueco de la foto, mientras no llegue: la superficie lisa, sin filo. */
   .home-contact__image img { display: block; width: 100%; height: 100%; object-fit: cover; }

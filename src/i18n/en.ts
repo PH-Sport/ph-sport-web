@@ -19,26 +19,18 @@ const en: Record<TranslationKey, string> = {
   'nav.aria.mobile': 'Mobile navigation',
   'nav.lang.menu': 'Change language',
 
-  // --- Hero ---
-  'hero.claim': 'Brands add up, but people make the mark',
-  'hero.tagline': 'Now. Next. Forever Football.',
-
   // --- Hero (redesign V3) ---
   'hero.claim.lead': 'Now. Next.',
   'hero.claim.accent': 'Forever Football.',
-  'hero.scroll.label': 'Scroll',
 
   // --- Inicio (secciones) ---
   'home.players.cta': 'Talents',
 
   // --- Home: Talents (mini section) ---
-  'home.players.eyebrow': '02 · Talent',
-  'home.players.title': 'The roster.',
   'home.players.titleAccent': 'roster',
   'home.players.lead': 'Talent in every category. A unique project for every career.',
 
   // --- Home: Services (accordion) ---
-  'home.services.eyebrow': '03 · Services',
   'home.services.title': 'Representation with purpose.',
   'home.services.lead': 'Five management areas and an integrated action plan supporting the player\u2019s career.',
 
@@ -80,7 +72,6 @@ const en: Record<TranslationKey, string> = {
   'home.services.cta': 'Services',
 
   // --- Home: About (editorial block) ---
-  'home.about.eyebrow': '04 · About PHSPORT',
   'home.about.title': 'Brands add up,',
   'home.about.titleAccent': 'but people make the mark.',
   'home.about.body': 'We are a football-only representation agency. We build and protect the career of every player with closeness, rigour and excellence.',
@@ -88,28 +79,17 @@ const en: Record<TranslationKey, string> = {
   'home.about.stats.aria': 'PHSPORT figures',
   'home.about.stats.countries.value': '7',
   'home.about.stats.countries.label': 'Countries',
-  'home.about.stats.service.value': '360°',
   'home.about.stats.service.label': 'Support',
-  'home.about.values.aria': 'PHSPORT values',
-  'home.about.values.v1': 'Excellence',
-  'home.about.values.v2': 'Closeness',
-  'home.about.values.v3': 'Rigour',
 
   // --- Home: Contact ---
-  'home.contact.eyebrow': '05 · Contact',
   'home.contact.title': 'Let\u2019s talk.',
   'home.contact.email': 'info@phsport.es',
   'home.contact.emailLabel': 'Direct email',
 
   // --- Jugadores ---
   'players.title': 'Talent we represent',
-  'players.subtitle': 'Players and coaches united by the same vision.',
-  'players.back': 'Back to talents',
-  'players.empty': 'No players available.',
-  'players.detail.bioEmpty': 'More about this profile coming soon.',
 
   // --- Talents (page V3) ---
-  'talents.eyebrow': '02 · Talents',
   'talents.title': 'The ',
   'talents.titleAccent': 'roster',
   'talents.lead': 'Talent in every category. A unique project for every career.',
@@ -134,29 +114,21 @@ const en: Record<TranslationKey, string> = {
   'about.title': 'About PHSPORT',
   'about.subtitle': 'Strategic representation, international reach, and long-term focus.',
   // Hero split
-  'about.hero.eyebrow': '04 · About us',
   'about.hero.titlePre': '',
   'about.hero.titleAccent': 'Representing',
   'about.hero.titlePost': ' with purpose.',
   'about.hero.body1': "PHSPORT is an agency specialized in the integral management of footballers, created to support ambitious talent on and off the pitch.",
   'about.hero.body2': "Our team brings together specialists in representation, scouting, marketing, analytics, and professional development — giving the player everything they need to compete at the highest level.",
   'about.hero.body3': "We operate with an international outlook and a modern mindset, connecting talent, opportunities, and strategy in an ever more competitive landscape. We don't just guide sporting careers: we help build paths with their own identity, ambition, and purpose.",
-  'about.hero.values': 'EXCELLENCE · CLOSENESS · RIGOR',
-  'about.hero.caption': 'PHSPORT · IDENTITY',
-  'about.hero.imageAlt': 'The PHSPORT team facing the illuminated PH logo',
   // Manifesto — Now / Next / Forever Football slogan breakdown
   'about.manifesto.eyebrow': 'Philosophy',
-  'about.manifesto.blocks.now.idx': '01',
   'about.manifesto.blocks.now.title': 'Now.',
   'about.manifesto.blocks.now.body': "We work every career on a personal basis, combining sporting strategy and a professional structure focused on protecting the player's present.",
-  'about.manifesto.blocks.next.idx': '02',
   'about.manifesto.blocks.next.title': 'Next.',
   'about.manifesto.blocks.next.body': 'We generate international opportunities and plan each step with future-focused vision, building careers that grow without losing direction.',
-  'about.manifesto.blocks.forever.idx': '03',
   'about.manifesto.blocks.forever.title': 'Forever Football.',
   'about.manifesto.blocks.forever.body': 'We believe talent needs direction, intelligent decisions, and the right people to guide it at every stage.',
   // Equipo (section header within About)
-  'about.team.eyebrow': 'THE TEAM',
   'about.team.titlePre': 'Who ',
   'about.team.titleAccent': 'we are',
   'about.team.titlePost': '.',
@@ -218,25 +190,19 @@ const en: Record<TranslationKey, string> = {
   'services.items.familyOffice.body': 'Wealth management, financial and tax planning, and administrative structure for the player. What is built must last longer than a career.',
   'services.items.psychology.title': 'Psychology',
   'services.items.psychology.body': 'High-performance mental preparation, pressure management, and habits. Continuous competitive support.',
-  'services.items.actionPlan.title': 'Action Plan',
-  'services.items.actionPlan.body': 'Contract management and review. Market strategy and international positioning. Integrated support on and off the pitch. Adaptation at every career stage.',
 
   // Hero
-  'services.hero.eyebrow': '03 · Services',
   'services.hero.titleLead': 'A team',
   'services.hero.titleRest': 'off the ',
   'services.hero.titleAccent': 'pitch',
   'services.hero.lead': 'Strategic representation, international reach, and long-term focus. Five management areas and six operating pillars to support the player at every stage of their career.',
 
   // Áreas header
-  'services.areas.eyebrow': 'Management areas',
-  'services.areas.kicker': '05 disciplines · 01 team',
   'services.areas.titleLead': 'We manage your career. We look after your ',
   'services.areas.titleAccent1': 'present',
   'services.areas.titleMid': ' and plan your ',
   'services.areas.titleAccent2': 'future',
   'services.areas.titleTrail': '.',
-  'services.areas.foot': '360° SUPPORT · 365 SERVICE',
   'services.areas.leadLabel': 'Description',
 
   // Áreas — 01 Representation & intermediation
@@ -280,7 +246,6 @@ const en: Record<TranslationKey, string> = {
   'services.areas.items.legal.bullet4': 'Financial oversight and control',
 
   // Model intro
-  'services.model.eyebrow': 'PHSPORT operating model',
   'services.model.titleLead': 'Beyond representation, we build an ',
   'services.model.titleAccent': 'integrated',
   'services.model.titleTrail': '.',
@@ -305,12 +270,8 @@ const en: Record<TranslationKey, string> = {
   'services.items.psychology.tag1': 'High performance',
   'services.items.psychology.tag2': 'Competitive pressure',
   'services.items.psychology.tag3': 'Habits',
-  'services.items.actionPlan.tag1': 'Contracts',
-  'services.items.actionPlan.tag2': 'International market',
-  'services.items.actionPlan.tag3': '365 service',
 
   // Manifest
-  'services.manifest.eyebrow': '360° SUPPORT · 365 SERVICE',
   'services.manifest.bodyLead': 'At PHSPORT we represent careers',
   'services.manifest.bodyAccent': 'with rigor, judgment, and long-term commitment',
   'services.manifest.bodyTrail': '.',
@@ -343,7 +304,6 @@ const en: Record<TranslationKey, string> = {
   'a11y.logo': 'PHSPORT — Go to home',
   'a11y.menu.open': 'Open menu',
   'a11y.menu.close': 'Close menu',
-  'a11y.close': 'Close',
   'a11y.copyEmail': 'Copy email',
 };
 

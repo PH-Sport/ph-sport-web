@@ -1,13 +1,10 @@
 /**
  * Comportamiento de las piezas compartidas de PHSPORT (estilos en
- * src/styles/ph-ui.css), con el lenguaje de movimiento de Mochi.
+ * src/styles/ph-ui.css): acordeones, pestañas, desplegables, la etiqueta que viaja
+ * y el botón de copiar que confirma con un check. Las curvas y tiempos son los de
+ * src/styles/tokens.css (`--ph-ease-*`, `--ph-duration-*`, heredados de Mochi).
  *
- * Mochi se usa sin JavaScript en el navegador (React solo al construir), así que lo
- * que reacciona a lo que haces vive aquí: acordeones, pestañas, desplegables, la
- * etiqueta que viaja y el botón de copiar que confirma con un check. Las curvas y
- * tiempos son los de Mochi (`--mochi-ease-*`, `--mochi-duration-*`).
- *
- * Reglas (README de Mochi, «Movimiento»): el movimiento responde a lo que hace el
+ * Reglas (las del lenguaje de Mochi, «Movimiento»): el movimiento responde a lo que hace el
  * usuario. Nada se anima al cargar ni al hacer scroll; todo se puede interrumpir.
  *
  * Arranca en cada `astro:page-load` y lo deshace todo en `astro:before-swap`, para
@@ -23,9 +20,9 @@ const on = <K extends keyof HTMLElementEventMap>(el: EventTarget, type: K | stri
 
 export const reducedMotion = (): boolean => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/** Duración de un muelle de Mochi en ms, leída de su variable CSS. */
+/** Duración de un muelle en ms, leída de su variable CSS (`--ph-duration-*`). */
 export function springMs(name: string): number {
-  const v = getComputedStyle(document.documentElement).getPropertyValue(`--mochi-duration-${name}`);
+  const v = getComputedStyle(document.documentElement).getPropertyValue(`--ph-duration-${name}`);
   return reducedMotion() ? 0 : parseFloat(v) || 0;
 }
 
@@ -41,11 +38,11 @@ export function slider(container: HTMLElement, thumb: HTMLElement) {
     const r = el.getBoundingClientRect();
     const l = r.left - c.left + container.scrollLeft;
     const rr = c.right - r.right - container.scrollLeft;
-    const lead = 'var(--mochi-duration-lead) var(--mochi-ease-lead)';
-    const trail = 'var(--mochi-duration-trail) var(--mochi-ease-trail)';
+    const lead = 'var(--ph-duration-lead) var(--ph-ease-lead)';
+    const trail = 'var(--ph-duration-trail) var(--ph-ease-trail)';
     const right = !!cur && l > cur.l;
     const jump = instant || !cur || reducedMotion();
-    thumb.style.transition = jump ? 'none' : `left ${right ? trail : lead}, right ${right ? lead : trail}, opacity var(--mochi-duration-fade-in) var(--mochi-ease-fade-in)`;
+    thumb.style.transition = jump ? 'none' : `left ${right ? trail : lead}, right ${right ? lead : trail}, opacity var(--ph-duration-fade-in) var(--ph-ease-fade-in)`;
     thumb.style.setProperty('--l', `${l}px`);
     thumb.style.setProperty('--r', `${rr}px`);
     cur = { l };

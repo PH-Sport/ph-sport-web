@@ -13,6 +13,120 @@ leído el resto.
 
 ---
 
+## 2026-10-02 · Limpieza del repositorio: lo que ya no usaba nada
+
+**Decisión** (de Mario: «quiero dejar el repo ordenado, en medida de lo
+posible»), junto con la salida de Mochi (entrada siguiente). Solo sale lo que
+ninguna página usa, comprobado buscando cada nombre en todo `src/`. La web no
+cambia.
+
+**Lo que sale** (recuperable del historial de Git si algún día hace falta):
+
+- **Componentes y utilidades sin uso:**
+  - `LanguageSwitcher.astro` (vacío);
+  - `SectionHeader.astro`;
+  - `countryLabels.ts` y `sortRoster.ts`;
+  - `getInstagramProfileUrl()` de `social.ts`;
+  - `ph-ui-buttons.css`, que estilaba los botones de antes del rediseño.
+- **Estilos sin uso:**
+  - en `global.css`, las clases `.ph-label`, `.ph-divider`, `.ph-glass` y
+    `.glass-card`, con la familia de variables `--ph-glass-*`;
+  - en `ph-ui.css`, `.ph-card` y `.ph-flag`.
+- **Variables sin lector:**
+  - del `@theme`: radios, sombras, curva, espaciado de letra, el punto de corte
+    `xs`, proporciones, `--font-mono` y tres colores;
+  - de `:root`: `--ph-duration` y `--ph-head-title-gap`;
+  - de la paleta heredada de Mochi en `tokens.css`: diez variables que nadie leía.
+- **38 textos de traducción**, en los tres idiomas, que ya no salen en ninguna
+  página. La mayoría son rótulos que el rediseño quitó (los «02 · Talentos»…);
+  también el sexto pilar de Servicios (Plan de Acción), el antiguo claim del
+  hero y los textos de las fichas de jugador. Se queda `team.countries.uruguay`:
+  hoy nadie del equipo es de Uruguay, pero la clave se usa en cuanto lo haya.
+
+**Lo que cambia de sitio:**
+
+- `about-equipo.webp` pasa de `public/` a `assets/source-media/`. No se muestra en
+  la web desde el 2026-10-01; solo es el original de `og-image.jpg`
+  (`npm run assets:favicons`, comprobado: genera los mismos archivos byte a
+  byte). Deja de publicarse en `/about-equipo.webp`.
+- `.impeccable/`, el espacio de trabajo de la skill de diseño, entra en
+  `.gitignore`: salía en todos los clones como cambio pendiente.
+
+**Lo que se queda a propósito:**
+
+- Las variantes de componente que hoy no usa ninguna página pero forman parte de
+  la pieza (`data-align="start"` del desplegable).
+- Los escudos de Brasil, Rumanía y Panamá: dependen del roster (hoy son de
+  jugadores ocultos o de nadie) y vuelven a hacer falta si cambia.
+- El CSS de `LogoReveal` repetido en `global.css` y en línea en `BaseLayout`: es
+  terreno de trampas conocidas (`docs/trampas-conocidas.md`) y no se toca de paso.
+
+---
+
+## 2026-10-02 · Fuera Mochi y React: el botón y las curvas pasan a ser de PHSPORT
+
+**Decisión** (de Mario: «eliminar Mochi del proyecto. No usamos tantos elementos, y
+los que usamos, podemos crearlos nosotros directamente»):
+
+- Salen `mochi-ui` y todo lo que solo estaba para él: `react`, `react-dom`,
+  `@astrojs/react`, `@types/react` y `@types/react-dom` (75 paquetes menos en el
+  lockfile, sin cambiar la versión de ningún otro).
+- El único componente de Mochi que se usaba, el botón-enlace (`LinkButton`, en
+  cinco sitios, y su icono de flecha), pasa a `src/components/ui/Button.astro`, con
+  el mismo aspecto y movimiento.
+- Las curvas y tiempos de Mochi se copian tal cual a `src/styles/tokens.css`. Con
+  ellos, todas las variables `--mochi-*` pasan a `--ph-*` (las sombras, a
+  `--ph-sh-*`). `mochi-phsport.css` pasa a ser ese `tokens.css`.
+- El lenguaje no cambia: muelles con un rebote mínimo y movimiento solo como
+  respuesta. Lo que sale es la librería, no la forma de moverse.
+
+**Motivo:**
+
+- **Peso sin uso.** Cada página descargaba la hoja de estilos entera de Mochi (36
+  componentes) para usar 4 piezas de un botón. El CSS común de todas las páginas
+  pasa de 19,6 KB a 11,4 KB comprimido (de 110 a 59 KB sin comprimir).
+- **Cinco dependencias para un `<a>`.** React solo servía para fabricar ese botón
+  al construir; no llegaba al navegador.
+- **Instalación frágil.** `mochi-ui` se instalaba desde una etiqueta del repo de
+  GitHub, no desde npm: si ese repo cambia o se cierra, la web deja de construir.
+- **Ya casi todo estaba pisado.** La paleta, las esquinas, las sombras y el filo
+  de los botones se corregían por fuera (el bloque «provisional» de
+  `mochi-phsport.css` y el hallazgo «lo que la web ajusta por fuera mientras Mochi
+  no lo trae», que se cierra con esto).
+
+**Comprobado:** el build de antes y el de después, servidos lado a lado y
+capturados con Playwright (fondo animado y vídeo ocultos, sin transiciones), dan
+**cero píxeles distintos** en 8 páginas (portada ES/EN/IT, Talentos, Servicios
+ES/EN, Sobre nosotros y aviso legal), en escritorio (1440 px) y en móvil (390 px),
+y en cada botón con el ratón encima. La caja, la posición del texto y los estilos
+calculados de todos los botones coinciden.
+
+**De paso:**
+
+- Los pesos del botón se quedan en los de Mochi (500 y 520), aunque Söhne no los
+  tenga. Se probó escribir los que pinta (400 y 600) y la «ó» de «Conócenos»
+  cambió: las letras acentuadas salen de Helvetica, que sí tiene 500.
+- El botón ya no lleva su texto dos veces en el HTML (Mochi ocultaba el visible a
+  los lectores de pantalla y les daba una copia aparte, por sus animaciones de
+  cambio de estado, que aquí no existen). Lo que lee un lector de pantalla no
+  cambia.
+- `<html>` pierde `data-theme="dark"`, que solo servía para ganar al tema de
+  Mochi. El modo oscuro lo fija `color-scheme: dark` en `global.css`, como antes.
+
+**Alternativas descartadas:**
+
+- **Quedarse con Mochi y pedirle las variables que faltaban** (radio y sombra de
+  los botones): seguía arrastrando React, el CSS entero y la instalación desde
+  GitHub para un solo componente.
+- **Conservar los nombres `--mochi-*`** para ahorrar el renombrado (unas 400
+  referencias en 15 archivos): habrían dejado al siguiente lector buscando una
+  librería que ya no está.
+
+**Supera** la parte de «Cómo entra Mochi» de la entrada del 2026-10-01
+(«Rediseño con el lenguaje de Mochi»).
+
+---
+
 ## 2026-10-02 · Corrección: con el arreglo del esmerilado, la web se veía sin fondo
 
 **Qué pasó:**
@@ -431,6 +545,10 @@ Eran así antes del rediseño. Están en `docs/hallazgos-abiertos.md`.
 ---
 
 ## 2026-10-01 · Rediseño con el lenguaje de Mochi: esquinas redondeadas, movimiento solo como respuesta, sin GSAP
+
+> **Sin la librería de Mochi desde el 2026-10-02** («Fuera Mochi y React»): ni
+> `mochi-ui` ni React. El botón es `Button.astro`, las curvas están copiadas en
+> `tokens.css` y las variables se llaman `--ph-*`. El lenguaje de movimiento sigue.
 
 > **Sin sombras ni filo, y sin jugadores en la portada, desde el 2026-10-02**
 > («Sin marco ni sombra…»): las «sombras estratégicas en botones» y el raíl de
@@ -1876,7 +1994,8 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 > **Superada en parte el 2026-10-01** («Rediseño con el lenguaje de Mochi»): React
 > vuelve a `package.json`, pero solo para dibujar los componentes de Mochi al
 > construir. Sigue sin haber islands y sin React en el navegador, que era el
-> motivo de esta entrada.
+> motivo de esta entrada. **Y vuelve a salir el 2026-10-02** («Fuera Mochi y
+> React»).
 
 > **Superada en parte el 2026-08-29**: la salida de React y de las islands sigue
 > vigente, pero el reveal ya no usa GSAP ni `astro:page-load` — es CSS puro y no
@@ -2223,7 +2342,7 @@ Se eligió el apex porque todo el código ya lo declaraba (`site` en `astro.conf
 > **Vuelve el 2026-10-01 con otro papel** («Rediseño con el lenguaje de Mochi»):
 > `@astrojs/react` está otra vez en `astro.config.mjs`, solo para dibujar en el
 > servidor los componentes de Mochi. No hidrata nada: ningún componente lleva
-> `client:`.
+> `client:`. **Sale otra vez el 2026-10-02** («Fuera Mochi y React»).
 
 > ⚠️ **REVERTIDA por la decisión de 2026-06-25.** `@astrojs/react` ya no está en `astro.config.mjs`, y el paquete se retiró de `package.json` el 2026-08-11. No hay renderer de React en el proyecto.
 

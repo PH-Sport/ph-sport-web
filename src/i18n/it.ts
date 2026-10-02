@@ -22,27 +22,18 @@ const it: Record<TranslationKey, string> = {
   'nav.aria.mobile': 'Navigazione mobile',
   'nav.lang.menu': 'Cambia lingua',
 
-  // --- Hero ---
-  // «Segnare» es marcar un gol y dejar huella, como el «marcan» del original.
-  'hero.claim': 'I marchi contano, ma sono le persone a segnare',
-  'hero.tagline': 'Now. Next. Forever Football.',
-
   // --- Hero (redesign V3) ---
   'hero.claim.lead': 'Now. Next.',
   'hero.claim.accent': 'Forever Football.',
-  'hero.scroll.label': 'Scroll',
 
   // --- Inicio (secciones) ---
   'home.players.cta': 'Talenti',
 
   // --- Home: Talenti (mini-sección) ---
-  'home.players.eyebrow': '02 · Talenti',
-  'home.players.title': 'Il roster.',
   'home.players.titleAccent': 'roster',
   'home.players.lead': 'Talento in ogni categoria. Un progetto unico per ogni carriera.',
 
   // --- Home: Servizi (acordeón) ---
-  'home.services.eyebrow': '03 · Servizi',
   'home.services.title': 'Rappresentiamo con uno scopo.',
   'home.services.lead': 'Cinque aree di gestione e un piano integrato a sostegno della carriera del giocatore.',
   'home.services.cta': 'Servizi',
@@ -84,7 +75,6 @@ const it: Record<TranslationKey, string> = {
   'home.services.actionPlan.familyOffice.b3': 'Struttura amministrativa del giocatore',
 
   // --- Home: Chi siamo (bloque editorial) ---
-  'home.about.eyebrow': '04 · Chi è PHSPORT',
   'home.about.title': 'I marchi contano,',
   'home.about.titleAccent': 'ma sono le persone a segnare.',
   'home.about.body': 'Siamo un’agenzia di rappresentanza specializzata nel calcio. Costruiamo e tuteliamo la carriera di ogni giocatore con vicinanza, rigore ed eccellenza.',
@@ -92,28 +82,17 @@ const it: Record<TranslationKey, string> = {
   'home.about.stats.aria': 'I numeri di PHSPORT',
   'home.about.stats.countries.value': '7',
   'home.about.stats.countries.label': 'Paesi',
-  'home.about.stats.service.value': '360°',
   'home.about.stats.service.label': 'Accompagnamento',
-  'home.about.values.aria': 'I valori di PHSPORT',
-  'home.about.values.v1': 'Eccellenza',
-  'home.about.values.v2': 'Vicinanza',
-  'home.about.values.v3': 'Rigore',
 
   // --- Home: Contatti ---
-  'home.contact.eyebrow': '05 · Contatti',
   'home.contact.title': 'Parliamone.',
   'home.contact.email': 'info@phsport.es',
   'home.contact.emailLabel': 'Email diretta',
 
   // --- Jugadores ---
   'players.title': 'I talenti che rappresentiamo',
-  'players.subtitle': 'Giocatori e allenatori uniti da un’unica visione.',
-  'players.back': 'Torna ai talenti',
-  'players.empty': 'Nessun giocatore disponibile.',
-  'players.detail.bioEmpty': 'Presto più informazioni su questo profilo.',
 
   // --- Talenti (página V3) ---
-  'talents.eyebrow': '02 · Talenti',
   'talents.title': 'Il ',
   'talents.titleAccent': 'roster',
   'talents.lead': 'Talento in ogni categoria. Un progetto unico per ogni carriera.',
@@ -138,29 +117,21 @@ const it: Record<TranslationKey, string> = {
   'about.title': 'Chi è PHSPORT',
   'about.subtitle': 'Rappresentanza strategica, visione internazionale e approccio a lungo termine.',
   // Hero split
-  'about.hero.eyebrow': '04 · Chi siamo',
   'about.hero.titlePre': '',
   'about.hero.titleAccent': 'Rappresentare',
   'about.hero.titlePost': ' con uno scopo.',
   'about.hero.body1': 'PHSPORT è un’agenzia specializzata nella gestione integrale dei calciatori, nata per accompagnare il talento ambizioso dentro e fuori dal campo.',
   'about.hero.body2': 'Il nostro team riunisce specialisti in rappresentanza, scouting, marketing, analisi e sviluppo professionale, e offre al giocatore tutto ciò di cui ha bisogno per competere al massimo livello.',
   'about.hero.body3': 'Lavoriamo con una visione internazionale e una mentalità moderna, mettendo in contatto talento, opportunità e strategia in un contesto sempre più competitivo. Non ci limitiamo ad accompagnare carriere sportive: aiutiamo a costruire percorsi con un’identità propria, ambizione e uno scopo.',
-  'about.hero.values': 'ECCELLENZA · VICINANZA · RIGORE',
-  'about.hero.caption': 'PHSPORT · IDENTITÀ',
-  'about.hero.imageAlt': 'Il team PHSPORT davanti al logo PH illuminato',
   // Manifesto — desempaque del eslogan Now / Next / Forever Football
   'about.manifesto.eyebrow': 'Filosofia',
-  'about.manifesto.blocks.now.idx': '01',
   'about.manifesto.blocks.now.title': 'Now.',
   'about.manifesto.blocks.now.body': 'Seguiamo ogni carriera in modo personalizzato, unendo strategia sportiva e una struttura professionale orientata a tutelare il presente del giocatore.',
-  'about.manifesto.blocks.next.idx': '02',
   'about.manifesto.blocks.next.title': 'Next.',
   'about.manifesto.blocks.next.body': 'Creiamo opportunità internazionali e pianifichiamo ogni passo guardando al futuro, costruendo carriere che crescono senza perdere la rotta.',
-  'about.manifesto.blocks.forever.idx': '03',
   'about.manifesto.blocks.forever.title': 'Forever Football.',
   'about.manifesto.blocks.forever.body': 'Crediamo che il talento abbia bisogno di una direzione, di decisioni intelligenti e di persone preparate ad accompagnarlo in ogni fase.',
   // Equipo (cabecera del bloque dentro de About)
-  'about.team.eyebrow': 'IL TEAM',
   'about.team.titlePre': 'Chi ',
   'about.team.titleAccent': 'siamo',
   'about.team.titlePost': '.',
@@ -222,25 +193,19 @@ const it: Record<TranslationKey, string> = {
   'services.items.familyOffice.body': 'Gestione patrimoniale, pianificazione finanziaria e fiscale, struttura amministrativa del giocatore. Ciò che si costruisce deve durare più di una carriera.',
   'services.items.psychology.title': 'Psicologia',
   'services.items.psychology.body': 'Preparazione mentale ad alto rendimento, gestione della pressione e delle abitudini. Supporto continuo in competizione.',
-  'services.items.actionPlan.title': 'Piano d’azione',
-  'services.items.actionPlan.body': 'Gestione e revisione dei contratti. Strategia di mercato e posizionamento internazionale. Supporto integrato dentro e fuori dal campo. Adattamento a ogni fase della carriera.',
 
   // Hero
-  'services.hero.eyebrow': '03 · Servizi',
   'services.hero.titleLead': 'Una squadra',
   'services.hero.titleRest': 'fuori dal ',
   'services.hero.titleAccent': 'campo',
   'services.hero.lead': 'Rappresentanza strategica, visione internazionale e approccio a lungo termine. Cinque aree di gestione e sei pilastri del modello operativo per accompagnare il giocatore in ogni fase della sua carriera.',
 
   // Áreas header
-  'services.areas.eyebrow': 'Aree di gestione',
-  'services.areas.kicker': '05 discipline · 01 squadra',
   'services.areas.titleLead': 'Gestiamo la tua carriera. Ci prendiamo cura del tuo ',
   'services.areas.titleAccent1': 'presente',
   'services.areas.titleMid': ' e pianifichiamo il tuo ',
   'services.areas.titleAccent2': 'futuro',
   'services.areas.titleTrail': '.',
-  'services.areas.foot': 'ACCOMPAGNAMENTO 360º · SERVIZIO 365',
   'services.areas.leadLabel': 'Descrizione',
 
   // Áreas — 01 Rappresentanza e intermediazione
@@ -284,7 +249,6 @@ const it: Record<TranslationKey, string> = {
   'services.areas.items.legal.bullet4': 'Supervisione e controllo finanziario',
 
   // Model intro
-  'services.model.eyebrow': 'Modello operativo PHSPORT',
   'services.model.titleLead': 'Oltre la rappresentanza, sviluppiamo una struttura ',
   'services.model.titleAccent': 'integrata',
   'services.model.titleTrail': '.',
@@ -309,12 +273,8 @@ const it: Record<TranslationKey, string> = {
   'services.items.psychology.tag1': 'Alto rendimento',
   'services.items.psychology.tag2': 'Pressione competitiva',
   'services.items.psychology.tag3': 'Abitudini',
-  'services.items.actionPlan.tag1': 'Contratti',
-  'services.items.actionPlan.tag2': 'Mercato internazionale',
-  'services.items.actionPlan.tag3': 'Servizio 365',
 
   // Manifest
-  'services.manifest.eyebrow': 'ACCOMPAGNAMENTO 360º · SERVIZIO 365',
   'services.manifest.bodyLead': 'In PHSPORT rappresentiamo carriere',
   'services.manifest.bodyAccent': 'con rigore, criterio e impegno',
   'services.manifest.bodyTrail': ' a lungo termine.',
@@ -350,7 +310,6 @@ const it: Record<TranslationKey, string> = {
   'a11y.logo': 'PHSPORT — Vai alla home',
   'a11y.menu.open': 'Apri il menu',
   'a11y.menu.close': 'Chiudi il menu',
-  'a11y.close': 'Chiudi',
   'a11y.copyEmail': 'Copia email',
 };
 

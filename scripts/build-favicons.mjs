@@ -16,7 +16,8 @@ import { readFile, writeFile, stat } from 'node:fs/promises';
 
 const PUBLIC = 'public';
 const SRC_SVG = `${PUBLIC}/favicon.svg`;
-const SRC_OG = `${PUBLIC}/about-equipo.webp`;
+// Original de la imagen Open Graph: no se publica, solo se usa aquí.
+const SRC_OG = 'assets/source-media/about-equipo.webp';
 
 const PH_BLACK = '#0d0f12';
 

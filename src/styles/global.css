@@ -1,8 +1,10 @@
 /* src/styles/global.css */
-/* Sistema de diseno PHSPORT — Tailwind v4 @theme como fuente unica de tokens */
+/* Sistema de diseño de PHSPORT. Aquí, las variables de Tailwind v4 (@theme: colores de
+   marca, tipografía) y las globales de maquetación; las de superficies, sombras,
+   esquinas, paneles y movimiento, en tokens.css. */
 
 @import "tailwindcss";
-@import "./ph-ui-buttons.css";
+@import "./tokens.css";
 @import "./ph-ui.css";
 
 /* ── DESIGN TOKENS (Tailwind v4 @theme) ────────────────────────────────────── */
@@ -15,39 +17,14 @@
   --color-ph-gold-muted: #a8893e;
 
   --color-ph-white-10:   rgba(255, 255, 255, 0.10);
-  --color-ph-white-20:   rgba(255, 255, 255, 0.20);
   --color-ph-white-60:   rgba(255, 255, 255, 0.60);
-  --color-ph-white-80:   rgba(255, 255, 255, 0.80);
-  --color-ph-black-80:   rgba(13, 15, 18, 0.80);
 
   /* Tipografia */
   --font-display: 'Sohne', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-body:    'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --font-mono:    ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
-  /* Border-radius (pico ligeramente suavizado) */
-  --radius-sm: 4px;   /* botones, CTAs, chips, inputs */
-  --radius-md: 6px;   /* cards, paneles, contenedores */
-
-  /* Sombras */
-  --shadow-ph-sm: 0 2px 8px rgba(13, 15, 18, 0.4);
-  --shadow-ph:    0 4px 24px rgba(13, 15, 18, 0.6);
-  --shadow-ph-lg: 0 8px 48px rgba(13, 15, 18, 0.8);
-  --shadow-gold:  0 0 24px rgba(214, 178, 94, 0.25);
-
-  /* Easing */
-  --ease-ph: cubic-bezier(0.16, 1, 0.3, 1);
-
-  /* Letter-spacing custom */
-  --tracking-tightest: -0.04em;
-  --tracking-tighter:  -0.02em;
-
-  /* Breakpoint adicional */
-  --breakpoint-xs: 375px;
-
-  /* Aspect ratios */
-  --aspect-player: 3 / 4;
-  --aspect-hero:   16 / 9;
+  /* Esquinas, sombras y movimiento: en tokens.css (`--ph-r-*`, `--ph-sh-*`,
+     `--ph-ease-*`, `--ph-duration-*`). */
 }
 
 /* ── CUSTOM PROPERTIES (no cubiertas por @theme) ───────────────────────────── */
@@ -55,7 +32,6 @@
 :root {
   --ph-section-py: clamp(4rem, 8vw, 8rem);
   --ph-section-px: clamp(1.5rem, 5vw, 6rem);
-  --ph-duration:   400ms;
 
   /* Alto de pantalla, congelado. Lo usa todo lo que ocupa la pantalla entera.
      El valor de aquí es el respaldo y el del primer pintado; en cuanto corre el
@@ -72,21 +48,6 @@
      estirar sin que el layout se entere. Mismo arreglo que en ochoa-cokima. */
   --ph-viewport-h: 100svh;
 
-  /* Glassmorphism */
-  --ph-glass-bg:        rgba(255, 255, 255, 0.04);
-  --ph-glass-border:    rgba(255, 255, 255, 0.08);
-  --ph-glass-blur:      16px;
-  --ph-glass-blur-ui:   8px;
-  --ph-glass-blur-overlay: 10px;
-  --ph-glass-blur-modal: 24px;
-  --ph-glass-saturate:  1.1;
-  --ph-glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  /* Cadenas completas para backdrop-filter (-webkit duplicado en componentes) */
-  --ph-glass-backdrop: blur(var(--ph-glass-blur)) saturate(var(--ph-glass-saturate));
-  --ph-glass-backdrop-ui: blur(var(--ph-glass-blur-ui)) saturate(var(--ph-glass-saturate));
-  --ph-glass-backdrop-overlay: blur(var(--ph-glass-blur-overlay)) saturate(var(--ph-glass-saturate));
-  --ph-glass-backdrop-modal: blur(var(--ph-glass-blur-modal)) saturate(var(--ph-glass-saturate));
-
   /* Secciones página: transparente para ver el fondo (body / logo parallax) a través de main */
   --ph-section-bg: transparent;
 
@@ -96,7 +57,6 @@
      de móvil (390 px) a escritorio (1440 px) en línea recta. Ver ARCHITECTURE.md,
      «Cabecera de sección y fondo animado». */
   --ph-head-top:        clamp(104px, calc(4vw + 80px), 144px);
-  --ph-head-title-gap:  clamp(28px, calc(1.9vw + 20.6px), 48px);
   --ph-head-title-size: clamp(46px, calc(5.6vw + 26px), 106px);
   --ph-head-lead-gap:   clamp(16px, calc(0.76vw + 13px), 24px);
   --ph-head-lead-size:  clamp(18px, calc(0.38vw + 16.5px), 22px);
@@ -105,17 +65,6 @@
   --ph-ink-lead: rgba(255, 255, 255, 0.9);
   --ph-ink-body: rgba(255, 255, 255, 0.82);
   --ph-ink-meta: rgba(255, 255, 255, 0.62);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  :root {
-    --ph-glass-blur: 0px;
-    --ph-glass-blur-ui: 0px;
-    --ph-glass-blur-overlay: 0px;
-    --ph-glass-blur-modal: 0px;
-    --ph-glass-saturate: 1;
-    --ph-glass-bg: rgba(255, 255, 255, 0.08);
-  }
 }
 
 /* ── FUENTES (self-hosted) ─────────────────────────────────────────────────── */
@@ -246,21 +195,6 @@ strong {
 
 /* ── UTILIDADES GLOBALES ───────────────────────────────────────────────────── */
 
-.ph-label {
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-ph-gold);
-}
-
-.ph-divider {
-  width: 2.5rem;
-  height: 2px;
-  background-color: var(--color-ph-gold);
-}
-
 .ph-accent {
   color: var(--color-ph-gold);
 }
@@ -272,71 +206,6 @@ strong {
   width: 100%;
   max-width: none;
   margin-inline: auto;
-}
-
-.ph-glass {
-  background: var(--ph-glass-bg);
-  backdrop-filter: var(--ph-glass-backdrop);
-  -webkit-backdrop-filter: var(--ph-glass-backdrop);
-  border: 1px solid var(--ph-glass-border);
-  box-shadow: var(--ph-glass-highlight);
-}
-
-
-/**
- * Glass “brillante” (variante experimental): capas de sombra + bordes con gradiente.
- * Sin dimensiones fijas: el contenedor define width/height o aspect-ratio.
- */
-.glass-card {
-  position: relative;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 16px 8px rgba(255, 255, 255, 0.8);
-}
-
-.glass-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  z-index: 2;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-}
-
-.glass-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.8),
-    transparent,
-    rgba(255, 255, 255, 0.3)
-  );
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .glass-card {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: rgba(255, 255, 255, 0.14);
-  }
 }
 
 .skip-link {

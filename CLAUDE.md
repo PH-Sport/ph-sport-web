@@ -213,12 +213,12 @@ una tarjeta suelta, y lo sabe.
 tarjetas no son clicables. No proponer rutas `/talentos/[slug]`, modales de
 detalle ni JSON-LD `Person` — se retiró a propósito (`DECISIONS.md`, 2026-04-24).
 
-**Mochi sin React en el navegador, y movimiento solo como respuesta.** Los
-componentes de Mochi (`mochi-ui`) se dibujan en el servidor: ninguno lleva
-`client:`. Lo interactivo va en `src/scripts/ph-motion.ts` con las curvas de
-Mochi, y nada se anima al cargar ni al hacer scroll; GSAP salió del proyecto el
-2026-10-01. Ver `ARCHITECTURE.md` («Sistema de diseño y movimiento») y
-`DECISIONS.md` (2026-10-01).
+**Sin React, y movimiento solo como respuesta.** No hay React ni librería de
+componentes: los botones son `src/components/ui/Button.astro` y lo interactivo va
+en `src/scripts/ph-motion.ts`, con las curvas de `src/styles/tokens.css`
+(heredadas de Mochi, cuya librería salió el 2026-10-02). Nada se anima al cargar
+ni al hacer scroll; GSAP salió el 2026-10-01. Ver `ARCHITECTURE.md` («Sistema de
+diseño y movimiento») y `DECISIONS.md` (2026-10-01 y 2026-10-02).
 
 ## Trampas conocidas
 
@@ -293,8 +293,7 @@ Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: backlog de
 rendimiento del 2026-08-18, SEO P1/P2, el
 vídeo del hero, el fondo animado con paneles esmerilados y el rediseño sin probar
 en un móvil real (2026-10-01/02), las fotos de talentos en AVIF, que con 4G lento tardan bastante
-más en aparecer (2026-10-01), lo que la web ajusta por fuera de Mochi mientras
-Mochi no lo trae, y los filtros de Talentos y las pestañas en móvil que dejó
+más en aparecer (2026-10-01), y los filtros de Talentos y las pestañas en móvil que dejó
 pendientes la revisión de diseño del 2026-10-02.
 
 ## Convenciones

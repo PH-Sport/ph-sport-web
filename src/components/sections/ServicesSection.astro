@@ -332,7 +332,7 @@ const pillars = getServicesItems(lang).map((item, i) => ({ ...item, ...pillarArt
     margin: clamp(36px, calc(1.9vw + 28.6px), 56px) var(--srv-edge) 0;
     padding: 0;
     list-style: none;
-    border-bottom: 1px solid var(--mochi-surface-border);
+    border-bottom: 1px solid var(--ph-surface-border);
   }
   .srv-pillar {
     display: grid;
@@ -340,7 +340,7 @@ const pillars = getServicesItems(lang).map((item, i) => ({ ...item, ...pillarArt
     column-gap: clamp(24px, 4vw, 72px);
     align-items: center;
     padding: clamp(32px, calc(2.3vw + 23px), 56px) 0;
-    border-top: 1px solid var(--mochi-surface-border);
+    border-top: 1px solid var(--ph-surface-border);
   }
   /* Uno sí y otro no, la foto pasa a la izquierda. */
   .srv-pillar--flip .srv-pillar__media { order: -1; }
@@ -385,7 +385,7 @@ const pillars = getServicesItems(lang).map((item, i) => ({ ...item, ...pillarArt
     overflow: hidden;
     aspect-ratio: 4 / 3;
     border-radius: var(--ph-r-lg);
-    background: var(--mochi-surface);
+    background: var(--ph-surface);
   }
   .srv-pillar__media img {
     display: block;

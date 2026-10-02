@@ -17,26 +17,18 @@ const es = {
   'nav.aria.mobile': 'Navegación móvil',
   'nav.lang.menu': 'Cambiar idioma',
 
-  // --- Hero ---
-  'hero.claim': 'Las marcas suman, pero las personas marcan',
-  'hero.tagline': 'Now. Next. Forever Football.',
-
   // --- Hero (redesign V3) ---
   'hero.claim.lead': 'Now. Next.',
   'hero.claim.accent': 'Forever Football.',
-  'hero.scroll.label': 'Scroll',
 
   // --- Inicio (secciones) ---
   'home.players.cta': 'Talentos',
 
   // --- Home: Talentos (mini-sección) ---
-  'home.players.eyebrow': '02 · Talentos',
-  'home.players.title': 'El roster.',
   'home.players.titleAccent': 'roster',
   'home.players.lead': 'Talento en cada categoría. Un proyecto único para cada carrera.',
 
   // --- Home: Servicios (acordeón) ---
-  'home.services.eyebrow': '03 · Servicios',
   'home.services.title': 'Representamos con propósito.',
   'home.services.lead': 'Cinco áreas de gestión y un plan integral que sostienen la carrera del jugador.',
   'home.services.cta': 'Servicios',
@@ -78,7 +70,6 @@ const es = {
   'home.services.actionPlan.familyOffice.b3': 'Estructura administrativa del jugador',
 
   // --- Home: Sobre nosotros (bloque editorial) ---
-  'home.about.eyebrow': '04 · Sobre PHSPORT',
   'home.about.title': 'Las marcas suman,',
   'home.about.titleAccent': 'pero las personas marcan.',
   'home.about.body': 'Somos una agencia de representación especializada en fútbol. Construimos y protegemos la carrera de cada jugador con cercanía, rigor y excelencia.',
@@ -86,28 +77,17 @@ const es = {
   'home.about.stats.aria': 'Cifras PHSPORT',
   'home.about.stats.countries.value': '7',
   'home.about.stats.countries.label': 'Países',
-  'home.about.stats.service.value': '360°',
   'home.about.stats.service.label': 'Acompañamiento',
-  'home.about.values.aria': 'Valores PHSPORT',
-  'home.about.values.v1': 'Excelencia',
-  'home.about.values.v2': 'Cercanía',
-  'home.about.values.v3': 'Rigor',
 
   // --- Home: Contacto ---
-  'home.contact.eyebrow': '05 · Contacto',
   'home.contact.title': 'Hablemos.',
   'home.contact.email': 'info@phsport.es',
   'home.contact.emailLabel': 'Email directo',
 
   // --- Jugadores ---
   'players.title': 'Talento que representamos',
-  'players.subtitle': 'Jugadores y entrenadores unidos por una misma visión.',
-  'players.back': 'Volver a talentos',
-  'players.empty': 'No hay jugadores disponibles.',
-  'players.detail.bioEmpty': 'Próximamente más información sobre este perfil.',
 
   // --- Talentos (página V3) ---
-  'talents.eyebrow': '02 · Talentos',
   'talents.title': 'El ',
   'talents.titleAccent': 'roster',
   'talents.lead': 'Talento en cada categoría. Un proyecto único para cada carrera.',
@@ -132,29 +112,21 @@ const es = {
   'about.title': 'Sobre PHSPORT',
   'about.subtitle': 'Representación estratégica, visión internacional y enfoque a largo plazo.',
   // Hero split
-  'about.hero.eyebrow': '04 · Sobre nosotros',
   'about.hero.titlePre': '',
   'about.hero.titleAccent': 'Representar',
   'about.hero.titlePost': ' con propósito.',
   'about.hero.body1': 'PHSPORT es una agencia especializada en la gestión integral de futbolistas, creada para acompañar talento con ambición dentro y fuera del campo.',
   'about.hero.body2': 'Nuestro equipo reúne especialistas en representación, scouting, marketing, análisis y desarrollo profesional, ofreciendo al jugador todo lo necesario para competir al máximo nivel.',
   'about.hero.body3': 'Trabajamos con una visión internacional y una mentalidad moderna, conectando talento, oportunidades y estrategia en un entorno cada vez más competitivo. No solo acompañamos carreras deportivas: ayudamos a construir caminos con identidad propia, ambición y propósito.',
-  'about.hero.values': 'EXCELENCIA · CERCANÍA · RIGOR',
-  'about.hero.caption': 'PHSPORT · IDENTIDAD',
-  'about.hero.imageAlt': 'El equipo PHSPORT frente al logo PH iluminado',
   // Manifesto — desempaque del eslogan Now / Next / Forever Football
   'about.manifesto.eyebrow': 'Filosofía',
-  'about.manifesto.blocks.now.idx': '01',
   'about.manifesto.blocks.now.title': 'Now.',
   'about.manifesto.blocks.now.body': 'Trabajamos cada carrera de forma personalizada, combinando estrategia deportiva y una estructura profesional enfocada en proteger el presente del jugador.',
-  'about.manifesto.blocks.next.idx': '02',
   'about.manifesto.blocks.next.title': 'Next.',
   'about.manifesto.blocks.next.body': 'Generamos oportunidades internacionales y planificamos cada paso con visión de futuro, construyendo carreras que crecen sin perder rumbo.',
-  'about.manifesto.blocks.forever.idx': '03',
   'about.manifesto.blocks.forever.title': 'Forever Football.',
   'about.manifesto.blocks.forever.body': 'Creemos que el talento necesita dirección, decisiones inteligentes y personas preparadas para acompañarlo en cada etapa.',
   // Equipo (cabecera del bloque dentro de About)
-  'about.team.eyebrow': 'EL EQUIPO',
   'about.team.titlePre': 'Quiénes ',
   'about.team.titleAccent': 'somos',
   'about.team.titlePost': '.',
@@ -221,25 +193,19 @@ const es = {
   'services.items.familyOffice.body': 'Gestión patrimonial, planificación financiera y fiscal, y estructura administrativa del jugador. Lo que se construye debe durar más que una carrera.',
   'services.items.psychology.title': 'Psicólogo',
   'services.items.psychology.body': 'Preparación mental de alto rendimiento, gestión de presión y hábitos. Acompañamiento competitivo continuo.',
-  'services.items.actionPlan.title': 'Plan de Acción',
-  'services.items.actionPlan.body': 'Gestión y revisión de contratos. Estrategia de mercado y posicionamiento internacional. Soporte integral dentro y fuera del campo. Adaptación a cada etapa de la carrera.',
 
   // Hero
-  'services.hero.eyebrow': '03 · Servicios',
   'services.hero.titleLead': 'Un equipo',
   'services.hero.titleRest': 'fuera del ',
   'services.hero.titleAccent': 'campo',
   'services.hero.lead': 'Representación estratégica, visión internacional y enfoque a largo plazo. Cinco áreas de gestión y seis pilares del modelo operativo para acompañar al jugador en cada etapa de su carrera.',
 
   // Áreas header
-  'services.areas.eyebrow': 'Áreas de gestión',
-  'services.areas.kicker': '05 disciplinas · 01 equipo',
   'services.areas.titleLead': 'Gestionamos tu carrera. Cuidamos tu ',
   'services.areas.titleAccent1': 'presente',
   'services.areas.titleMid': ' y planificamos tu ',
   'services.areas.titleAccent2': 'futuro',
   'services.areas.titleTrail': '.',
-  'services.areas.foot': 'ACOMPAÑAMIENTO 360º · SERVICIO 365',
   'services.areas.leadLabel': 'Descripción',
 
   // Áreas — 01 Representación e intermediación
@@ -283,7 +249,6 @@ const es = {
   'services.areas.items.legal.bullet4': 'Supervisión y control financiero',
 
   // Model intro
-  'services.model.eyebrow': 'Modelo operativo PHSPORT',
   'services.model.titleLead': 'Más allá de la representación, desarrollamos una estructura ',
   'services.model.titleAccent': 'integral',
   'services.model.titleTrail': '.',
@@ -308,12 +273,8 @@ const es = {
   'services.items.psychology.tag1': 'Alto rendimiento',
   'services.items.psychology.tag2': 'Presión competitiva',
   'services.items.psychology.tag3': 'Hábitos',
-  'services.items.actionPlan.tag1': 'Contratos',
-  'services.items.actionPlan.tag2': 'Mercado internacional',
-  'services.items.actionPlan.tag3': 'Servicio 365',
 
   // Manifest
-  'services.manifest.eyebrow': 'ACOMPAÑAMIENTO 360º · SERVICIO 365',
   'services.manifest.bodyLead': 'En PHSPORT representamos carreras',
   'services.manifest.bodyAccent': 'con rigor, criterio y compromiso',
   'services.manifest.bodyTrail': ' a largo plazo.',
@@ -346,7 +307,6 @@ const es = {
   'a11y.logo': 'PHSPORT — Ir a inicio',
   'a11y.menu.open': 'Abrir menú',
   'a11y.menu.close': 'Cerrar menú',
-  'a11y.close': 'Cerrar',
   'a11y.copyEmail': 'Copiar email',
 } as const;
 

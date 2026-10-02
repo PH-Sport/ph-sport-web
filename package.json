@@ -29,13 +29,7 @@
   },
   "homepage": "https://github.com/PH-Sport/ph-sport-web#readme",
   "dependencies": {
-    "@astrojs/react": "^4.4.2",
     "@tailwindcss/vite": "^4.2.1",
-    "@types/react": "^18.3.31",
-    "@types/react-dom": "^18.3.7",
-    "mochi-ui": "github:RodzCantCode/mochi#v0.3.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {

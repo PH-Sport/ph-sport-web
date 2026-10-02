@@ -1,7 +1,5 @@
 ---
 import '@/styles/global.css';
-import 'mochi-ui/styles.css';
-import '@/styles/mochi-phsport.css';
 import { ClientRouter } from 'astro:transitions';
 import QuietScrollHistory from './QuietScrollHistory.astro';
 import Header from './Header.astro';
@@ -93,7 +91,7 @@ const organizationJsonLd = {
 ---
 
 <!doctype html>
-<html lang={lang} data-theme="dark">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     {/* `viewport-fit=cover`: la página se dibuja también bajo la barra de estado y el
@@ -486,14 +484,14 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
     box-shadow: none;
   }
 
-  /* Al bajar, la isla se vuelve sólida y se estrecha (transición «morph» de Mochi
+  /* Al bajar, la isla se vuelve sólida y se estrecha (muelle «morph»,
      en Header.astro). Arriba del todo es transparente y ancha, alineada con el texto. */
   [data-header].header--solid .header-shell {
     width: min(calc(100% - var(--ph-section-px)), 1200px);
     background-color: var(--ph-panel);
     backdrop-filter: blur(18px) saturate(1.15);
     -webkit-backdrop-filter: blur(18px) saturate(1.15);
-    box-shadow: var(--mochi-shadow-surface);
+    box-shadow: var(--ph-sh-surface);
   }
 
   [data-header].header--scroll-hidden .header-shell {

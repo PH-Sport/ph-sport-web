@@ -1,6 +1,6 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
-import { LinkButton, ArrowRightIcon } from 'mochi-ui';
+import Button from '@/components/ui/Button.astro';
 
 interface Props {
   lang: Lang;
@@ -37,10 +37,7 @@ const servicesHref = localizePath('/servicios/', lang);
       <p class="ph-head-lead">{t('home.services.lead')}</p>
     </div>
     <div class="home-services__cta">
-      <LinkButton href={servicesHref} variant="surface">
-        {t('home.services.cta')}
-        <ArrowRightIcon slot="icon" />
-      </LinkButton>
+      <Button href={servicesHref} arrow>{t('home.services.cta')}</Button>
     </div>
   </div>
 
@@ -155,7 +152,7 @@ const servicesHref = localizePath('/servicios/', lang);
     background: var(--ph-panel-solid);
     -webkit-backdrop-filter: var(--ph-panel-blur);
     backdrop-filter: var(--ph-panel-blur);
-    box-shadow: var(--mochi-shadow-surface);
+    box-shadow: var(--ph-sh-surface);
   }
   .home-services__plan-head { display: grid; gap: 6px; }
   .home-services__plan-eyebrow { font-size: 14px; color: var(--ph-ink-meta); }

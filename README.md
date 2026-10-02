@@ -1,6 +1,6 @@
 # ph-sport-web
 
-Web de PHSPORT construida con Astro 5, i18n ES/EN/IT, vídeo de portada y el sistema de diseño Mochi.
+Web de PHSPORT construida con Astro 5, i18n ES/EN/IT, vídeo de portada y el lenguaje de diseño de Mochi (sin la librería).
 
 ## Scripts
 
@@ -36,4 +36,4 @@ salida se versiona en `public/`.
 
 ## Stack
 
-Astro 5 (SSG, sin islands) · Mochi (`mochi-ui`, React solo al construir) · Tailwind CSS 4 · TypeScript · Vercel
+Astro 5 (SSG, sin islands ni React) · Tailwind CSS 4 · TypeScript · Vercel

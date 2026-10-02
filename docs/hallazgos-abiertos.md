@@ -218,35 +218,6 @@ decisión de Mario (logo centrado; misma fecha). Queda:
   Si hiciera falta, el render admite cualquier tamaño: subir `FORMATS` en
   `scripts/build-hero-neon.mjs` a 2560×1440, a costa de más bytes.
 
-### Mochi: lo que la web ajusta por fuera mientras Mochi no lo trae (2026-10-01)
-
-El rediseño (`DECISIONS.md`, 2026-10-01, «Rediseño con el lenguaje de Mochi») usa
-`mochi-ui` tal cual, fijado a la etiqueta `v0.3.1` del repo
-`RodzCantCode/mochi`. **No se parchea Mochi desde aquí**: lo que le falta se
-compensa en `src/styles/mochi-phsport.css`, en un bloque marcado como
-provisional, y se anota para que lo resuelva Mochi. Al subir de versión, revisar
-uno por uno:
-
-- **El radio de los botones va escrito a mano** (`border-radius: 9999px` en
-  `.mochi-morph`/`.mochi-button`), sin variable. La web pide un rectángulo
-  redondeado, no una píldora, así que lo pisa con `--ph-r-btn*`. Si Mochi cambia
-  esas clases o su especificidad, los botones vuelven a salir en píldora sin que
-  nada falle.
-- **Los tonos claros dibujan su filo con una sombra interior**, y el tono `accent`
-  no tiene sombra propia. Desde el 2026-10-02 la web va sin filo: quita esa sombra
-  interior de los botones `solid` y `surface` y deja solo la de profundidad, y al
-  dorado le da la misma. Si Mochi cambia cómo dibuja el filo, volvería a verse.
-- **El peso 520 de las etiquetas** (`--mochi-text-label`, botón grande) no existe
-  en Söhne, que solo trae 400, 600 y 700: el navegador pinta 600, algo más
-  pesado de lo que Mochi diseñó.
-- **Los componentes interactivos de Mochi necesitan una island de React** para
-  funcionar (su README). Como aquí no hay React en el navegador, el
-  comportamiento está reescrito en `src/scripts/ph-motion.ts`: acordeón,
-  pestañas, desplegable, etiqueta que viaja y copiar. Son candidatos a volver a
-  Mochi como versión sin React. (Hubo también un raíl arrastrable con rebote, que
-  se quitó con los jugadores de la portada el 2026-10-02; está en el historial,
-  commit `437a9dd`.)
-
 ### Rediseño: sin probar en un móvil real (2026-10-01)
 
 El rediseño se ha comprobado en Chromium con Playwright, en escritorio y a 390 px

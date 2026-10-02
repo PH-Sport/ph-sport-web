@@ -10,7 +10,7 @@ import {
   LANG_FLAGS,
 } from '@/i18n/utils';
 import { NAV_ITEMS } from '@/lib/navigation';
-import { LinkButton } from 'mochi-ui';
+import Button from '@/components/ui/Button.astro';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -113,7 +113,7 @@ const isActive = (href: string): boolean => {
           </div>
         </div>
         <span class="header-cta" data-header-cta>
-          <LinkButton href={contactHref} variant="accent" size="sm">{t('footer.contact')}</LinkButton>
+          <Button href={contactHref} variant="accent" size="sm">{t('footer.contact')}</Button>
         </span>
       </div>
 
@@ -183,7 +183,7 @@ const isActive = (href: string): boolean => {
           ))}
         </ul>
         <span class="header-cta" data-header-cta>
-          <LinkButton href={contactHref} variant="accent" size="sm" data-mobile-link>{t('footer.contact')}</LinkButton>
+          <Button href={contactHref} variant="accent" size="sm" data-mobile-link>{t('footer.contact')}</Button>
         </span>
       </div>
     </div>
@@ -207,11 +207,11 @@ const isActive = (href: string): boolean => {
        que no se funda (sale/entra) en cada navegación SPA. Ver bloque is:global. */
     view-transition-name: ph-header;
     transition:
-      width var(--mochi-duration-morph) var(--mochi-ease-morph),
-      transform var(--mochi-duration-morph) var(--mochi-ease-morph),
-      background-color var(--mochi-duration-morph) var(--mochi-ease-morph),
-      border-color var(--mochi-duration-morph) var(--mochi-ease-morph),
-      box-shadow var(--mochi-duration-morph) var(--mochi-ease-morph);
+      width var(--ph-duration-morph) var(--ph-ease-morph),
+      transform var(--ph-duration-morph) var(--ph-ease-morph),
+      background-color var(--ph-duration-morph) var(--ph-ease-morph),
+      border-color var(--ph-duration-morph) var(--ph-ease-morph),
+      box-shadow var(--ph-duration-morph) var(--ph-ease-morph);
   }
 
   @media (max-width: 767px) {
@@ -234,11 +234,11 @@ const isActive = (href: string): boolean => {
   .header-logo {
     display: block;
     color: var(--color-ph-gold);
-    transition: color var(--mochi-duration-color) var(--mochi-ease-color);
+    transition: color var(--ph-duration-color) var(--ph-ease-color);
   }
   .header-logo svg { display: block; height: 1.75rem; width: auto; }
   @media (max-width: 767px) { .header-logo svg { height: 1.5rem; } }
-  .header-logo:hover { color: var(--mochi-accent-strong); }
+  .header-logo:hover { color: var(--ph-accent-strong); }
 
   /* ── Navegación de escritorio ── */
   .header-nav { display: none; justify-self: center; }
@@ -256,7 +256,7 @@ const isActive = (href: string): boolean => {
     font-weight: 400;
     letter-spacing: 0.02em;
     color: rgba(255, 255, 255, 0.64);
-    transition: color var(--mochi-duration-color) var(--mochi-ease-color);
+    transition: color var(--ph-duration-color) var(--ph-ease-color);
   }
   .nav-link:hover,
   .nav-link.is-active { color: var(--color-ph-white); }
@@ -274,7 +274,7 @@ const isActive = (href: string): boolean => {
     transform: translateX(var(--x, 0px));
     border-radius: var(--ph-r-sm);
     background: rgba(255, 255, 255, 0.075);
-    box-shadow: var(--mochi-shadow-thumb);
+    box-shadow: var(--ph-sh-thumb);
     opacity: 0;
     pointer-events: none;
     /* Nombre propio de View Transition: el navegador morfea su geometría de la
@@ -285,9 +285,9 @@ const isActive = (href: string): boolean => {
   .nav-indicator.is-visible { opacity: 1; }
   .nav-indicator.is-animated {
     transition:
-      transform var(--mochi-duration-morph) var(--mochi-ease-morph),
-      width var(--mochi-duration-morph) var(--mochi-ease-morph),
-      opacity var(--mochi-duration-fade-in) var(--mochi-ease-fade-in);
+      transform var(--ph-duration-morph) var(--ph-ease-morph),
+      width var(--ph-duration-morph) var(--ph-ease-morph),
+      opacity var(--ph-duration-fade-in) var(--ph-ease-fade-in);
   }
   @media (prefers-reduced-motion: reduce) {
     .nav-indicator.is-animated { transition: none; }
@@ -309,17 +309,17 @@ const isActive = (href: string): boolean => {
     padding: 0 12px;
     border-radius: var(--ph-r-btn-sm);
     background: rgba(255, 255, 255, 0.06);
-    box-shadow: var(--mochi-shadow-surface);
+    box-shadow: var(--ph-sh-surface);
     color: var(--color-ph-white);
     cursor: pointer;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     transition:
-      background-color var(--mochi-duration-color) var(--mochi-ease-color),
-      transform var(--mochi-duration-snappy) var(--mochi-ease-snappy);
+      background-color var(--ph-duration-color) var(--ph-ease-color),
+      transform var(--ph-duration-snappy) var(--ph-ease-snappy);
   }
   .lang-switch:hover { background: rgba(255, 255, 255, 0.07); }
-  .lang-switch:active { transform: scale(0.965); transition-duration: var(--mochi-duration-press); transition-timing-function: var(--mochi-ease-press); }
+  .lang-switch:active { transform: scale(0.965); transition-duration: var(--ph-duration-press); transition-timing-function: var(--ph-ease-press); }
   .lang-flag { display: block; width: 20px; height: 15px; border-radius: 3px; }
   .lang-label { font-family: var(--font-display); font-size: 13px; font-weight: 500; letter-spacing: 0.03em; }
   .lang-chevron {
@@ -329,7 +329,7 @@ const isActive = (href: string): boolean => {
     stroke-width: 1.6;
     stroke-linecap: round;
     stroke-linejoin: round;
-    transition: rotate var(--mochi-duration-snappy) var(--mochi-ease-snappy);
+    transition: rotate var(--ph-duration-snappy) var(--ph-ease-snappy);
   }
   .lang-current .lang-chevron { rotate: 180deg; }
 
@@ -344,16 +344,16 @@ const isActive = (href: string): boolean => {
     background: var(--ph-panel-strong);
     -webkit-backdrop-filter: var(--ph-panel-blur);
     backdrop-filter: var(--ph-panel-blur);
-    box-shadow: var(--mochi-shadow-overlay);
+    box-shadow: var(--ph-sh-overlay);
     /* Cerrado, el recorte tiene exactamente la forma del botón, en su esquina. */
     clip-path: inset(0 0 calc(100% - 40px) calc(100% - var(--bw, 76px)) round var(--ph-r-btn-sm));
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
     transition:
-      clip-path var(--mochi-duration-morph) var(--mochi-ease-morph),
-      opacity var(--mochi-duration-fade-out) var(--mochi-ease-fade-out) 120ms,
-      visibility 0s linear var(--mochi-duration-morph);
+      clip-path var(--ph-duration-morph) var(--ph-ease-morph),
+      opacity var(--ph-duration-fade-out) var(--ph-ease-fade-out) 120ms,
+      visibility 0s linear var(--ph-duration-morph);
   }
   .lang-switch[aria-expanded='true'] + .lang-panel {
     clip-path: inset(0 0 0 0 round var(--ph-r-md));
@@ -361,7 +361,7 @@ const isActive = (href: string): boolean => {
     visibility: visible;
     pointer-events: auto;
     transition:
-      clip-path var(--mochi-duration-morph) var(--mochi-ease-morph),
+      clip-path var(--ph-duration-morph) var(--ph-ease-morph),
       opacity 0s,
       visibility 0s;
   }
@@ -375,7 +375,7 @@ const isActive = (href: string): boolean => {
     color: var(--color-ph-white);
     cursor: pointer;
   }
-  .lang-options { display: grid; gap: 2px; margin: 6px 0 0; padding: 6px 0 0; list-style: none; border-top: 1px solid var(--mochi-surface-border); }
+  .lang-options { display: grid; gap: 2px; margin: 6px 0 0; padding: 6px 0 0; list-style: none; border-top: 1px solid var(--ph-surface-border); }
   .lang-option {
     display: grid;
     grid-template-columns: 20px 1fr 16px;
@@ -390,20 +390,20 @@ const isActive = (href: string): boolean => {
     filter: blur(4px);
     translate: 0 -4px;
     transition:
-      background-color var(--mochi-duration-color) var(--mochi-ease-color),
-      opacity var(--mochi-duration-fade-out) var(--mochi-ease-fade-out),
-      filter var(--mochi-duration-fade-out) var(--mochi-ease-fade-out),
-      translate var(--mochi-duration-fade-out) var(--mochi-ease-fade-out);
+      background-color var(--ph-duration-color) var(--ph-ease-color),
+      opacity var(--ph-duration-fade-out) var(--ph-ease-fade-out),
+      filter var(--ph-duration-fade-out) var(--ph-ease-fade-out),
+      translate var(--ph-duration-fade-out) var(--ph-ease-fade-out);
   }
   .lang-switch[aria-expanded='true'] + .lang-panel .lang-option {
     opacity: 1;
     filter: blur(0);
     translate: 0 0;
     transition:
-      background-color var(--mochi-duration-color) var(--mochi-ease-color),
-      opacity var(--mochi-duration-fade-in) var(--mochi-ease-fade-in) calc(60ms + var(--i) * 26ms),
-      filter var(--mochi-duration-fade-in) var(--mochi-ease-fade-in) calc(60ms + var(--i) * 26ms),
-      translate var(--mochi-duration-fade-in) var(--mochi-ease-fade-in) calc(60ms + var(--i) * 26ms);
+      background-color var(--ph-duration-color) var(--ph-ease-color),
+      opacity var(--ph-duration-fade-in) var(--ph-ease-fade-in) calc(60ms + var(--i) * 26ms),
+      filter var(--ph-duration-fade-in) var(--ph-ease-fade-in) calc(60ms + var(--i) * 26ms),
+      translate var(--ph-duration-fade-in) var(--ph-ease-fade-in) calc(60ms + var(--i) * 26ms);
   }
   .lang-option:hover,
   .lang-option:focus-visible { background-color: rgba(255, 255, 255, 0.07); }
@@ -433,15 +433,15 @@ const isActive = (href: string): boolean => {
     height: 44px;
     border: 0;
     border-radius: var(--ph-r-btn);
-    background: var(--mochi-solid);
-    box-shadow: var(--mochi-shadow-surface);
+    background: var(--ph-solid);
+    box-shadow: var(--ph-sh-surface);
     color: var(--color-ph-white);
     cursor: pointer;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-    transition: transform var(--mochi-duration-snappy) var(--mochi-ease-snappy);
+    transition: transform var(--ph-duration-snappy) var(--ph-ease-snappy);
   }
-  .menu-toggle:active { transform: scale(0.965); transition-duration: var(--mochi-duration-press); transition-timing-function: var(--mochi-ease-press); }
+  .menu-toggle:active { transform: scale(0.965); transition-duration: var(--ph-duration-press); transition-timing-function: var(--ph-ease-press); }
   @media (min-width: 768px) { .menu-toggle { display: none; } }
 
   .menu-toggle__inner { position: relative; width: 20px; height: 14px; }
@@ -453,9 +453,9 @@ const isActive = (href: string): boolean => {
     border-radius: 1px;
     background: currentColor;
     transition:
-      top var(--mochi-duration-snappy) var(--mochi-ease-snappy),
-      rotate var(--mochi-duration-snappy) var(--mochi-ease-snappy),
-      left var(--mochi-duration-snappy) var(--mochi-ease-snappy);
+      top var(--ph-duration-snappy) var(--ph-ease-snappy),
+      rotate var(--ph-duration-snappy) var(--ph-ease-snappy),
+      left var(--ph-duration-snappy) var(--ph-ease-snappy);
   }
   .menu-toggle__bar:nth-child(1) { top: 2px; }
   .menu-toggle__bar:nth-child(2) { top: 10.4px; left: 6px; }
@@ -474,7 +474,7 @@ const isActive = (href: string): boolean => {
     z-index: 100;
     visibility: hidden;
     pointer-events: none;
-    transition: visibility 0s linear var(--mochi-duration-morph);
+    transition: visibility 0s linear var(--ph-duration-morph);
   }
   .mobile-menu.is-open { visibility: visible; pointer-events: auto; transition: none; }
 
@@ -486,10 +486,10 @@ const isActive = (href: string): boolean => {
     backdrop-filter: blur(6px);
     opacity: 0;
     cursor: pointer;
-    transition: opacity var(--mochi-duration-fade-out) var(--mochi-ease-fade-out);
+    transition: opacity var(--ph-duration-fade-out) var(--ph-ease-fade-out);
   }
-  .mobile-menu.is-open .mobile-menu-backdrop { opacity: 1; transition: opacity var(--mochi-duration-fade-in) var(--mochi-ease-fade-in); }
-  .mobile-menu.is-open.mobile-menu--closing .mobile-menu-backdrop { opacity: 0; pointer-events: none; transition: opacity var(--mochi-duration-fade-out) var(--mochi-ease-fade-out); }
+  .mobile-menu.is-open .mobile-menu-backdrop { opacity: 1; transition: opacity var(--ph-duration-fade-in) var(--ph-ease-fade-in); }
+  .mobile-menu.is-open.mobile-menu--closing .mobile-menu-backdrop { opacity: 0; pointer-events: none; transition: opacity var(--ph-duration-fade-out) var(--ph-ease-fade-out); }
 
   .mobile-menu-panel {
     position: absolute;
@@ -502,9 +502,9 @@ const isActive = (href: string): boolean => {
     background: var(--ph-panel-strong);
     -webkit-backdrop-filter: var(--ph-panel-blur);
     backdrop-filter: var(--ph-panel-blur);
-    box-shadow: var(--mochi-shadow-overlay);
+    box-shadow: var(--ph-sh-overlay);
     clip-path: inset(0 0 calc(100% - var(--cap-h, 62px)) 0 round var(--ph-r-md));
-    transition: clip-path var(--mochi-duration-morph) var(--mochi-ease-morph);
+    transition: clip-path var(--ph-duration-morph) var(--ph-ease-morph);
   }
   .mobile-menu.is-open .mobile-menu-panel { clip-path: inset(0 0 0 0 round var(--ph-r-md)); }
   .mobile-menu.is-open.mobile-menu--closing .mobile-menu-panel { clip-path: inset(0 0 calc(100% - var(--cap-h, 62px)) 0 round var(--ph-r-md)); }
@@ -521,9 +521,9 @@ const isActive = (href: string): boolean => {
     filter: blur(6px);
     translate: 0 8px;
     transition:
-      opacity var(--mochi-duration-fade-out) var(--mochi-ease-fade-out),
-      filter var(--mochi-duration-fade-out) var(--mochi-ease-fade-out),
-      translate var(--mochi-duration-fade-out) var(--mochi-ease-fade-out);
+      opacity var(--ph-duration-fade-out) var(--ph-ease-fade-out),
+      filter var(--ph-duration-fade-out) var(--ph-ease-fade-out),
+      translate var(--ph-duration-fade-out) var(--ph-ease-fade-out);
   }
   .mobile-menu.is-open .mobile-nav-list li,
   .mobile-menu.is-open .mobile-menu-foot {
@@ -531,9 +531,9 @@ const isActive = (href: string): boolean => {
     filter: blur(0);
     translate: 0 0;
     transition:
-      opacity var(--mochi-duration-fade-in) var(--mochi-ease-fade-in) calc(60ms + var(--i) * 30ms),
-      filter var(--mochi-duration-fade-in) var(--mochi-ease-fade-in) calc(60ms + var(--i) * 30ms),
-      translate var(--mochi-duration-morph) var(--mochi-ease-morph) calc(60ms + var(--i) * 30ms);
+      opacity var(--ph-duration-fade-in) var(--ph-ease-fade-in) calc(60ms + var(--i) * 30ms),
+      filter var(--ph-duration-fade-in) var(--ph-ease-fade-in) calc(60ms + var(--i) * 30ms),
+      translate var(--ph-duration-morph) var(--ph-ease-morph) calc(60ms + var(--i) * 30ms);
   }
   .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li,
   .mobile-menu.is-open.mobile-menu--closing .mobile-menu-foot {
@@ -541,9 +541,9 @@ const isActive = (href: string): boolean => {
     filter: blur(6px);
     translate: 0 4px;
     transition:
-      opacity var(--mochi-duration-fade-out) var(--mochi-ease-fade-out),
-      filter var(--mochi-duration-fade-out) var(--mochi-ease-fade-out),
-      translate var(--mochi-duration-fade-out) var(--mochi-ease-fade-out);
+      opacity var(--ph-duration-fade-out) var(--ph-ease-fade-out),
+      filter var(--ph-duration-fade-out) var(--ph-ease-fade-out),
+      translate var(--ph-duration-fade-out) var(--ph-ease-fade-out);
   }
 
   .mobile-link {
@@ -556,7 +556,7 @@ const isActive = (href: string): boolean => {
     line-height: 1.05;
     letter-spacing: -0.03em;
     color: rgba(255, 255, 255, 0.86);
-    transition: color var(--mochi-duration-color) var(--mochi-ease-color), background-color var(--mochi-duration-color) var(--mochi-ease-color);
+    transition: color var(--ph-duration-color) var(--ph-ease-color), background-color var(--ph-duration-color) var(--ph-ease-color);
   }
   .mobile-link:active { background: rgba(255, 255, 255, 0.05); }
   /* La página actual, como en escritorio: blanco pleno sobre una superficie
@@ -571,7 +571,7 @@ const isActive = (href: string): boolean => {
     gap: 12px;
     margin-top: 6px;
     padding: 14px 8px 4px;
-    border-top: 1px solid var(--mochi-surface-border);
+    border-top: 1px solid var(--ph-surface-border);
   }
   .lang-list--mobile { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; }
   .lang-switch--mobile {
@@ -587,12 +587,12 @@ const isActive = (href: string): boolean => {
     font-weight: 500;
     letter-spacing: 0.03em;
     color: var(--color-ph-white);
-    transition: background-color var(--mochi-duration-color) var(--mochi-ease-color), color var(--mochi-duration-color) var(--mochi-ease-color);
+    transition: background-color var(--ph-duration-color) var(--ph-ease-color), color var(--ph-duration-color) var(--ph-ease-color);
   }
   .lang-switch--mobile[aria-current='true'] {
-    background: var(--mochi-thumb);
-    color: var(--mochi-on-thumb);
-    box-shadow: var(--mochi-shadow-thumb);
+    background: var(--ph-thumb);
+    color: var(--ph-on-thumb);
+    box-shadow: var(--ph-sh-thumb);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -621,7 +621,7 @@ const isActive = (href: string): boolean => {
   }
 
   /* Indicador: el morph por defecto (geometría vieja → nueva) es el deslizamiento,
-     con el muelle «morph» de Mochi. La curva va escrita entera: las variables no
+     con el muelle «morph» (`--ph-ease-morph`). La curva va escrita entera: las variables no
      heredan en el árbol de ::view-transition (docs/trampas-conocidas.md). */
   ::view-transition-group(ph-nav-indicator) {
     animation-duration: 586ms;
@@ -726,7 +726,7 @@ const isActive = (href: string): boolean => {
     const contactLabel = t('footer.contact');
     document.querySelectorAll<HTMLAnchorElement>('[data-header-cta] a').forEach((cta) => {
       cta.href = localizePath('/#contacto', lang);
-      cta.querySelectorAll('.mochi-button__label, .mochi-sr').forEach((el) => { el.textContent = contactLabel; });
+      cta.querySelectorAll('.ph-btn__label').forEach((el) => { el.textContent = contactLabel; });
     });
 
     // Selector de idioma: el botón muestra el idioma actual…
@@ -930,7 +930,7 @@ const isActive = (href: string): boolean => {
     }
   }
 
-  /** Lo que tarda el recorte en volver a la cápsula (muelle «morph» de Mochi, 586 ms). */
+  /** Lo que tarda el recorte en volver a la cápsula (muelle «morph», 586 ms). */
   const MENU_CLOSE_TOTAL_MS = 620;
 
   let mobileMenuCloseTimer: ReturnType<typeof setTimeout> | null = null;

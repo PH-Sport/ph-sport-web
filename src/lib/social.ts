@@ -16,9 +16,3 @@ export const SOCIAL_LINKS: readonly SocialEntry[] = [
 export function isSocialPlaceholder(href: string): boolean {
   return href === '#' || href === '';
 }
-
-/** URL del perfil de Instagram (misma fuente que el footer). */
-export function getInstagramProfileUrl(): string {
-  const entry = SOCIAL_LINKS.find((s) => s.id === 'instagram');
-  return entry?.href ?? '#';
-}

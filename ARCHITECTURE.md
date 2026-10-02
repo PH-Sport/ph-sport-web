@@ -12,7 +12,7 @@
 |---|---|---|
 | Framework | Astro (SSG) | 5.x |
 | Estilos | Tailwind CSS | 4.x |
-| Componentes y movimiento | Mochi (`mochi-ui`, etiqueta `v0.3.1`), dibujado en el servidor con `@astrojs/react`; la interacción en `src/scripts/ph-motion.ts`. Sin React ni GSAP en el navegador | 0.3.1 |
+| Componentes y movimiento | Componentes `.astro` propios con el lenguaje de Mochi (curvas y tiempos copiados a `src/styles/tokens.css`); la interacción en `src/scripts/ph-motion.ts`. Sin React ni GSAP | — |
 | Internacionalización | Astro i18n nativo | — |
 | Datos | JSON en `data/` + helpers en `lib/` | — |
 | Imágenes | astro:assets | — |
@@ -30,7 +30,6 @@ ph-sport-web/
 │   ├── fonts/                       # Söhne (3 pesos: Buch 400, Halbfett 600, Dreiviertelfett 700) — self-hosted
 │   ├── icons/
 │   ├── national-team-badges/        # Escudos de selecciones nacionales
-│   ├── about-equipo.webp            # Ya no se muestra: es el origen de og-image.jpg (npm run assets:favicons)
 │   ├── favicon.svg
 │   ├── hero/2026-10b/               # Vídeos y pósters del hero (npm run assets:hero). La versión va en la ruta por la caché de 7 días
 │   ├── logo-ph-3d.webp / *-sm.webp
@@ -38,7 +37,8 @@ ph-sport-web/
 │
 ├── assets/
 │   └── source-media/                  # Fuentes originales para scripts de build (NO se sirven)
-│       └── badges/                    # PNG 600×600 → WebP 128×128 (npm run assets:badges)
+│       ├── badges/                    # PNG 600×600 → WebP 128×128 (npm run assets:badges)
+│       └── about-equipo.webp          # Origen de og-image.jpg (npm run assets:favicons); ya no se muestra en la web
 │
 ├── src/
 │   ├── assets/images/players/       # Fotos de jugadores (procesadas por astro:assets)
@@ -59,10 +59,8 @@ ph-sport-web/
 │   │   │   ├── ServicesSection.astro       # Áreas en acordeón, cinco pilares y manifiesto
 │   │   │   └── TalentsSection.astro        # Buscador, desplegables Ver/Orden y grid de tarjetas
 │   │   └── ui/
-│   │       ├── Button.astro
-│   │       ├── FooterSocialIcon.astro
-│   │       ├── LanguageSwitcher.astro   # VACÍO, sin uso: el selector de idioma vive en Header.astro
-│   │       └── SectionHeader.astro
+│   │       ├── Button.astro             # Botón-enlace: recuadro con sombra, flecha opcional (sustituye al de Mochi)
+│   │       └── FooterSocialIcon.astro
 │   │
 │   ├── i18n/
 │   │   ├── es.ts                    # Fuente de las claves; en.ts e it.ts tienen las mismas
@@ -72,7 +70,6 @@ ph-sport-web/
 │   │
 │   ├── lib/                         # Helpers y datos de dominio
 │   │   ├── constants.ts             # SITE_URL y constantes globales
-│   │   ├── countryLabels.ts         # Etiquetas de selecciones nacionales
 │   │   ├── heroMedia.ts             # Fuente de verdad del vídeo del hero (versión, fuentes por pantalla, pósters)
 │   │   ├── nationalTeamBadge.ts     # Resuelve escudo PNG por código ISO 3166-1 alpha-2
 │   │   ├── navigation.ts            # Items de navegación
@@ -81,7 +78,6 @@ ph-sport-web/
 │   │   ├── servicesItems.ts         # Datos de los cinco pilares de servicios
 │   │   ├── slugify.ts
 │   │   ├── social.ts                # Links de redes sociales
-│   │   ├── sortRoster.ts            # Ordenación del roster
 │   │   └── teamMembers.ts           # Datos de los 21 integrantes del equipo
 │   │
 │   ├── pages/
@@ -105,13 +101,12 @@ ph-sport-web/
 │   │
 │   ├── scripts/                     # Scripts vanilla para interacciones y animaciones
 │   │   ├── ph-ambient.ts            # Fondo animado: bombo de escenas en WebGL2, una al azar por página (no en las legales)
-│   │   └── ph-motion.ts             # Interacción con el movimiento de Mochi: acordeón, pestañas, desplegable, etiquetas, copiar
+│   │   └── ph-motion.ts             # Interacción de las piezas compartidas: acordeón, pestañas, desplegable, etiquetas, copiar
 │   │
 │   └── styles/
-│       ├── global.css               # Reset + variables CSS + font-face + cabecera de sección
-│       ├── mochi-phsport.css        # Capa de marca sobre Mochi: paleta, Söhne, esquinas y sombras
-│       ├── ph-ui.css                # Piezas compartidas con el lenguaje de Mochi (sus estilos)
-│       └── ph-ui-buttons.css
+│       ├── global.css               # Reset + variables de Tailwind + font-face + cabecera de sección; importa los otros dos
+│       ├── tokens.css               # Variables del sistema: superficies, sombras, esquinas, paneles, curvas y tiempos
+│       └── ph-ui.css                # Piezas compartidas (acordeón, pestañas, desplegable, tarjetas, botón de icono)
 │
 ├── data/
 │   ├── jugadores.json               # Roster principal. "hidden": true oculta sin borrar
@@ -274,7 +269,7 @@ idioma actual (bandera y código) y abre los tres. Es un botón que despliega
 enlaces (patrón *disclosure*), no un `role="menu"`. El estado lo lleva
 `aria-expanded` y el CSS abre el panel a partir de él: el botón crece hasta ser
 el panel (recorte animado desde su ancho, `--bw`) y las opciones entran después,
-con las curvas de Mochi. **En el menú móvil van los tres en fila**, sin
+con las curvas de `tokens.css`. **En el menú móvil van los tres en fila**, sin
 desplegable dentro del menú.
 
 **Trampa: la cabecera persiste entre navegaciones** (`transition:persist`). Su
@@ -368,37 +363,41 @@ El titular del hero se ve desde el primer pintado: ya no entra palabra a palabra
 
 ---
 
-## Sistema de diseño y movimiento (Mochi)
+## Sistema de diseño y movimiento
 
-Desde el 2026-10-01 la web usa el lenguaje de **Mochi** (`mochi-ui`), el sistema
-de diseño propio de Mario, con su movimiento de muelles de rebote mínimo. La forma
+Desde el 2026-10-01 la web habla el lenguaje de **Mochi**, el sistema de diseño
+propio de Mario: movimiento de muelles con un rebote mínimo, solo como respuesta.
+Desde el 2026-10-02 **no depende de la librería** (`mochi-ui`): sus curvas y
+tiempos están copiados en `tokens.css` y el único componente que se usaba, el
+botón-enlace, es `Button.astro` (`DECISIONS.md`, «Fuera Mochi y React»). La forma
 es de PHSPORT: rectángulos con una esquina sutil de 6 px, sin filo y con sombra
-(2026-10-02). La marca
-no cambia: negro y oro, Söhne, logos y textos. El porqué y lo descartado, en
-`DECISIONS.md` («Rediseño con el lenguaje de Mochi»).
+(2026-10-02). La marca no cambia: negro y oro, Söhne, logos y textos.
 
-**Tres capas:**
+**Dónde vive cada cosa:**
 
 | Capa | Archivo | Qué pone |
 |---|---|---|
-| Mochi | `mochi-ui/styles.css` (importado en `BaseLayout`) | Tokens `--mochi-*`, curvas `--mochi-ease-*`, tiempos `--mochi-duration-*` y los botones (`LinkButton`, `Button`) |
-| Marca | `src/styles/mochi-phsport.css` | Los tokens de Mochi con la paleta PHSPORT (tema oscuro: `data-theme="dark"` en `<html>`; el oro hace de acento), Söhne, esquinas `--ph-r-*` y sombras en dos capas (`--mochi-shadow-*`, `--ph-sh-*`). Al final, un bloque **provisional** que corrige lo que Mochi aún no permite (`docs/hallazgos-abiertos.md`) |
-| Piezas | `src/styles/ph-ui.css` + `src/scripts/ph-motion.ts` | Lo interactivo, hecho aquí porque Mochi lo resuelve con React en el navegador |
+| Variables de Tailwind | `src/styles/global.css` (`@theme`) | Colores de marca (`--color-ph-*`), tipografía (`--font-display`…) |
+| Variables del sistema | `src/styles/tokens.css` (importado desde `global.css`) | Superficies (`--ph-surface`, `--ph-solid`…), oro (`--ph-accent`), sombras en dos capas (`--ph-sh-*`), esquinas (`--ph-r-*`), paneles esmerilados (`--ph-panel*`), curvas (`--ph-ease-*`) y tiempos (`--ph-duration-*`) |
+| Botón-enlace | `src/components/ui/Button.astro` | El recuadro con sombra que lleva a otra página o al correo |
+| Piezas | `src/styles/ph-ui.css` + `src/scripts/ph-motion.ts` | Lo interactivo: acordeón, pestañas, desplegable, etiqueta, copiar |
 
-**React solo al construir.** Los componentes de Mochi son de React: Astro los
-dibuja en el servidor (`@astrojs/react`) y el navegador recibe HTML y CSS.
-**Ninguno lleva `client:`.** Añadir una directiva metería React en el navegador, y
-eso es una decisión nueva que se registra en `DECISIONS.md`, no la aplicación de
-un patrón. Uso:
+**Botón-enlace.** Uso:
 
 ```astro
-import { LinkButton, ArrowRightIcon } from 'mochi-ui';
-<LinkButton href={href} variant="surface">{texto}<ArrowRightIcon slot="icon" /></LinkButton>
+import Button from '@/components/ui/Button.astro';
+<Button href={href} arrow>{texto}</Button>
+<Button href={`mailto:${email}`} variant="accent" size="lg">{email}</Button>
 ```
 
-`LinkButton` para ir a otra página o al correo; las acciones dentro de la página
-son un `<button>` con las piezas de abajo. `variant="accent"` es el dorado: uno por
-pantalla como mucho.
+Para ir a otra página o al correo; las acciones dentro de la página son un
+`<button>` con las piezas de abajo. `variant="accent"` es el dorado: uno por
+pantalla como mucho. `size`: `sm` (36 px), `md` (44 px, por defecto) o `lg`
+(56 px). `arrow` añade la flecha, que avanza 3 px al pasar el ratón.
+
+**Sin React.** No hay ningún componente de React en el proyecto ni la integración
+de Astro para dibujarlos. Meter uno es una decisión nueva que se registra en
+`DECISIONS.md`.
 
 **Piezas compartidas.** Estilos en `ph-ui.css`; comportamiento en `ph-motion.ts`,
 que arranca en cada `astro:page-load` y lo desmonta en `astro:before-swap`:
@@ -416,8 +415,8 @@ que arranca en cada `astro:page-load` y lo desmonta en `astro:before-swap`:
 
 - **Solo como respuesta** a pulsar, abrir, pasar el ratón o cambiar de pestaña.
   Nada se anima al cargar ni al hacer scroll: todo se ve desde el primer pintado.
-- **Siempre las curvas y tiempos de Mochi** (`var(--mochi-ease-morph)`,
-  `var(--mochi-duration-morph)`…).
+- **Siempre las curvas y tiempos de `tokens.css`** (`var(--ph-ease-morph)`,
+  `var(--ph-duration-morph)`…).
 - Pulsar: `scale(0.965)` con `press`; la vuelta, con `snappy`.
 - `prefers-reduced-motion`: sin movimiento.
 - **En los pseudos `::view-transition` la curva va escrita literal**, no con
@@ -539,7 +538,7 @@ Para tocar una escena: su shader está en el mismo archivo. Se ve en directo con
 menú se aparta medio margen de sección del borde y deja medio margen de relleno
 (`Header.astro`), así el logo queda a un margen completo, como los textos.
 
-**No hay islands de React en el proyecto.** `@astrojs/react` está en `astro.config.mjs` solo para dibujar Mochi al construir (ver «Sistema de diseño y movimiento»); ningún componente lleva `client:`. La última island (`LogoReveal`) se migró a vanilla el 2026-06-25. Si alguna vez hiciera falta una, sería una decisión nueva a registrar en `DECISIONS.md`, no la aplicación de un patrón existente.
+**No hay React en el proyecto.** La última island (`LogoReveal`) se migró a vanilla el 2026-06-25, y la integración `@astrojs/react`, que del 2026-10-01 al 02 solo dibujaba los botones de Mochi al construir, salió con ellos. Si alguna vez hiciera falta una, sería una decisión nueva a registrar en `DECISIONS.md`, no la aplicación de un patrón existente.
 
 ---
 
@@ -548,7 +547,7 @@ menú se aparta medio margen de sección del borde y deja medio margen de rellen
 | Regla | Motivo |
 |---|---|
 | Todas las imágenes con `<Image>` de `astro:assets` | WebP automático + width/height → cero CLS. Excepción: las fotos del grid de talentos van en `<picture>` AVIF 90 con WebP 85 de reserva (`DECISIONS.md`, 2026-10-01) |
-| Ningún componente con `client:`: React solo al construir | React fuera del bundle del navegador (~182 KB en la home cuando había una island) |
+| Sin React ni componentes con `client:` | React fuera del bundle del navegador (~182 KB en la home cuando había una island) |
 | Named imports: `import { X } from 'lib'` | Tree-shaking efectivo |
 | Fuentes self-hosted desde `/public/fonts/` | Elimina round-trips externos |
 | `font-display: swap` en `@font-face` | Sin FOIT |
@@ -585,20 +584,24 @@ El dominio canónico es el **apex** `phsport.es`; `www` redirige con 308. Ver DE
 
 ## Sistema de diseño
 
-> Fuente de verdad visual del proyecto. Variables en `src/styles/global.css`.
+> Fuente de verdad visual del proyecto. Colores de marca y tipografía en el
+> `@theme` de `src/styles/global.css`; superficies, sombras, esquinas, paneles y
+> movimiento en `src/styles/tokens.css` («Sistema de diseño y movimiento»).
 
 ### Paleta de colores
 
 | Token | Variable CSS | Hex | Uso |
 |---|---|---|---|
-| `ph-black` | `--ph-black` | `#0d0f12` | Fondo base — charcoal authority |
-| `ph-white` | `--ph-white` | `#ffffff` | Texto principal y contraste |
-| `ph-gold` | `--ph-gold` | `#D6B25E` | Acento único — nunca como fondo o relleno |
-| `ph-gold-muted` | `--ph-gold-muted` | `#a8893e` | Hover y estados activos del oro |
-| `ph-white-60` | `--ph-white-60` | `rgba(255,255,255,0.60)` | Texto secundario y descripciones |
-| `ph-white-20` | `--ph-white-20` | `rgba(255,255,255,0.20)` | Bordes sutiles y separadores |
-| `ph-white-10` | `--ph-white-10` | `rgba(255,255,255,0.10)` | Fondos de cards sobre negro |
-| `ph-black-80` | `--ph-black-80` | `rgba(13,15,18,0.80)` | Overlays sobre imágenes y vídeo |
+| `ph-black` | `--color-ph-black` | `#0d0f12` | Fondo base — charcoal authority |
+| `ph-white` | `--color-ph-white` | `#ffffff` | Texto principal y contraste |
+| `ph-gold` | `--color-ph-gold` | `#D6B25E` | Acento único — nunca como fondo o relleno |
+| `ph-gold-muted` | `--color-ph-gold-muted` | `#a8893e` | Hover y estados activos del oro |
+| `ph-white-60` | `--color-ph-white-60` | `rgba(255,255,255,0.60)` | Texto secundario y descripciones |
+| `ph-white-10` | `--color-ph-white-10` | `rgba(255,255,255,0.10)` | Separadores finos |
+
+Los tonos de texto sobre fondo oscuro (`--ph-ink-lead`, `--ph-ink-body`,
+`--ph-ink-meta`) están en `global.css`; las superficies (`--ph-surface`,
+`--ph-solid`) y el oro de los botones (`--ph-accent`), en `tokens.css`.
 
 **Regla de oro**: el acento dorado aparece en máximo un elemento por bloque visual. Si todo brilla, nada brilla.
 
@@ -617,12 +620,13 @@ fuente de reserva (`docs/hallazgos-abiertos.md`).
 
 ### Escala tipográfica
 
-| Elemento | Font |
+| Elemento | Clase |
 |---|---|
-| Hero claim principal | display, `font-black tracking-tightest` |
-| Título de sección | display, `font-bold tracking-tighter` |
-| Body | body |
-| Label en mayúsculas | clase `.ph-label` |
+| Titular de cabecera (Talentos, Servicios, Sobre nosotros) | `.ph-head-title`, con su entradilla `.ph-head-lead` (`global.css`) |
+| Titular de sección | `.ph-h2`; la palabra destacada va en `<em>`, en oro (`ph-ui.css`) |
+| Texto corrido | `.ph-body` (`ph-ui.css`) |
+
+Sin rótulos en mayúsculas encima de los titulares (2026-10-02).
 
 ### Espaciado de secciones
 
@@ -637,8 +641,6 @@ Usar siempre `.ph-section` o las variables CSS. No hardcodear valores de secció
 
 | Clase | Descripción |
 |---|---|
-| `.ph-label` | Label en mayúsculas con tracking ancho, color dorado |
-| `.ph-divider` | Línea decorativa dorada de 2.5rem × 2px |
 | `.ph-accent` | Texto en color dorado |
 | `.ph-section` | Contenedor de sección con padding responsivo y max-width |
 | `.skip-link` | Enlace de accesibilidad "saltar al contenido" |
@@ -647,7 +649,7 @@ Usar siempre `.ph-section` o las variables CSS. No hardcodear valores de secció
 
 Desde el 2026-10-02, **rectángulo con una esquina sutil: 6 px en todo**
 (decisión de Mario; del 2026-10-01 al 02 fueron de 8 a 28 px, y antes de Mochi
-6–8 px). Tokens en `src/styles/mochi-phsport.css`, todos a 6 px. Se mantienen
+6–8 px). Tokens en `src/styles/tokens.css`, todos a 6 px. Se mantienen
 los nombres por tamaño por si vuelven a separarse:
 
 | Token CSS | Uso |
@@ -667,7 +669,7 @@ botón.
 - **Fondo**: siempre `ph-black`. Sin blancos de fondo.
 - **Espaciado**: generoso. El negro es parte del diseño.
 - **Movimiento**: solo como respuesta a lo que hace la persona, con muelles de
-  rebote mínimo y las curvas de Mochi. Nada entra al cargar ni al hacer scroll
+  rebote mínimo y las curvas de `tokens.css`. Nada entra al cargar ni al hacer scroll
   («Sistema de diseño y movimiento»).
 - **Tarjetas solo en lo que se toca** (2026-10-02): acordeones, pestañas,
   desplegables y tarjetas de jugador. Lo que solo se lee (Filosofía, Presencia,
@@ -681,7 +683,7 @@ botón.
 - **Sin filo, con sombra** (2026-10-02): lo que flota es un recuadro de color,
   «como la ventanilla de una puerta sin marco» (Mario), con profundidad.
   - Tarjetas, paneles, desplegables, botones y la cápsula del menú llevan un tono
-    un punto más claro que el fondo (`--mochi-surface` `#1a1d22`, `--mochi-solid`
+    un punto más claro que el fondo (`--ph-surface` `#1a1d22`, `--ph-solid`
     `#21252b`) y una sombra en dos capas: una corta y densa y otra larga y difusa.
     Sobre un fondo casi negro una sombra suave sola no se ve: es el tono del
     recuadro el que lo despega.
@@ -778,9 +780,7 @@ que ejecutar nada a mano.
 | `AboutSection.astro` | ✅ Completo | Cabecera, Filosofía en filas (Now. Next. Forever Football.), equipo en tabla sin numerar (21 integrantes) y Presencia como lista con Madrid de encabezado |
 | `ServicesSection.astro` | ✅ Completo | Cabecera, áreas de gestión en acordeón, modelo operativo con cinco pilares (texto y hueco de foto, alternando lados) y manifiesto. Los huecos (`pillarArt`) se ven vacíos hasta que lleguen las fotos |
 | `TalentsSection.astro` | ✅ Completo | Buscador (en móvil, icono que se despliega), desplegables Ver y Orden (`.ph-select`) y grid 3:4 no clicable con escudos de selección siempre visibles |
-| `Button.astro` | ⚠️ Sin uso | Nadie lo importa. Los botones son `LinkButton` de Mochi (2026-10-01) |
-| `SectionHeader.astro` | ✅ Completo | |
-| `LanguageSwitcher.astro` | ✅ Completo | Integrado en Header |
+| `Button.astro` | ✅ Completo | Botón-enlace (`surface`/`accent`, tres altos, flecha opcional). Sustituye al `LinkButton` de Mochi (2026-10-02) |
 | `FooterSocialIcon.astro` | ✅ Completo | |
 
 ### Páginas
@@ -826,8 +826,8 @@ que ejecutar nada a mano.
 - **Slug del jugador**: se deriva del nombre con `slugify(name)`. Este mismo slug nombra la foto en `src/assets/images/players/{slug}.{jpg,jpeg,png,webp}`.
 - **Foto por jugador**: cualquier jugador sin foto coincidente recibe el placeholder SVG automáticamente.
 - **Ocultar un talento**: `"hidden": true` en `jugadores.json`. `getAllRosterEntries()` lo filtra en build.
-- **Movimiento**: con las curvas y tiempos de Mochi, solo como respuesta a lo que hace la persona. Lo interactivo compartido va en `src/scripts/ph-motion.ts` («Sistema de diseño y movimiento»). No hay GSAP desde el 2026-10-01.
-- **Sin islands de React**: Mochi se dibuja en el servidor, sin `client:`. El JS de cliente va en `<script>` de componentes `.astro` o en `src/scripts/`.
+- **Movimiento**: con las curvas y tiempos de `tokens.css` (heredados de Mochi), solo como respuesta a lo que hace la persona. Lo interactivo compartido va en `src/scripts/ph-motion.ts` («Sistema de diseño y movimiento»). No hay GSAP desde el 2026-10-01.
+- **Sin React**: el JS de cliente va en `<script>` de componentes `.astro` o en `src/scripts/`.
 - **Datos de dominio en `lib/`**: `playerDetail`, `teamMembers`, `servicesItems`, etc. son la fuente de verdad. Las páginas y secciones los consumen.
 
 Ver `DECISIONS.md` para el histórico completo de decisiones no obvias.

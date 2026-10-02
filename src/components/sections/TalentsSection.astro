@@ -240,8 +240,8 @@ const selects = [
      sale del flujo al abrirse. */
   .talents__controls > .talents__select:first-of-type { margin-left: auto; }
 
-  /* Buscador: campo de Mochi. El filo es una sombra interior para que, al enfocar,
-     pase de 1 px gris a 2 px dorado con el mismo muelle (como `TextField`). */
+  /* Buscador: el filo es una sombra interior para que, al enfocar, pase de 1 px gris
+     a 2 px dorado con el mismo muelle (como el `TextField` de Mochi). */
   .talents__search {
     position: relative;
     flex: 1 1 280px;
@@ -259,14 +259,14 @@ const selects = [
     box-shadow: inset 0 0 0 0 transparent;
     cursor: text;
     transition:
-      box-shadow var(--mochi-duration-snappy) var(--mochi-ease-snappy),
-      background-color var(--mochi-duration-color) var(--mochi-ease-color);
+      box-shadow var(--ph-duration-snappy) var(--ph-ease-snappy),
+      background-color var(--ph-duration-color) var(--ph-ease-color);
   }
   @media (hover: hover) {
     .talents__search:hover { background: rgba(255, 255, 255, 0.09); }
   }
   .talents__search:focus-within {
-    box-shadow: inset 0 0 0 2px var(--mochi-focus-ring);
+    box-shadow: inset 0 0 0 2px var(--ph-focus-ring);
   }
   .talents__search-icon {
     width: 18px;
@@ -312,9 +312,9 @@ const selects = [
     color: var(--ph-ink-meta);
     cursor: pointer;
     transition:
-      background-color var(--mochi-duration-color) var(--mochi-ease-color),
-      color var(--mochi-duration-color) var(--mochi-ease-color),
-      transform var(--mochi-duration-snappy) var(--mochi-ease-snappy);
+      background-color var(--ph-duration-color) var(--ph-ease-color),
+      color var(--ph-duration-color) var(--ph-ease-color),
+      transform var(--ph-duration-snappy) var(--ph-ease-snappy);
   }
   .talents__search-btn .ph-ico { width: 16px; height: 16px; }
   @media (hover: hover) {
@@ -322,12 +322,12 @@ const selects = [
   }
   .talents__search-btn:active {
     transform: scale(0.965);
-    transition-duration: var(--mochi-duration-press);
-    transition-timing-function: var(--mochi-ease-press);
+    transition-duration: var(--ph-duration-press);
+    transition-timing-function: var(--ph-ease-press);
   }
-  .talents__search-btn:focus-visible { outline: 2px solid var(--mochi-focus-ring); outline-offset: 1px; }
+  .talents__search-btn:focus-visible { outline: 2px solid var(--ph-focus-ring); outline-offset: 1px; }
   /* La X de limpiar aparece al escribir: entra con desenfoque corto. */
-  .talents__search-clear { animation: talentsBtnIn var(--mochi-duration-snappy) var(--mochi-ease-snappy) both; }
+  .talents__search-clear { animation: talentsBtnIn var(--ph-duration-snappy) var(--ph-ease-snappy) both; }
   /* «Cerrar» solo existe en el buscador desplegado de móvil. */
   .talents__search-close { display: none; }
 
@@ -361,9 +361,9 @@ const selects = [
          ver solo su primer cuadro, y desde ahí se anima. */
       clip-path: inset(0 calc(100% - 44px) 0 0 round var(--ph-r-btn));
       transition:
-        clip-path var(--mochi-duration-morph) var(--mochi-ease-morph),
-        box-shadow var(--mochi-duration-snappy) var(--mochi-ease-snappy),
-        background-color var(--mochi-duration-color) var(--mochi-ease-color);
+        clip-path var(--ph-duration-morph) var(--ph-ease-morph),
+        box-shadow var(--ph-duration-snappy) var(--ph-ease-snappy),
+        background-color var(--ph-duration-color) var(--ph-ease-color);
     }
     .talents__search .talents__search-input,
     .talents__search .talents__search-btn {
@@ -382,7 +382,7 @@ const selects = [
       gap: 10px;
       justify-content: flex-start;
       cursor: text;
-      background: var(--mochi-solid);
+      background: var(--ph-solid);
     }
     .talents__search.is-open { clip-path: inset(0 0 0 0 round var(--ph-r-btn)); }
     .talents__search.is-open .talents__search-input,
@@ -392,11 +392,11 @@ const selects = [
 
     .talents__search.is-open .talents__search-input,
     .talents__search.is-open .talents__search-close {
-      animation: talentsSearchIn var(--mochi-duration-fade-in) var(--mochi-ease-fade-in) 60ms both;
+      animation: talentsSearchIn var(--ph-duration-fade-in) var(--ph-ease-fade-in) 60ms both;
     }
     .talents__search.is-closing .talents__search-input,
     .talents__search.is-closing .talents__search-btn {
-      animation: talentsSearchOut var(--mochi-duration-fade-out) var(--mochi-ease-fade-out) both;
+      animation: talentsSearchOut var(--ph-duration-fade-out) var(--ph-ease-fade-out) both;
     }
   }
 
@@ -442,7 +442,7 @@ const selects = [
     -webkit-backdrop-filter: var(--ph-panel-blur);
     backdrop-filter: var(--ph-panel-blur);
     border-radius: var(--ph-r-lg);
-    box-shadow: var(--mochi-shadow-surface);
+    box-shadow: var(--ph-sh-surface);
   }
   .talents__empty-text {
     margin: 0;
@@ -451,7 +451,7 @@ const selects = [
     line-height: 1.6;
     color: var(--ph-ink-body);
   }
-  /* Botón en tono «solid» de Mochi: se aclara y su sombra crece al pasar el ratón;
+  /* Botón en tono «solid» (`--ph-solid`): se aclara y su sombra crece al pasar el ratón;
      se hunde al pulsar. */
   .talents__reset {
     all: unset;
@@ -461,26 +461,26 @@ const selects = [
     height: 44px;
     padding: 0 18px;
     border-radius: var(--ph-r-btn);
-    background: var(--mochi-solid);
+    background: var(--ph-solid);
     color: var(--color-ph-white);
-    box-shadow: var(--mochi-shadow-surface);
+    box-shadow: var(--ph-sh-surface);
     font: 500 15px/1 var(--font-display);
     letter-spacing: -0.005em;
     cursor: pointer;
     transition:
-      transform var(--mochi-duration-snappy) var(--mochi-ease-snappy),
-      background-color var(--mochi-duration-color) var(--mochi-ease-color),
-      box-shadow var(--mochi-duration-morph) var(--mochi-ease-morph);
+      transform var(--ph-duration-snappy) var(--ph-ease-snappy),
+      background-color var(--ph-duration-color) var(--ph-ease-color),
+      box-shadow var(--ph-duration-morph) var(--ph-ease-morph);
   }
   @media (hover: hover) {
     .talents__reset:hover { background: #292d34; box-shadow: var(--ph-sh-raise); }
   }
   .talents__reset:active {
     transform: scale(0.965);
-    transition-duration: var(--mochi-duration-press);
-    transition-timing-function: var(--mochi-ease-press);
+    transition-duration: var(--ph-duration-press);
+    transition-timing-function: var(--ph-ease-press);
   }
-  .talents__reset:focus-visible { outline: 2px solid var(--mochi-focus-ring); outline-offset: 3px; }
+  .talents__reset:focus-visible { outline: 2px solid var(--ph-focus-ring); outline-offset: 3px; }
 
   /* «Reducir movimiento»: todo salta a su estado final. */
   @media (prefers-reduced-motion: reduce) {
@@ -522,10 +522,10 @@ const selects = [
     return window.matchMedia('(max-width: 720px)').matches;
   }
 
-  /** Duración del muelle «morph» de Mochi en ms (0 con «reducir movimiento»). */
+  /** Duración del muelle «morph» en ms (0 con «reducir movimiento»). */
   function morphMs(): number {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return 0;
-    const v = getComputedStyle(document.documentElement).getPropertyValue('--mochi-duration-morph');
+    const v = getComputedStyle(document.documentElement).getPropertyValue('--ph-duration-morph');
     return parseFloat(v) || 0;
   }
 

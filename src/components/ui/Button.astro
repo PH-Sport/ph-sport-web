@@ -1,111 +1,86 @@
 ---
-type BaseProps = {
-  href?: string;
-  variant?: 'primary' | 'secondary';
-  class?: string;
-  type?: 'button' | 'submit' | 'reset';
-};
+/**
+ * Botón-enlace de PHSPORT: lleva a otra página, al correo o a una sección. Es un
+ * enlace de verdad (se abre en otra pestaña, se copia, funciona sin JavaScript).
+ *
+ * Sustituye al `LinkButton` de Mochi desde el 2026-10-02 con el mismo aspecto y
+ * movimiento: recuadro opaco sin filo y con sombra, que al pasar el ratón se aclara
+ * y su sombra crece, la flecha avanza 3 px, y al pulsar se encoge un poco con el
+ * muelle «press». Por qué ya no es de Mochi: DECISIONS.md (2026-10-02).
+ */
+import type { HTMLAttributes } from 'astro/types';
 
-type Props = BaseProps &
-  (
-    | astroHTML.JSX.AnchorHTMLAttributes
-    | astroHTML.JSX.ButtonHTMLAttributes
-  );
+interface Props extends HTMLAttributes<'a'> {
+  href: string;
+  /** `surface`: recuadro gris oscuro. `accent`: dorado, para la acción principal. */
+  variant?: 'surface' | 'accent';
+  /** Alto: 36 px (`sm`), 44 px (`md`) o 56 px (`lg`). */
+  size?: 'sm' | 'md' | 'lg';
+  /** Flecha a la derecha del texto, para los enlaces que llevan a otra página. */
+  arrow?: boolean;
+}
 
-const {
-  href,
-  variant = 'primary',
-  class: className = '',
-  type = 'button',
-  ...rest
-} = Astro.props;
+const { href, variant = 'surface', size = 'md', arrow = false, class: className, ...rest } = Astro.props;
 ---
 
-{href ? (
-  <a href={href} class:list={['btn', `btn--${variant}`, className]} {...rest}>
-    <span class="btn-label"><slot /></span>
-  </a>
-) : (
-  <button type={type} class:list={['btn', `btn--${variant}`, className]} {...rest}>
-    <span class="btn-label"><slot /></span>
-  </button>
-)}
+<a href={href} class:list={['ph-btn', className]} data-variant={variant} data-size={size} {...rest}>
+  <span class="ph-btn__label">
+    <slot />
+    {arrow && (
+      <svg class="ph-btn__arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.92" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+    )}
+  </span>
+</a>
 
 <style>
-  .btn {
+  .ph-btn {
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.875rem 2rem;
-    font-family: var(--font-display);
-    font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    justify-content: center;
+    height: 44px;
+    margin: 0;
+    padding: 0 20px;
+    border: 0;
+    border-radius: var(--ph-r-btn);
     overflow: hidden;
-    border: 1px solid;
-    border-radius: var(--radius-sm);
+    isolation: isolate;
+    /* Pesos de Mochi. Söhne no tiene 500 ni 520 (pinta 400 y 600), pero no se
+       redondean: las letras acentuadas salen de Helvetica (la Söhne servida no las
+       trae, docs/hallazgos-abiertos.md), y Helvetica sí tiene 500. */
+    font: 500 15px/20px var(--ph-font-sans);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    text-decoration: none;
+    vertical-align: middle;
     cursor: pointer;
-    touch-action: manipulation;
+    transform-origin: 50% 50%;
     -webkit-tap-highlight-color: transparent;
     transition:
-      border-color var(--ph-duration) var(--ease-ph),
-      color var(--ph-duration) var(--ease-ph);
+      transform var(--ph-duration-snappy) var(--ph-ease-snappy),
+      box-shadow var(--ph-duration-morph) var(--ph-ease-morph),
+      background-color var(--ph-duration-color) var(--ph-ease-color);
   }
+  .ph-btn[data-size='sm'] { height: 36px; padding: 0 16px; border-radius: var(--ph-r-btn-sm); font: 520 13px/16px var(--ph-font-sans); }
+  .ph-btn[data-size='lg'] { height: 56px; padding: 0 26px; border-radius: var(--ph-r-btn-lg); font: 520 17px/22px var(--ph-font-sans); }
 
-  .btn::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform var(--ph-duration) var(--ease-ph);
-    pointer-events: none;
-  }
+  .ph-btn[data-variant='surface'] { background: var(--ph-surface); color: var(--ph-on-surface); box-shadow: var(--ph-sh-surface); }
+  .ph-btn[data-variant='accent'] { background: var(--ph-accent); color: var(--ph-on-accent); box-shadow: var(--ph-sh-accent); }
 
-  @media (hover: hover) {
-    .btn:hover::before {
-      transform: scaleX(1);
-    }
+  .ph-btn:active {
+    transform: scale(0.965);
+    transition-duration: var(--ph-duration-press);
+    transition-timing-function: var(--ph-ease-press);
   }
+  .ph-btn:focus-visible { outline: 2px solid var(--ph-focus-ring); outline-offset: 3px; }
 
-  .btn-label {
-    position: relative;
-    z-index: 1;
-    transition: color var(--ph-duration) var(--ease-ph);
-  }
-
-  /* Primary — gold fill slide-in */
-  .btn--primary {
-    border-color: var(--color-ph-gold);
-    color: var(--color-ph-gold);
-  }
-
-  .btn--primary::before {
-    background: var(--color-ph-gold);
-  }
+  .ph-btn__label { display: inline-flex; align-items: center; gap: 8px; }
 
   @media (hover: hover) {
-    .btn--primary:hover {
-      color: var(--color-ph-black);
-    }
-  }
-
-  /* Secondary — ghost, subtle fill */
-  .btn--secondary {
-    border-color: var(--color-ph-white-20);
-    color: var(--color-ph-white-60);
-  }
-
-  .btn--secondary::before {
-    background: var(--color-ph-white-10);
-  }
-
-  @media (hover: hover) {
-    .btn--secondary:hover {
-      border-color: var(--color-ph-white-60);
-      color: var(--color-ph-white);
-    }
+    /* Al pasar el ratón, el recuadro se aclara y su sombra crece. */
+    .ph-btn[data-variant='surface']:hover { background: var(--ph-solid); box-shadow: var(--ph-sh-raise); }
+    .ph-btn[data-variant='accent']:hover { background: var(--ph-accent-strong); box-shadow: var(--ph-sh-accent-raise); }
+    .ph-btn__arrow { transition: transform var(--ph-duration-snappy) var(--ph-ease-snappy); }
+    .ph-btn:hover .ph-btn__arrow { transform: translateX(3px); }
   }
 </style>

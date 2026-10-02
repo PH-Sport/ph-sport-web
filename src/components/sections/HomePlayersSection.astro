@@ -1,6 +1,6 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
-import { LinkButton, ArrowRightIcon } from 'mochi-ui';
+import Button from '@/components/ui/Button.astro';
 
 interface Props {
   lang: Lang;
@@ -24,10 +24,7 @@ const listHref = localizePath('/talentos/', lang);
       <p class="ph-head-lead">{t('home.players.lead')}</p>
     </div>
     <div class="home-players__actions">
-      <LinkButton href={listHref} variant="surface">
-        {t('home.players.cta')}
-        <ArrowRightIcon slot="icon" />
-      </LinkButton>
+      <Button href={listHref} arrow>{t('home.players.cta')}</Button>
     </div>
   </div>
 </section>

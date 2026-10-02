@@ -1,6 +1,6 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
-import { LinkButton, ArrowRightIcon } from 'mochi-ui';
+import Button from '@/components/ui/Button.astro';
 
 interface Props {
   lang: Lang;
@@ -25,10 +25,7 @@ const countriesValue = Number(t('home.about.stats.countries.value'));
 
     <div class="home-about__body">
       <p class="ph-body">{t('home.about.body')}</p>
-      <LinkButton href={aboutHref} variant="surface">
-        {t('home.about.cta')}
-        <ArrowRightIcon slot="icon" />
-      </LinkButton>
+      <Button href={aboutHref} arrow>{t('home.about.cta')}</Button>
     </div>
 
     {/* Las dos cifras como una sola línea de texto, no como dos cajas de

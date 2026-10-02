@@ -40,6 +40,9 @@ const isActive = (href: string): boolean => {
           <polygon points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" />
           <polygon points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" />
         </svg>
+        {/* Destello al señalar el logo: una luz recortada con la forma del logo
+            (máscara con /logo.svg) que lo cruza en su diagonal. */}
+        <span class="header-logo__glint" aria-hidden="true"></span>
       </a>
 
       <nav class="header-nav hidden md:block" aria-label={t('nav.aria.main')}>
@@ -53,7 +56,12 @@ const isActive = (href: string): boolean => {
                   data-astro-prefetch="load"
                   class:list={['nav-link', isActive(item.href) && 'is-active']}
                 >
-                  {item.label}
+                  {/* La palabra va dos veces para rodar al señalarla; la copia no
+                      la leen los lectores de pantalla. */}
+                  <span class="nav-link__roll">
+                    <span class="nav-link__text">{item.label}</span>
+                    <span class="nav-link__text" aria-hidden="true">{item.label}</span>
+                  </span>
                 </a>
               </li>
             ))}
@@ -147,8 +155,7 @@ const isActive = (href: string): boolean => {
                 isActive(item.href) && 'mobile-link--active',
               ]}
             >
-              <span class="mobile-link-num">{String(i + 1).padStart(2, '0')}</span>
-              {item.label}
+              <span class="mobile-link__label">{item.label}</span>
             </a>
           </li>
         ))}
@@ -244,8 +251,36 @@ const isActive = (href: string): boolean => {
     }
   }
 
-  .header-logo:hover {
-    color: var(--color-ph-gold-muted);
+  .header-logo {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .header-logo__glint {
+    position: absolute;
+    inset: 0;
+    -webkit-mask: url('/logo.svg') center / contain no-repeat;
+    mask: url('/logo.svg') center / contain no-repeat;
+    background: linear-gradient(45deg, transparent 38%, rgba(255, 246, 222, 0.95) 50%, transparent 62%) no-repeat;
+    background-size: 320% 100%;
+    background-position: 100% 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .header-logo:hover .header-logo__glint {
+      animation: ph-logo-glint 900ms var(--ph-ease-std) both;
+    }
+  }
+
+  @keyframes ph-logo-glint {
+    from { opacity: 1; background-position: 100% 0; }
+    to { opacity: 1; background-position: 0 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header-logo:hover .header-logo__glint { animation: none; }
   }
 
   /* ── Desktop nav ── */
@@ -267,6 +302,7 @@ const isActive = (href: string): boolean => {
   }
 
   .nav-link {
+    display: inline-flex;
     font-family: var(--font-display);
     font-size: 0.875rem;
     font-weight: 500;
@@ -274,12 +310,33 @@ const isActive = (href: string): boolean => {
     color: var(--color-ph-white-60);
     position: relative;
     padding-block: 0.25rem;
-    transition: color var(--ph-duration) var(--ease-ph);
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
   }
 
   .nav-link:hover,
   .nav-link.is-active {
     color: var(--color-ph-white);
+  }
+
+  /* Al señalar un enlace, la palabra rueda en su ranura: sale por arriba y la
+     misma vuelve a entrar por abajo. Respuesta en 320 ms, sin mover nada más. */
+  .nav-link__roll {
+    display: grid;
+    overflow: hidden;
+  }
+  .nav-link__text {
+    grid-area: 1 / 1;
+    transition: transform var(--ph-dur-move) var(--ph-ease-out);
+  }
+  .nav-link__text + .nav-link__text {
+    transform: translateY(110%);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .nav-link:hover .nav-link__text:first-child { transform: translateY(-110%); }
+    .nav-link:hover .nav-link__text + .nav-link__text { transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-link__text { transition: none; }
   }
 
   .header-nav-list-wrap {
@@ -306,8 +363,11 @@ const isActive = (href: string): boolean => {
     view-transition-name: ph-nav-indicator;
   }
 
+  /* Misma curva de llegada que el resto del movimiento (`--ph-ease-out`), sin
+     rebote: la marca no rebota. Escrita aquí y abajo en literal porque el grupo de
+     View Transition no hereda `var()`. */
   .nav-indicator.is-animated {
-    transition: transform 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -630,48 +690,52 @@ const isActive = (href: string): boolean => {
     }
   }
 
-  /* ── Mobile menu: base opaca + glass; overlay con opacity (visibility retardada al cerrar para permitir transición) ── */
+  /* ── Menú móvil: una paleta del marcador ──
+     El panel cae desde la bisagra de arriba (gira hasta quedar vertical, como una
+     paleta) y los enlaces entran detrás, cada uno con su línea dibujándose, en el
+     orden en que se leen. Sin números delante: repetían el orden del menú y no
+     decían nada más. Al cerrar, todo se va más rápido de lo que llegó: el panel
+     empieza a plegarse mientras salen las palabras. El JS solo pone y quita clases
+     (`is-open`, `mobile-menu--closing`). */
   .mobile-menu {
-    --menu-anim-duration: 420ms;
-    --menu-nav-stagger-step: 0.04s;
-    --menu-nav-li-duration: 0.38s;
+    --menu-in: 420ms;
+    --menu-out: 240ms;
     position: fixed;
     inset: 0;
     z-index: 100;
     isolation: isolate;
     min-height: 100vh;
     min-height: 100dvh;
-    background:
-      linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 32%),
-      rgba(255, 255, 255, 0.03),
-      var(--color-ph-black);
-    backdrop-filter: var(--ph-glass-backdrop);
-    -webkit-backdrop-filter: var(--ph-glass-backdrop);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.08),
-      0 24px 80px rgba(0, 0, 0, 0.45);
+    background: var(--color-ph-black);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+    transform-origin: 50% 0;
+    transform: perspective(1400px) rotateX(48deg);
     transition:
-      opacity 280ms var(--ease-ph),
-      visibility 0s linear 280ms;
-  }
-
-  @supports not (backdrop-filter: blur(1px)) {
-    .mobile-menu {
-      background: var(--color-ph-black);
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-    }
+      opacity var(--menu-out) var(--ph-ease-in),
+      transform var(--menu-out) var(--ph-ease-in),
+      visibility 0s linear var(--menu-out);
   }
 
   .mobile-menu.is-open {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+    transform: perspective(1400px) rotateX(0deg);
     transition:
-      opacity var(--menu-anim-duration) var(--ease-ph),
+      opacity 180ms var(--ph-ease-std),
+      transform var(--menu-in) var(--ph-ease-out),
+      visibility 0s linear 0s;
+  }
+
+  /* Cerrando: el panel se pliega ya, sin esperar a que el JS quite `is-open`. */
+  .mobile-menu.is-open.mobile-menu--closing {
+    opacity: 0;
+    transform: perspective(1400px) rotateX(48deg);
+    transition:
+      opacity var(--menu-out) var(--ph-ease-in) 90ms,
+      transform var(--menu-out) var(--ph-ease-in) 90ms,
       visibility 0s linear 0s;
   }
 
@@ -684,7 +748,6 @@ const isActive = (href: string): boolean => {
   }
 
   .mobile-menu-inner {
-    --menu-inner-duration: calc(var(--menu-anim-duration) + 40ms);
     position: relative;
     z-index: 1;
     pointer-events: none;
@@ -699,26 +762,11 @@ const isActive = (href: string): boolean => {
     padding-inline:
       calc(var(--ph-section-px) + env(safe-area-inset-left))
       calc(var(--ph-section-px) + env(safe-area-inset-right));
-    /* padding-top explícito para poder interpolarlo al cerrar (evita el salto al quitar .is-open) */
-    padding-top: 1.25rem;
+    padding-top: calc(var(--mobile-menu-chrome-offset, 64px) + 1.25rem);
     padding-bottom: calc(3rem + env(safe-area-inset-bottom));
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    opacity: 0;
-    transform: translateY(1rem);
-    transition:
-      opacity var(--menu-inner-duration) var(--ease-ph),
-      transform var(--menu-inner-duration) var(--ease-ph),
-      padding-top var(--menu-inner-duration) var(--ease-ph);
-  }
-
-  .mobile-menu.is-open .mobile-menu-inner {
-    opacity: 1;
-    transform: translateY(0);
-    transition-delay: 0.04s;
-    /* Contenido por debajo del header fijo (medido en JS → --mobile-menu-chrome-offset) */
-    padding-top: calc(var(--mobile-menu-chrome-offset, 0px) + 0.75rem);
   }
 
   .mobile-menu-inner nav,
@@ -726,93 +774,109 @@ const isActive = (href: string): boolean => {
     pointer-events: auto;
   }
 
-  /* Enlaces: entrada escalonada al abrir; cierre escalonado inverso con .mobile-menu--closing */
-  .mobile-menu .mobile-nav-list li {
+  .mobile-nav-list {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+  }
+
+  /* Cada enlace es una fila del tablero, con su línea arriba que se dibuja al
+     abrir, en cascada (`--row`). */
+  .mobile-nav-list li {
+    --row: 0;
+    position: relative;
+  }
+  .mobile-nav-list li:nth-child(2) { --row: 1; }
+  .mobile-nav-list li:nth-child(3) { --row: 2; }
+  .mobile-nav-list li:nth-child(4) { --row: 3; }
+  .mobile-nav-list li:nth-child(5) { --row: 4; }
+
+  .mobile-nav-list li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.14);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 160ms var(--ph-ease-in);
+  }
+
+  .mobile-menu.is-open .mobile-nav-list li::before {
+    transform: scaleX(1);
+    transition: transform 560ms var(--ph-ease-out) calc(120ms + var(--row) * 60ms);
+  }
+
+  .mobile-link__label {
+    display: inline-block;
     opacity: 0;
-    transform: translateX(-0.75rem);
+    transform: translateY(0.45em);
     transition:
-      opacity var(--menu-nav-li-duration) var(--ease-ph),
-      transform var(--menu-nav-li-duration) var(--ease-ph);
+      opacity 140ms var(--ph-ease-in),
+      transform 140ms var(--ph-ease-in);
   }
 
-  .mobile-menu.is-open .mobile-nav-list li {
+  .mobile-menu.is-open .mobile-link__label {
     opacity: 1;
-    transform: translateX(0);
+    transform: none;
+    transition:
+      opacity 420ms var(--ph-ease-out) calc(160ms + var(--row) * 60ms),
+      transform 520ms var(--ph-ease-out) calc(160ms + var(--row) * 60ms);
   }
 
-  .mobile-menu.is-open .mobile-nav-list li:nth-child(1) {
-    transition-delay: 0.1s;
-  }
-  .mobile-menu.is-open .mobile-nav-list li:nth-child(2) {
-    transition-delay: 0.15s;
-  }
-  .mobile-menu.is-open .mobile-nav-list li:nth-child(3) {
-    transition-delay: 0.2s;
-  }
-  .mobile-menu.is-open .mobile-nav-list li:nth-child(4) {
-    transition-delay: 0.25s;
-  }
-  .mobile-menu.is-open .mobile-nav-list li:nth-child(5) {
-    transition-delay: 0.3s;
-  }
-
-  @media (max-width: 767px) {
-    .mobile-menu.is-open .mobile-nav-list li:nth-child(1) {
-      transition-delay: 0.04s;
-    }
-    .mobile-menu.is-open .mobile-nav-list li:nth-child(2) {
-      transition-delay: 0.08s;
-    }
-    .mobile-menu.is-open .mobile-nav-list li:nth-child(3) {
-      transition-delay: 0.12s;
-    }
-    .mobile-menu.is-open .mobile-nav-list li:nth-child(4) {
-      transition-delay: 0.16s;
-    }
-    .mobile-menu.is-open .mobile-nav-list li:nth-child(5) {
-      transition-delay: 0.2s;
-    }
-  }
-
-  /* Cierre inverso (5→1), mantiene .is-open hasta que JS quite ambas clases */
-  .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li {
+  .mobile-menu.is-open.mobile-menu--closing .mobile-link__label {
     opacity: 0;
-    transform: translateX(-0.75rem);
-    transition-duration: 0.2s;
+    transform: translateY(-0.3em);
+    transition:
+      opacity 140ms var(--ph-ease-in),
+      transform 140ms var(--ph-ease-in);
   }
 
-  .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li:nth-child(5) {
-    transition-delay: 0s;
+  .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li::before {
+    transform: scaleX(0);
+    transition: transform 200ms var(--ph-ease-in);
   }
 
-  .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li:nth-child(4) {
-    transition-delay: var(--menu-nav-stagger-step);
+  .mobile-menu .ph-divider {
+    opacity: 0;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition:
+      opacity 140ms var(--ph-ease-in),
+      transform 140ms var(--ph-ease-in);
   }
 
-  .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li:nth-child(3) {
-    transition-delay: calc(2 * var(--menu-nav-stagger-step));
+  .mobile-menu.is-open .ph-divider {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 300ms var(--ph-ease-out) 380ms,
+      transform 560ms var(--ph-ease-out) 380ms;
   }
 
-  .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li:nth-child(2) {
-    transition-delay: calc(3 * var(--menu-nav-stagger-step));
-  }
-
-  .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li:nth-child(1) {
-    transition-delay: calc(4 * var(--menu-nav-stagger-step));
-  }
-
-  .mobile-menu.is-open.mobile-menu--closing .ph-divider {
+  .mobile-menu .lang-list--mobile {
     opacity: 0;
     transform: translateY(0.35rem);
-    transition-delay: 0.14s;
-    transition-duration: 0.2s;
+    transition:
+      opacity 140ms var(--ph-ease-in),
+      transform 140ms var(--ph-ease-in);
   }
 
+  .mobile-menu.is-open .lang-list--mobile {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity 360ms var(--ph-ease-out) 420ms,
+      transform 460ms var(--ph-ease-out) 420ms;
+  }
+
+  .mobile-menu.is-open.mobile-menu--closing .ph-divider,
   .mobile-menu.is-open.mobile-menu--closing .lang-list--mobile {
     opacity: 0;
-    transform: translateY(0.35rem);
-    transition-delay: 0.18s;
-    transition-duration: 0.2s;
+    transition-delay: 0s;
+    transition-duration: 140ms;
   }
 
   .mobile-menu.mobile-menu--closing .mobile-menu-backdrop {
@@ -824,81 +888,38 @@ const isActive = (href: string): boolean => {
     pointer-events: none;
   }
 
-  .mobile-menu .ph-divider {
-    opacity: 0;
-    transform: translateY(0.35rem);
-    transition:
-      opacity 0.35s var(--ease-ph),
-      transform 0.35s var(--ease-ph);
-  }
-
-  .mobile-menu.is-open .ph-divider {
-    opacity: 1;
-    transform: translateY(0);
-    transition-delay: 0.34s;
-  }
-
-  .mobile-menu .lang-list--mobile {
-    opacity: 0;
-    transform: translateY(0.35rem);
-    transition:
-      opacity 0.38s var(--ease-ph),
-      transform 0.38s var(--ease-ph);
-  }
-
-  .mobile-menu.is-open .lang-list--mobile {
-    opacity: 1;
-    transform: translateY(0);
-    transition-delay: 0.38s;
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .mobile-menu {
-      --menu-anim-duration: 1ms;
-      transition: none;
-    }
-
-    .mobile-menu.is-open {
-      transition: none;
-    }
-
-    .mobile-menu-inner,
-    .mobile-menu.is-open .mobile-menu-inner,
-    .mobile-menu .mobile-nav-list li,
-    .mobile-menu.is-open .mobile-nav-list li,
-    .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li,
-    .mobile-menu .ph-divider,
-    .mobile-menu.is-open .ph-divider,
-    .mobile-menu.is-open.mobile-menu--closing .ph-divider,
-    .mobile-menu .lang-list--mobile,
-    .mobile-menu.is-open .lang-list--mobile,
-    .mobile-menu.is-open.mobile-menu--closing .lang-list--mobile {
-      opacity: 1;
+    .mobile-menu,
+    .mobile-menu.is-open,
+    .mobile-menu.is-open.mobile-menu--closing {
       transform: none;
       transition: none;
-      transition-delay: 0s !important;
     }
-  }
 
-  .mobile-nav-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    list-style: none;
-    padding-top: 0.25rem;
+    .mobile-menu .mobile-link__label,
+    .mobile-menu .mobile-nav-list li::before,
+    .mobile-menu .ph-divider,
+    .mobile-menu .lang-list--mobile {
+      opacity: 1;
+      transform: none;
+      transition: none !important;
+    }
   }
 
   /* ── Mobile nav links ── */
   .mobile-link {
     display: flex;
-    align-items: baseline;
-    gap: 0.75rem;
+    align-items: center;
+    gap: 1rem;
+    padding-block: 1.05rem;
     font-family: var(--font-display);
-    font-size: 1.75rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-size: clamp(2rem, 9vw, 2.5rem);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 1;
     color: var(--color-ph-white-60);
-    transition: color var(--ph-duration) var(--ease-ph);
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
+    -webkit-tap-highlight-color: transparent;
   }
 
   .mobile-link:hover,
@@ -907,23 +928,14 @@ const isActive = (href: string): boolean => {
   }
 
   .mobile-link:active {
-    color: var(--color-ph-white);
-    opacity: 0.88;
-    transition-duration: 120ms;
+    color: var(--color-ph-gold);
+    transition-duration: var(--ph-dur-tap);
   }
 
   .lang-switch--mobile:active {
     border-color: var(--color-ph-white-20);
     background-color: var(--color-ph-white-10);
     transition-duration: 120ms;
-  }
-
-  .mobile-link-num {
-    font-size: 0.6875rem;
-    font-weight: 400;
-    color: var(--color-ph-gold);
-    letter-spacing: 0;
-    min-width: 1.5rem;
   }
 
   @media (min-width: 768px) {
@@ -950,7 +962,7 @@ const isActive = (href: string): boolean => {
      de .nav-indicator.is-animated. */
   ::view-transition-group(ph-nav-indicator) {
     animation-duration: 0.4s;
-    animation-timing-function: cubic-bezier(0.34, 1.2, 0.64, 1);
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   /* Sin movimiento: la barrita aparece directamente en su sitio, sin slide. */
@@ -996,6 +1008,10 @@ const isActive = (href: string): boolean => {
   // de la primera página que se cargó, así que todo lo que depende del idioma o
   // de la página se reescribe aquí en cada navegación.
   import { NAV_ITEMS } from '@/lib/navigation';
+  // El núcleo de movimiento (sin GSAP) se carga con la cabecera, que está en
+  // todas las páginas: vigila lo que entra en pantalla y arranca la luz entre
+  // páginas (src/scripts/ph-motion.ts).
+  import '@/scripts/ph-motion';
   import {
     useTranslations,
     getLangFromUrl,
@@ -1022,7 +1038,9 @@ const isActive = (href: string): boolean => {
     desktopLinks.forEach((link, i) => {
       const href = navHrefs[i] ?? link.href;
       link.href = href;
-      link.textContent = navLabels[i] ?? link.textContent;
+      const label = navLabels[i];
+      // La palabra va dos veces (la segunda, para rodar al señalarla).
+      if (label) link.querySelectorAll('.nav-link__text').forEach((el) => { el.textContent = label; });
       link.classList.toggle('is-active', norm(href) === currentPath);
     });
 
@@ -1034,11 +1052,9 @@ const isActive = (href: string): boolean => {
         const label = navLabels[i];
         if (href) link.href = href;
         link.classList.toggle('mobile-link--active', norm(href ?? '') === currentPath);
-        // Preservar el span numerador y actualizar solo el texto del label
         if (label) {
-          const numSpan = link.querySelector('.mobile-link-num');
-          link.textContent = label;
-          if (numSpan) link.prepend(numSpan);
+          const labelEl = link.querySelector('.mobile-link__label');
+          if (labelEl) labelEl.textContent = label;
         }
       });
 
@@ -1231,8 +1247,9 @@ const isActive = (href: string): boolean => {
     }
   }
 
-  /** (n-1)*40ms + 200ms por ítem; divider/lang hasta ~380ms + margen */
-  const MENU_CLOSE_TOTAL_MS = 420;
+  /** Lo que tarda en irse: las palabras (140 ms) y el panel, que empieza a
+   *  plegarse a los 90 ms y tarda 240 ms. */
+  const MENU_CLOSE_TOTAL_MS = 340;
 
   let mobileMenuCloseTimer: ReturnType<typeof setTimeout> | null = null;
 

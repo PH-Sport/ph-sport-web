@@ -1,7 +1,21 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { CustomEase } from 'gsap/CustomEase';
+import { watchInView, glint } from './ph-motion';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, CustomEase);
+
+// ── Curvas del lenguaje «Marcador» ────────────────────────────────────────────
+// Las mismas que `--ph-ease-*` de global.css, con el mismo nombre, para que lo
+// que mueve GSAP y lo que mueve CSS frenen igual. Ver ph-motion.ts.
+CustomEase.create('ph-out', '0.16, 1, 0.3, 1');
+CustomEase.create('ph-emph', '0.05, 0.7, 0.1, 1');
+CustomEase.create('ph-std', '0.2, 0, 0, 1');
+CustomEase.create('ph-in', '0.3, 0, 0.8, 0.15');
+
+export const EASE = { out: 'ph-out', emph: 'ph-emph', std: 'ph-std', in: 'ph-in' } as const;
+/** Segundos (los mismos que `--ph-dur-*`). */
+export const DUR = { tap: 0.12, state: 0.2, move: 0.32, draw: 0.64, roll: 0.76 } as const;
 
 // ── Config global de ScrollTrigger ────────────────────────────────────────────
 // ignoreMobileResize: en móvil, mostrar/ocultar la barra de direcciones del
@@ -115,28 +129,6 @@ export function afterTransitionPaint(cb: () => void): void {
   }
 }
 
-// ── Reveal Tier 2 (fade + slide) ──────────────────────────────────────────────
-// Reveal simple y robusto para cabeceras secundarias. Reemplaza el patrón
-// wrapWords + gsap.from(yPercent) + scrollTrigger artesanal de cada sección.
-// Si el elemento ya está en viewport al llamarse, anima INMEDIATO: un scrollTrigger
-// `once` cuyo `start` no se alcanza al cargar dejaría el contenido invisible (el bug
-// que arreglamos en Servicios). Si está below-the-fold, scroll-reveal normal.
-export function revealOnView(
-  el: HTMLElement,
-  opts: { y?: number; duration?: number; delay?: number; ease?: string } = {},
-): gsap.core.Tween {
-  const { y = 20, duration = 0.85, delay = 0, ease = 'power3.out' } = opts;
-  const inView = el.getBoundingClientRect().top < window.innerHeight;
-  return gsap.from(el, {
-    opacity: 0,
-    y,
-    duration,
-    ease,
-    delay: inView ? delay : 0,
-    scrollTrigger: inView ? undefined : { trigger: el, start: 'top 85%', once: true },
-  });
-}
-
 // ── FOUC guard (reveal) ───────────────────────────────────────────────────────
 // El contenido con animación de entrada arranca oculto vía CSS
 // (`html.ph-anim [data-reveal] { visibility: hidden }`, fijado antes del primer
@@ -213,105 +205,8 @@ export function wrapWords(el: HTMLElement): HTMLElement[] {
   return Array.from(el.querySelectorAll<HTMLElement>('.ph-clip-inner'));
 }
 
-/**
- * Wraps each word in a plain inline-block span for blur/opacity reveal.
- */
-export function splitWords(el: HTMLElement): HTMLElement[] {
-  const text = el.textContent?.trim() ?? '';
-  el.innerHTML = text
-    .split(/\s+/)
-    .map((w) => `<span style="display:inline-block">${w}</span>`)
-    .join(' ');
-  return Array.from(el.querySelectorAll<HTMLElement>('span'));
-}
-
-// ── Character scramble ────────────────────────────────────────────────────────
-const SCRAMBLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-const activeScrambles: Array<(time: number, deltaTime: number) => void> = [];
-
 // ── Magnetic hover disposers ──────────────────────────────────────────────────
 const magneticDisposers: Array<() => void> = [];
-
-/**
- * Animates el.textContent through random chars before resolving to the real text.
- * Uses GSAP ticker for reliable frame-rate synchronization.
- */
-export function scrambleReveal(el: HTMLElement, delay = 0): void {
-  const finalText = el.textContent ?? '';
-  const len = finalText.length;
-  const DURATION = 1.3;
-  let elapsed = -delay;
-  let visible = false;
-
-  gsap.set(el, { opacity: 0 });
-
-  const tick = (_time: number, deltaTime: number) => {
-    elapsed += deltaTime / 1000;
-    if (elapsed < 0) return;
-    if (!visible) {
-      gsap.set(el, { opacity: 1 });
-      visible = true;
-    }
-
-    const progress = Math.min(elapsed / DURATION, 1);
-    const settled = Math.floor(progress * len * 1.1);
-
-    let result = '';
-    for (let i = 0; i < len; i++) {
-      if (finalText[i] === ' ' || finalText[i] === '.') {
-        result += finalText[i];
-      } else if (i < settled) {
-        result += finalText[i];
-      } else {
-        result += SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
-      }
-    }
-    el.textContent = result;
-
-    if (progress >= 1 || !document.contains(el)) {
-      el.textContent = finalText;
-      gsap.ticker.remove(tick);
-      const idx = activeScrambles.indexOf(tick);
-      if (idx > -1) activeScrambles.splice(idx, 1);
-    }
-  };
-
-  activeScrambles.push(tick);
-  gsap.ticker.add(tick);
-}
-
-// ── Tracking (letter-spacing) compression ────────────────────────────────────
-export function trackingReveal(
-  el: HTMLElement,
-  scrollTrigger?: ScrollTrigger.Vars,
-): gsap.core.Tween {
-  return gsap.from(el, {
-    letterSpacing: '0.3em',
-    opacity: 0,
-    duration: 0.9,
-    ease: 'expo.out',
-    scrollTrigger,
-  });
-}
-
-// ── Number counter ────────────────────────────────────────────────────────────
-export function counterReveal(
-  el: HTMLElement,
-  target: number,
-  scrollTrigger?: ScrollTrigger.Vars,
-): gsap.core.Tween {
-  const obj = { val: 0 };
-  el.textContent = '00';
-  return gsap.to(obj, {
-    val: target,
-    duration: 0.8,
-    ease: 'power3.out',
-    onUpdate() {
-      el.textContent = String(Math.round(obj.val)).padStart(2, '0');
-    },
-    scrollTrigger,
-  });
-}
 
 // ── Magnetic hover ────────────────────────────────────────────────────────────
 /**
@@ -371,6 +266,92 @@ export function clipPathReveal(
   );
 }
 
+// ── «Marcador»: titulares que ruedan y cabeceras de bloque ───────────────────
+// El vocabulario sin GSAP (paletas, líneas, destello, la luz entre páginas) vive
+// en ph-motion.ts; aquí, lo que necesita GSAP.
+
+/** ¿Está ya en pantalla (o casi)? Lo que lo está anima ya; lo demás, al llegar. */
+function nearView(el: Element): boolean {
+  return el.getBoundingClientRect().top < window.innerHeight * 0.92;
+}
+
+/**
+ * Titular que entra rodando: cada palabra sube por su ranura y frena. Si ya está
+ * en pantalla, arranca ya (un ScrollTrigger `once` cuyo inicio no se alcanza lo
+ * dejaría invisible); si no, al llegar al 85 % de la pantalla.
+ */
+export function rollIn(
+  el: HTMLElement,
+  opts: { delay?: number; stagger?: number; duration?: number; trigger?: Element } = {},
+): gsap.core.Tween {
+  const { delay = 0, stagger = 0.055, duration = DUR.roll } = opts;
+  const words = wrapWords(el);
+  el.style.visibility = 'visible';
+  const trigger = opts.trigger ?? el;
+  const now = nearView(trigger);
+  return gsap.from(words, {
+    yPercent: 112,
+    duration,
+    ease: EASE.out,
+    stagger,
+    delay: now ? delay : 0,
+    scrollTrigger: now ? undefined : { trigger, start: 'top 85%', once: true },
+  });
+}
+
+/** Sube y aparece (texto corrido, piezas sueltas), con el mismo disparo. */
+export function riseIn(
+  els: HTMLElement | ArrayLike<HTMLElement>,
+  opts: { delay?: number; stagger?: number; y?: number; trigger?: Element } = {},
+): gsap.core.Tween | null {
+  const list = els instanceof HTMLElement ? [els] : Array.from(els);
+  if (!list.length) return null;
+  const { delay = 0, stagger = 0.07, y = 14 } = opts;
+  const trigger = opts.trigger ?? list[0];
+  const now = nearView(trigger);
+  return gsap.from(list, {
+    opacity: 0,
+    y,
+    duration: 0.7,
+    ease: EASE.out,
+    stagger,
+    delay: now ? delay : 0,
+    scrollTrigger: now ? undefined : { trigger, start: 'top 85%', once: true },
+  });
+}
+
+/**
+ * La coreografía común de una cabecera de bloque, marcada en el HTML con
+ * `data-m`: `title` rueda, `lead` sube después y `item` cierra la cascada. La
+ * pizarra (`Slate.astro`) se dibuja sola al entrar en pantalla. Escalonado a
+ * propósito: la jerarquía se lee en el orden en que llega. Con `glint`, la
+ * palabra dorada del titular (`em` o `[data-glint]`) recibe la luz al terminar.
+ */
+export function stage(block: HTMLElement, opts: { delay?: number; glint?: boolean } = {}): void {
+  const title = block.querySelector<HTMLElement>('[data-m="title"]');
+  const leads = block.querySelectorAll<HTMLElement>('[data-m="lead"]');
+  const items = block.querySelectorAll<HTMLElement>('[data-m="item"]');
+  const delay = opts.delay ?? 0;
+  if (title) {
+    const tween = rollIn(title, { delay: delay + 0.08 });
+    if (opts.glint) {
+      const accent = title.querySelector<HTMLElement>('[data-glint], em');
+      if (accent) tween.eventCallback('onComplete', () => glint(accent));
+    }
+  }
+  riseIn(leads, { delay: delay + 0.24, trigger: title ?? undefined });
+  riseIn(items, { delay: delay + 0.36, stagger: 0.06, y: 10, trigger: title ?? undefined });
+}
+
+/** Cierre del montaje de una sección: vigilar lo que entra en pantalla, destapar
+ *  `data-reveal` (los estados iniciales de GSAP ya están puestos) y pedir el
+ *  refresh coalescido de ScrollTrigger. */
+export function mountSection(root: HTMLElement): void {
+  watchInView(root);
+  revealReveals(root);
+  scheduleScrollTriggerRefresh();
+}
+
 // ── Cleanup on View Transitions swap ─────────────────────────────────────────
 document.addEventListener('astro:before-swap', (e) => {
   // Marca que la próxima carga es una navegación SPA (hay telón que enmascara el
@@ -378,8 +359,6 @@ document.addEventListener('astro:before-swap', (e) => {
   // en true para el resto de navegaciones; una recarga completa resetea el módulo.
   navInProgress = true;
 
-  activeScrambles.forEach((t) => gsap.ticker.remove(t));
-  activeScrambles.length = 0;
   magneticDisposers.forEach((d) => d());
   magneticDisposers.length = 0;
   ScrollTrigger.getAll().forEach((t) => t.kill());

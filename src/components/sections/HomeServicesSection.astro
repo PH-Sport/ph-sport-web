@@ -1,5 +1,8 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
+import Slate from '@/components/ui/Slate.astro';
+import Flap from '@/components/ui/Flap.astro';
+import Key from '@/components/ui/Key.astro';
 
 interface Props {
   lang: Lang;
@@ -77,21 +80,23 @@ const actionPlanSub = [
 const servicesHref = localizePath('/servicios/', lang);
 ---
 
+{/* El tablero de servicios: cada área es una fila del marcador, con su número
+    en paletas y la línea que la separa dibujándose al entrar, en cascada. */}
 <section class="home-services" id="servicios" aria-labelledby="home-services-title">
+  <Slate text={t('home.services.eyebrow')} />
   <header class="home-services__head">
-    <span class="home-services__eyebrow">{t('home.services.eyebrow')}</span>
-    <h2 class="home-services__title" id="home-services-title">
+    <h2 class="home-services__title" id="home-services-title" data-m="title" data-reveal>
       {t('home.services.title')}
     </h2>
-    <p class="home-services__lead">{t('home.services.lead')}</p>
+    <p class="home-services__lead" data-m="lead" data-reveal>{t('home.services.lead')}</p>
   </header>
 
-  <ol class="home-services__list" role="list">
+  <ol class="home-services__list" role="list" data-board>
     {areas.map((item, idx) => (
-      <li class="home-services__item">
+      <li class="home-services__item ph-seam" data-inview>
         <details class="home-services__row" name="home-services">
           <summary class="home-services__summary">
-            <span class="home-services__num">{String(idx + 1).padStart(2, '0')}</span>
+            <Flap value={String(idx + 1).padStart(2, '0')} size="md" class="home-services__num" />
             <span class="home-services__name">{item.title}</span>
             <span class="home-services__plus" aria-hidden="true">
               <span></span><span></span>
@@ -106,7 +111,7 @@ const servicesHref = localizePath('/servicios/', lang);
       </li>
     ))}
 
-    <li class="home-services__item home-services__item--featured">
+    <li class="home-services__item home-services__item--featured" data-inview>
       <details class="home-services__row home-services__row--plan" name="home-services">
         <summary class="home-services__summary">
           <span class="home-services__num home-services__num--rombo" aria-hidden="true"></span>
@@ -139,10 +144,7 @@ const servicesHref = localizePath('/servicios/', lang);
   </ol>
 
   <div class="home-services__cta-wrap">
-    <a class="home-services__cta" href={servicesHref}>
-      {t('home.services.cta')}
-      <span class="home-services__arrow" aria-hidden="true">→</span>
-    </a>
+    <Key href={servicesHref} label={t('home.services.cta')} tone="gold" />
   </div>
 </section>
 
@@ -153,66 +155,80 @@ const servicesHref = localizePath('/servicios/', lang);
     color: var(--color-ph-white, #ffffff);
   }
 
-  .home-services__head { max-width: 720px; margin-bottom: clamp(32px, 5vw, 56px); }
-
-  .home-services__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-services__eyebrow::before {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-  }
+  .home-services__head { max-width: 860px; margin: clamp(28px, 4vw, 48px) 0 clamp(32px, 5vw, 56px); }
 
   .home-services__title {
     font-family: var(--font-display, 'Inter Tight', sans-serif);
     font-weight: 500;
-    font-size: clamp(32px, 5vw, 60px);
-    letter-spacing: -0.03em;
-    line-height: 1.02;
-    margin: 14px 0 0;
+    font-size: clamp(40px, 10.5vw, 80px);
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    margin: 0;
+    text-wrap: balance;
   }
 
   .home-services__lead {
-    margin: 18px 0 0;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 15px;
-    line-height: 1.6;
-    max-width: 520px;
+    margin: clamp(18px, 2vw, 24px) 0 0;
+    color: var(--ph-ink-lead);
+    font-family: var(--font-display);
+    font-size: var(--ph-head-lead-size);
+    line-height: 1.45;
+    max-width: 38ch;
+    text-wrap: balance;
   }
 
   .home-services__list {
     list-style: none;
     padding: 0;
     margin: clamp(32px, 5vw, 56px) 0 0;
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
   }
 
-  .home-services__item { border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12)); }
+  /* Cada fila entra detrás de su línea: primero se dibuja la costura (retardo en
+     `--ph-seam-delay`, en cascada desde el script) y la fila sube por debajo. */
+  .home-services__item > .home-services__row {
+    transition:
+      opacity 520ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 120ms),
+      transform 640ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 120ms);
+  }
+  :global(html.ph-anim) .home-services__item:not(.is-inview) > .home-services__row {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  /* La última área cierra el tablero con su propia línea, que se dibuja detrás
+     de la de arriba. El plan de acción va aparte, como anexo, sin línea. */
+  .home-services__list > .home-services__item:nth-last-child(2)::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.14);
+    transform-origin: 0 50%;
+    transition: transform var(--ph-dur-draw) var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 90ms);
+  }
+  :global(html.ph-anim) .home-services__list > .home-services__item:nth-last-child(2):not(.is-inview)::after {
+    transform: scaleX(0);
+  }
+  :global(html.ph-anim:not(.ph-motion)) .home-services__list > .home-services__item:nth-last-child(2)::after {
+    animation: ph-motion-failsafe 0s linear 2.5s forwards;
+  }
 
   /* Plan de Acción como anexo: alineado con los 01-05 pero sin número de
      secuencia. Un rombo dorado y la micro-eyebrow ("Además de") le dan
      carácter sin convertirlo en el sexto ítem de la lista. */
   .home-services__item--featured {
     margin-top: clamp(12px, 2vw, 24px);
-    border-bottom: none;
   }
   /* Rombo hueco dorado como marcador del anexo. La columna del grid en
-     .home-services__summary es fija (20px) para todas las filas, así que el
-     slot tiene el mismo ancho que "01..05" y los títulos alinean. */
+     .home-services__summary es fija (52px) para todas las filas, así que el
+     slot tiene el mismo ancho que las paletas «01..05» y los títulos alinean. */
   .home-services__num--rombo {
     position: relative;
     display: inline-block;
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
+    margin-left: 4px;
     font-size: 0;
   }
   .home-services__num--rombo::before {
@@ -233,10 +249,9 @@ const servicesHref = localizePath('/servicios/', lang);
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    font-family: var(--font-body);
+    font-size: 13px;
+    letter-spacing: 0.01em;
     color: var(--color-ph-gold, #d6b25e);
     white-space: nowrap;
   }
@@ -254,27 +269,34 @@ const servicesHref = localizePath('/servicios/', lang);
 
   .home-services__summary {
     display: grid;
-    grid-template-columns: 20px 1fr auto;
+    grid-template-columns: 52px 1fr auto;
     align-items: center;
-    gap: clamp(16px, 2.5vw, 32px);
-    padding: clamp(20px, 3vw, 32px) 0;
-    transition: color 0.3s;
+    gap: clamp(12px, 2.5vw, 32px);
+    padding: clamp(20px, 3vw, 30px) 0;
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
     color: var(--color-ph-white, #ffffff);
+    -webkit-tap-highlight-color: transparent;
   }
-  .home-services__row:hover .home-services__summary { color: var(--color-ph-gold, #d6b25e); }
   .home-services__row[open] .home-services__summary { color: var(--color-ph-gold, #d6b25e); }
+  /* El nombre se adelanta un paso al señalar la fila: la fila responde, no solo
+     cambia de color. */
+  .home-services__name {
+    transition: transform var(--ph-dur-move) var(--ph-ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .home-services__row:hover .home-services__summary { color: var(--color-ph-gold, #d6b25e); }
+    .home-services__row:hover .home-services__name { transform: translateX(8px); }
+  }
+  .home-services__summary:active .home-services__name {
+    transform: translateX(4px);
+    transition-duration: var(--ph-dur-tap);
+  }
 
   .home-services__row > summary:focus-visible {
     outline: 2px solid var(--color-ph-gold, #d6b25e);
     outline-offset: 4px;
   }
 
-  .home-services__num {
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    color: var(--color-ph-gold, #d6b25e);
-  }
 
   .home-services__name {
     font-family: var(--font-display, 'Inter Tight', sans-serif);
@@ -298,7 +320,7 @@ const servicesHref = localizePath('/servicios/', lang);
     height: 1px;
     background: currentColor;
     transform: translateY(-50%);
-    transition: transform 0.3s;
+    transition: transform var(--ph-dur-move) var(--ph-ease-out);
   }
   .home-services__plus span:last-child {
     transform: translateY(-50%) rotate(90deg);
@@ -309,6 +331,7 @@ const servicesHref = localizePath('/servicios/', lang);
 
   @media (prefers-reduced-motion: reduce) {
     .home-services__summary,
+    .home-services__name,
     .home-services__plus span { transition: none; }
   }
 
@@ -325,16 +348,20 @@ const servicesHref = localizePath('/servicios/', lang);
     padding: 0 0 clamp(20px, 3vw, 32px);
     max-width: 640px;
   }
+  .home-services__body-inner {
+    padding-left: calc(52px + clamp(12px, 2.5vw, 32px));
+  }
   .home-services__body-inner p {
     margin: 0;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 15px;
+    color: var(--ph-ink-body);
+    font-size: 16px;
     line-height: 1.6;
   }
 
   /* Plan de Acción: el body se extiende a todo el ancho para albergar el grid. */
   .home-services__body-inner--plan {
     max-width: none;
+    padding-left: 0;
   }
 
   .home-services__plan-grid {
@@ -358,20 +385,21 @@ const servicesHref = localizePath('/servicios/', lang);
     }
   }
 
+  /* Las sub-áreas del plan como paneles del tablero: la cara de arriba un punto
+     más clara, como las paletas. */
   .home-services__plan-card {
     padding: 18px 18px 16px;
-    border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    border-radius: var(--radius-sm);
-    background: rgba(13, 15, 18, 0.4);
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 70%);
   }
 
   .home-services__plan-card-title {
-    margin: 0 0 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
+    margin: 0 0 12px;
+    font-family: var(--font-display);
+    font-size: 17px;
     font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    letter-spacing: -0.005em;
     color: var(--color-ph-gold, #d6b25e);
   }
 
@@ -386,7 +414,7 @@ const servicesHref = localizePath('/servicios/', lang);
   .home-services__plan-card-bullets li {
     position: relative;
     padding-left: 14px;
-    color: var(--color-ph-ink-soft, #b5b7bb);
+    color: var(--ph-ink-body);
     font-size: 14px;
     line-height: 1.5;
   }
@@ -401,34 +429,16 @@ const servicesHref = localizePath('/servicios/', lang);
   }
 
   .home-services__cta-wrap {
-    margin-top: clamp(32px, 5vw, 56px);
+    margin-top: clamp(36px, 5vw, 56px);
     display: flex;
-    justify-content: center;
   }
-
-  .home-services__cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 20px;
-    background: var(--color-ph-gold, #d6b25e);
-    color: var(--color-ph-black, #0d0f12);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 13px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: background 0.2s;
-  }
-  .home-services__cta:hover { background: var(--color-ph-gold-soft, #e6c682); }
-  .home-services__cta:hover .home-services__arrow { transform: translateX(4px); }
-  .home-services__arrow { transition: transform 0.2s; }
 
   @media (max-width: 720px) {
-    .home-services__summary { gap: 14px; }
+    .home-services__summary { gap: 14px; grid-template-columns: 46px 1fr auto; }
     .home-services__name { font-size: 20px; }
+    .home-services__body-inner { padding-left: 0; }
     .home-services__plan-card { padding: 16px 16px 14px; }
-    .home-services__plan-card-bullets li { font-size: 13.5px; }
+    .home-services__plan-card-bullets li { font-size: 14px; }
   }
 </style>
 
@@ -436,51 +446,22 @@ const servicesHref = localizePath('/servicios/', lang);
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, revealOnView, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
+    reducedMotion, stage, mountSection, afterTransitionPaint, EASE,
   } from '@/scripts/ph-text-animations';
+  import { cascade } from '@/scripts/ph-motion';
 
   gsap.registerPlugin(ScrollTrigger);
 
   function initHomeServicesAnimations(): void {
     const section = document.querySelector<HTMLElement>('.home-services');
     if (!section) return;
-    if (reducedMotion()) return;
-
-    const eyebrow = section.querySelector<HTMLElement>('.home-services__eyebrow');
-    const title = section.querySelector<HTMLElement>('.home-services__title');
-    const lead = section.querySelector<HTMLElement>('.home-services__lead');
-    const head = section.querySelector<HTMLElement>('.home-services__head');
-    const list = section.querySelector<HTMLElement>('.home-services__list');
-    const rows = section.querySelectorAll<HTMLElement>('.home-services__row');
-
-    if (eyebrow && head) {
-      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
+    if (!reducedMotion()) {
+      stage(section);
+      // Las filas del tablero, en cascada: cada línea se dibuja 70 ms después de
+      // la anterior y su fila sube detrás.
+      cascade(section.querySelectorAll<HTMLElement>('.home-services__item'), 70);
     }
-    if (title) {
-      revealOnView(title, { y: 24, duration: 0.9 });
-    }
-    if (lead && head) {
-      gsap.from(lead, {
-        opacity: 0,
-        y: 18,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.2,
-        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
-      });
-    }
-    if (rows.length && list) {
-      gsap.from(rows, {
-        opacity: 0,
-        y: 12,
-        duration: 0.7,
-        ease: 'power3.out',
-        stagger: 0.06,
-        scrollTrigger: { trigger: list, start: 'top 82%', once: true },
-      });
-    }
-
-    scheduleScrollTriggerRefresh();
+    mountSection(section);
   }
 
   function initHomeServicesAccordion(): void {
@@ -488,8 +469,10 @@ const servicesHref = localizePath('/servicios/', lang);
     const details = document.querySelectorAll<HTMLDetailsElement>('.home-services__row');
     if (!details.length) return;
 
-    const DURATION = 0.5;
-    const EASE = 'power3.out';
+    // Abrir tarda más que cerrar: lo que llega se presenta, lo que se va no se
+    // hace esperar.
+    const OPEN_S = 0.5;
+    const CLOSE_S = 0.32;
     const active = new WeakMap<HTMLElement, gsap.core.Tween>();
 
     const animateClose = (d: HTMLDetailsElement): void => {
@@ -502,8 +485,8 @@ const servicesHref = localizePath('/servicios/', lang);
       const tween = gsap.to(body, {
         height: 0,
         opacity: 0,
-        duration: DURATION,
-        ease: EASE,
+        duration: CLOSE_S,
+        ease: EASE.std,
         onComplete: () => {
           d.removeAttribute('open');
           body.style.height = '';
@@ -526,8 +509,8 @@ const servicesHref = localizePath('/servicios/', lang);
       const tween = gsap.to(body, {
         height: target,
         opacity: 1,
-        duration: DURATION,
-        ease: EASE,
+        duration: OPEN_S,
+        ease: EASE.out,
         onComplete: () => {
           body.style.height = '';
           body.style.opacity = '';
@@ -535,6 +518,11 @@ const servicesHref = localizePath('/servicios/', lang);
         },
       });
       active.set(body, tween);
+      // El plan se despliega como un tablero: sus paneles entran uno tras otro.
+      const cards = inner.querySelectorAll<HTMLElement>('.home-services__plan-card');
+      if (cards.length) {
+        gsap.from(cards, { opacity: 0, y: 12, duration: 0.5, ease: EASE.out, stagger: 0.05, delay: 0.08, clearProps: 'opacity,transform' });
+      }
     };
 
     details.forEach((d) => {

@@ -1,0 +1,36 @@
+---
+/**
+ * Pizarra de bloque: la fila índice que abre cada sección («02 · Talentos»). Una
+ * línea que se dibuja al entrar en pantalla, el número en paletas del marcador y
+ * el nombre; a la derecha, un dato opcional («05 disciplinas · 01 equipo»), con
+ * sus cifras también en paletas. Estilos en global.css (`.ph-rowline`).
+ *
+ * El texto llega tal cual de las traducciones. Si empieza por un número seguido
+ * de « · », ese número va a las paletas; si no, el texto entero es la etiqueta.
+ */
+import Flap from './Flap.astro';
+import FlapText from './FlapText.astro';
+
+interface Props {
+  text: string;
+  meta?: string;
+  as?: 'p' | 'div';
+  id?: string;
+  class?: string;
+}
+
+const { text, meta, as: Tag = 'p', id, class: className } = Astro.props;
+const [first, ...rest] = text.split(' · ');
+const hasNumber = rest.length > 0 && /^\d+$/.test(first.trim());
+const num = hasNumber ? first.trim() : null;
+const label = hasNumber ? rest.join(' · ') : text;
+---
+
+<Tag class:list={['ph-rowline', 'ph-slate', className]} id={id} data-inview>
+  <span class="ph-rowline__group">
+    {num && <Flap value={num} />}
+    {num && <span class="ph-rowline__sep" aria-hidden="true">·</span>}
+    <span class="ph-slate__label"><span class="ph-rowline__label"><FlapText text={label} /></span></span>
+  </span>
+  {meta && <span class="ph-slate__label"><span class="ph-rowline__meta"><FlapText text={meta} /></span></span>}
+</Tag>

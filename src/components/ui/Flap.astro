@@ -1,0 +1,25 @@
+---
+/**
+ * Paleta del marcador: un valor corto (cifras o un código en letras) partido en
+ * fichas que, al entrar en pantalla, caen una tras otra hasta su valor
+ * (`runFlap` en src/scripts/ph-motion.ts; estilos `.ph-flap` en global.css).
+ *
+ * El HTML ya trae el valor final, así que sin JS o con movimiento reducido se ve
+ * tal cual. Un lector de pantalla lee el valor entero, no ficha a ficha.
+ */
+interface Props {
+  value: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  /** Retardo en ms antes de empezar a caer, para encadenar varias. */
+  delay?: number;
+  /** Todo el valor en una sola paleta, que pasa por estas caras hasta llegar
+   *  (los números romanos: I, II, III…). */
+  sequence?: string[];
+  class?: string;
+}
+
+const { value, size = 'sm', delay, sequence, class: className } = Astro.props;
+const chars = sequence ? [value] : [...value];
+---
+
+<span class:list={['ph-flap', size !== 'sm' && `ph-flap--${size}`, className]} data-flap data-flap-delay={delay} data-flap-seq={sequence?.join('|')}><span class="ph-sr">{value}</span><span class="ph-flap__cells" aria-hidden="true">{chars.map((ch) => <span class="ph-flap__cell"><span class="ph-flap__char">{ch}</span></span>)}</span></span>

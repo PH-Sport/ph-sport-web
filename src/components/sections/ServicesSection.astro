@@ -1,6 +1,9 @@
 ---
 import { getServicesItems } from '@/lib/servicesItems';
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
+import Slate from '@/components/ui/Slate.astro';
+import Flap from '@/components/ui/Flap.astro';
+import FlapText from '@/components/ui/FlapText.astro';
 
 interface Props {
   lang: Lang;
@@ -10,10 +13,6 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const items = getServicesItems(lang);
-
-/** «03 · Servicios»: el número y la etiqueta van en estilos distintos en la fila índice. */
-const [eyebrowNum, ...eyebrowRest] = t('services.hero.eyebrow').split(' · ');
-const eyebrowLabel = eyebrowRest.join(' · ');
 
 const areas = [
   {
@@ -83,28 +82,19 @@ const contactHref = localizePath('/#contacto', lang);
 
   {/* 01 — Hero: misma cabecera que Talentos y Sobre nosotros (global.css). */}
   <div class="srv-hero">
-    <p class="ph-rowline srv-hero__index">
-      <span class="ph-rowline__group">
-        <span class="ph-rowline__num">{eyebrowNum}</span>
-        <span class="ph-rowline__sep" aria-hidden="true">·</span>
-        <span class="ph-rowline__label">{eyebrowLabel}</span>
-      </span>
-    </p>
-    <h1 class="srv-hero__title ph-head-title" id="srv-hero-title">
+    <Slate text={t('services.hero.eyebrow')} class="srv-hero__index" />
+    <h1 class="srv-hero__title ph-head-title" id="srv-hero-title" data-m="title" data-reveal>
       {t('services.hero.titleLead')}<br />
       {t('services.hero.titleRest')}<em>{t('services.hero.titleAccent')}</em>.
     </h1>
-    <p class="srv-hero__lead ph-head-lead">{t('services.hero.lead')}</p>
+    <p class="srv-hero__lead ph-head-lead" data-m="lead" data-reveal>{t('services.hero.lead')}</p>
   </div>
 
   {/* 02 — Áreas de gestión (accordion) */}
   <div class="srv-areas">
     <header class="srv-areas__head">
-      <div class="ph-rowline srv-areas__index" data-reveal>
-        <span class="ph-rowline__label">{t('services.areas.eyebrow')}</span>
-        <span class="ph-rowline__num">{t('services.areas.kicker')}</span>
-      </div>
-      <h2 class="srv-areas__title" data-reveal>
+      <Slate as="div" text={t('services.areas.eyebrow')} meta={t('services.areas.kicker')} class="srv-areas__index" />
+      <h2 class="srv-areas__title" data-m="title" data-reveal>
         {t('services.areas.titleLead')}<em>{t('services.areas.titleAccent1')}</em>{t('services.areas.titleMid')}<em>{t('services.areas.titleAccent2')}</em>{t('services.areas.titleTrail')}
       </h2>
     </header>
@@ -114,7 +104,7 @@ const contactHref = localizePath('/#contacto', lang);
         const panelId = `srv-area-panel-${area.key}`;
         const buttonId = `srv-area-button-${area.key}`;
         return (
-          <li class="srv-area-row">
+          <li class="srv-area-row ph-seam" data-inview>
             <button
               type="button"
               class="srv-area-row__summary"
@@ -123,7 +113,7 @@ const contactHref = localizePath('/#contacto', lang);
               aria-controls={panelId}
               data-srv-area-toggle
             >
-              <span class="srv-area-row__num srv-mono">{String(idx + 1).padStart(2, '0')}</span>
+              <Flap value={String(idx + 1).padStart(2, '0')} size="md" class="srv-area-row__num" />
               <span class="srv-area-row__title">{area.title}</span>
               <span class="srv-area-row__toggle" aria-hidden="true">
                 <span></span><span></span>
@@ -137,7 +127,7 @@ const contactHref = localizePath('/#contacto', lang);
             >
               <div class="srv-area-row__body">
                 <div class="srv-area-row__lead">
-                  <span class="srv-mono srv-area-row__leadLabel">{t('services.areas.leadLabel')}</span>
+                  <span class="srv-label srv-area-row__leadLabel">{t('services.areas.leadLabel')}</span>
                   <p>{area.lead}</p>
                 </div>
                 <ul class="srv-area-row__bullets" role="list">
@@ -152,43 +142,47 @@ const contactHref = localizePath('/#contacto', lang);
       })}
     </ol>
 
-    <div class="srv-areas__foot srv-mono">{t('services.areas.foot')}</div>
+    <div class="srv-areas__foot srv-label" data-inview><FlapText text={t('services.areas.foot')} /></div>
   </div>
 
   {/* 03 — Model intro */}
-  <div class="srv-model">
+  <div class="srv-model ph-seam" data-inview>
+    {/* El tallo baja como un trazo que se dibuja: une el tablero de áreas con los
+        pilares. */}
     <div class="srv-model__stem" aria-hidden="true"></div>
     <div class="srv-model__inner">
-      <div class="srv-model__eyebrow">
-        <span class="srv-mono">{t('services.model.eyebrow')}</span>
+      <div class="srv-model__eyebrow" data-m="item" data-reveal>
+        <span class="srv-label">{t('services.model.eyebrow')}</span>
       </div>
-      <h2 class="srv-model__title">
+      <h2 class="srv-model__title" data-m="title" data-reveal>
         {t('services.model.titleLead')}<em>{t('services.model.titleAccent')}</em>{t('services.model.titleTrail')}
       </h2>
-      <p class="srv-model__lead">{t('services.model.lead')}</p>
+      <p class="srv-model__lead" data-m="lead" data-reveal>{t('services.model.lead')}</p>
     </div>
   </div>
 
   {/* 04 — Six pillar blocks */}
   <div class="srv-pillars">
     {items.map((item, idx) => {
-      const roman = ['I', 'II', 'III', 'IV', 'V'][idx];
+      const romans = ['I', 'II', 'III', 'IV', 'V'];
+      const roman = romans[idx];
       const pillarKey = ['press', 'performance', 'media', 'familyOffice', 'psychology'][idx];
       const even = idx % 2 === 1;
       return (
-        <article class:list={['srv-block', `srv-block--${pillarKey}`, { 'srv-block--even': even }]}>
+        <article class:list={['srv-block', 'ph-seam', `srv-block--${pillarKey}`, { 'srv-block--even': even }]} data-inview>
           <div class="srv-block__text">
-            <div class="srv-block__roman">{roman}</div>
-            <h3 class="srv-block__title">{item.title}</h3>
-            <p class="srv-block__body">{item.body}</p>
+            <div class="srv-block__roman"><Flap value={roman} size="xl" sequence={romans.slice(0, idx + 1)} /></div>
+            <h3 class="srv-block__title" data-m="title" data-reveal>{item.title}</h3>
+            <p class="srv-block__body" data-m="lead" data-reveal>{item.body}</p>
             <div class="srv-block__tags">
-              {item.tags.map((tag) => (
-                <span class="srv-tag srv-mono">{tag}</span>
+              {item.tags.map((tag, i) => (
+                <span class="srv-tag srv-label" style={`--i: ${i}`}>{tag}</span>
               ))}
             </div>
           </div>
-          <div class="srv-block__img" aria-hidden="true">
-            <span class="srv-block__imgTag srv-mono">{roman} / V</span>
+          <div class="srv-block__img ph-develop" aria-hidden="true">
+            <div class="srv-block__media ph-develop__media"></div>
+            <span class="srv-block__imgTag srv-label">{roman} / V</span>
           </div>
         </article>
       );
@@ -196,11 +190,11 @@ const contactHref = localizePath('/#contacto', lang);
   </div>
 
   {/* 05 — Manifest */}
-  <div class="srv-manifest">
+  <div class="srv-manifest ph-seam" data-inview>
     <div class="srv-manifest__eyebrow">
-      <span class="srv-mono">{t('services.manifest.eyebrow')}</span>
+      <span class="srv-label"><FlapText text={t('services.manifest.eyebrow')} /></span>
     </div>
-    <p class="srv-manifest__body">
+    <p class="srv-manifest__body" data-m="title" data-reveal>
       {t('services.manifest.bodyLead')}<br />
       <em>{t('services.manifest.bodyAccent')}</em>{t('services.manifest.bodyTrail')}
     </p>
@@ -240,12 +234,13 @@ const contactHref = localizePath('/#contacto', lang);
   .srv-manifest,
   .srv-cta { position: relative; z-index: 1; }
 
-  .srv-mono {
-    font-family: var(--srv-mono);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--srv-ink-faint);
+  /* Etiquetas y datos: letra normal a 13 px, una sola escala para todas. La
+     monoespaciada queda para las cifras, que van en paletas (`Flap`). */
+  .srv-label {
+    font-family: var(--srv-sans);
+    font-size: 13px;
+    letter-spacing: 0.01em;
+    color: var(--ph-ink-meta);
   }
 
   /* ── 01 Hero ──────────────────────────────────────────── */
@@ -255,12 +250,6 @@ const contactHref = localizePath('/#contacto', lang);
      GSAP los anima. */
   .srv-hero {
     padding: var(--ph-head-top) var(--srv-edge) 0;
-  }
-  .srv-hero__title { visibility: hidden; }
-  .srv-hero__lead { visibility: hidden; }
-  @media (prefers-reduced-motion: reduce) {
-    .srv-hero__title,
-    .srv-hero__lead { visibility: visible; }
   }
   .srv-hero__title em {
     font-style: italic;
@@ -291,14 +280,43 @@ const contactHref = localizePath('/#contacto', lang);
   }
   .srv-areas__title em { font-style: italic; color: var(--srv-gold); font-weight: 400; }
 
+  /* El tablero de áreas: cada fila con su línea arriba, dibujándose en cascada al
+     entrar (retardo en `--ph-seam-delay`), y la fila subiendo detrás. La última
+     cierra con su propia línea. */
   .srv-areas__list {
     list-style: none; margin: 0; padding: 0;
-    border-top: 1px solid var(--srv-line);
   }
-  .srv-area-row { border-bottom: 1px solid var(--srv-line); }
+  .srv-area-row > .srv-area-row__summary {
+    transition:
+      color 0.3s,
+      opacity 520ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 120ms),
+      transform 640ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 120ms);
+  }
+  :global(html.ph-anim) .srv-area-row:not(.is-inview) > .srv-area-row__summary {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  .srv-area-row:last-child::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.14);
+    transform-origin: 0 50%;
+    transition: transform var(--ph-dur-draw) var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 90ms);
+  }
+  :global(html.ph-anim) .srv-area-row:last-child:not(.is-inview)::after {
+    transform: scaleX(0);
+  }
+  :global(html.ph-anim:not(.ph-motion)) .srv-area-row:last-child::after {
+    animation: ph-motion-failsafe 0s linear 2.5s forwards;
+  }
 
   .srv-area-row__summary {
     all: unset;
+    box-sizing: border-box;
     display: grid; grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: clamp(14px, calc(1.33vw + 8.8px), 28px);
@@ -306,21 +324,26 @@ const contactHref = localizePath('/#contacto', lang);
     padding: clamp(20px, calc(0.76vw + 17px), 28px) 0;
     cursor: pointer;
     color: var(--srv-ink);
-    transition: color 0.3s;
+    -webkit-tap-highlight-color: transparent;
   }
-  .srv-area-row__summary:hover,
   .srv-area-row.is-open .srv-area-row__summary { color: var(--srv-gold); }
+  .srv-area-row__title {
+    transition: transform var(--ph-dur-move) var(--ph-ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .srv-area-row__summary:hover { color: var(--srv-gold); }
+    .srv-area-row__summary:hover .srv-area-row__title { transform: translateX(8px); }
+  }
+  .srv-area-row__summary:active .srv-area-row__title {
+    transform: translateX(4px);
+    transition-duration: var(--ph-dur-tap);
+  }
   .srv-area-row__summary:focus-visible {
     outline: 2px solid var(--srv-gold);
     outline-offset: 4px;
   }
 
-  .srv-area-row__num {
-    color: var(--srv-gold);
-    font-family: var(--srv-mono);
-    font-size: 12px;
-    letter-spacing: 0.04em;
-  }
+
   .srv-area-row__title {
     font-family: var(--srv-display);
     font-weight: 500;
@@ -345,7 +368,7 @@ const contactHref = localizePath('/#contacto', lang);
     height: 1px;
     background: currentColor;
     transform: translateY(-50%);
-    transition: transform 0.3s;
+    transition: transform var(--ph-dur-move) var(--ph-ease-out);
   }
   .srv-area-row__toggle span:last-child {
     transform: translateY(-50%) rotate(90deg);
@@ -379,8 +402,8 @@ const contactHref = localizePath('/#contacto', lang);
   }
   .srv-area-row__lead p {
     margin: 0;
-    color: var(--srv-ink-soft);
-    font-size: 15px;
+    color: var(--ph-ink-body);
+    font-size: 16px;
     line-height: 1.7;
     max-width: 520px;
   }
@@ -390,8 +413,8 @@ const contactHref = localizePath('/#contacto', lang);
   }
   .srv-area-row__bullets li {
     display: flex; align-items: baseline; gap: 14px;
-    color: var(--srv-ink-soft);
-    font-size: 15px;
+    color: var(--ph-ink-body);
+    font-size: 16px;
     line-height: 1.5;
   }
   .srv-bullet-dash {
@@ -401,14 +424,21 @@ const contactHref = localizePath('/#contacto', lang);
     transform: translateY(-4px);
   }
 
+  /* Alineado a la derecha y partiéndose en dos líneas si no cabe: en italiano, a
+     360 px, una sola línea se salía por la izquierda. */
   .srv-areas__foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.4em;
     margin-top: clamp(32px, 4vw, 48px);
-    color: var(--srv-ink-faint);
-    text-align: right;
+    color: var(--ph-ink-meta);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .srv-area-row__summary,
+    .srv-area-row__title,
     .srv-area-row__toggle,
     .srv-area-row__toggle span,
     .srv-area-row__panel { transition: none !important; }
@@ -416,7 +446,6 @@ const contactHref = localizePath('/#contacto', lang);
 
   /* ── 03 Model intro ──────────────────────────────────── */
   .srv-model {
-    border-top: 1px solid var(--srv-line);
     padding: clamp(48px, 7vw, 96px) var(--srv-edge) clamp(56px, 8vw, 96px);
     text-align: center;
     position: relative;
@@ -424,8 +453,13 @@ const contactHref = localizePath('/#contacto', lang);
   .srv-model__stem {
     width: 1px;
     height: clamp(40px, 6vw, 72px);
-    background: var(--srv-line-strong);
+    background: var(--srv-gold);
     margin: 0 auto clamp(24px, 3vw, 40px);
+    transform-origin: 50% 0;
+    transition: transform 720ms var(--ph-ease-out) 200ms;
+  }
+  :global(html.ph-anim) .srv-model:not(.is-inview) .srv-model__stem {
+    transform: scaleY(0);
   }
   .srv-model__inner { max-width: 900px; margin: 0 auto; }
   .srv-model__eyebrow {
@@ -436,7 +470,7 @@ const contactHref = localizePath('/#contacto', lang);
   .srv-model__eyebrow::after {
     content: ""; width: 28px; height: 1px; background: var(--srv-gold);
   }
-  .srv-model__eyebrow .srv-mono { color: var(--srv-gold); }
+  .srv-model__eyebrow .srv-label { color: var(--srv-gold); }
   .srv-model__title {
     font-family: var(--srv-display);
     font-weight: 500;
@@ -461,9 +495,9 @@ const contactHref = localizePath('/#contacto', lang);
   .srv-block {
     display: grid; grid-template-columns: 1fr 1fr;
     min-height: clamp(420px, 58vw, 640px);
-    border-top: 1px solid var(--srv-line);
     overflow: clip;
   }
+  .srv-block::before { z-index: 2; }
   .srv-block--even { background: var(--srv-bg-2); }
 
   .srv-block__text {
@@ -471,14 +505,10 @@ const contactHref = localizePath('/#contacto', lang);
     display: flex; flex-direction: column; justify-content: center;
     gap: clamp(16px, 2vw, 24px);
   }
+  /* El número del pilar, en romanos, va en paletas del marcador. */
   .srv-block__roman {
-    font-family: var(--srv-display);
-    font-style: italic;
-    font-weight: 500;
-    color: var(--srv-gold);
-    font-size: clamp(56px, 9vw, 120px);
+    display: flex;
     line-height: 1;
-    letter-spacing: -0.03em;
   }
   .srv-block__title {
     font-family: var(--srv-display);
@@ -490,9 +520,9 @@ const contactHref = localizePath('/#contacto', lang);
     color: var(--srv-ink);
   }
   .srv-block__body {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--srv-ink-soft);
+    font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
+    line-height: 1.65;
+    color: var(--ph-ink-body);
     max-width: 480px;
     margin: 0;
   }
@@ -500,22 +530,31 @@ const contactHref = localizePath('/#contacto', lang);
     display: flex; flex-wrap: wrap; gap: 8px;
     margin-top: 4px;
   }
+  /* Las etiquetas del pilar entran una tras otra, detrás del texto. */
   .srv-tag {
     display: inline-flex; align-items: center;
-    padding: 6px 12px;
+    padding: 7px 12px;
     border: 1px solid var(--srv-line-strong);
     border-radius: var(--radius-sm);
-    color: var(--srv-ink-soft);
-    font-size: 10px;
-    letter-spacing: 0.15em;
+    color: var(--ph-ink-lead);
     background: transparent;
+    transition:
+      opacity 420ms var(--ph-ease-out) calc(520ms + var(--i, 0) * 60ms),
+      transform 520ms var(--ph-ease-out) calc(520ms + var(--i, 0) * 60ms);
+  }
+  :global(html.ph-anim) .srv-block:not(.is-inview) .srv-tag {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  /* Sin el JS de movimiento, a los 2,5 s en su sitio (global.css, «Red de
+     seguridad»). */
+  :global(html.ph-anim:not(.ph-motion)) .srv-tag {
+    animation: ph-motion-failsafe 0s linear 2.5s forwards;
   }
 
   .srv-block__img {
     position: relative;
-    background:
-      repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 10px),
-      var(--srv-bg-2);
+    background: var(--srv-bg-2);
     border-left: 1px solid var(--srv-line);
     min-height: clamp(240px, 50vw, 520px);
   }
@@ -523,43 +562,42 @@ const contactHref = localizePath('/#contacto', lang);
     order: -1;
     border-left: 0;
     border-right: 1px solid var(--srv-line);
-    background:
-      repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 10px),
-      var(--srv-bg-3);
+    background: var(--srv-bg-3);
+  }
+  /* La foto va en su propia capa para poder revelarla (sale del negro y se
+     asienta) sin mover el marco. */
+  .srv-block__media {
+    position: absolute;
+    inset: 0;
   }
   .srv-block--even .srv-block__text { order: 0; }
 
   /* Imágenes por pilar (desktop) */
-  .srv-block--press .srv-block__img,
-  .srv-block--press.srv-block--even .srv-block__img {
+  .srv-block--press .srv-block__media {
     background:
       linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
       url('/pillar-press.webp') center / cover no-repeat,
       var(--srv-bg-2);
   }
-  .srv-block--performance .srv-block__img,
-  .srv-block--performance.srv-block--even .srv-block__img {
+  .srv-block--performance .srv-block__media {
     background:
       linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
       url('/pillar-performance.webp') center / cover no-repeat,
       var(--srv-bg-2);
   }
-  .srv-block--media .srv-block__img,
-  .srv-block--media.srv-block--even .srv-block__img {
+  .srv-block--media .srv-block__media {
     background:
       linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
       url('/pillar-media.webp') center / cover no-repeat,
       var(--srv-bg-2);
   }
-  .srv-block--familyOffice .srv-block__img,
-  .srv-block--familyOffice.srv-block--even .srv-block__img {
+  .srv-block--familyOffice .srv-block__media {
     background:
       linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
       url('/pillar-family-office.webp') center / cover no-repeat,
       var(--srv-bg-2);
   }
-  .srv-block--psychology .srv-block__img,
-  .srv-block--psychology.srv-block--even .srv-block__img {
+  .srv-block--psychology .srv-block__media {
     background:
       linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
       url('/pillar-psychology.webp') center / cover no-repeat,
@@ -567,7 +605,7 @@ const contactHref = localizePath('/#contacto', lang);
   }
 
   .srv-block__imgTag {
-    position: absolute; top: 16px; left: 16px;
+    position: absolute; top: 16px; left: 16px; z-index: 2;
     background: rgba(14, 14, 14, 0.6);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
@@ -589,36 +627,31 @@ const contactHref = localizePath('/#contacto', lang);
     .srv-block--even .srv-block__text { order: 0; }
     .srv-block__text { padding: clamp(40px, 8vw, 64px) var(--srv-edge); }
 
-    .srv-block--press .srv-block__img,
-    .srv-block--press.srv-block--even .srv-block__img {
+    .srv-block--press .srv-block__media {
       background:
         linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
         url('/pillar-press-sm.webp') center / cover no-repeat,
         var(--srv-bg-2);
     }
-    .srv-block--performance .srv-block__img,
-    .srv-block--performance.srv-block--even .srv-block__img {
+    .srv-block--performance .srv-block__media {
       background:
         linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
         url('/pillar-performance-sm.webp') center / cover no-repeat,
         var(--srv-bg-2);
     }
-    .srv-block--media .srv-block__img,
-    .srv-block--media.srv-block--even .srv-block__img {
+    .srv-block--media .srv-block__media {
       background:
         linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
         url('/pillar-media-sm.webp') center / cover no-repeat,
         var(--srv-bg-2);
     }
-    .srv-block--familyOffice .srv-block__img,
-    .srv-block--familyOffice.srv-block--even .srv-block__img {
+    .srv-block--familyOffice .srv-block__media {
       background:
         linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
         url('/pillar-family-office-sm.webp') center / cover no-repeat,
         var(--srv-bg-2);
     }
-    .srv-block--psychology .srv-block__img,
-    .srv-block--psychology.srv-block--even .srv-block__img {
+    .srv-block--psychology .srv-block__media {
       background:
         linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
         url('/pillar-psychology-sm.webp') center / cover no-repeat,
@@ -637,11 +670,22 @@ const contactHref = localizePath('/#contacto', lang);
     margin-bottom: clamp(24px, 4vw, 40px);
     color: var(--srv-gold);
   }
+  .srv-manifest__eyebrow .srv-label {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.35em;
+  }
+  @media (max-width: 560px) {
+    .srv-manifest__eyebrow::before,
+    .srv-manifest__eyebrow::after { display: none; }
+  }
   .srv-manifest__eyebrow::before,
   .srv-manifest__eyebrow::after {
     content: ""; width: 28px; height: 1px; background: var(--srv-gold);
   }
-  .srv-manifest__eyebrow .srv-mono { color: var(--srv-gold); }
+  .srv-manifest__eyebrow .srv-label { color: var(--srv-gold); }
   .srv-manifest__body {
     font-family: var(--srv-display);
     font-weight: 500;
@@ -726,9 +770,12 @@ const contactHref = localizePath('/#contacto', lang);
 
 <script>
   import { gsap } from 'gsap';
+  import { EASE } from '@/scripts/ph-text-animations';
 
-  const SRV_DURATION = 0.5;
-  const SRV_EASE = 'power3.out';
+  // Abrir tarda más que cerrar: lo que llega se presenta, lo que se va no se hace
+  // esperar.
+  const SRV_OPEN_S = 0.5;
+  const SRV_CLOSE_S = 0.32;
   const srvActive = new WeakMap<HTMLElement, gsap.core.Tween>();
 
   function srvReducedMotion(): boolean {
@@ -753,8 +800,8 @@ const contactHref = localizePath('/#contacto', lang);
     const tween = gsap.to(panel, {
       height: 0,
       opacity: 0,
-      duration: SRV_DURATION,
-      ease: SRV_EASE,
+      duration: SRV_CLOSE_S,
+      ease: EASE.std,
       onComplete: () => {
         panel.style.height = '';
         panel.style.opacity = '';
@@ -782,8 +829,8 @@ const contactHref = localizePath('/#contacto', lang);
     const tween = gsap.to(panel, {
       height: target,
       opacity: 1,
-      duration: SRV_DURATION,
-      ease: SRV_EASE,
+      duration: SRV_OPEN_S,
+      ease: EASE.out,
       onComplete: () => {
         panel.style.height = '';
         panel.style.opacity = '';
@@ -791,6 +838,11 @@ const contactHref = localizePath('/#contacto', lang);
       },
     });
     srvActive.set(panel, tween);
+    // Los puntos entran uno tras otro, con su guion dibujándose.
+    const bullets = panel.querySelectorAll<HTMLElement>('.srv-area-row__bullets li');
+    if (bullets.length) {
+      gsap.from(bullets, { opacity: 0, x: -10, duration: 0.45, ease: EASE.out, stagger: 0.05, delay: 0.12, clearProps: 'opacity,transform' });
+    }
   }
 
   function initSrvAccordion(): void {
@@ -825,118 +877,49 @@ const contactHref = localizePath('/#contacto', lang);
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, wrapWords, scheduleScrollTriggerRefresh, afterTransitionPaint, revealReveals, revealOnView,
+    reducedMotion, stage, rollIn, riseIn, mountSection, afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
+  import { cascade, glint } from '@/scripts/ph-motion';
 
   gsap.registerPlugin(ScrollTrigger);
 
   function initServicesAnimations(): void {
     const section = document.querySelector<HTMLElement>('.srv');
     if (!section) return;
-    if (reducedMotion()) return;
+    if (!reducedMotion()) {
+      // La cabecera, en la primera pantalla: pizarra, titular con su luz y entradilla.
+      const hero = section.querySelector<HTMLElement>('.srv-hero');
+      if (hero) stage(hero, { glint: true });
 
-    // ── Hero block ───────────────────────────────────────
-    const heroIndex = section.querySelector<HTMLElement>('.srv-hero__index');
-    const heroTitle = section.querySelector<HTMLElement>('.srv-hero__title');
-    const heroLead = section.querySelector<HTMLElement>('.srv-hero__lead');
-
-    if (heroIndex) {
-      gsap.from(heroIndex, { opacity: 0, y: 8, duration: 0.7, ease: 'power3.out' });
-    }
-
-    if (heroTitle) {
-      // Reveal from FOUC guard so GSAP owns the first visible frame.
-      heroTitle.style.visibility = 'visible';
-      const words = wrapWords(heroTitle);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 1.0,
-        ease: 'power4.out',
-        stagger: 0.08,
-        delay: 0.1,
-      });
-    }
-    if (heroLead) {
-      heroLead.style.visibility = 'visible';
-      gsap.from(heroLead, {
-        opacity: 0,
-        y: 18,
-        duration: 0.9,
-        ease: 'power3.out',
-        delay: 0.45,
-      });
-    }
-    // ── Areas head ───────────────────────────────────────
-    // Con la cabecera compacta suele entrar ya en la primera pantalla; en pantallas
-    // bajas queda por debajo. Si ya está en pantalla al cargar, animamos INMEDIATO (un scrollTrigger
-    // `once` cuyo start no se alcanza dejaría el título invisible hasta hacer scroll);
-    // si está por debajo, scroll-reveal normal. El guard data-reveal evita el flash
-    // en ambos casos.
-    const areasHead = section.querySelector<HTMLElement>('.srv-areas__head');
-    const areasIndex = section.querySelector<HTMLElement>('.srv-areas__index');
-    const areasTitle = section.querySelector<HTMLElement>('.srv-areas__title');
-    const areasInView = !!areasHead && areasHead.getBoundingClientRect().top < window.innerHeight;
-    const areasTrigger = areasInView ? undefined : { trigger: areasHead!, start: 'top 80%', once: true };
-    if (areasIndex && areasHead) {
-      gsap.from(areasIndex, { opacity: 0, y: 8, duration: 0.7, ease: 'power3.out', scrollTrigger: areasTrigger });
-    }
-    if (areasTitle) {
-      revealOnView(areasTitle, { y: 24, duration: 0.9, delay: areasInView ? 0.1 : 0 });
-    }
-
-    // ── 6 pillar blocks ──────────────────────────────────
-    const pillars = section.querySelectorAll<HTMLElement>('.srv-block');
-    pillars.forEach((block, idx) => {
-      const img = block.querySelector<HTMLElement>('.srv-block__img');
-      if (img) {
-        gsap.fromTo(
-          img,
-          { autoAlpha: 0, scale: 1.06 },
-          {
-            autoAlpha: 1,
-            scale: 1,
-            duration: 1.0,
-            ease: 'power3.out',
-            scrollTrigger: { trigger: block, start: 'top 80%', once: true },
-          },
-        );
+      // El tablero de áreas: titular y filas en cascada.
+      const areas = section.querySelector<HTMLElement>('.srv-areas');
+      if (areas) {
+        stage(areas, { delay: 0.1 });
+        cascade(areas.querySelectorAll<HTMLElement>('.srv-area-row'), 70);
       }
-      const blockTitle = block.querySelector<HTMLElement>('.srv-block__title');
-      if (blockTitle) {
-        revealOnView(blockTitle, { y: 22, duration: 0.85 });
-      }
-      const blockBody = block.querySelector<HTMLElement>('.srv-block__body');
-      if (blockBody) {
-        gsap.from(blockBody, {
-          opacity: 0,
-          y: 18,
-          duration: 0.8,
-          ease: 'power3.out',
-          delay: 0.15,
-          scrollTrigger: { trigger: block, start: 'top 75%', once: true },
-        });
-      }
-    });
 
-    // ── Manifest ─────────────────────────────────────────
-    // Note: no .srv-manifest__accent element exists in markup; the accent is
-    // an <em> inside .srv-manifest__body. scrambleReveal is skipped.
-    // wrapWords is applied to the full body paragraph instead.
-    const manifest = section.querySelector<HTMLElement>('.srv-manifest');
-    const manifestBody = section.querySelector<HTMLElement>('.srv-manifest__body');
-    if (manifestBody && manifest) {
-      const words = wrapWords(manifestBody);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 0.9,
-        ease: 'power4.out',
-        stagger: 0.05,
-        scrollTrigger: { trigger: manifest, start: 'top 80%', once: true },
+      const model = section.querySelector<HTMLElement>('.srv-model');
+      if (model) stage(model, { glint: true });
+
+      // Cada pilar: el número cae en paletas (lo arranca el núcleo al entrar), la
+      // foto sale del negro, el título rueda y el texto sube detrás.
+      section.querySelectorAll<HTMLElement>('.srv-block').forEach((block) => {
+        const title = block.querySelector<HTMLElement>('[data-m="title"]');
+        const body = block.querySelector<HTMLElement>('[data-m="lead"]');
+        if (title) rollIn(title, { trigger: block, delay: 0.1 });
+        if (body) riseIn(body, { trigger: block, delay: 0.3 });
       });
-    }
 
-    revealReveals(section);
-    scheduleScrollTriggerRefresh();
+      // El manifiesto rueda línea a línea y su parte dorada recibe la luz.
+      const manifest = section.querySelector<HTMLElement>('.srv-manifest');
+      const manifestBody = manifest?.querySelector<HTMLElement>('[data-m="title"]');
+      if (manifest && manifestBody) {
+        const tween = rollIn(manifestBody, { trigger: manifest, stagger: 0.04 });
+        const accent = manifestBody.querySelector<HTMLElement>('em');
+        if (accent) tween.eventCallback('onComplete', () => glint(accent));
+      }
+    }
+    mountSection(section);
   }
 
   document.addEventListener('astro:page-load', () => afterTransitionPaint(initServicesAnimations));

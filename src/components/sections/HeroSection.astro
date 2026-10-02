@@ -50,11 +50,14 @@ const t = useTranslations(lang);
   </div>
 
   <div class="hero-overlay" aria-hidden="true"></div>
+  {/* Velo que oscurece el neón al bajar: la cámara entra y la portada cede el
+      paso al bloque siguiente. Lo mueve el scroll (script de abajo). */}
+  <div class="hero-veil" aria-hidden="true"></div>
 
   <div class="hero-content">
     <h1 class="hero-claim">
       <span class="hero-claim__lead">{t('hero.claim.lead')}</span>
-      <span class="hero-claim__accent">{t('hero.claim.accent')}</span>
+      <span class="hero-claim__accent" data-glint>{t('hero.claim.accent')}</span>
     </h1>
   </div>
 
@@ -82,6 +85,7 @@ const t = useTranslations(lang);
     inset: 0;
     z-index: 0;
     overflow: hidden;
+    transform-origin: 50% 50%;
   }
 
   /* Fondo bajo el póster: se ve mientras carga. */
@@ -144,6 +148,15 @@ const t = useTranslations(lang);
         rgba(13,15,18,0) 55%);
   }
 
+  .hero-veil {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: var(--color-ph-black, #0d0f12);
+    opacity: 0;
+    pointer-events: none;
+  }
+
   .hero-content {
     position: absolute;
     left: var(--ph-section-px, clamp(20px, 4vw, 48px));
@@ -153,12 +166,15 @@ const t = useTranslations(lang);
     max-width: 980px;
   }
 
+  /* El titular es el rótulo de la retransmisión: en el móvil, a casi todo el
+     ancho que deja libre la señal de scroll (tres líneas: «Now. Next.»,
+     «Forever», «Football.»); en escritorio, en dos. */
   .hero-claim {
     font-family: var(--font-display, 'Inter Tight', sans-serif);
     font-weight: 500;
-    font-size: clamp(44px, 8.5vw, 132px);
-    letter-spacing: -0.03em;
-    line-height: 0.96;
+    font-size: clamp(48px, 14.5vw, 88px);
+    letter-spacing: -0.035em;
+    line-height: 0.94;
     margin: 0;
     text-wrap: balance;
   }
@@ -195,9 +211,9 @@ const t = useTranslations(lang);
   .hero-scroll__label {
     writing-mode: vertical-rl;
     transform: rotate(180deg);
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.2em;
+    font-family: var(--font-body);
+    font-size: 13px;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
   }
   .hero-scroll__line {
@@ -244,22 +260,29 @@ const t = useTranslations(lang);
     }
   }
 
+  @media (min-width: 721px) {
+    .hero-claim {
+      font-size: clamp(56px, 8vw, 104px);
+    }
+  }
+
   @media (min-width: 1024px) {
     .hero-content {
       bottom: clamp(40px, 5vw, 72px);
     }
     .hero-claim {
-      font-size: clamp(56px, 6.2vw, 96px);
+      font-size: clamp(56px, 6.2vw, 104px);
     }
   }
 
   /* El titular arranca oculto para que GSAP controle su primer fotograma, con una
-     red de seguridad en CSS: pase lo que pase, a 1,1 s se muestra.
+     red de seguridad en CSS: pase lo que pase, a 1,5 s se muestra (el telón de
+     intro termina a 1,3 s).
 
      Antes no hacía falta porque el telón de intro y este titular colgaban del
      mismo evento (`astro:page-load` = `window.load`): cuando el telón se
      levantaba, el titular ya estaba puesto. Ahora el telón es CSS y termina a
-     1,26 s por su cuenta, así que son dos relojes distintos: si el JS se retrasa
+     1,3 s por su cuenta, así que son dos relojes distintos: si el JS se retrasa
      —y `window.load` es mucho más variable que el primer pintado—, el telón se
      abriría sobre un hero mudo.
 
@@ -269,7 +292,7 @@ const t = useTranslations(lang);
   .hero-claim__lead,
   .hero-claim__accent {
     visibility: hidden;
-    animation: ph-hero-claim-visible 0s linear 1.1s forwards;
+    animation: ph-hero-claim-visible 0s linear 1.5s forwards;
   }
 
   @keyframes ph-hero-claim-visible {
@@ -283,12 +306,16 @@ const t = useTranslations(lang);
 </style>
 
 <script>
+  /* La señal de scroll se esconde al bajar. Un solo listener para toda la sesión
+     que mira la señal de la página actual: antes se añadía uno nuevo en cada
+     visita a la home y se acumulaban (3 → 4 → 6). */
+  let scrollCue: HTMLElement | null = null;
+  const syncScrollCue = () => scrollCue?.classList.toggle('is-hidden', window.scrollY > 48);
+  document.addEventListener('scroll', syncScrollCue, { passive: true });
+
   function initHeroScrollCue(): void {
-    const cue = document.querySelector<HTMLElement>('[data-hero-scroll-indicator]');
-    if (!cue) return;
-    const toggle = () => cue.classList.toggle('is-hidden', window.scrollY > 48);
-    toggle();
-    document.addEventListener('scroll', toggle, { passive: true });
+    scrollCue = document.querySelector<HTMLElement>('[data-hero-scroll-indicator]');
+    syncScrollCue();
   }
 
   /* El rótulo se enciende una vez (vídeo de encendido) y luego queda encendido en
@@ -376,10 +403,25 @@ const t = useTranslations(lang);
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, wrapWords, scheduleScrollTriggerRefresh, afterTransitionPaint,
+    reducedMotion, wrapWords, scheduleScrollTriggerRefresh, afterTransitionPaint, EASE,
   } from '@/scripts/ph-text-animations';
+  import { glint } from '@/scripts/ph-motion';
 
   gsap.registerPlugin(ScrollTrigger);
+
+  /** Segundos que faltan para que el telón de intro empiece a abrirse (0 si no
+   *  hay telón). El titular entra cuando el marcador se abre, no debajo de él. */
+  function introRemaining(): number {
+    const overlay = document.querySelector<HTMLElement>('[data-logo-reveal-overlay]');
+    if (!overlay || document.documentElement.classList.contains('ph-sin-intro')) return 0;
+    const salida = overlay
+      .getAnimations()
+      .find((a) => (a as CSSAnimation).animationName === 'ph-intro-salir');
+    if (!salida) return 0;
+    const elapsed = Number(salida.currentTime ?? 0) / 1000;
+    // Las mitades se pliegan de 0,9 a 1,2 s: el titular arranca a mitad del pliegue.
+    return Math.max(0, 1.02 - elapsed);
+  }
 
   function initHeroAnimations(): void {
     const hero = document.querySelector<HTMLElement>('.hero--home');
@@ -389,31 +431,25 @@ const t = useTranslations(lang);
     const lead = hero.querySelector<HTMLElement>('.hero-claim__lead');
     const accent = hero.querySelector<HTMLElement>('.hero-claim__accent');
     const claim = hero.querySelector<HTMLElement>('.hero-claim');
+    const media = hero.querySelector<HTMLElement>('.hero-media');
+    const veil = hero.querySelector<HTMLElement>('.hero-veil');
 
     // Reveal now so GSAP controls the first visible frame.
     if (lead) lead.style.visibility = 'visible';
     if (accent) accent.style.visibility = 'visible';
 
+    // El rótulo entra en dos tiempos, como dos líneas de grafismo: «Now. Next.»
+    // y, detrás, «Forever Football.», que recibe la luz al asentarse.
+    const wait = introRemaining();
+    const tl = gsap.timeline({ delay: wait + 0.12 });
     if (lead) {
-      const words = wrapWords(lead);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 1.0,
-        ease: 'power4.out',
-        stagger: 0.08,
-        delay: 0.2,
-      });
+      tl.from(wrapWords(lead), { yPercent: 112, duration: 0.9, ease: EASE.out, stagger: 0.09 }, 0);
     }
     if (accent) {
-      const words = wrapWords(accent);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 1.0,
-        ease: 'power4.out',
-        stagger: 0.08,
-        delay: 0.4,
-      });
+      tl.from(wrapWords(accent), { yPercent: 112, duration: 0.9, ease: EASE.out, stagger: 0.09 }, 0.2);
+      tl.add(() => glint(accent), 0.95);
     }
+
     if (claim) {
       ScrollTrigger.create({
         trigger: hero,
@@ -424,6 +460,15 @@ const t = useTranslations(lang);
           gsap.set(claim, { yPercent: self.progress * 20 });
         },
       });
+    }
+    // La cámara entra en el neón mientras la portada se oscurece: el relevo al
+    // bloque siguiente. Solo transform y opacity.
+    if (media && veil) {
+      gsap.timeline({
+        scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.6 },
+      })
+        .to(media, { scale: 1.12, ease: 'none' }, 0)
+        .to(veil, { opacity: 0.7, ease: 'none' }, 0);
     }
 
     scheduleScrollTriggerRefresh();

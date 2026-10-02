@@ -28,10 +28,18 @@ const socialLabel = (id: SocialId) => {
   const key = id === 'instagram' ? 'footer.social.instagram' : 'footer.social.linkedin';
   return t(key);
 };
+
+/** El lema, palabra a palabra, para que ruede en CSS al entrar en pantalla (el pie
+ *  está también en las páginas legales, que no cargan GSAP). */
+const words = (text: string) => text.split(' ').filter(Boolean);
+const leadWords = words(t('hero.claim.lead'));
+const accentWords = words(t('hero.claim.accent'));
 ---
 
+{/* El cierre de la retransmisión: la línea dorada se dibuja, el lema entra
+    rodando y el logo se vuelve a dibujar como en la intro de la portada. */}
 <footer class="footer">
-  <div class="footer-gold-rule" aria-hidden="true"></div>
+  <div class="footer-gold-rule ph-seam" aria-hidden="true" data-inview></div>
 
   <div class="footer-logo-bg" aria-hidden="true">
     <img
@@ -49,23 +57,36 @@ const socialLabel = (id: SocialId) => {
 
   <div class="ph-section">
     <!-- 02 · Sello editorial -->
-    <p class="footer-sello">
-      {t('hero.claim.lead')} <span class="footer-sello__accent">{t('hero.claim.accent')}</span>
+    <p class="footer-sello" data-inview data-footer-sello>
+      {leadWords.map((w, i) => (
+        <><span class="footer-sello__slot"><span class="footer-sello__word" style={`--w: ${i}`}>{w}</span></span>{' '}</>
+      ))}
+      <span class="footer-sello__accent">
+        {accentWords.map((w, i) => (
+          <><span class="footer-sello__slot"><span class="footer-sello__word" style={`--w: ${i + leadWords.length}`}>{w}</span></span>{i < accentWords.length - 1 ? ' ' : ''}</>
+        ))}
+      </span>
     </p>
 
     <!-- 03 · 3-col funcional -->
     <div class="footer-grid">
       <!-- Col 1: brand -->
       <div class="footer-brand">
+        {/* Se dibuja al entrar en pantalla: trazo y después relleno, como la
+            intro. Los perímetros (753 y 637) son los de LogoReveal.astro. */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 259.8 206.1"
           fill="currentColor"
+          stroke="currentColor"
+          stroke-width="4"
+          stroke-linejoin="bevel"
           aria-hidden="true"
           class="footer-logo"
+          data-inview
         >
-          <polygon points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" />
-          <polygon points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" />
+          <polygon class="footer-logo__line" points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" stroke-dasharray="753" />
+          <polygon class="footer-logo__line footer-logo__line--2" points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" stroke-dasharray="637" />
         </svg>
       </div>
 
@@ -76,7 +97,7 @@ const socialLabel = (id: SocialId) => {
           {nav.map((item) => (
             <li>
               <a href={item.href} class="footer-link">
-                {item.label}
+                <span>{item.label}</span>
               </a>
             </li>
           ))}
@@ -180,35 +201,49 @@ const socialLabel = (id: SocialId) => {
     }
   }
 
-  /* 01 · Gold rule (unchanged from previous version) */
+  /* 01 · La línea dorada de arriba, que se dibuja al llegar al pie. */
   .footer-gold-rule {
+    --ph-seam-color: rgba(214, 178, 94, 0.5);
     height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      var(--color-ph-gold-muted) 20%,
-      var(--color-ph-gold) 50%,
-      var(--color-ph-gold-muted) 80%,
-      transparent
-    );
-    opacity: 0.4;
   }
 
-  /* 02 · Sello editorial */
+  /* 02 · Sello: el lema, a escala de rótulo, entra palabra a palabra. */
   .footer-sello {
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
-    line-height: 1.15;
-    letter-spacing: 0.04em;
+    font-size: clamp(2.25rem, 8.6vw, 5.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
     text-transform: uppercase;
     color: var(--color-ph-white);
+    max-width: none;
     margin: 0;
-    padding-block: clamp(2.5rem, 5vw, 3.5rem) clamp(2rem, 4vw, 2.5rem);
+    padding-block: clamp(3rem, 7vw, 5rem) clamp(2.25rem, 5vw, 3.5rem);
   }
 
   .footer-sello__accent {
     color: var(--color-ph-gold);
+  }
+
+  .footer-sello__slot {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    padding-right: 0.06em;
+    margin-right: -0.06em;
+  }
+
+  .footer-sello__word {
+    display: inline-block;
+    transition: transform var(--ph-dur-roll) var(--ph-ease-out) calc(var(--w, 0) * 70ms);
+  }
+
+  :global(html.ph-anim) .footer-sello:not(.is-inview) .footer-sello__word {
+    transform: translateY(110%);
+  }
+
+  :global(html.ph-anim:not(.ph-motion)) .footer-sello__word {
+    animation: ph-motion-failsafe 0s linear 2.5s forwards;
   }
 
   /* 03 · 3-col funcional */
@@ -233,9 +268,42 @@ const socialLabel = (id: SocialId) => {
   }
 
   .footer-logo {
-    height: 2rem;
+    height: 2.25rem;
     width: auto;
+    overflow: visible;
     color: var(--color-ph-white);
+  }
+
+  .footer-logo__line {
+    stroke-dashoffset: 0;
+    fill-opacity: 1;
+    stroke-opacity: 0;
+    transition:
+      stroke-dashoffset 900ms cubic-bezier(0.77, 0, 0.175, 1),
+      fill-opacity 300ms var(--ph-ease-std) 820ms,
+      stroke-opacity 200ms linear 1100ms;
+  }
+
+  .footer-logo__line--2 {
+    transition-delay: 180ms, 820ms, 1100ms;
+  }
+
+  :global(html.ph-anim) .footer-logo:not(.is-inview) .footer-logo__line {
+    stroke-dashoffset: 753;
+    fill-opacity: 0;
+    stroke-opacity: 1;
+  }
+
+  :global(html.ph-anim) .footer-logo:not(.is-inview) .footer-logo__line--2 {
+    stroke-dashoffset: 637;
+  }
+
+  :global(html.ph-anim:not(.ph-motion)) .footer-logo__line {
+    animation: ph-footer-logo-failsafe 0s linear 2.5s forwards;
+  }
+
+  @keyframes ph-footer-logo-failsafe {
+    to { stroke-dashoffset: 0; fill-opacity: 1; stroke-opacity: 0; }
   }
 
   .footer-col {
@@ -244,11 +312,10 @@ const socialLabel = (id: SocialId) => {
   }
 
   .footer-col-label {
-    font-family: var(--font-display);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
     color: var(--color-ph-gold);
   }
 
@@ -265,18 +332,43 @@ const socialLabel = (id: SocialId) => {
     list-style: none;
   }
 
+  /* Enlaces del pie: al señalarlos, una línea se dibuja debajo, de izquierda a
+     derecha, como las del tablero. */
   .footer-link {
+    position: relative;
+    display: inline-block;
+    padding-block: 0.125rem;
     font-family: var(--font-display);
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-weight: 400;
     color: var(--color-ph-white-60);
-    transition: color var(--ph-duration) var(--ease-ph);
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
+  }
+
+  .footer-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform var(--ph-dur-move) var(--ph-ease-out);
   }
 
   @media (hover: hover) {
     .footer-link:hover {
       color: var(--color-ph-white);
     }
+    .footer-link:hover::after {
+      transform: scaleX(1);
+    }
+  }
+
+  .footer-link:active {
+    color: var(--color-ph-gold);
   }
 
   .footer-contact {
@@ -285,9 +377,9 @@ const socialLabel = (id: SocialId) => {
 
   .footer-email {
     font-family: var(--font-display);
-    font-size: 0.875rem;
+    font-size: 1rem;
     color: var(--color-ph-white-60);
-    transition: color var(--ph-duration) var(--ease-ph);
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
   }
 
   @media (hover: hover) {
@@ -309,15 +401,20 @@ const socialLabel = (id: SocialId) => {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2.75rem;
+    height: 2.75rem;
     border-radius: var(--radius-sm);
     color: var(--color-ph-white-60);
     border: 1px solid var(--color-ph-white-10);
     transition:
-      color var(--ph-duration) var(--ease-ph),
-      border-color var(--ph-duration) var(--ease-ph),
-      background var(--ph-duration) var(--ease-ph);
+      color var(--ph-dur-state) var(--ph-ease-std),
+      border-color var(--ph-dur-state) var(--ph-ease-std),
+      background var(--ph-dur-state) var(--ph-ease-std),
+      transform var(--ph-dur-tap) var(--ph-ease-std);
+  }
+
+  .footer-social-link:active {
+    transform: scale(0.94);
   }
 
   @media (hover: hover) {
@@ -355,9 +452,8 @@ const socialLabel = (id: SocialId) => {
   }
 
   .footer-bottom p {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.05em;
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
     color: var(--color-ph-white-60);
     margin: 0;
   }
@@ -369,11 +465,10 @@ const socialLabel = (id: SocialId) => {
   }
 
   .footer-legal-link {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.05em;
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
     color: var(--color-ph-white-60);
-    transition: color var(--ph-duration) var(--ease-ph);
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
   }
 
   @media (hover: hover) {
@@ -383,8 +478,41 @@ const socialLabel = (id: SocialId) => {
   }
 
   .footer-legal-sep {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
+    font-size: 0.8125rem;
     color: var(--color-ph-white-20);
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer-sello__word,
+    .footer-logo__line,
+    .footer-link,
+    .footer-link::after,
+    .footer-social-link {
+      transition: none;
+    }
+  }
 </style>
+
+<script>
+  /* El pie está en todas las páginas: el núcleo de movimiento (sin GSAP) vigila lo
+     que entra en pantalla. Al terminar de rodar el lema, la luz cruza la parte
+     dorada, una vez. */
+  import { glint } from '@/scripts/ph-motion';
+
+  function initFooter(): void {
+    const sello = document.querySelector<HTMLElement>('[data-footer-sello]');
+    const accent = sello?.querySelector<HTMLElement>('.footer-sello__accent');
+    if (!sello || !accent) return;
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      io.disconnect();
+      window.setTimeout(() => {
+        accent.querySelectorAll<HTMLElement>('.footer-sello__word').forEach((word, i) => glint(word, i * 140));
+      }, 760);
+    }, { rootMargin: '0px 0px -8% 0px' });
+    io.observe(sello);
+    document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
+  }
+
+  document.addEventListener('astro:page-load', initFooter);
+</script>

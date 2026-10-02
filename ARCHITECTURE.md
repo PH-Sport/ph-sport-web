@@ -1,7 +1,7 @@
 # PHSPORT — Architecture Document
 
 > Documento de referencia para el proyecto. Leer antes de cualquier tarea estructural.
-> Última revisión: 2026-10-01
+> Última revisión: 2026-10-02 (rama `feat/rediseno-motion`: lenguaje de movimiento «Marcador»)
 > Secciones: Stack · Estructura · i18n · Hero · Motion · Performance · SEO · Sistema de diseño · Tests · Estado del proyecto
 
 ---
@@ -44,7 +44,7 @@ ph-sport-web/
 │   ├── assets/images/players/       # Fotos de jugadores (procesadas por astro:assets)
 │   │
 │   ├── components/
-│   │   ├── LogoReveal.astro         # Intro de la home — animación en CSS, sin GSAP
+│   │   ├── LogoReveal.astro         # Intro de la home — paleta a pantalla completa, en CSS, sin GSAP
 │   │   ├── layout/
 │   │   │   ├── BaseLayout.astro     # Layout raíz: meta, fuentes, global CSS
 │   │   │   ├── Header.astro         # Flotante, scroll-hide, desplegable de idioma; logo en la vertical del texto
@@ -60,9 +60,13 @@ ph-sport-web/
 │   │   │   └── TalentsSection.astro        # Grid de talentos con escudos de selección en hover
 │   │   └── ui/
 │   │       ├── Button.astro
+│   │       ├── Flap.astro               # Paleta del marcador: cifras y códigos que caen hasta su valor
+│   │       ├── FlapText.astro           # Un texto con sus cifras en paletas («21 INTEGRANTES · 7 PAÍSES»)
 │   │       ├── FooterSocialIcon.astro
+│   │       ├── Key.astro                # Tecla: el botón-enlace (la palabra rueda, la flecha sale y vuelve)
 │   │       ├── LanguageSwitcher.astro   # VACÍO, sin uso: el selector de idioma vive en Header.astro
-│   │       └── SectionHeader.astro
+│   │       ├── SectionHeader.astro
+│   │       └── Slate.astro              # Pizarra: la fila índice que abre cada bloque («02 · Talentos»)
 │   │
 │   ├── i18n/
 │   │   ├── es.ts                    # Fuente de las claves; en.ts e it.ts tienen las mismas
@@ -106,7 +110,8 @@ ph-sport-web/
 │   ├── scripts/                     # Scripts vanilla para interacciones y animaciones
 │   │   ├── dropdown.ts              # SIN USO: nadie lo importa. Talentos monta su combo aparte
 │   │   ├── ph-ambient.ts            # Luz animada de fondo de Talentos, Servicios y Sobre nosotros (WebGL2 en directo)
-│   │   └── ph-text-animations.ts   # Sistema GSAP de sección (reveals, stagger, refresh coalescido)
+│   │   ├── ph-motion.ts             # Núcleo del movimiento «Marcador», sin GSAP (paletas, líneas, destello, luz entre páginas)
+│   │   └── ph-text-animations.ts   # Infraestructura GSAP (refresh, scroll al navegar) y titulares que ruedan
 │   │
 │   └── styles/
 │       ├── global.css               # Reset + variables CSS + font-face
@@ -349,7 +354,13 @@ sin bajarse el que no puede reproducir. La versión va en la ruta porque
 
 ### Logo Reveal
 
-`LogoReveal.astro` tapa la home con un overlay negro mientras se dibuja el trazo del logo. **La animación es CSS puro, sin JavaScript**: arranca con el primer pintado y termina sola aunque el JS no llegue nunca. Duración 1,26 s.
+`LogoReveal.astro` tapa la home con un overlay negro mientras se dibuja el trazo del logo. **La animación es CSS puro, sin JavaScript**: arranca con el primer pintado y termina sola aunque el JS no llegue nunca. Duración 1,3 s.
+
+Desde el 2026-10-02 (lenguaje «Marcador», `DECISIONS.md`) el telón es **una paleta de marcador a pantalla completa**: dos mitades negras partidas por una bisagra horizontal. El logo se dibuja **con el tamaño y en el sitio exactos del rótulo de neón** del vídeo, y a 0,9 s las mitades se pliegan hacia la bisagra con gravedad y descubren el neón en el mismo sitio (un corte a juego). Tres detalles:
+
+- **El logo va dos veces**, una por mitad, recortado en la bisagra. Las dos copias corren las mismas animaciones, así que se ve uno solo.
+- **El ancho sale del encuadre del render** (`scale` en `scripts/hero-neon/neon.html`, con la cámara en la pose de arranque del encendido, distancia 1,22): `max(27,9vw, 49,6vh)` en apaisado y `max(57,4vw, 26,5vh)` por debajo de 9:10. Si cambia el encuadre del render, cambian estas cifras.
+- **La animación de salida del overlay se sigue llamando `ph-intro-salir`**: el script del componente la busca por nombre para anotar que la intro ya se vio.
 
 Fue una island de React hasta el 2026-06-25 (`2b74656`), GSAP vanilla hasta el 2026-08-27; ver `DECISIONS.md`.
 
@@ -364,21 +375,68 @@ Fue una island de React hasta el 2026-06-25 (`2b74656`), GSAP vanilla hasta el 2
 
 **Cuándo sale**: la primera vez, y no vuelve hasta pasadas **18 h** (marca con `Date.now()` en `localStorage`, decidida por un script inline del `<head>` antes del primer pintado). El clic en el logo del header la fuerza siempre. Con `prefers-reduced-motion`, nunca.
 
-El titular del hero (`.hero-claim__lead/__accent`) tiene una **red de seguridad en CSS** que lo revela a 1,1 s pase lo que pase: arranca oculto esperando a GSAP, y como el telón ya no cuelga del mismo evento, sin ella podría abrirse sobre un hero mudo.
+El titular del hero (`.hero-claim__lead/__accent`) tiene una **red de seguridad en CSS** que lo revela a 1,5 s pase lo que pase: arranca oculto esperando a GSAP, y como el telón ya no cuelga del mismo evento, sin ella podría abrirse sobre un hero mudo. Con el telón en pantalla, el titular espera a que las mitades se plieguen para entrar (`introRemaining()` en `HeroSection.astro`).
 
 ---
 
 ## Sistema de animaciones (Motion)
 
-Las animaciones de sección están en `src/scripts/ph-text-animations.ts`. El sistema usa GSAP con `ScrollTrigger` y expone helpers reutilizables:
+**Lenguaje «Marcador»** (2026-10-02; el porqué y lo descartado en `DECISIONS.md`):
+la web se mueve como el marcador de un estadio de noche bajo el rótulo de neón. El
+movimiento explica algo en cada sitio —qué ha cambiado, en qué orden se lee, hacia
+dónde se navega— y no adorna.
 
-- **`revealOnView`**: fade + slide de cabeceras secundarias. Es el reveal por defecto (14 usos).
-- **`trackingReveal`**: compresión de letter-spacing en labels y eyebrows (20 usos).
-- **`wrapWords` + `gsap.from`**: cortina palabra a palabra de los titulares grandes.
-- **`clipPathReveal` y `magneticHover`**: exportados pero **con cero usos**. No son el patrón vigente; antes de usarlos, comprobar que siguen haciendo falta.
-- Stagger de cards y grids.
-- Parallax en el hero.
-- Respeta `prefers-reduced-motion` — todos los efectos se desactivan si el usuario lo ha configurado.
+| Pieza | Qué hace | Dónde |
+|---|---|---|
+| **Paletas** | Cifras y códigos en fichas partidas por una bisagra que caen, con gravedad, hasta su valor (números de sección y de fila, 7 y 360°, romanos de los pilares, códigos de país) | `Flap.astro`, `FlapText.astro`; `runFlap` en `ph-motion.ts` |
+| **Letras de tablero** | Un texto corto en mayúsculas pasa por el abecedario hasta su letra, de izquierda a derecha (valores, sedes del equipo). La caja guarda el ancho final mientras cambia | atributo `data-cycle`; `cycleText` |
+| **Costuras** | Las líneas del tablero se dibujan de izquierda a derecha al entrar, en cascada | `.ph-seam`, `.ph-rowline` (global.css); `cascade` |
+| **Titulares que ruedan** | Cada palabra sube por su ranura y frena | `rollIn` y `stage` en `ph-text-animations.ts` (GSAP) |
+| **Revelado** | Las fotos salen del negro por tonos: primero las luces, en blanco y negro, y el color al final | `.ph-develop` + `.ph-develop__media` |
+| **Destello** | Una luz cruza una palabra dorada una vez, en la diagonal del logo (45°, hacia arriba a la derecha) | `glint`; `.ph-glint` |
+| **Luz entre páginas** | Una banda de luz cruza la pantalla al navegar: hacia arriba a la derecha al avanzar, al revés al volver | `.ph-stinger` en `BaseLayout`; `ph-motion.ts` |
+| **Teclas** | El botón-enlace: la palabra rueda y la flecha sale y vuelve al señalarlo; se hunde al pulsarlo | `Key.astro`; `.ph-key` |
+| **Reordenado** | El grid de talentos desliza cada ficha a su sitio nuevo al filtrar, buscar u ordenar | `flipGrid` en `TalentsSection.astro` (GSAP Flip) |
+
+**Curvas y tiempos.** Las mismas en CSS (`--ph-ease-*`, `--ph-dur-*` en
+global.css) y en GSAP (`EASE`, `DUR` en `ph-text-animations.ts`, con CustomEase):
+`ph-out` (0.16, 1, 0.3, 1) para llegar, `ph-emph` y `ph-std` de Material 3 y
+`ph-in` (0.3, 0, 0.8, 0.15) para salir. **Dos velocidades**: el interfaz responde
+en 120-320 ms; los momentos de autor (entradas de bloque, la intro) van de 600 a
+800 ms. Lo que se va, más rápido que lo que llega. **Sin rebotes**: la marca no
+rebota.
+
+**Reparto entre módulos.**
+- `src/scripts/ph-motion.ts` es el **núcleo sin GSAP**: el observador de «entra en
+  pantalla», las paletas, las letras de tablero, el destello y la luz entre
+  páginas. Lo cargan la cabecera y el pie, así que está en todas las páginas,
+  incluidas las legales, que no cargan GSAP.
+- `src/scripts/ph-text-animations.ts` es la **infraestructura GSAP** de siempre
+  (refresh coalescido de ScrollTrigger, el scroll al navegar, `data-reveal`,
+  `wrapWords`) más lo que rueda: `rollIn`, `riseIn`, `stage` y `mountSection`.
+- `clipPathReveal` y `magneticHover` siguen exportados **con cero usos**: no son el
+  patrón vigente.
+
+**Cómo se anima un bloque nuevo.** Pizarra con `Slate.astro`; en el HTML,
+`data-m="title"` (rueda), `data-m="lead"` y `data-m="item"` (suben detrás), con
+`data-reveal` para que no parpadeen; lo que espera a entrar en pantalla, con
+`data-inview`. En el `<script>` de la sección: `stage(bloque)` y, al final,
+`mountSection(sección)`.
+
+**Reglas que sostienen todo:**
+- **El estado de reposo es el visible.** Lo que espera a entrar en pantalla solo se
+  esconde con `html.ph-anim` (hay JS y no hay movimiento reducido).
+- **Red de seguridad en CSS**: si el núcleo de movimiento no llega a correr
+  (`html.ph-motion` no aparece), a los 2,5 s se ve todo, `data-reveal` incluido. Lo
+  anidado que se esconde con `transform` lleva su propia línea de red en su
+  componente.
+- **`prefers-reduced-motion`**: nada cae, rueda ni se dibuja; todo aparece en su
+  sitio. Se mantienen los cambios de color que confirman un gesto.
+- **Solo `transform`, `opacity` y `filter`** en lo que se mueve; el destello (el
+  fondo de un texto corto, un segundo) es la única excepción.
+- **La luz entre páginas guarda su sentido en la propia pieza** (`is-back`), no lo
+  lee de `<html>`: Astro quita `data-astro-transition` a mitad de la pasada
+  (`docs/trampas-conocidas.md`).
 
 **Regla**: GSAP en componentes `.astro` va siempre en un `<script>` inline que importa de `ph-text-animations.ts`. No importar GSAP directamente en el markup de un `.astro`.
 
@@ -398,18 +456,19 @@ contenido empiece ya en la primera pantalla y que todo se lea sin esfuerzo:
   - Entradilla: Söhne, 18–22 px, blanco al 90 %.
   - Texto corrido: Helvetica, 16–18 px, blanco al 82 %, como mucho 62 caracteres por línea.
   - Etiquetas: letra normal, 13–15 px.
-  - Números (02, 01–05, «05 disciplinas · 01 equipo»): lo único en monoespaciada.
-- **La fila índice es una pieza reutilizable** (`.ph-rowline` en `global.css`):
-  línea fina, etiqueta a la izquierda y dato a la derecha. La usan el número de
-  sección, «Áreas de gestión» en Servicios y la franja de valores de Sobre
-  nosotros.
+  - Números (02, 01–05, «05 disciplinas · 01 equipo»): lo único en monoespaciada, en paletas del marcador.
+- **La fila índice es una pieza reutilizable** (`Slate.astro`, estilos `.ph-rowline`
+  en `global.css`): línea fina que se dibuja al entrar, etiqueta a la izquierda y
+  dato a la derecha, con las cifras en paletas. Abre cada bloque de la web (también
+  los de la home desde el 2026-10-02), «Áreas de gestión» en Servicios y la franja
+  de valores de Sobre nosotros.
 - **Mismas cifras en las tres páginas**: alturas, separaciones y tamaños salen de
   `--ph-head-*` en `global.css`, y los tonos de texto de `--ph-ink-*`. Los estilos
   compartidos son `.ph-rowline`, `.ph-head-title` y `.ph-head-lead`. Cambiarlos
   ahí cambia las tres páginas a la vez.
-- **«02 · Talentos» se parte en el componente** por « · », para dar al número y a
+- **«02 · Talentos» se parte en `Slate.astro`** por « · », para dar al número y a
   la etiqueta estilos distintos. Si un idioma cambiara ese separador en el rótulo,
-  saldría entero como número.
+  saldría entero como etiqueta.
 
 El fondo es un `<canvas class="ph-ambient" data-ambient="<escena>">` dentro de
 `<div class="ph-page-bg">`. Lo dibuja en directo `src/scripts/ph-ambient.ts` con
@@ -473,6 +532,7 @@ menú se aparta medio margen de sección del borde y deja medio margen de rellen
 | `<Image loading="eager" fetchpriority="high">` solo en primer fold | El resto: lazy |
 | Vídeo del hero: `preload="none"` y `play()` a mano tras `load` | `preload="metadata"` **no basta**: con `autoplay`, Chrome se lo salta y descarga el vídeo igual. Medido en agosto: retrasaba el evento `load` 504 ms y el póster —que era el LCP real— medio segundo |
 | El telón de intro, en CSS y nunca dependiendo del JS | Un overlay opaco que solo se quita por JavaScript deja la portada en negro si el JS falla |
+| Lo que espera a entrar en pantalla, visible en reposo y con red de seguridad en CSS (2,5 s) | Si el JS de movimiento no llega, la página se tiene que ver entera igualmente (Motion, arriba) |
 | Hover prefetch en links de navegación | Precarga la siguiente página en hover |
 
 ---
@@ -575,7 +635,9 @@ No superar `0.75rem`. La marca no es redondeada.
 - **Clima**: túnel antes del partido. Energía contenida, no palco VIP.
 - **Fondo**: siempre `ph-black`. Sin blancos de fondo.
 - **Espaciado**: generoso. El negro es parte del diseño.
-- **Animaciones**: lentas y controladas. Sin rebotes ni efectos llamativos.
+- **Animaciones**: con propósito, en el lenguaje «Marcador» (Motion, arriba). Dos velocidades: el interfaz responde en 120-320 ms y los momentos de autor van de 600 a 800 ms. Sin rebotes.
+- **Rótulos**: los titulares de una o dos palabras que son el bloque («El roster.», «Hablemos.», «Madrid.») van a escala de rótulo, hasta 9rem (144 px). Es el recurso de tipografía en movimiento del lenguaje; el resto de titulares, como estaban.
+- **Etiquetas**: una sola escala, 13-15 px en letra normal. La monoespaciada, solo para cifras y códigos en paletas.
 - **Fotografía**: high-contrast sobre fondo oscuro. Ratio portrait `3:4` para jugadores.
 
 ---
@@ -646,21 +708,22 @@ que ejecutar nada a mano.
 | Componente | Estado | Notas |
 |---|---|---|
 | `BaseLayout.astro` | ✅ Completo | SEO, hreflang, preload fuentes, ClientRouter |
-| `Header.astro` | ✅ Completo | Flotante, scroll-hide, desplegable de idioma, mobile accesible |
-| `Footer.astro` | ✅ Completo | V3 editorial, social links, i18n |
-| `LogoReveal.astro` | ✅ Completo | Animación en CSS, sin JS. Una vez cada 18 h |
-| `HeroSection.astro` | ✅ Completo | Vídeo del neón (encendido y bucle) con encuadre apaisado y vertical, curtain reveal GSAP |
-| `HomePlayersSection.astro` | ✅ Completo | Stagger + scale GSAP |
-| `HomeServicesSection.astro` | ✅ Completo | CSS accordion + GSAP |
-| `HomeAboutSection.astro` | ✅ Completo | Head + counters GSAP |
-| `HomeContactSection.astro` | ✅ Completo | Layout 50/50 edge-to-edge, GSAP |
-| `AboutSection.astro` | ✅ Completo | V3 — historia, equipo (21 integrantes) |
-| `ServicesSection.astro` | ✅ Completo | 6 pilares + hero |
-| `TalentsSection.astro` | ✅ Completo | Grid 3:4 no clicable, escudo de selección en hover enmarcado por escuadra dorada |
+| `Header.astro` | ✅ Completo | Flotante, scroll-hide, desplegable de idioma, mobile accesible. Enlaces que ruedan al señalarlos, destello en el logo y menú móvil que cae como una paleta (2026-10-02) |
+| `Footer.astro` | ✅ Completo | V3 editorial, social links, i18n. Cierre: el lema rueda, el logo se vuelve a dibujar y la línea dorada se traza (2026-10-02) |
+| `LogoReveal.astro` | ✅ Completo | Animación en CSS, sin JS. Una vez cada 18 h. Paleta a pantalla completa con corte a juego sobre el neón (2026-10-02) |
+| `HeroSection.astro` | ✅ Completo | Vídeo del neón (encendido y bucle) con encuadre apaisado y vertical. El titular rueda cuando se abre el telón; al bajar, la cámara entra en el neón y se oscurece |
+| `HomePlayersSection.astro` | ✅ Completo | Pizarra, rótulo «El roster.» y tecla a /talentos. Sin fotos a propósito (commit `453e928`) |
+| `HomeServicesSection.astro` | ✅ Completo | Tablero de áreas (acordeón) con números en paletas y líneas en cascada |
+| `HomeAboutSection.astro` | ✅ Completo | Declaración y marcador: 7 y 360° caen en paletas, los valores en letras de tablero |
+| `HomeContactSection.astro` | ✅ Completo | Layout 50/50 edge-to-edge (en el móvil, la foto en franja debajo). Rótulo «Hablemos.» y el correo como acción |
+| `AboutSection.astro` | ✅ Completo | V3 — historia, equipo (21 integrantes) como tablero de salidas, sedes con su código en paletas |
+| `ServicesSection.astro` | ✅ Completo | 6 pilares + hero. Romanos que cuentan en una paleta, fotos reveladas |
+| `TalentsSection.astro` | ✅ Completo | Grid 3:4 no clicable, escudo de selección en hover enmarcado por escuadra dorada. Fotos reveladas por filas; filtrar y ordenar con FLIP |
 | `Button.astro` | ✅ Completo | Primary / secondary, `<a>` o `<button>` |
 | `SectionHeader.astro` | ✅ Completo | |
 | `LanguageSwitcher.astro` | ✅ Completo | Integrado en Header |
 | `FooterSocialIcon.astro` | ✅ Completo | |
+| `Flap.astro`, `FlapText.astro`, `Slate.astro`, `Key.astro` | ✅ Completo | Piezas del lenguaje «Marcador» (2026-10-02). Ver Motion |
 
 ### Páginas
 

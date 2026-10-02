@@ -138,16 +138,14 @@ Por rentabilidad, de mayor a menor:
 1. Los diccionarios `i18n` completos viajan en el JS del header para usar **ocho
    cadenas**.
 2. ScrollTrigger se carga en las cuatro páginas cuando `ScrollTrigger.create()` se
-   usa **una sola vez** en todo el sitio.
-3. Tirón de **217-359 ms** al entrar en `/sobre-nosotros` (135 spans animados con
-   `filter: blur()`).
-4. Cuatro imágenes con margen de compresión real.
+   usa **dos veces, las dos en el hero** (el desplazamiento del titular y el
+   acercamiento al neón, desde el 2026-10-02); el resto son entradas con
+   `{ start: 'top 85%', once: true }`, lo que ya hace un `IntersectionObserver`.
+3. Cuatro imágenes con margen de compresión real.
 
-### Fuga de listeners de scroll en la home
-
-Uno nuevo por visita: `initHeroScrollCue` registra una función nueva en cada
-`astro:page-load` sin quitar la anterior. Comprobado contando listeners reales:
-**3 → 4 → 6**.
+El tirón al entrar en `/sobre-nosotros` (135 spans con `filter: blur()`) se
+resolvió el 2026-10-02: los párrafos ya no entran palabra a palabra. Cifras en
+[`rendimiento.md`](rendimiento.md).
 
 ### SEO pendiente (P1/P2)
 
@@ -155,6 +153,27 @@ Uno nuevo por visita: `initHeroScrollCue` registra una función nueva en cada
 - Un `public/llms.txt` para buscadores con IA.
 - Una página `/faq` con preguntas y respuestas literales.
 - Auditar los `alt=""` de Header, Footer y Hero para confirmar que son decorativos.
+
+### Lenguaje de movimiento «Marcador»: sin probar en un móvil real (2026-10-02)
+
+En la rama `feat/rediseno-motion` (`DECISIONS.md`, 2026-10-02). Comprobado con
+Playwright en Chromium y WebKit, en escritorio y a 390 px con toque: la intro y su
+corte sobre el neón, las paletas, el menú móvil, la luz entre páginas en los dos
+sentidos, el reordenado del grid, movimiento reducido y JS bloqueado. **Falta un
+iPhone y un Android de verdad**: que la intro se pliegue fluida en 3D, que las
+paletas no tiren con muchas en pantalla (la tabla del equipo, 21 a la vez) y que
+el revelado por `filter` de las fotos aguante en un móvil modesto con el fondo
+animado de Talentos detrás. Si algo tira, la primera palanca es el revelado:
+quitar `contrast` y `saturate` y dejar solo `brightness`.
+
+### Sin control para pausar el movimiento continuo (WCAG 2.2.2)
+
+Visto al investigar el rediseño, el 2026-10-02; **ya pasaba antes**. El vídeo del
+hero va en bucle y los fondos de Talentos, Servicios y Sobre nosotros se mueven
+mientras la página está abierta, más de 5 s y junto a otro contenido, sin un botón
+para pararlos. Con `prefers-reduced-motion` se paran todos, pero WCAG 2.2.2 (nivel
+A) pide además un control en la página. Arreglarlo es añadir un botón, y su texto
+no existe en las traducciones: es decisión de Mario.
 
 ### Fondos animados de sección: sin medir en un móvil real (2026-10-01)
 

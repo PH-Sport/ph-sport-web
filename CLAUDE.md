@@ -236,6 +236,9 @@ leerlo antes de tocar el fichero que se nombra.
   se congela en `--ph-viewport-h`. **No arreglarlo cambiando de unidad: ya se probó.**
 - **`var()` no hereda en el árbol de pseudos `::view-transition`** → usar valores
   literales, o la animación no aplica y sale un corte seco.
+- **Astro quita `data-astro-transition` de `<html>` a mitad de la transición** → una
+  animación que dependa de él se reinicia a medias (le pasó a la luz entre
+  páginas al volver atrás). Apuntar el sentido en el propio elemento al empezar.
 - **Las capturas de pantalla no fotografían la capa `top-layer`** → el telón nunca sale
   en un screenshot; verificar con `animationstart`/`animationend`, no con capturas.
 - **El scroll suave está apagado a propósito durante la navegación** → si se quita
@@ -282,10 +285,11 @@ Lo que hay que saber **antes de tocar nada**:
   el equipo de PH valide el club.
 
 Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: backlog de
-rendimiento del 2026-08-18, fuga de listeners de scroll en la home, SEO P1/P2, el
-vídeo del hero y los fondos animados de sección sin probar en un móvil real
-(2026-10-01), y las fotos de talentos en AVIF, que con 4G lento tardan bastante más
-en aparecer (2026-10-01).
+rendimiento del 2026-08-18, SEO P1/P2, el vídeo del hero y los fondos animados de
+sección sin probar en un móvil real (2026-10-01), el lenguaje de movimiento
+«Marcador» tampoco (2026-10-02, rama `feat/rediseno-motion`), sin control para
+pausar el movimiento continuo (WCAG 2.2.2), y las fotos de talentos en AVIF, que
+con 4G lento tardan bastante más en aparecer (2026-10-01).
 
 ## Convenciones
 

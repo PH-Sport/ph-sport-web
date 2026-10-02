@@ -1,5 +1,8 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
+import Slate from '@/components/ui/Slate.astro';
+import Flap from '@/components/ui/Flap.astro';
+import Key from '@/components/ui/Key.astro';
 
 interface Props {
   lang: Lang;
@@ -11,90 +14,83 @@ const t = useTranslations(lang);
 const aboutHref = localizePath('/sobre-nosotros/', lang);
 // Países donde opera PHSPORT: sale del texto traducido, la misma fuente que el
 // resto de menciones (ver la nota de `about.team.meta` en es.ts).
-const countriesValue = Number(t('home.about.stats.countries.value'));
+const countriesValue = t('home.about.stats.countries.value');
 ---
 
+{/* La declaración de la agencia y sus cifras, que caen en el marcador al entrar:
+    los países y el 360. En pantallas anchas, la declaración a la izquierda y el
+    marcador a la derecha; en el resto, uno debajo del otro. */}
 <section class="home-about" id="sobre-nosotros" aria-labelledby="home-about-title">
+  <Slate text={t('home.about.eyebrow')} />
   <div class="home-about__inner">
     <div class="home-about__head">
-      <span class="home-about__eyebrow">{t('home.about.eyebrow')}</span>
-      <h2 class="home-about__title" id="home-about-title">
+      <h2 class="home-about__title" id="home-about-title" data-m="title" data-reveal>
         <span>{t('home.about.title')}</span>
-        <em>{t('home.about.titleAccent')}</em>
+        <em data-glint>{t('home.about.titleAccent')}</em>
       </h2>
-      <p class="home-about__body">{t('home.about.body')}</p>
-      <a class="home-about__cta" href={aboutHref}>
-        {t('home.about.cta')}
-        <span class="home-about__arrow" aria-hidden="true">→</span>
-      </a>
+      <p class="home-about__body" data-m="lead" data-reveal>{t('home.about.body')}</p>
+      <div class="home-about__cta" data-m="item" data-reveal>
+        <Key href={aboutHref} label={t('home.about.cta')} />
+      </div>
     </div>
 
-    <dl class="home-about__stats" aria-label={t('home.about.stats.aria')}>
-      <div class="home-about__stat">
-        <dt class="home-about__stat-value" data-counter={countriesValue}>{countriesValue}</dt>
-        <dd class="home-about__stat-label">{t('home.about.stats.countries.label')}</dd>
-      </div>
-      <div class="home-about__stat">
-        <dt class="home-about__stat-value--service">
-          <span class="home-about__stat-value" data-counter={360}>360</span><span class="home-about__stat-unit" aria-hidden="true">°</span>
-        </dt>
-        <dd class="home-about__stat-label">{t('home.about.stats.service.label')}</dd>
-      </div>
-    </dl>
+    <div class="home-about__board">
+      <dl class="home-about__stats" aria-label={t('home.about.stats.aria')}>
+        <div class="home-about__stat ph-seam" data-inview>
+          <dt class="home-about__stat-value">
+            <Flap value={countriesValue} size="xl" />
+          </dt>
+          <dd class="home-about__stat-label">{t('home.about.stats.countries.label')}</dd>
+        </div>
+        <div class="home-about__stat ph-seam" data-inview>
+          <dt class="home-about__stat-value">
+            <Flap value="360" size="xl" /><span class="home-about__stat-unit" aria-hidden="true">°</span>
+          </dt>
+          <dd class="home-about__stat-label">{t('home.about.stats.service.label')}</dd>
+        </div>
+      </dl>
 
-    <ul class="home-about__values" aria-label={t('home.about.values.aria')} role="list">
-      <li>{t('home.about.values.v1')}</li>
-      <li aria-hidden="true" class="home-about__values-sep">·</li>
-      <li>{t('home.about.values.v2')}</li>
-      <li aria-hidden="true" class="home-about__values-sep">·</li>
-      <li>{t('home.about.values.v3')}</li>
-    </ul>
+      <ul class="home-about__values ph-seam" aria-label={t('home.about.values.aria')} role="list" data-inview>
+        <li data-cycle>{t('home.about.values.v1')}</li>
+        <li aria-hidden="true" class="home-about__values-sep">·</li>
+        <li data-cycle>{t('home.about.values.v2')}</li>
+        <li aria-hidden="true" class="home-about__values-sep">·</li>
+        <li data-cycle>{t('home.about.values.v3')}</li>
+      </ul>
+    </div>
   </div>
 </section>
 
 <style>
   .home-about {
-    padding: clamp(80px, 12vw, 160px) var(--ph-section-px, clamp(20px, 4vw, 48px));
+    padding: clamp(64px, 9vw, 128px) var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(80px, 11vw, 150px);
     background: var(--color-ph-black, #0d0f12);
     color: var(--color-ph-white, #ffffff);
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
   }
 
   .home-about__inner {
-    max-width: 880px;
-    margin: 0 auto;
-    text-align: center;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(48px, 7vw, 96px);
+    margin-top: clamp(28px, 4vw, 48px);
   }
 
-  .home-about__head {
-    display: block;
-  }
-
-  .home-about__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-about__eyebrow::before,
-  .home-about__eyebrow::after {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
+  /* A dos columnas solo cuando el marcador cabe entero a la derecha: con 1024 px
+     el «360°» y su etiqueta se salían de la pantalla. */
+  @media (min-width: 1200px) {
+    .home-about__inner {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: end;
+    }
   }
 
   .home-about__title {
     font-family: var(--font-display, 'Inter Tight', sans-serif);
     font-weight: 500;
-    font-size: clamp(32px, 5.5vw, 72px);
-    letter-spacing: -0.03em;
-    line-height: 1.02;
-    margin: 18px 0 0;
+    font-size: clamp(40px, 10.5vw, 84px);
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+    margin: 0;
     text-wrap: balance;
   }
   .home-about__title span { display: block; }
@@ -106,169 +102,91 @@ const countriesValue = Number(t('home.about.stats.countries.value'));
   }
 
   .home-about__body {
-    margin: 24px auto 0;
-    max-width: 640px;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 16px;
+    margin: clamp(22px, 2.5vw, 30px) 0 0;
+    max-width: 52ch;
+    color: var(--ph-ink-body);
+    font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
     line-height: 1.65;
   }
 
   .home-about__cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: clamp(24px, 4vw, 40px);
-    padding: 9px 20px;
-    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 13px;
-    color: var(--color-ph-white, #ffffff);
-    text-decoration: none;
-    transition: border-color 0.2s, color 0.2s;
-  }
-  .home-about__cta:hover {
-    border-color: var(--color-ph-gold, #d6b25e);
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-about__cta:hover .home-about__arrow { transform: translateX(4px); }
-  .home-about__arrow { transition: transform 0.2s; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .home-about__cta,
-    .home-about__arrow { transition: none; }
+    margin-top: clamp(28px, 4vw, 40px);
   }
 
+  /* El marcador: cada cifra en su fila, con la línea encima. */
   .home-about__stats {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0;
-    margin: clamp(56px, 8vw, 96px) 0 0;
+    margin: 0;
     padding: 0;
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
   }
 
+  /* La cifra y su etiqueta, juntas: se leen como un par, no como dos cosas en
+     los extremos de la fila. */
   .home-about__stat {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: clamp(16px, 2vw, 24px);
     margin: 0;
-    padding: clamp(24px, 3vw, 40px) 8px;
-    border-right: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    text-align: center;
+    padding: clamp(18px, 2.4vw, 28px) 0;
   }
-  .home-about__stat:last-child { border-right: none; }
 
   .home-about__stat-value {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(36px, 5vw, 64px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    color: var(--color-ph-gold, #d6b25e);
-    margin: 0;
-  }
-
-  .home-about__stat-value--service {
     display: inline-flex;
-    align-items: baseline;
-    gap: 0;
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(36px, 5vw, 64px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    color: var(--color-ph-gold, #d6b25e);
+    align-items: flex-start;
     margin: 0;
+    color: var(--color-ph-gold, #d6b25e);
   }
   .home-about__stat-unit {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(22px, 3vw, 40px);
-    letter-spacing: -0.02em;
+    margin-left: 0.12em;
+    font-family: var(--font-display);
+    font-size: clamp(28px, calc(2.4vw + 18px), 52px);
     line-height: 1;
     color: var(--color-ph-gold, #d6b25e);
   }
   .home-about__stat-label {
-    margin: 8px 0 0;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-ph-ink-soft, #b5b7bb);
+    margin: 0;
+    font-size: clamp(14px, calc(0.1vw + 13.6px), 15px);
+    color: var(--ph-ink-lead);
   }
 
+  /* Valores: letras de tablero de salidas, que pasan por el abecedario hasta la
+     suya al entrar (el ancho se queda quieto mientras cambian). Letra normal: la
+     monoespaciada es solo para cifras. */
   .home-about__values {
     list-style: none;
-    padding: 0;
-    margin: clamp(32px, 5vw, 48px) 0 0;
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 14px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.2em;
+    gap: 10px 14px;
+    margin: 0;
+    padding: clamp(18px, 2.4vw, 24px) 0 0;
+    font-family: var(--font-body);
+    font-size: 13px;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--color-ph-ink-soft, #b5b7bb);
+    color: var(--ph-ink-lead);
   }
   .home-about__values li { margin: 0; }
   .home-about__values-sep { color: var(--color-ph-gold, #d6b25e); }
-
-  @media (max-width: 560px) {
-    .home-about__stats { grid-template-columns: 1fr; }
-    .home-about__stat {
-      border-right: none;
-      border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    }
-    .home-about__stat:last-child { border-bottom: none; }
-  }
 </style>
 
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, revealOnView, trackingReveal, counterReveal,
-    scheduleScrollTriggerRefresh, afterTransitionPaint,
+    reducedMotion, stage, mountSection, afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
+  import { cascade } from '@/scripts/ph-motion';
 
   gsap.registerPlugin(ScrollTrigger);
 
   function initHomeAboutAnimations(): void {
     const section = document.querySelector<HTMLElement>('.home-about');
     if (!section) return;
-    if (reducedMotion()) return;
-
-    const eyebrow = section.querySelector<HTMLElement>('.home-about__eyebrow');
-    const title = section.querySelector<HTMLElement>('.home-about__title');
-    const body = section.querySelector<HTMLElement>('.home-about__body');
-    const head = section.querySelector<HTMLElement>('.home-about__head');
-    const stats = section.querySelector<HTMLElement>('.home-about__stats');
-    const statValues = section.querySelectorAll<HTMLElement>('.home-about__stat-value[data-counter]');
-
-    if (eyebrow && head) {
-      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
+    if (!reducedMotion()) {
+      stage(section, { glint: true });
+      cascade(section.querySelectorAll<HTMLElement>('.home-about__board .ph-seam'), 110);
     }
-    if (title) {
-      revealOnView(title, { y: 24, duration: 0.9 });
-    }
-    if (body && head) {
-      gsap.from(body, {
-        opacity: 0,
-        y: 18,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.2,
-        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
-      });
-    }
-    if (statValues.length && stats) {
-      statValues.forEach((el) => {
-        const target = Number(el.dataset.counter ?? el.textContent ?? '0');
-        counterReveal(el, target, { trigger: stats, start: 'top 82%', once: true });
-      });
-    }
-
-    scheduleScrollTriggerRefresh();
+    mountSection(section);
   }
 
   document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeAboutAnimations));

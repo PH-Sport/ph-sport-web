@@ -1,6 +1,8 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
 import { getTeamMembers } from '@/lib/teamMembers';
+import Slate from '@/components/ui/Slate.astro';
+import Flap from '@/components/ui/Flap.astro';
 
 interface Props {
   lang: Lang;
@@ -10,10 +12,6 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const teamMembers = getTeamMembers(lang);
-
-/** «04 · Sobre nosotros»: el número y la etiqueta van en estilos distintos en la fila índice. */
-const [eyebrowNum, ...eyebrowRest] = t('about.hero.eyebrow').split(' · ');
-const eyebrowLabel = eyebrowRest.join(' · ');
 
 const internationalCountries = [
   { key: 'portugal' as const, iso: 'PT' },
@@ -34,34 +32,29 @@ const internationalCountries = [
   <!-- 01 HERO: misma cabecera que Talentos y Servicios (global.css): fila índice,
        titular y entradilla debajo. -->
   <div class="abt-hero">
-    <p class="ph-rowline abt-hero__index" data-reveal>
-      <span class="ph-rowline__group">
-        <span class="ph-rowline__num">{eyebrowNum}</span>
-        <span class="ph-rowline__sep" aria-hidden="true">·</span>
-        <span class="ph-rowline__label">{eyebrowLabel}</span>
-      </span>
-    </p>
-    <h1 id="about-hero-title" class="abt-hero__title ph-head-title" data-reveal>
-      {t('about.hero.titlePre')}<span class="abt-gold">{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
+    <Slate text={t('about.hero.eyebrow')} class="abt-hero__index" />
+    <h1 id="about-hero-title" class="abt-hero__title ph-head-title" data-m="title" data-reveal>
+      {t('about.hero.titlePre')}<span class="abt-gold" data-glint>{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
     </h1>
-    <p class="abt-hero__lead ph-head-lead" data-reveal>{t('about.hero.body1')}</p>
+    <p class="abt-hero__lead ph-head-lead" data-m="lead" data-reveal>{t('about.hero.body1')}</p>
   </div>
 
   <!-- Valores y pie en una fila índice, y el resto de la presentación en dos
-       columnas. Mismo texto y mismo orden que antes. -->
-  <div class="ph-rowline abt-hero__rail">
-    <span class="ph-rowline__meta abt-hero__values" data-reveal>{t('about.hero.values')}</span>
-    <span class="ph-rowline__meta abt-hero__caption">{t('about.hero.caption')}</span>
+       columnas. Mismo texto y mismo orden que antes. Los valores y el pie son
+       letras de tablero: pasan por el abecedario hasta la suya al entrar. -->
+  <div class="ph-rowline abt-hero__rail" data-inview>
+    <span class="ph-rowline__meta abt-hero__values" data-cycle>{t('about.hero.values')}</span>
+    <span class="ph-rowline__meta abt-hero__caption" data-cycle>{t('about.hero.caption')}</span>
   </div>
   <div class="abt-intro">
-    <p class="abt-hero__body" data-reveal>{t('about.hero.body2')}</p>
-    <p class="abt-hero__body" data-reveal>{t('about.hero.body3')}</p>
+    <p class="abt-hero__body" data-m="body" data-reveal>{t('about.hero.body2')}</p>
+    <p class="abt-hero__body" data-m="body" data-reveal>{t('about.hero.body3')}</p>
   </div>
 
   <!-- 02 MANIFESTO (Now. Next. Forever Football. — explicado por bloques) -->
   <div class="abt-manifesto" id="historia">
     <div class="abt-manifesto__head">
-      <div class="abt-eyebrow">{t('about.manifesto.eyebrow')}</div>
+      <Slate text={t('about.manifesto.eyebrow')} />
     </div>
 
     <div class="abt-manifesto__rows">
@@ -70,10 +63,10 @@ const internationalCountries = [
         { idx: t('about.manifesto.blocks.next.idx'),    title: t('about.manifesto.blocks.next.title'),    body: t('about.manifesto.blocks.next.body') },
         { idx: t('about.manifesto.blocks.forever.idx'), title: t('about.manifesto.blocks.forever.title'), body: t('about.manifesto.blocks.forever.body') },
       ].map((row) => (
-        <article class="abt-manifesto__row">
-          <span class="abt-manifesto__idx">{row.idx}</span>
-          <h3 class="abt-manifesto__title">{row.title}</h3>
-          <p class="abt-manifesto__body">{row.body}</p>
+        <article class="abt-manifesto__row ph-seam" data-inview>
+          <span class="abt-manifesto__idx"><Flap value={row.idx} size="md" /></span>
+          <h3 class="abt-manifesto__title" data-m="title" data-reveal>{row.title}</h3>
+          <p class="abt-manifesto__body" data-m="body" data-reveal>{row.body}</p>
         </article>
       ))}
     </div>
@@ -82,28 +75,27 @@ const internationalCountries = [
   <!-- 03 EQUIPO -->
   <div class="abt-team" id="equipo" aria-labelledby="about-team-title">
     <div class="abt-team__head">
-      <div>
-        <div class="abt-eyebrow">{t('about.team.eyebrow')}</div>
-        <h2 id="about-team-title" class="abt-team__title">
-          {t('about.team.titlePre')}<span class="abt-gold">{t('about.team.titleAccent')}</span>{t('about.team.titlePost')}
-        </h2>
-      </div>
-      <div class="abt-team__meta">{t('about.team.meta')}</div>
+      <Slate text={t('about.team.eyebrow')} meta={t('about.team.meta')} />
+      <h2 id="about-team-title" class="abt-team__title" data-m="title" data-reveal>
+        {t('about.team.titlePre')}<span class="abt-gold" data-glint>{t('about.team.titleAccent')}</span>{t('about.team.titlePost')}
+      </h2>
     </div>
 
+    {/* Tablero de salidas: cada fila entra detrás de su línea, con el número en
+        paletas y el destino en letras de tablero. */}
     <div class="abt-team-table" role="list">
       {teamMembers.map((m) => (
-        <div class="abt-team-row" role="listitem" data-id={m.id}>
-          <span class="abt-team-row__idx">{m.index}</span>
+        <div class="abt-team-row ph-seam" role="listitem" data-id={m.id} data-inview>
+          <span class="abt-team-row__idx"><Flap value={m.index} /></span>
           <div class="abt-team-row__name">
-            <span class="abt-team-row__name-text">{m.name}</span>
+            <span class="abt-team-row__slot"><span class="abt-team-row__name-text">{m.name}</span></span>
             <span class="abt-team-row__mobile-extras">
               {m.role} · {m.country ?? m.defaultLocation}
             </span>
           </div>
           <span class="abt-team-row__role">{m.role}</span>
           <span class="abt-team-row__flag">
-            <span>{(m.country ?? m.defaultLocation).toUpperCase()}</span>
+            <span data-cycle>{(m.country ?? m.defaultLocation).toUpperCase()}</span>
           </span>
         </div>
       ))}
@@ -113,22 +105,23 @@ const internationalCountries = [
   <!-- 04 PRESENCIA -->
   <div class="abt-presencia" id="presencia" aria-labelledby="about-presencia-title">
     <div class="abt-presencia__eyebrow-row">
-      <div class="abt-eyebrow">{t('about.presencia.eyebrow')}</div>
+      <Slate text={t('about.presencia.eyebrow')} />
     </div>
     <div class="abt-presencia__grid">
       <div class="abt-presencia__left">
-        <h3 id="about-presencia-title" class="abt-presencia__madrid">
+        <h3 id="about-presencia-title" class="abt-presencia__madrid" data-m="title" data-reveal>
           {t('about.presencia.madridTitle')}
         </h3>
-        <div class="abt-presencia__madrid-label">{t('about.presencia.madridLabel')}</div>
+        <div class="abt-presencia__madrid-label" data-m="item" data-reveal>{t('about.presencia.madridLabel')}</div>
       </div>
       <div class="abt-presencia__right">
-        <div class="abt-presencia__intl-label">{t('about.presencia.internationalLabel')}</div>
+        <div class="abt-presencia__intl-label" data-m="item" data-reveal>{t('about.presencia.internationalLabel')}</div>
+        {/* Las sedes como un tablero: cada país con su código en paletas. */}
         <div class="abt-presencia__countries">
           {internationalCountries.map((c) => (
-            <div class="abt-presencia__country">
-              <span>{t(`about.presencia.country.${c.key}` as const)}</span>
-              <span class="abt-presencia__iso">{c.iso}</span>
+            <div class="abt-presencia__country ph-seam" data-inview>
+              <span class="abt-presencia__country-name">{t(`about.presencia.country.${c.key}` as const)}</span>
+              <Flap value={c.iso} class="abt-presencia__iso" />
             </div>
           ))}
         </div>
@@ -161,15 +154,6 @@ const internationalCountries = [
     font-style: italic;
   }
 
-  /* Shared eyebrow pattern (mono). */
-  .about-section .abt-eyebrow {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--abt-gold);
-  }
 
   /* ── 01 HERO: misma cabecera que Talentos y Servicios (estilos y cifras en
      global.css: `.ph-rowline`, `.ph-head-*`) ── */
@@ -178,7 +162,8 @@ const internationalCountries = [
     padding: var(--ph-head-top) var(--edge) 0;
   }
 
-  /* Valores y pie en una fila índice, nada más acabar la entradilla. */
+  /* Valores y pie en una fila índice, nada más acabar la entradilla. Son letras
+     de tablero: cambian al entrar. */
   .abt-hero__rail {
     margin: var(--ph-head-after) var(--edge) 0;
   }
@@ -221,25 +206,23 @@ const internationalCountries = [
   }
 
   .abt-manifesto__rows {
-    border-top: 1px solid var(--abt-line-strong);
+    border-bottom: 1px solid var(--abt-line);
   }
+  /* Tres filas del tablero: Now, Next, Forever Football. Cada una con su línea
+     arriba, que se dibuja al entrar, y su número en paletas. */
   .abt-manifesto__row {
+    --ph-seam-color: var(--abt-line-strong);
     display: grid;
     grid-template-columns: 80px 1.3fr 1.7fr;
     gap: clamp(20px, 3vw, 40px);
     align-items: start;
     padding-block: clamp(36px, 5vw, 64px);
-    border-bottom: 1px solid var(--abt-line);
-    transition: padding 300ms var(--ease-ph, ease), background 300ms var(--ease-ph, ease);
+    transition: background var(--ph-dur-move) var(--ph-ease-std);
   }
   .abt-manifesto__idx {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-ink-faint);
-    letter-spacing: 0.2em;
-    /* Compensar el desplazamiento del baseline tipográfico para que el "01"
-       quede ópticamente alineado con la cap-height del título. */
-    padding-top: 0.6em;
+    display: flex;
+    /* Alinea las paletas con la altura de las mayúsculas del título. */
+    padding-top: 0.35em;
   }
   /* Estado base (desktop con puntero): blanco display 500, sin itálica.
      El lockup de marca (oro + itálico, idéntico a .hero-claim__accent) se
@@ -253,7 +236,7 @@ const internationalCountries = [
     line-height: 1;
     margin: 0;
     color: var(--abt-ink);
-    transition: color 300ms var(--ease-ph, ease);
+    transition: color var(--ph-dur-move) var(--ph-ease-std);
   }
   .abt-manifesto__body {
     font-size: 15px;
@@ -267,8 +250,7 @@ const internationalCountries = [
 
   @media (hover: hover) {
     .abt-manifesto__row:hover {
-      padding-inline: 18px;
-      background: rgba(201, 164, 90, 0.04);
+      background: rgba(214, 178, 94, 0.04);
     }
     /* Hover desbloquea el lockup de marca: gold + itálico + weight 400
        (firma del eslogan, idéntica a .hero-claim__accent del home/footer). */
@@ -277,6 +259,11 @@ const internationalCountries = [
       font-style: italic;
       font-weight: 400;
     }
+  }
+  /* La fila que se está leyendo (la del centro de la pantalla) se enciende en
+     dorado: el tablero marca la línea en curso. La pone el script. */
+  .abt-manifesto__row.is-current .abt-manifesto__title {
+    color: var(--abt-gold);
   }
 
   @media (max-width: 900px) {
@@ -300,16 +287,7 @@ const internationalCountries = [
       max-width: none;
     }
     .abt-manifesto__idx {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .abt-manifesto__idx::after {
-      content: '';
-      width: 18px;
-      height: 1px;
-      background: var(--abt-gold);
-      opacity: 0.6;
+      padding-top: 0;
     }
   }
 
@@ -319,55 +297,66 @@ const internationalCountries = [
     border-bottom: 1px solid var(--abt-line);
   }
   .abt-team__head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 20px;
-    flex-wrap: wrap;
     margin-bottom: clamp(32px, 5vw, 64px);
   }
   .abt-team__title {
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(36px, 5vw, 64px);
-    letter-spacing: -0.02em;
-    margin: 10px 0 0;
-    line-height: 1;
-  }
-  .abt-team__meta {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-ink-faint);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+    font-size: clamp(40px, 9vw, 72px);
+    letter-spacing: -0.035em;
+    margin: clamp(24px, 3vw, 36px) 0 0;
+    line-height: 0.98;
   }
 
   .abt-team-table {
-    border-top: 1px solid var(--abt-line-strong);
+    border-bottom: 1px solid var(--abt-line);
   }
+  /* Tablero de salidas: cada fila con su línea arriba. La fila entra detrás de
+     su línea; el nombre sube por su ranura y el destino pasa por el abecedario. */
+  /* Cuatro columnas: número, nombre, cargo y sede. Con tres, la sede caía en una
+     línea aparte debajo del número. */
   .abt-team-row {
     display: grid;
-    grid-template-columns: 60px 1.4fr 1.2fr;
+    grid-template-columns: 60px minmax(0, 1.4fr) minmax(0, 1.2fr) minmax(7em, auto);
     gap: 24px;
     align-items: center;
     padding-block: clamp(18px, 2.5vw, 28px);
-    border-bottom: 1px solid var(--abt-line);
-    transition: padding 300ms var(--ease-ph, ease), background 300ms var(--ease-ph, ease);
+    transition: background var(--ph-dur-move) var(--ph-ease-std);
+  }
+  .abt-team-row > * {
+    transition: opacity 480ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 100ms);
+  }
+  :global(html.ph-anim) .abt-team-row:not(.is-inview) > * {
+    opacity: 0;
+  }
+  .abt-team-row__slot {
+    display: block;
+    overflow: hidden;
+  }
+  .abt-team-row__name-text {
+    display: block;
+    transition:
+      transform var(--ph-dur-roll) var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 120ms),
+      color var(--ph-dur-move) var(--ph-ease-std);
+  }
+  :global(html.ph-anim) .abt-team-row:not(.is-inview) .abt-team-row__name-text {
+    transform: translateY(110%);
+  }
+  /* Sin el JS de movimiento, a los 2,5 s en su sitio (global.css, «Red de
+     seguridad»). */
+  :global(html.ph-anim:not(.ph-motion)) .abt-team-row__name-text {
+    animation: ph-motion-failsafe 0s linear 2.5s forwards;
   }
   @media (hover: hover) {
     .abt-team-row:hover {
-      padding-inline: 18px;
-      background: rgba(201, 164, 90, 0.04);
+      background: rgba(214, 178, 94, 0.04);
     }
     .abt-team-row:hover .abt-team-row__name-text {
       color: var(--abt-gold);
     }
   }
   .abt-team-row__idx {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-gold);
-    letter-spacing: 0.15em;
+    display: flex;
   }
   .abt-team-row__name-text {
     font-family: var(--font-display);
@@ -378,20 +367,18 @@ const internationalCountries = [
     transition: color 300ms var(--ease-ph, ease);
   }
   .abt-team-row__role {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-ink-soft);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--ph-ink-lead);
   }
   .abt-team-row__flag {
     display: inline-flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 8px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-ink-soft);
-    letter-spacing: 0.1em;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--ph-ink-meta);
   }
   .abt-team-row__mobile-extras {
     display: none;
@@ -414,11 +401,8 @@ const internationalCountries = [
     }
     .abt-team-row__mobile-extras {
       display: block;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--abt-ink-soft);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+      font-size: 13px;
+      color: var(--ph-ink-meta);
       font-style: normal;
       line-height: 1.5;
     }
@@ -437,53 +421,52 @@ const internationalCountries = [
     grid-template-columns: 1.2fr 1fr;
     gap: clamp(40px, 6vw, 80px);
     align-items: end;
-    border-top: 1px solid var(--abt-line);
     padding-top: clamp(32px, 4vw, 48px);
   }
   .abt-presencia__madrid {
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(36px, 5vw, 56px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    margin: 0;
+    font-size: clamp(64px, 12vw, 144px);
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+    margin: 0 0 0 -0.04em;
   }
   .abt-presencia__madrid-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--abt-ink-faint);
-    text-transform: uppercase;
-    margin-top: 12px;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    color: var(--ph-ink-meta);
+    margin-top: 16px;
   }
   .abt-presencia__intl-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--abt-ink-faint);
-    text-transform: uppercase;
-    margin-bottom: 16px;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    color: var(--ph-ink-meta);
+    margin-bottom: 12px;
   }
   .abt-presencia__countries {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    border-bottom: 1px solid var(--abt-line);
+  }
+  /* Las sedes, como filas de tablero: el país a la izquierda y su código en
+     paletas a la derecha. */
+  .abt-presencia__countries {
+    gap: 0;
   }
   .abt-presencia__country {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
+    padding-block: 10px;
     font-family: var(--font-body);
-    font-size: 13px;
+    font-size: 15px;
     color: var(--abt-ink);
-    border-bottom: 1px solid var(--abt-line);
-    padding-bottom: 6px;
   }
-  .abt-presencia__iso {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-gold);
-    letter-spacing: 0.15em;
+  .abt-presencia__country-name {
+    transition: opacity 480ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 100ms);
+  }
+  :global(html.ph-anim) .abt-presencia__country:not(.is-inview) .abt-presencia__country-name {
+    opacity: 0;
   }
 
   @media (max-width: 900px) {
@@ -492,9 +475,7 @@ const internationalCountries = [
       align-items: stretch;
       gap: 32px;
     }
-    .abt-presencia__madrid {
-      font-size: 40px;
-    }
+
   }
 
 </style>
@@ -503,160 +484,62 @@ const internationalCountries = [
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion,
-    wrapWords,
-    splitWords,
-    trackingReveal,
-    scheduleScrollTriggerRefresh,
-    afterTransitionPaint,
-    revealReveals,
-    revealOnView,
+    reducedMotion, stage, rollIn, riseIn, mountSection, afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
+  import { cascade } from '@/scripts/ph-motion';
 
   gsap.registerPlugin(ScrollTrigger);
+
+  let currentRowObserver: IntersectionObserver | null = null;
 
   function initAboutAnimations(): void {
     const section = document.querySelector<HTMLElement>('.about-section');
     if (!section) return;
 
-    if (reducedMotion()) {
-      // Ensure all content is visible without animating.
-      section.querySelectorAll<HTMLElement>('.abt-team-row').forEach((r) => {
-        r.style.opacity = '1';
-        r.style.transform = 'none';
+    if (!reducedMotion()) {
+      // Cabecera: pizarra, «Representar» rodando con su luz y la entradilla.
+      const hero = section.querySelector<HTMLElement>('.abt-hero');
+      if (hero) stage(hero, { glint: true });
+      // Los dos párrafos de la presentación suben enteros, uno tras otro. Antes
+      // entraban palabra a palabra con desenfoque (135 piezas con `filter: blur`):
+      // era el tirón de 217-359 ms al entrar en la página (docs/rendimiento.md).
+      riseIn(section.querySelectorAll<HTMLElement>('.abt-intro [data-m="body"]'), { delay: 0.45, stagger: 0.1 });
+
+      // Manifiesto: cada fila rueda su título y sube su texto al entrar.
+      section.querySelectorAll<HTMLElement>('.abt-manifesto__row').forEach((row) => {
+        const title = row.querySelector<HTMLElement>('[data-m="title"]');
+        const body = row.querySelector<HTMLElement>('[data-m="body"]');
+        if (title) rollIn(title, { trigger: row, delay: 0.12 });
+        if (body) riseIn(body, { trigger: row, delay: 0.26 });
       });
-      return;
-    }
 
-    // ── Hero ──
-    // El hero está above-the-fold: lo animamos de forma INMEDIATA (sin scrollTrigger).
-    // Con scrollTrigger `once` para contenido ya visible en la carga, el trigger
-    // fallaba intermitentemente al disparar y los títulos quedaban congelados
-    // (invisibles). Mismo patrón fiable que el hero de la home / Servicios.
-    const heroIndex = section.querySelector<HTMLElement>('.abt-hero__index');
-    if (heroIndex) gsap.from(heroIndex, { opacity: 0, y: 8, duration: 0.7, ease: 'power3.out' });
+      const team = section.querySelector<HTMLElement>('.abt-team');
+      if (team) stage(team, { glint: true });
+      cascade(section.querySelectorAll<HTMLElement>('.abt-team-row'), 45);
 
-    const heroTitle = section.querySelector<HTMLElement>('.abt-hero__title');
-    if (heroTitle) {
-      const words = wrapWords(heroTitle);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 0.85,
-        stagger: 0.07,
-        ease: 'power4.out',
-        delay: 0.1,
-      });
-    }
+      const presencia = section.querySelector<HTMLElement>('.abt-presencia');
+      if (presencia) stage(presencia);
+      cascade(section.querySelectorAll<HTMLElement>('.abt-presencia__country'), 70);
 
-    section.querySelectorAll<HTMLElement>('.abt-hero__lead, .abt-hero__body').forEach((body, i) => {
-      const spans = splitWords(body);
-      gsap.from(spans, {
-        opacity: 0,
-        filter: 'blur(6px)',
-        y: 6,
-        duration: 0.6,
-        stagger: 0.025,
-        ease: 'power2.out',
-        delay: 0.3 + i * 0.1,
-      });
-    });
-
-    const heroValues = section.querySelector<HTMLElement>('.abt-hero__values');
-    if (heroValues) trackingReveal(heroValues);
-
-    // ── Manifesto ──
-    const manifestoEyebrow = section.querySelector<HTMLElement>('.abt-manifesto .abt-eyebrow');
-    if (manifestoEyebrow) trackingReveal(manifestoEyebrow, { trigger: manifestoEyebrow, start: 'top 92%', once: true });
-
-    section.querySelectorAll<HTMLElement>('.abt-manifesto__row').forEach((row) => {
-      const idx = row.querySelector<HTMLElement>('.abt-manifesto__idx');
-      const title = row.querySelector<HTMLElement>('.abt-manifesto__title');
-      const body = row.querySelector<HTMLElement>('.abt-manifesto__body');
-
-      if (idx) {
-        gsap.from(idx, {
-          opacity: 0,
-          y: 8,
-          duration: 0.5,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: row, start: 'top 88%', once: true },
-        });
-      }
-      if (title) {
-        revealOnView(title, { y: 18, duration: 0.7 });
-      }
-      if (body) {
-        const spans = splitWords(body);
-        gsap.from(spans, {
-          opacity: 0,
-          filter: 'blur(6px)',
-          y: 5,
-          duration: 0.55,
-          stagger: 0.02,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: row, start: 'top 88%', once: true },
-        });
-      }
-    });
-
-    // ── Equipo ──
-    const teamEyebrow = section.querySelector<HTMLElement>('.abt-team .abt-eyebrow');
-    if (teamEyebrow) trackingReveal(teamEyebrow, { trigger: teamEyebrow, start: 'top 88%', once: true });
-
-    const teamTitle = section.querySelector<HTMLElement>('.abt-team__title');
-    if (teamTitle) {
-      revealOnView(teamTitle, { y: 22, duration: 0.8 });
-    }
-
-    const teamMeta = section.querySelector<HTMLElement>('.abt-team__meta');
-    if (teamMeta) trackingReveal(teamMeta, { trigger: teamMeta, start: 'top 92%', once: true });
-
-    const teamTable = section.querySelector<HTMLElement>('.abt-team-table');
-    const teamRows = section.querySelectorAll<HTMLElement>('.abt-team-row');
-    if (teamTable && teamRows.length) {
-      gsap.set(teamRows, { opacity: 0, y: 14 });
-      gsap.to(teamRows, {
-        opacity: 1,
-        y: 0,
-        duration: 0.45,
-        stagger: { each: 0.04, from: 'start' },
-        ease: 'power3.out',
-        scrollTrigger: { trigger: teamTable, start: 'top 88%', once: true },
-        onComplete: () => {
-          gsap.set(teamRows, { clearProps: 'opacity,transform' });
+      // La fila del manifiesto que está en el centro de la pantalla se enciende.
+      currentRowObserver?.disconnect();
+      currentRowObserver = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) entry.target.classList.toggle('is-current', entry.isIntersecting);
         },
-      });
-      // Safety net — ensure rows are visible even if ScrollTrigger misfires.
-      window.setTimeout(() => {
-        teamRows.forEach((r) => {
-          r.style.opacity = '1';
-          r.style.transform = 'none';
-        });
-      }, 2200);
+        { rootMargin: '-45% 0px -45% 0px' },
+      );
+      section.querySelectorAll('.abt-manifesto__row').forEach((row) => currentRowObserver!.observe(row));
     }
 
-    // ── Presencia ──
-    const presenciaEyebrow = section.querySelector<HTMLElement>('.abt-presencia .abt-eyebrow');
-    if (presenciaEyebrow) trackingReveal(presenciaEyebrow, { trigger: presenciaEyebrow, start: 'top 92%', once: true });
-
-    const presenciaLeft = section.querySelector<HTMLElement>('.abt-presencia__left');
-    const presenciaRight = section.querySelector<HTMLElement>('.abt-presencia__right');
-    if (presenciaLeft && presenciaRight) {
-      gsap.from([presenciaLeft, presenciaRight], {
-        opacity: 0,
-        y: 20,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: presenciaLeft, start: 'top 88%', once: true },
-      });
-    }
-
-    revealReveals(section);
-    scheduleScrollTriggerRefresh();
+    mountSection(section);
   }
 
   document.addEventListener('astro:page-load', () => afterTransitionPaint(initAboutAnimations));
+  document.addEventListener('astro:before-swap', () => {
+    currentRowObserver?.disconnect();
+    currentRowObserver = null;
+  });
 </script>
 
 <script>

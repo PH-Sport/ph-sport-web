@@ -1,5 +1,6 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
+import Slate from '@/components/ui/Slate.astro';
 
 interface Props {
   lang: Lang;
@@ -9,19 +10,27 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 ---
 
+{/* El cierre de la portada: «Hablemos.» a escala de rótulo y el correo como
+    la acción. La imagen sale del negro al entrar (revelado); en el móvil va
+    debajo, en franja. */}
 <section class="home-contact" id="contacto" aria-labelledby="home-contact-title">
   <div class="home-contact__grid">
     <header class="home-contact__head">
-      <span class="home-contact__eyebrow">{t('home.contact.eyebrow')}</span>
-      <h2 class="home-contact__title" id="home-contact-title">{t('home.contact.title')}</h2>
-      <div class="home-contact__email">
+      <Slate text={t('home.contact.eyebrow')} />
+      <h2 class="home-contact__title" id="home-contact-title" data-m="title" data-reveal>{t('home.contact.title')}</h2>
+      <div class="home-contact__email ph-seam" data-inview>
         <span class="home-contact__email-label">{t('home.contact.emailLabel')}</span>
-        <a href={`mailto:${t('home.contact.email')}`}>{t('home.contact.email')}</a>
+        <a href={`mailto:${t('home.contact.email')}`} class="home-contact__email-link">
+          <span class="home-contact__email-text">{t('home.contact.email')}</span>
+          <span class="home-contact__email-arrow" aria-hidden="true">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"><path d="M2.5 9.5 9.5 2.5M4 2.5h5.5V8" /></svg>
+          </span>
+        </a>
       </div>
     </header>
 
-    <div class="home-contact__image" aria-hidden="true">
-      <span class="home-contact__image-tag">{t('home.contact.eyebrow')}</span>
+    <div class="home-contact__image ph-develop" aria-hidden="true" data-inview>
+      <div class="home-contact__photo ph-develop__media"></div>
     </div>
   </div>
 </section>
@@ -31,113 +40,131 @@ const t = useTranslations(lang);
     --home-contact-edge: var(--ph-section-px, clamp(20px, 4vw, 48px));
     background: var(--color-ph-bg-2, #15171b);
     color: var(--color-ph-white, #ffffff);
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
     overflow: clip;
   }
 
   .home-contact__grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: stretch;
-    min-height: clamp(420px, 58vw, 640px);
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .home-contact__head {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     justify-content: center;
-    padding: clamp(48px, 7vw, 96px) var(--home-contact-edge);
-  }
-
-  .home-contact__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-contact__eyebrow::before {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
+    padding: clamp(64px, 9vw, 112px) var(--home-contact-edge) clamp(48px, 7vw, 96px);
   }
 
   .home-contact__title {
     font-family: var(--font-display, 'Inter Tight', sans-serif);
     font-weight: 500;
-    font-size: clamp(36px, 6vw, 72px);
-    letter-spacing: -0.03em;
-    line-height: 1.02;
-    margin: 14px 0 0;
+    font-size: clamp(64px, 19vw, 144px);
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+    margin: clamp(28px, 4vw, 44px) 0 0 -0.04em;
   }
 
   .home-contact__email {
-    margin-top: clamp(24px, 4vw, 40px);
+    margin-top: clamp(32px, 5vw, 56px);
     padding-top: 24px;
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    align-self: stretch;
+    gap: 10px;
   }
   .home-contact__email-label {
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-ph-ink-soft, #b5b7bb);
+    font-size: 14px;
+    color: var(--ph-ink-meta);
   }
-  .home-contact__email a {
+  /* El correo es la acción de la página: grande, con su flecha hacia arriba a la
+     derecha que sale y vuelve al señalarlo, y una línea que se dibuja debajo. */
+  .home-contact__email-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    width: fit-content;
+    padding-bottom: 6px;
     font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-size: clamp(20px, 2.4vw, 28px);
+    font-size: clamp(24px, 6.4vw, 40px);
     font-weight: 500;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
     color: var(--color-ph-white, #ffffff);
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
+    -webkit-tap-highlight-color: transparent;
   }
-  @media (hover: hover) {
-    .home-contact__email a:hover { color: var(--color-ph-gold, #d6b25e); }
+  .home-contact__email-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--color-ph-gold, #d6b25e);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform var(--ph-dur-move) var(--ph-ease-out);
+  }
+  .home-contact__email-arrow {
+    position: relative;
+    display: block;
+    width: 0.5em;
+    height: 0.5em;
+    overflow: hidden;
+    color: var(--color-ph-gold, #d6b25e);
+  }
+  .home-contact__email-arrow svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transition: transform var(--ph-dur-move) var(--ph-ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .home-contact__email-link:hover { color: var(--color-ph-gold, #d6b25e); }
+    .home-contact__email-link:hover::after { transform: scaleX(1); }
+    .home-contact__email-link:hover .home-contact__email-arrow svg {
+      animation: ph-contact-arrow var(--ph-dur-move) var(--ph-ease-out);
+    }
+  }
+  .home-contact__email-link:active { color: var(--color-ph-gold, #d6b25e); }
+  .home-contact__email-link:active::after { transform: scaleX(1); transition-duration: var(--ph-dur-tap); }
+  @keyframes ph-contact-arrow {
+    0% { transform: translate(0, 0); }
+    49% { transform: translate(120%, -120%); }
+    50% { transform: translate(-120%, 120%); }
+    100% { transform: translate(0, 0); }
   }
 
   .home-contact__image {
     position: relative;
+    aspect-ratio: 16 / 10;
+    background: var(--color-ph-bg-3, #1c1f24);
+  }
+  .home-contact__photo {
+    position: absolute;
+    inset: 0;
     background:
       linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-      url('/contact-image.webp') center / cover no-repeat,
-      var(--color-ph-bg-3, #1c1f24);
-    border-left: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-  }
-
-  .home-contact__image-tag {
-    position: absolute;
-    top: 16px;
-    left: 16px;
-    padding: 6px 10px;
-    background: rgba(14, 14, 14, 0.6);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    border-radius: var(--radius-sm);
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-white, #ffffff);
+      url('/contact-image.webp') center / cover no-repeat;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .home-contact__email a { transition: none; }
+    .home-contact__email-link,
+    .home-contact__email-link::after,
+    .home-contact__email-arrow svg { transition: none; animation: none; }
   }
 
-  @media (max-width: 900px) {
-    .home-contact__grid { grid-template-columns: 1fr; }
-    .home-contact__image { display: none; }
+  @media (min-width: 901px) {
+    .home-contact__grid {
+      grid-template-columns: 1fr 1fr;
+      min-height: clamp(520px, 58vw, 720px);
+    }
+    .home-contact__title { font-size: clamp(88px, 9vw, 144px); }
+    .home-contact__image {
+      aspect-ratio: auto;
+      border-left: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    }
   }
 </style>
 
@@ -145,7 +172,7 @@ const t = useTranslations(lang);
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, revealOnView, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
+    reducedMotion, stage, mountSection, afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -153,34 +180,8 @@ const t = useTranslations(lang);
   function initHomeContactAnimations(): void {
     const section = document.querySelector<HTMLElement>('.home-contact');
     if (!section) return;
-    if (reducedMotion()) return;
-
-    const eyebrow = section.querySelector<HTMLElement>('.home-contact__eyebrow');
-    const title = section.querySelector<HTMLElement>('.home-contact__title');
-    const head = section.querySelector<HTMLElement>('.home-contact__head');
-    const image = section.querySelector<HTMLElement>('.home-contact__image');
-
-    if (eyebrow && head) {
-      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
-    }
-    if (title) {
-      revealOnView(title, { y: 24, duration: 0.9 });
-    }
-    if (image && window.matchMedia('(min-width: 901px)').matches) {
-      gsap.fromTo(
-        image,
-        { autoAlpha: 0, scale: 1.06 },
-        {
-          autoAlpha: 1,
-          scale: 1,
-          duration: 1.0,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: image, start: 'top 80%', once: true },
-        },
-      );
-    }
-
-    scheduleScrollTriggerRefresh();
+    if (!reducedMotion()) stage(section);
+    mountSection(section);
   }
 
   document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeContactAnimations));

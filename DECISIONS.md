@@ -13,6 +13,129 @@ leído el resto.
 
 ---
 
+## 2026-10-02 · Lenguaje de movimiento «Marcador»: la web se mueve como el marcador de un estadio
+
+> **Estado: propuesta en la rama `feat/rediseno-motion`, sin fusionar.** Se hizo en
+> una rama paralela a `preview` a petición de Mario, para verla sin mezclarla con el
+> trabajo en curso. Si no se fusiona, esta entrada se queda en esa rama y no existe
+> en `preview` ni en `main`.
+
+**Decisión** (pedido por Mario: rediseñar la web «como un showreel» en el lenguaje
+de los motion graphics, móvil primero, sin tocar textos, secciones, paleta,
+tipografías ni fotos de jugadores, y con las decisiones de diseño delegadas): todo
+el movimiento de la web pasa a un solo lenguaje, el de un **marcador de estadio de
+noche** bajo el rótulo de neón de la portada. Cómo funciona, en
+`ARCHITECTURE.md` («Sistema de animaciones»). En corto:
+
+- **Los datos caen en paletas** (split-flap): los números de sección, de las filas,
+  las cifras de la home (7, 360°), los romanos de los pilares (cuentan I → II →
+  III en una sola paleta) y los códigos de país. Las paletas caen con gravedad y
+  frenan contra el tope; las letras de los tableros (valores, sedes) pasan por el
+  abecedario hasta la suya.
+- **Los titulares entran rodando** palabra a palabra por su ranura; **las líneas
+  del tablero se dibujan** de izquierda a derecha, en cascada; **las fotos se
+  revelan** saliendo del negro, por filas.
+- **Una sola luz** dorada viaja en la diagonal del logo, hacia arriba a la
+  derecha: el destello de las palabras doradas, el de las tecla y el del logo al
+  señalarlos, y la banda que cruza la pantalla al cambiar de página (al revés al
+  volver atrás).
+- **La intro de la portada es una paleta a pantalla completa**: el logo se dibuja
+  con el tamaño y en el sitio exactos del rótulo de neón del vídeo, y las dos
+  mitades se pliegan hacia la bisagra y descubren el neón en el mismo sitio (un
+  corte a juego). Sigue siendo CSS puro, con las reglas de `docs/trampas-conocidas.md`.
+- **El grid de talentos se reordena con FLIP** (GSAP Flip) al filtrar, buscar u
+  ordenar: cada ficha se desliza a su sitio nuevo en vez de saltar.
+
+**Cómo se eligió.** Se investigaron los principios (Material 3, Apple HIG, los 12
+de *UX in Motion*, los de animación de Disney aplicados a motion design y los
+paquetes gráficos de televisión de Premier League, Champions y LaLiga). De ahí las
+curvas y tiempos: las de Material 3 más la de la marca, dos velocidades (interfaz
+120-320 ms; momentos de autor 600-800 ms) y salidas más rápidas que entradas. La
+dirección se eligió entre siete tradiciones gráficas del fútbol, ordenadas por lo
+que resuenan con este público: el túnel de vestuarios con su espectáculo de luces,
+el paquete gráfico de retransmisión, la pizarra de análisis táctico, el álbum de
+cromos, los gráficos del cierre de mercado, **el marcador de paletas** y las vallas
+LED del estadio. Se construyó la sexta por sorteo (el método de la skill de diseño
+`impeccable`, que obliga a no quedarse con la primera idea de la categoría), y se
+reforzó con lo mejor de las otras: pasos mecánicos en vez de transiciones suaves en
+las letras, fotos que se revelan en vez de fundirse, una sola escala para las
+etiquetas, un solo sentido para toda la luz, y las costuras del tablero dibujadas.
+
+**Por qué el marcador encaja con el contenido**: la web está llena de datos
+tabulares —números de sección y de área, cifras, un equipo de 21 con cargo y
+sede, siete sedes con su código— que en un marcador tienen su forma natural. El
+movimiento explica algo en cada sitio: qué ha cambiado (filtros, cifras), en qué
+orden se lee (cascadas) y hacia dónde se navega (la luz entre páginas).
+
+**Alternativas descartadas**:
+
+- *El paquete de retransmisión al uso* (barras, cortinillas en diagonal, rótulos
+  inferiores): la dirección que cualquiera esperaría para una web de fútbol;
+  quedó segunda.
+- *Cortinilla geométrica en el propio cambio de página* (recortar la página nueva
+  con `clip-path` en la View Transition). Descartada al leer el router de Astro:
+  la foto de la página nueva se toma **después** de restaurar el scroll, así que al
+  volver atrás o al ir a un ancla (`/#contacto`) la página está desplazada y el
+  recorte barre una zona que no se ve. La luz va en una pieza fija a la pantalla
+  con su propio nombre de View Transition, que no depende del scroll. Tampoco se
+  tocó el nombre `page-main` ni su fundido: es la zona que `hallazgos-abiertos.md`
+  pide no tocar sin Mario.
+- *Paletas 3D también en los titulares*: ilegible y pesado; los titulares ruedan.
+- *Animaciones guiadas por scroll en CSS* (`animation-timeline`): en octubre de 2026
+  Firefox aún no las trae por defecto, y el proyecto ya tiene GSAP y un
+  IntersectionObserver para lo mismo.
+- *Rebotes y elásticos*: la marca no rebota. Se cambió también la curva con rebote
+  que tenía la barrita dorada del menú.
+
+**Qué cambia además** (decidido al construirlo):
+
+- **Piezas nuevas**: `Flap`, `FlapText`, `Slate` (la fila índice de cada bloque,
+  que antes se escribía a mano en tres secciones) y `Key` (el botón-enlace), en
+  `src/components/ui/`; y `src/scripts/ph-motion.ts`, el núcleo sin GSAP.
+- **Las etiquetas pasan a una sola escala** (13-15 px, letra normal) y la
+  monoespaciada queda solo para las cifras y códigos de las paletas, como se
+  decidió el 2026-10-01. Los antetítulos de la home y de Sobre nosotros, que eran
+  monoespaciada en mayúsculas, pasan a la fila índice; los valores, los cargos y
+  las sedes, a letra normal.
+- **Rótulos hasta 9rem (144 px).** Los titulares de una o dos palabras que son el
+  bloque («El roster.» en la home, «Hablemos.», «Madrid.») van a escala de
+  rótulo: es el recurso de tipografía en movimiento del lenguaje. La revisión de
+  diseño propuso el tope habitual de 6rem; se dejó en 9rem, por debajo de los 200
+  px que llegó a tener el primer montaje. **Los titulares de cabecera de
+  Talentos, Servicios y Sobre nosotros no cambian**: siguen en el máximo de 106 px
+  de la entrada del 2026-10-01.
+- **La fila índice se queda en cada bloque.** La revisión de diseño la marca como
+  antetítulo (un patrón que su sistema veta), pero su texto es contenido que no
+  se toca y la fila es la cabecera que eligió Mario el 2026-10-01. Pendiente de
+  que Mario diga si la quiere en todos los bloques o solo en las cabeceras de
+  página.
+- **El menú móvil pierde los números 01-04** delante de cada página: repetían el
+  orden del menú sin decir nada más. Quedan las filas con su línea y la cascada.
+  Tampoco se repite ya «05 · Contacto» sobre la foto de contacto, al lado de su
+  propia fila índice.
+- **Sobre nosotros**: los párrafos ya no entran palabra a palabra con desenfoque
+  (era el tirón medido en `rendimiento.md`); la tabla del equipo pasa a cuatro
+  columnas (la sede caía en una línea aparte debajo del número desde antes de
+  este cambio).
+- **Portada**: la imagen de contacto se ve también en el móvil, en franja; el
+  marcador de cifras va a dos columnas solo desde 1200 px.
+- **Se arregla la fuga de listeners de scroll de la home** (`hallazgos-abiertos.md`).
+- **Se retiran** `revealOnView`, `trackingReveal`, `counterReveal`, `splitWords` y
+  `scrambleReveal` de `ph-text-animations.ts`: este cambio dejó de usarlas.
+
+**Consecuencias**:
+
+- Red de seguridad en CSS para todo lo que espera a entrar en pantalla: si el JS
+  no llega, a los 2,5 s se ve todo. Ahora cubre también `data-reveal`, que antes
+  solo tenía red en JS.
+- Peso: +3 KB comprimidos de JS en las páginas animadas (las curvas a medida de
+  GSAP) y +10 KB en `/talentos` (Flip). El núcleo de movimiento (2 KB) se carga
+  ahora también en las páginas legales, por la cabecera y el pie. Cifras en
+  `docs/rendimiento.md`.
+- **No se ha probado en un móvil real** (`docs/hallazgos-abiertos.md`).
+
+---
+
 ## 2026-10-02 · El entrenador vuelve al grid de `/talentos`, al final
 
 **Decisión**: Thomas Christiansen (Seleccionador de Panamá) vuelve a mostrarse en

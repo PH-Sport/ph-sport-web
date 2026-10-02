@@ -207,24 +207,45 @@ const organizationJsonLd = {
         atributo `style` del elemento, que ganan a cualquier regla y hacían
         imposible ocultarlo. Esto es una hoja normal, así que la regla de
         `ph-sin-intro` funciona. */}
+    {/* La intro es una paleta de marcador a pantalla completa (LogoReveal.astro):
+        el logo se dibuja con el tamaño y en el sitio del rótulo de neón del vídeo
+        —las dos fórmulas de ancho salen del encuadre del render, `scale` en
+        scripts/hero-neon/neon.html, con la cámara en la pose con la que arranca el
+        encendido (distancia 1,22): 0,48 del alto en apaisado y 0,70 del ancho en
+        vertical, entre 1,22, con `cover`— y a 0,9 s las dos mitades se pliegan
+        hacia la bisagra con gravedad y descubren el neón en el mismo sitio. La
+        bisagra se ve desde el principio (una raya oscura que parte el logo, como
+        en las paletas del marcador) y se enciende en dorado al plegarse. El fondo
+        negro del overlay tapa la raya de un píxel que podría quedar entre las
+        mitades hasta que empiezan a plegarse. */}
     {intro && (
       <style is:inline set:html={`
-[data-logo-reveal-overlay]{--e-trazo:cubic-bezier(.77,0,.175,1);--e-color:cubic-bezier(.645,.045,.355,1);--e-salida:cubic-bezier(.95,.05,.795,.035);position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background-color:#0d0f12;view-transition-name:ph-intro;touch-action:none;animation:ph-intro-salir .18s linear 1.08s forwards}
+[data-logo-reveal-overlay]{--e-trazo:cubic-bezier(.77,0,.175,1);--e-color:cubic-bezier(.645,.045,.355,1);--e-caida:cubic-bezier(.3,0,.8,.15);position:fixed;inset:0;z-index:9999;background-color:#0d0f12;perspective:1400px;perspective-origin:50% 50%;view-transition-name:ph-intro;touch-action:none;animation:ph-intro-fondo 0s linear .9s forwards,ph-intro-salir .12s linear 1.18s forwards}
 html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
 @media (prefers-reduced-motion:reduce){[data-logo-reveal-overlay]{display:none}}
-.logo-reveal-container{width:120px;color:#fff;animation:ph-intro-color .18s var(--e-color) .55s forwards}
-@media (min-width:1024px){.logo-reveal-container{width:220px}}
+.intro-half{position:absolute;left:0;right:0;height:50%;overflow:hidden;background-color:#0d0f12}
+.intro-half--top{top:0;transform-origin:50% 100%;animation:ph-intro-pliegue-arriba .3s var(--e-caida) .9s both}
+.intro-half--bottom{bottom:0;transform-origin:50% 0;animation:ph-intro-pliegue-abajo .3s var(--e-caida) .9s both}
+[data-logo-reveal-overlay]::before,[data-logo-reveal-overlay]::after{content:'';position:absolute;z-index:1;left:0;right:0;top:50%;height:1px;margin-top:-.5px}
+[data-logo-reveal-overlay]::before{background:rgba(13,15,18,.9)}
+[data-logo-reveal-overlay]::after{background:#D6B25E;opacity:0;animation:ph-intro-bisagra .1s linear .9s forwards}
+[data-logo-reveal-overlay] .logo-reveal-container{position:absolute;left:50%;width:max(27.9vw,49.6vh);color:#fff;transform:translate(-50%,-50%);animation:ph-intro-color .18s var(--e-color) .55s forwards}
+@media (max-aspect-ratio:9/10){[data-logo-reveal-overlay] .logo-reveal-container{width:max(57.4vw,26.5vh)}}
+.intro-half--top .logo-reveal-container{top:100%}
+.intro-half--bottom .logo-reveal-container{top:0}
 [data-logo-reveal-overlay] svg{display:block;width:100%;height:auto;overflow:visible}
-[data-logo-line1],[data-logo-line2]{fill-opacity:0;transform-box:fill-box;transform-origin:center}
-[data-logo-line1]{animation:ph-intro-trazo-1 .52s var(--e-trazo) 0s both,ph-intro-relleno .2s var(--e-color) .66s forwards,ph-intro-sin-trazo .12s linear .84s forwards,ph-intro-salida-izq .28s var(--e-salida) .96s forwards}
-[data-logo-line2]{animation:ph-intro-trazo-2 .45s var(--e-trazo) .2s both,ph-intro-relleno .2s var(--e-color) .66s forwards,ph-intro-sin-trazo .12s linear .84s forwards,ph-intro-salida-der .28s var(--e-salida) .96s forwards}
+[data-logo-line1],[data-logo-line2]{fill-opacity:0}
+[data-logo-line1]{animation:ph-intro-trazo-1 .52s var(--e-trazo) 0s both,ph-intro-relleno .18s var(--e-color) .62s forwards,ph-intro-sin-trazo .12s linear .78s forwards}
+[data-logo-line2]{animation:ph-intro-trazo-2 .45s var(--e-trazo) .2s both,ph-intro-relleno .18s var(--e-color) .62s forwards,ph-intro-sin-trazo .12s linear .78s forwards}
 @keyframes ph-intro-trazo-1{from{stroke-dashoffset:753}to{stroke-dashoffset:0}}
 @keyframes ph-intro-trazo-2{from{stroke-dashoffset:637}to{stroke-dashoffset:0}}
 @keyframes ph-intro-color{to{color:#D6B25E}}
 @keyframes ph-intro-relleno{from{fill-opacity:0}to{fill-opacity:1}}
 @keyframes ph-intro-sin-trazo{from{stroke-opacity:1}to{stroke-opacity:0}}
-@keyframes ph-intro-salida-izq{from{transform:translateX(0);opacity:1}to{transform:translateX(-300%);opacity:0}}
-@keyframes ph-intro-salida-der{from{transform:translateX(0);opacity:1}to{transform:translateX(300%);opacity:0}}
+@keyframes ph-intro-fondo{to{background-color:transparent}}
+@keyframes ph-intro-pliegue-arriba{to{transform:rotateX(-90deg)}}
+@keyframes ph-intro-pliegue-abajo{to{transform:rotateX(90deg)}}
+@keyframes ph-intro-bisagra{to{opacity:1}}
 @keyframes ph-intro-salir{from{opacity:1}99%{opacity:0;visibility:visible;pointer-events:auto}to{opacity:0;visibility:hidden;pointer-events:none}}
 `} />
     )}
@@ -255,6 +276,11 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
       <slot />
     </main>
     <Footer />
+    {/* La luz que cruza la pantalla al cambiar de página (`.ph-stinger` en
+        global.css; la arranca src/scripts/ph-motion.ts). Va fija a la pantalla y
+        con su propio nombre de View Transition: así se pinta por encima de la
+        página que cambia y por debajo de la cabecera. */}
+    <div class="ph-stinger" data-stinger aria-hidden="true"></div>
 
     <script>
       /* El alto de pantalla se mide una vez y se queda quieto.

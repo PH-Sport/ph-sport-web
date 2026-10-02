@@ -105,6 +105,27 @@
   --ph-ink-lead: rgba(255, 255, 255, 0.9);
   --ph-ink-body: rgba(255, 255, 255, 0.82);
   --ph-ink-meta: rgba(255, 255, 255, 0.62);
+
+  /* ── Movimiento: lenguaje «Marcador» ──
+     Dos velocidades. La del interfaz responde a un gesto y no se hace esperar
+     (120-320 ms); la de autor es la de las entradas de sección (600-800 ms). Las
+     curvas son las de Material 3 más la de la marca, y las mismas existen en JS
+     con el mismo nombre (src/scripts/ph-motion.ts). Ver ARCHITECTURE.md,
+     «Sistema de animaciones». */
+  --ph-ease-out:  cubic-bezier(0.16, 1, 0.3, 1);   /* llegada: frena como algo con masa */
+  --ph-ease-emph: cubic-bezier(0.05, 0.7, 0.1, 1); /* entrada enfatizada (M3) */
+  --ph-ease-std:  cubic-bezier(0.2, 0, 0, 1);      /* cambio de estado (M3 estándar) */
+  --ph-ease-in:   cubic-bezier(0.3, 0, 0.8, 0.15); /* salida: acelera, como lo que cae (M3) */
+  --ph-dur-tap:   120ms;  /* respuesta a un toque */
+  --ph-dur-state: 200ms;  /* hover, color, estado */
+  --ph-dur-move:  320ms;  /* algo que se desplaza: menú, panel, flecha */
+  --ph-dur-draw:  640ms;  /* una línea que se dibuja */
+  --ph-dur-roll:  760ms;  /* un titular que entra rodando */
+
+  /* Las dos caras de una paleta del marcador: la de arriba un punto más clara,
+     como la luz que cae desde arriba sobre el panel. */
+  --ph-flap-top:    #1d2025;
+  --ph-flap-bottom: #15171b;
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -365,6 +386,29 @@ strong {
 ::-webkit-scrollbar-track { background: var(--color-ph-black); }
 ::-webkit-scrollbar-thumb { background: var(--color-ph-gold-muted); border-radius: 3px; }
 
+/* Firefox no lee los pseudo-elementos de arriba: mismo color con la propiedad
+   estándar. */
+@supports not selector(::-webkit-scrollbar) {
+  html { scrollbar-color: var(--color-ph-gold-muted) var(--color-ph-black); scrollbar-width: thin; }
+}
+
+/* El cursor de texto, en el oro de la marca, como la selección. */
+input, textarea { caret-color: var(--color-ph-gold); }
+
+/* Texto solo para lectores de pantalla (la cifra de una ficha del marcador, por
+   ejemplo: se ve dividida en paletas y se lee entera). */
+.ph-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ── Word-curtain helpers (ph-text-animations.ts) ──────────────────────────── */
 
 .ph-clip {
@@ -378,19 +422,6 @@ strong {
 
 .ph-clip-inner {
   display: inline-block;
-}
-
-/* ── Logo reveal ───────────────────────────────────────────────────────────── */
-
-.logo-reveal-container {
-  width: 120px;
-  overflow: visible;
-}
-
-@media (min-width: 1024px) {
-  .logo-reveal-container {
-    width: 220px;
-  }
 }
 
 /* ── Fondo animado de página (src/scripts/ph-ambient.ts) ──────────────────────
@@ -424,32 +455,29 @@ strong {
    (`--ph-head-*`). */
 
 /* Fila índice: una línea fina con una etiqueta a la izquierda y un dato a la
-   derecha. Ordena la página: número de sección, «Áreas de gestión», valores. */
+   derecha. Ordena la página: número de sección, «Áreas de gestión», valores.
+   Es la «pizarra» del marcador: la línea se dibuja al entrar en pantalla y las
+   cifras van en paletas (`.ph-flap`). La pinta `Slate.astro`. */
 .ph-rowline {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  align-items: baseline;
-  gap: 6px 24px;
+  align-items: center;
+  gap: 8px 24px;
   margin: 0;
   /* A veces es un <p>: sin esto heredaría el tope de 65ch de los párrafos y la
      línea se cortaría a media pantalla. */
   max-width: none;
   padding-top: var(--ph-head-index-pad);
-  border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
 }
 .ph-rowline__group {
   display: inline-flex;
-  align-items: baseline;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
 }
-/* Números (02, 05 disciplinas…): lo único que va en monoespaciada. */
-.ph-rowline__num {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  color: var(--color-ph-gold);
-}
+/* Los números (02, 05 disciplinas…) van en paletas del marcador (`Flap.astro`):
+   lo único que va en monoespaciada. */
 .ph-rowline__sep {
   color: rgba(255, 255, 255, 0.3);
 }
@@ -463,6 +491,23 @@ strong {
   font-size: 13px;
   letter-spacing: 0.05em;
   color: var(--ph-ink-meta);
+}
+
+/* Pizarra (`Slate.astro`): la etiqueta y el dato suben por su ranura detrás de la
+   línea, que se dibuja primero. */
+.ph-slate__label {
+  display: inline-flex;
+  overflow: hidden;
+  padding-block: 0.12em;
+}
+.ph-slate__label > * {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  transition: transform var(--ph-dur-roll) var(--ph-ease-out) 140ms;
+}
+html.ph-anim .ph-slate:not(.is-inview) .ph-slate__label > * {
+  transform: translateY(115%);
 }
 
 .ph-head-title {
@@ -488,4 +533,374 @@ strong {
   letter-spacing: -0.005em;
   color: var(--ph-ink-lead);
   text-wrap: balance;
+}
+
+/* ══ LENGUAJE «MARCADOR» ════════════════════════════════════════════════════
+   Las piezas comunes del movimiento. Cómo encajan y por qué, en ARCHITECTURE.md
+   («Sistema de animaciones»). Regla de todas: el estado de reposo es el
+   visible. Lo que espera a entrar en pantalla solo se esconde con `ph-anim` en
+   <html> (hay JS y no hay movimiento reducido) y tiene red de seguridad abajo. */
+
+/* ── Costura: una línea que se dibuja de izquierda a derecha ────────────────
+   La de la fila índice y la de cualquier `.ph-seam`. El JS le pone `is-inview`
+   al entrar en pantalla; el retardo de cada una, si va en cascada, en
+   `--ph-seam-delay`. */
+.ph-seam { position: relative; }
+.ph-rowline::before,
+.ph-seam::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--ph-seam-color, rgba(255, 255, 255, 0.14));
+  transform-origin: 0 50%;
+  transition: transform var(--ph-dur-draw) var(--ph-ease-out) var(--ph-seam-delay, 0ms);
+  pointer-events: none;
+}
+html.ph-anim .ph-rowline:not(.is-inview)::before,
+html.ph-anim .ph-seam:not(.is-inview)::before {
+  transform: scaleX(0);
+}
+
+/* ── Paletas del marcador (`Flap.astro`) ────────────────────────────────────
+   Cada carácter va en su paleta: dos caras partidas por una bisagra. Al entrar
+   en pantalla las paletas caen, una tras otra, hasta su valor (ph-motion.ts). El
+   HTML ya trae el valor final: sin JS o con movimiento reducido se ve tal cual. */
+.ph-flap {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--color-ph-gold);
+}
+.ph-flap--md { font-size: 15px; }
+.ph-flap--lg { font-size: clamp(20px, calc(1.2vw + 15px), 28px); }
+.ph-flap--xl { font-size: clamp(38px, calc(4.2vw + 22px), 72px); }
+.ph-flap__cells {
+  display: inline-flex;
+  gap: 0.16em;
+}
+.ph-flap__cell {
+  --flap-h: 1.9em;
+  position: relative;
+  display: inline-block;
+  min-width: 1.5em;
+  height: var(--flap-h);
+  padding-inline: 0.22em;
+  line-height: var(--flap-h);
+  text-align: center;
+  background: linear-gradient(to bottom, var(--ph-flap-top) 50%, var(--ph-flap-bottom) 50%);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.45);
+  perspective: 6em;
+}
+.ph-flap--xl .ph-flap__cell { border-radius: 6px; min-width: 1.3em; --flap-h: 1.5em; }
+/* La bisagra: la raya que parte la paleta en dos. Es lo que hace que se lea como
+   marcador aun quieta. */
+.ph-flap__cell::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  margin-top: -0.5px;
+  background: rgba(13, 15, 18, 0.92);
+  z-index: 4;
+  pointer-events: none;
+}
+.ph-flap__char { display: block; }
+html.ph-anim .ph-flap:not(.is-flapped) .ph-flap__cell:not(.is-set) .ph-flap__char { opacity: 0; }
+
+/* Las capas de la caída: las crea el JS mientras dura y las quita al terminar.
+   Arriba la cara que cae (gira sobre la bisagra hacia el que mira) y abajo la
+   que llega. */
+.ph-flap__half {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+.ph-flap__half > span {
+  display: block;
+  height: var(--flap-h);
+  line-height: var(--flap-h);
+}
+.ph-flap__half--top {
+  top: 0;
+  background: var(--ph-flap-top);
+  border-radius: 3px 3px 0 0;
+  transform-origin: 50% 100%;
+}
+.ph-flap__half--bottom {
+  bottom: 0;
+  background: var(--ph-flap-bottom);
+  border-radius: 0 0 3px 3px;
+  transform-origin: 50% 0;
+}
+.ph-flap__half--bottom > span { transform: translateY(-50%); }
+.ph-flap__leaf { z-index: 2; }
+.ph-flap__half--bottom.ph-flap__leaf { transform: rotateX(90deg); }
+
+/* ── Tecla: el botón de la web ──────────────────────────────────────────────
+   Al pasar el ratón, una luz barre la tecla en la diagonal del logo, la palabra
+   rueda (sale por arriba y vuelve a entrar por abajo) y la flecha sale por la
+   esquina de arriba y vuelve por la de abajo: siempre hacia arriba a la derecha.
+   Al pulsarla se hunde un poco. La pinta `Key.astro`. */
+.ph-key {
+  --key-line: rgba(255, 255, 255, 0.24);
+  --key-ink: var(--color-ph-white);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 48px;
+  padding: 0 16px 0 20px;
+  border: 1px solid var(--key-line);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  color: var(--key-ink);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  isolation: isolate;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color var(--ph-dur-state) var(--ph-ease-std),
+    color var(--ph-dur-state) var(--ph-ease-std),
+    transform var(--ph-dur-tap) var(--ph-ease-std);
+}
+.ph-key--gold {
+  --key-line: rgba(214, 178, 94, 0.6);
+  --key-ink: var(--color-ph-gold);
+}
+.ph-key::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -56px;
+  right: -56px;
+  z-index: -1;
+  background: rgba(214, 178, 94, 0.12);
+  transform: translateX(-101%) skewX(45deg);
+  transition: transform var(--ph-dur-move) var(--ph-ease-out);
+}
+.ph-key__label {
+  display: grid;
+  overflow: hidden;
+  /* Un pelo más alto que la línea para que la cola de la g o la j no se corte. */
+  padding-block: 0.15em;
+}
+.ph-key__text {
+  grid-area: 1 / 1;
+  transition: transform var(--ph-dur-move) var(--ph-ease-out);
+}
+.ph-key__text + .ph-key__text { transform: translateY(125%); }
+.ph-key__arrow {
+  position: relative;
+  display: block;
+  width: 12px;
+  height: 12px;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+.ph-key__arrow svg {
+  position: absolute;
+  inset: 0;
+  width: 12px;
+  height: 12px;
+  transition: transform var(--ph-dur-move) var(--ph-ease-out);
+}
+.ph-key__arrow svg + svg { transform: translate(-130%, 130%); }
+
+@media (hover: hover) and (pointer: fine) {
+  .ph-key:hover {
+    --key-line: var(--color-ph-gold);
+    color: var(--color-ph-gold);
+  }
+  .ph-key:hover::before { transform: translateX(0) skewX(45deg); }
+  .ph-key:hover .ph-key__text:first-child { transform: translateY(-125%); }
+  .ph-key:hover .ph-key__text + .ph-key__text { transform: none; }
+  .ph-key:hover .ph-key__arrow svg:first-child { transform: translate(130%, -130%); }
+  .ph-key:hover .ph-key__arrow svg + svg { transform: none; }
+}
+/* En pantalla táctil la respuesta es al dedo: la luz y el hundimiento, sin la
+   palabra rodando (no hay «hover» que deshacer después). */
+.ph-key:active {
+  transform: scale(0.97);
+  transition-duration: 80ms;
+}
+.ph-key:active::before {
+  transform: translateX(0) skewX(45deg);
+  transition-duration: var(--ph-dur-tap);
+}
+
+/* ── Revelado: las fotos salen del negro como una copia en la cubeta ────────
+   No es un fundido: el tono llega por partes. Primero asoman las luces (la
+   camiseta, el halo dorado) muy contrastadas y en blanco y negro; después se
+   rellenan los medios tonos y, al final, entra el color. La imagen se asienta a
+   la vez (de 1,06 a 1). Una vez por foto. `filter` y `transform` van por la
+   tarjeta gráfica. */
+.ph-develop {
+  position: relative;
+  overflow: hidden;
+}
+.ph-develop__media {
+  transition:
+    filter 1300ms cubic-bezier(0.45, 0, 0.25, 1) var(--ph-develop-delay, 0ms),
+    transform 1400ms var(--ph-ease-out) var(--ph-develop-delay, 0ms);
+}
+html.ph-anim .ph-develop:not(.is-inview) .ph-develop__media {
+  filter: brightness(0.12) contrast(2.2) saturate(0);
+  transform: scale(1.06);
+}
+
+/* ── Destello: la luz que cruza una palabra dorada, una sola vez ────────────
+   Lo pone y lo quita el JS (`glint` en ph-motion.ts); en reposo el texto es de
+   color liso. La banda va a 45°: entra por abajo a la izquierda y sale por arriba
+   a la derecha, como la flecha del logo. */
+.ph-glint {
+  background-image: linear-gradient(
+    45deg,
+    currentColor 0 44%,
+    rgba(255, 246, 222, 0.98) 50%,
+    currentColor 56% 100%
+  );
+  background-size: 320% 100%;
+  background-repeat: no-repeat;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* La cursiva se sale de su caja por la derecha y el fondo solo pinta dentro
+     de la caja: sin este margen, la última letra perdería la punta mientras pasa
+     la luz. El margen negativo lo compensa y no mueve nada. */
+  padding-inline: 0.06em 0.18em;
+  margin-inline: -0.06em -0.18em;
+  animation: ph-glint 1100ms var(--ph-ease-std) var(--ph-glint-delay, 0ms) both;
+}
+@keyframes ph-glint {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+
+/* ── Paso entre páginas: la luz que cruza ───────────────────────────────────
+   Mientras la página vieja se apaga y entra la nueva (el telón de BaseLayout),
+   una banda de luz dorada cruza la pantalla en la diagonal del logo: hacia arriba
+   a la derecha al avanzar, al revés al volver atrás. Va fija a la pantalla y con
+   nombre propio de View Transition, así se pinta por encima de la página y por
+   debajo de la cabecera, y no depende del tamaño de la página ni del scroll. La
+   arranca ph-motion.ts en `astro:before-swap`. */
+.ph-stinger {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+  view-transition-name: ph-stinger;
+}
+.ph-stinger::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 28vmax;
+  height: 260vmax;
+  margin: -130vmax 0 0 -14vmax;
+  background: linear-gradient(
+    to right,
+    rgba(214, 178, 94, 0) 0%,
+    rgba(214, 178, 94, 0.06) 70%,
+    rgba(214, 178, 94, 0.22) 97%,
+    #d6b25e 99.6%,
+    rgba(214, 178, 94, 0) 100%
+  );
+  opacity: 0;
+  transform: rotate(-45deg) translateX(-110vmax);
+}
+.ph-stinger.is-running::before {
+  animation: ph-stinger 560ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+/* Al volver atrás, al revés. El sentido lo apunta el JS en la propia pieza
+   (`is-back`) y no se lee del `data-astro-transition` de <html>: Astro lo quita
+   al acabar la View Transition, a mitad de la pasada, y la animación saltaría a
+   la de avanzar. */
+.ph-stinger.is-back::before {
+  background: linear-gradient(
+    to left,
+    rgba(214, 178, 94, 0) 0%,
+    rgba(214, 178, 94, 0.06) 70%,
+    rgba(214, 178, 94, 0.22) 97%,
+    #d6b25e 99.6%,
+    rgba(214, 178, 94, 0) 100%
+  );
+}
+.ph-stinger.is-running.is-back::before {
+  animation-name: ph-stinger-back;
+}
+@keyframes ph-stinger {
+  0% { opacity: 1; transform: rotate(-45deg) translateX(-110vmax); }
+  100% { opacity: 1; transform: rotate(-45deg) translateX(110vmax); }
+}
+@keyframes ph-stinger-back {
+  0% { opacity: 1; transform: rotate(-45deg) translateX(110vmax); }
+  100% { opacity: 1; transform: rotate(-45deg) translateX(-110vmax); }
+}
+/* Literales a propósito: `var()` no hereda en el árbol `::view-transition`
+   (docs/trampas-conocidas.md). La vieja se oculta: si se fotografiara a medio
+   cruzar (dos navegaciones seguidas), la banda se quedaría congelada encima. */
+::view-transition-group(ph-stinger),
+::view-transition-new(ph-stinger) {
+  animation: none;
+}
+::view-transition-old(ph-stinger) {
+  display: none;
+}
+
+/* ── Red de seguridad ───────────────────────────────────────────────────────
+   `ph-motion` lo pone en <html> el JS de movimiento al arrancar. Si no llega
+   nunca (un error, un bloqueador), a los 2,5 s se ve todo en su estado final:
+   también lo que espera a GSAP con `data-reveal` (BaseLayout), que hasta ahora
+   solo tenía red de seguridad en JS y se quedaba oculto si no llegaba ningún
+   módulo. */
+@keyframes ph-motion-failsafe {
+  to { opacity: 1; transform: none; visibility: visible; filter: none; }
+}
+html.ph-anim:not(.ph-motion) .ph-rowline::before,
+html.ph-anim:not(.ph-motion) .ph-seam::before,
+html.ph-anim:not(.ph-motion) .ph-flap__char,
+html.ph-anim:not(.ph-motion) .ph-develop__media,
+html.ph-anim:not(.ph-motion) .ph-slate__label > *,
+html.ph-anim:not(.ph-motion) [data-inview],
+html.ph-anim:not(.ph-motion) [data-inview] > *,
+html.ph-anim:not(.ph-motion) [data-reveal] {
+  animation: ph-motion-failsafe 0s linear 2.5s forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ph-stinger { display: none; }
+  .ph-key,
+  .ph-key::before,
+  .ph-key__text,
+  .ph-key__arrow svg {
+    transition: none;
+  }
 }

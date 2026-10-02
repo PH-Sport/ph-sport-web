@@ -1,5 +1,7 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
+import Slate from '@/components/ui/Slate.astro';
+import Key from '@/components/ui/Key.astro';
 
 interface Props {
   lang: Lang;
@@ -11,28 +13,28 @@ const t = useTranslations(lang);
 const listHref = localizePath('/talentos/', lang);
 ---
 
+{/* Bloque de paso hacia /talentos: la pizarra abre el segmento y el titular
+    ocupa la pantalla del móvil. Sin fotos a propósito: el grid destacado de la
+    portada se quitó en abril para llevar a la lista completa (commit 453e928). */}
 <section class="home-players" id="talentos" aria-labelledby="home-players-title">
+  <Slate text={t('home.players.eyebrow')} />
   <div class="home-players__row">
     <header class="home-players__head">
-      <span class="home-players__eyebrow">{t('home.players.eyebrow')}</span>
-      <h2 class="home-players__title" id="home-players-title">
+      <h2 class="home-players__title" id="home-players-title" data-m="title" data-reveal>
         {t('talents.title')}<em>{t('home.players.titleAccent')}</em>.
       </h2>
-      <p class="home-players__lead">{t('home.players.lead')}</p>
+      <p class="home-players__lead" data-m="lead" data-reveal>{t('home.players.lead')}</p>
     </header>
 
-    <div class="home-players__cta-wrap">
-      <a class="home-players__cta" href={listHref}>
-        {t('home.players.cta')}
-        <span class="home-players__arrow" aria-hidden="true">→</span>
-      </a>
+    <div class="home-players__cta-wrap" data-m="item" data-reveal>
+      <Key href={listHref} label={t('home.players.cta')} tone="gold" />
     </div>
   </div>
 </section>
 
 <style>
   .home-players {
-    padding: clamp(56px, 8vw, 120px) var(--ph-section-px, clamp(20px, 4vw, 48px));
+    padding: clamp(64px, 9vw, 128px) var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(72px, 10vw, 136px);
     background: var(--color-ph-black, #0d0f12);
     color: var(--color-ph-white, #ffffff);
   }
@@ -40,36 +42,21 @@ const listHref = localizePath('/talentos/', lang);
   .home-players__row {
     display: flex;
     flex-direction: column;
-    gap: clamp(28px, 4vw, 48px);
+    gap: clamp(32px, 4vw, 48px);
     align-items: flex-start;
+    margin-top: clamp(28px, 4vw, 48px);
   }
 
-  .home-players__head { max-width: 720px; }
+  .home-players__head { max-width: 980px; }
 
-  .home-players__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-players__eyebrow::before {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-  }
-
+  /* El titular a escala de rótulo: «El roster.» llena el ancho del móvil. */
   .home-players__title {
     font-family: var(--font-display, 'Inter Tight', sans-serif);
     font-weight: 500;
-    font-size: clamp(36px, 6vw, 72px);
-    letter-spacing: -0.03em;
-    line-height: 1.02;
-    margin: 14px 0 0;
+    font-size: clamp(72px, 24vw, 144px);
+    letter-spacing: -0.045em;
+    line-height: 0.86;
+    margin: 0 0 0 -0.04em;
   }
   .home-players__title em {
     color: var(--color-ph-gold, #d6b25e);
@@ -78,11 +65,13 @@ const listHref = localizePath('/talentos/', lang);
   }
 
   .home-players__lead {
-    margin: 18px 0 0;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 15px;
-    line-height: 1.6;
-    max-width: 520px;
+    margin: clamp(20px, 2.5vw, 28px) 0 0;
+    color: var(--ph-ink-lead);
+    font-family: var(--font-display);
+    font-size: var(--ph-head-lead-size);
+    line-height: 1.45;
+    max-width: 30ch;
+    text-wrap: balance;
   }
 
   .home-players__cta-wrap {
@@ -96,41 +85,21 @@ const listHref = localizePath('/talentos/', lang);
       justify-content: space-between;
       gap: clamp(32px, 5vw, 72px);
     }
+    .home-players__title {
+      font-size: clamp(96px, 10vw, 144px);
+    }
     .home-players__cta-wrap {
       flex-shrink: 0;
-      padding-bottom: 6px;
+      padding-bottom: 8px;
     }
   }
-
-  .home-players__cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 20px;
-    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 13px;
-    letter-spacing: 0.01em;
-    color: var(--color-ph-white, #ffffff);
-    text-decoration: none;
-    transition: border-color 0.2s, color 0.2s;
-  }
-  .home-players__cta:hover {
-    border-color: var(--color-ph-gold, #d6b25e);
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-players__cta:hover .home-players__arrow {
-    transform: translateX(4px);
-  }
-  .home-players__arrow { transition: transform 0.2s; }
 </style>
 
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, revealOnView, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
+    reducedMotion, stage, mountSection, afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -138,42 +107,8 @@ const listHref = localizePath('/talentos/', lang);
   function initHomePlayersAnimations(): void {
     const section = document.querySelector<HTMLElement>('.home-players');
     if (!section) return;
-    if (reducedMotion()) return;
-
-    const eyebrow = section.querySelector<HTMLElement>('.home-players__eyebrow');
-    const title = section.querySelector<HTMLElement>('.home-players__title');
-    const lead = section.querySelector<HTMLElement>('.home-players__lead');
-    const head = section.querySelector<HTMLElement>('.home-players__head');
-    const cta = section.querySelector<HTMLElement>('.home-players__cta-wrap');
-
-    if (eyebrow && head) {
-      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
-    }
-    if (title) {
-      revealOnView(title, { y: 24, duration: 0.9 });
-    }
-    if (lead && head) {
-      gsap.from(lead, {
-        opacity: 0,
-        y: 18,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.2,
-        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
-      });
-    }
-    if (cta) {
-      gsap.from(cta, {
-        opacity: 0,
-        y: 14,
-        duration: 0.7,
-        ease: 'power3.out',
-        delay: 0.3,
-        scrollTrigger: { trigger: cta, start: 'top 90%', once: true },
-      });
-    }
-
-    scheduleScrollTriggerRefresh();
+    if (!reducedMotion()) stage(section, { glint: true });
+    mountSection(section);
   }
 
   document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomePlayersAnimations));

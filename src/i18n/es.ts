@@ -347,8 +347,6 @@ const es = {
   'a11y.menu.open': 'Abrir menú',
   'a11y.menu.close': 'Cerrar menú',
   'a11y.close': 'Cerrar',
-  'a11y.rail.prev': 'Anterior',
-  'a11y.rail.next': 'Siguiente',
   'a11y.copyEmail': 'Copiar email',
 } as const;
 

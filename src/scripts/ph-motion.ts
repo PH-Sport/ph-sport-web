@@ -3,10 +3,9 @@
  * src/styles/ph-ui.css), con el lenguaje de movimiento de Mochi.
  *
  * Mochi se usa sin JavaScript en el navegador (React solo al construir), así que lo
- * que reacciona a lo que haces vive aquí: acordeones, pestañas, desplegables, el
- * raíl que se arrastra, la etiqueta que viaja y el botón de copiar que confirma
- * con un check. Las curvas y tiempos son los de Mochi (`--mochi-ease-*`,
- * `--mochi-duration-*`); lo que se mueve con JavaScript usa los mismos muelles.
+ * que reacciona a lo que haces vive aquí: acordeones, pestañas, desplegables, la
+ * etiqueta que viaja y el botón de copiar que confirma con un check. Las curvas y
+ * tiempos son los de Mochi (`--mochi-ease-*`, `--mochi-duration-*`).
  *
  * Reglas (README de Mochi, «Movimiento»): el movimiento responde a lo que hace el
  * usuario. Nada se anima al cargar ni al hacer scroll; todo se puede interrumpir.
@@ -28,39 +27,6 @@ export const reducedMotion = (): boolean => window.matchMedia('(prefers-reduced-
 export function springMs(name: string): number {
   const v = getComputedStyle(document.documentElement).getPropertyValue(`--mochi-duration-${name}`);
   return reducedMotion() ? 0 : parseFloat(v) || 0;
-}
-
-/** Muelles de Mochi (periodo en s, amortiguación) para lo que se mueve con JS. */
-export const SPRINGS = {
-  morph: { period: 0.42, damping: 0.86 },
-  back: { period: 0.34, damping: 0.84 },
-} as const;
-
-/** Anima un número con un muelle, conservando la velocidad inicial. */
-export function spring(opts: { from: number; to: number; v?: number; period: number; damping: number; onUpdate: (x: number) => void; onDone?: () => void }): Cleanup {
-  const { from, to, period, damping, onUpdate, onDone } = opts;
-  if (reducedMotion()) { onUpdate(to); onDone?.(); return () => {}; }
-  const k = Math.pow((2 * Math.PI) / period, 2);
-  const c = 2 * damping * Math.sqrt(k);
-  let x = from - to;
-  let vel = opts.v ?? 0;
-  let last = performance.now();
-  let raf = 0;
-  const step = (now: number) => {
-    let dt = Math.min(0.032, (now - last) / 1000);
-    last = now;
-    while (dt > 0) {
-      const h = Math.min(dt, 1 / 240);
-      vel += (-k * x - c * vel) * h;
-      x += vel * h;
-      dt -= h;
-    }
-    onUpdate(to + x);
-    if (Math.abs(x) < 0.3 && Math.abs(vel) < 4) { onUpdate(to); onDone?.(); return; }
-    raf = requestAnimationFrame(step);
-  };
-  raf = requestAnimationFrame(step);
-  return () => cancelAnimationFrame(raf);
 }
 
 /**
@@ -245,82 +211,6 @@ function initSelects(root: ParentNode) {
   });
 }
 
-/* ── Raíl que se arrastra: en los bordes se estira con resistencia y al soltar
-      vuelve con el muelle «back» y la velocidad que llevaba ─────────────────── */
-function initRails(root: ParentNode) {
-  root.querySelectorAll<HTMLElement>('[data-ph-rail]').forEach((rail) => {
-    const track = rail.querySelector<HTMLElement>('.ph-rail__track');
-    if (!track) return;
-    const rubber = (d: number) => { const C = 140; return (d * 0.55 * C) / (C + 0.55 * Math.abs(d)); };
-    let offset = 0;
-    let stop: Cleanup = () => {};
-    let drag: { x: number; start: number; last: number; t: number; v: number; moved: boolean } | null = null;
-    const setOffset = (v: number) => { offset = v; track.style.transform = v ? `translateX(${v}px)` : ''; };
-    on(rail, 'pointerdown', (e: PointerEvent) => {
-      if (e.pointerType !== 'mouse' || e.button !== 0) return;
-      stop();
-      drag = { x: e.clientX, start: rail.scrollLeft, last: e.clientX, t: performance.now(), v: 0, moved: false };
-      rail.setPointerCapture(e.pointerId);
-    });
-    on(rail, 'pointermove', (e: PointerEvent) => {
-      if (!drag) return;
-      const dx = e.clientX - drag.x;
-      if (Math.abs(dx) > 4) { drag.moved = true; rail.classList.add('is-dragging'); }
-      const now = performance.now();
-      drag.v = ((e.clientX - drag.last) / Math.max(1, now - drag.t)) * 1000;
-      drag.last = e.clientX;
-      drag.t = now;
-      const max = rail.scrollWidth - rail.clientWidth;
-      const target = drag.start - dx;
-      if (target < 0) { rail.scrollLeft = 0; setOffset(rubber(-target)); }
-      else if (target > max) { rail.scrollLeft = max; setOffset(-rubber(target - max)); }
-      else { rail.scrollLeft = target; setOffset(0); }
-    });
-    const end = () => {
-      if (!drag) return;
-      rail.classList.remove('is-dragging');
-      const v = drag.v;
-      drag = null;
-      if (offset) { stop = spring({ from: offset, to: 0, v, ...SPRINGS.back, onUpdate: setOffset }); return; }
-      // Inercia: decelera; si llega al borde, rebota con el mismo muelle.
-      let vel = -v;
-      let last = performance.now();
-      let raf = 0;
-      const glide = (now: number) => {
-        const dt = (now - last) / 1000;
-        last = now;
-        vel *= Math.pow(0.0025, dt);
-        const max = rail.scrollWidth - rail.clientWidth;
-        const next = rail.scrollLeft + vel * dt;
-        if (next < 0 || next > max) {
-          rail.scrollLeft = next < 0 ? 0 : max;
-          stop = spring({ from: 0, to: 0, v: -vel * 0.5, ...SPRINGS.back, onUpdate: setOffset });
-          return;
-        }
-        rail.scrollLeft = next;
-        if (Math.abs(vel) > 20 && !reducedMotion()) raf = requestAnimationFrame(glide);
-      };
-      raf = requestAnimationFrame(glide);
-      stop = () => cancelAnimationFrame(raf);
-    };
-    on(rail, 'pointerup', end);
-    on(rail, 'pointercancel', end);
-    const controls = rail.dataset.phRail ? document.querySelectorAll<HTMLButtonElement>(`[data-ph-rail-step="${rail.dataset.phRail}"]`) : [];
-    controls.forEach((b) => on(b, 'click', () => {
-      stop();
-      const dir = Number(b.dataset.dir);
-      const first = track.firstElementChild as HTMLElement | null;
-      const step = ((first?.getBoundingClientRect().width ?? 280) + 18) * 2 * dir;
-      const max = rail.scrollWidth - rail.clientWidth;
-      const from = rail.scrollLeft;
-      const to = Math.max(0, Math.min(max, from + step));
-      if (from === to) { stop = spring({ from: -18 * dir, to: 0, ...SPRINGS.back, onUpdate: setOffset }); return; }
-      stop = spring({ from, to, ...SPRINGS.morph, onUpdate: (x) => { rail.scrollLeft = x; } });
-    }));
-    cleanups.push(() => stop());
-  });
-}
-
 /* ── Etiqueta flotante única: viaja de un elemento a otro ────────────────── */
 function initTooltips(root: ParentNode) {
   root.querySelectorAll<HTMLElement>('[data-ph-tip-group]').forEach((group) => {
@@ -370,7 +260,6 @@ function init() {
   initAccordions(document);
   initTabs(document);
   initSelects(document);
-  initRails(document);
   initTooltips(document);
   initCopyButtons(document);
 }

@@ -351,8 +351,6 @@ const it: Record<TranslationKey, string> = {
   'a11y.menu.open': 'Apri il menu',
   'a11y.menu.close': 'Chiudi il menu',
   'a11y.close': 'Chiudi',
-  'a11y.rail.prev': 'Precedente',
-  'a11y.rail.next': 'Successivo',
   'a11y.copyEmail': 'Copia email',
 };
 

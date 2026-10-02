@@ -1,7 +1,5 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
-import { buildPlayerDetailPayloadsForLang, getAllRosterEntries } from '@/lib/playerDetail';
-import { nationalTeamBadgeSrc } from '@/lib/nationalTeamBadge';
 import { LinkButton, ArrowRightIcon } from 'mochi-ui';
 
 interface Props {
@@ -12,27 +10,11 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const listHref = localizePath('/talentos/', lang);
-
-/** Los primeros jugadores del roster, en el orden del archivo (el de la lista de
- *  Mario, ver CLAUDE.md): la portada enseña a quién representa la agencia. */
-const RAIL_SIZE = 10;
-const payloads = await buildPlayerDetailPayloadsForLang(lang);
-const players = getAllRosterEntries()
-  .filter((e) => e.role === 'player')
-  .map((e) => payloads[e.slug])
-  .filter(Boolean)
-  .slice(0, RAIL_SIZE)
-  .map((p) => ({
-    ...p,
-    badges: p.nationalTeamCodes
-      .map((code) => nationalTeamBadgeSrc(code))
-      .filter((src): src is string => src !== null),
-  }));
-
-const photoSizes = '(max-width: 720px) 60vw, 300px';
-const railLabel = `${t('talents.title')}${t('home.players.titleAccent')}`;
 ---
 
+{/* Roster de la portada: solo el titular, la entradilla y el botón que lleva a
+    Talentos. Sin jugadores aquí (decisión de Mario, 2026-10-02): el roster se ve
+    en su página. */}
 <section class="home-players" id="talentos" aria-labelledby="home-players-title">
   <div class="home-players__head">
     <div class="home-players__titles">
@@ -42,61 +24,17 @@ const railLabel = `${t('talents.title')}${t('home.players.titleAccent')}`;
       <p class="ph-head-lead">{t('home.players.lead')}</p>
     </div>
     <div class="home-players__actions">
-      <span class="home-players__arrows">
-        <button type="button" class="ph-icon-btn" data-ph-rail-step="home" data-dir="-1" aria-label={t('a11y.rail.prev')} aria-controls="home-rail">
-          <svg class="ph-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
-        </button>
-        <button type="button" class="ph-icon-btn" data-ph-rail-step="home" data-dir="1" aria-label={t('a11y.rail.next')} aria-controls="home-rail">
-          <svg class="ph-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </button>
-      </span>
       <LinkButton href={listHref} variant="surface">
         {t('home.players.cta')}
         <ArrowRightIcon slot="icon" />
       </LinkButton>
     </div>
   </div>
-
-  {/* Raíl que se arrastra con el ratón (en móvil, con el dedo, como un scroll
-      normal). Comportamiento en src/scripts/ph-motion.ts. */}
-  <div class="home-players__rail ph-rail" id="home-rail" data-ph-rail="home" role="region" aria-label={railLabel} tabindex="0">
-    <ul class="ph-rail__track" role="list">
-      {players.map((p) => (
-        <li class="ph-player home-players__card">
-          <div class="ph-player__photo">
-            <picture>
-              {p.photoSrcsetAvif && <source type="image/avif" srcset={p.photoSrcsetAvif} sizes={photoSizes} />}
-              <img
-                src={p.photoSrc}
-                srcset={p.photoSrcset || undefined}
-                sizes={photoSizes}
-                alt={p.name}
-                width="480"
-                height="640"
-                loading="lazy"
-                decoding="async"
-                draggable="false"
-              />
-            </picture>
-          </div>
-          {p.badges.length > 0 && (
-            <div class="ph-player__badges" aria-hidden="true">
-              {p.badges.map((src) => <img src={src} alt="" width="22" height="22" loading="lazy" decoding="async" draggable="false" />)}
-            </div>
-          )}
-          <div class="ph-player__meta">
-            <span class="ph-player__name">{p.name}</span>
-            {p.subtitle && <span class="ph-player__club">{p.subtitle}</span>}
-          </div>
-        </li>
-      ))}
-    </ul>
-  </div>
 </section>
 
 <style>
   /* Mismo sistema que las cabeceras de sección (global.css: `.ph-head-*`;
-     ph-ui.css: `.ph-h2`, `.ph-player`, `.ph-rail`). */
+     ph-ui.css: `.ph-h2`). */
   .home-players {
     position: relative;
     padding: clamp(88px, 9vw, 156px) var(--ph-section-px) 0;
@@ -112,22 +50,10 @@ const railLabel = `${t('talents.title')}${t('home.players.titleAccent')}`;
   }
   .home-players__titles { grid-column: 1 / 9; display: grid; gap: var(--ph-head-lead-gap); }
   .home-players__titles .ph-head-lead { margin: 0; }
-  .home-players__actions { grid-column: 9 / 13; justify-self: end; display: flex; align-items: center; gap: 8px; }
-  .home-players__arrows { display: flex; gap: 8px; margin-right: 8px; }
-
-  /* El raíl va de borde a borde; las tarjetas arrancan en el margen del texto. */
-  .home-players__rail {
-    margin: clamp(28px, 2.5vw, 44px) calc(-1 * var(--ph-section-px)) 0;
-    padding: 18px var(--ph-section-px) 40px;
-    scroll-padding-inline: var(--ph-section-px);
-  }
-  .home-players__rail:focus-visible { outline: 2px solid var(--mochi-focus-ring); outline-offset: -4px; }
-  .home-players__card { flex: none; width: clamp(220px, calc(15vw + 120px), 300px); user-select: none; }
+  .home-players__actions { grid-column: 9 / 13; justify-self: end; }
 
   @media (max-width: 900px) {
     .home-players__head { display: flex; flex-direction: column; align-items: stretch; }
     .home-players__actions { justify-self: start; }
-    .home-players__arrows { display: none; }
-    .home-players__card { width: clamp(200px, 58vw, 260px); }
   }
 </style>

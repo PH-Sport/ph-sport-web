@@ -13,6 +13,51 @@ leído el resto.
 
 ---
 
+## 2026-10-02 · Sin marco ni sombra, y el roster de la portada sin jugadores
+
+**Decisión** (de Mario):
+
+- **Roster de la portada:** «no debe mostrar jugadores, solo el botón para
+  conducir hasta dicha página».
+- **Superficies:** «la estética de cuadro flotante con sombra no pega mucho en este
+  estilo. Si queremos hacer algo flotante, un recuadro de ese estilo, pero sin el
+  borde». Su analogía: la puerta de un coche con o sin marco en la ventanilla;
+  sin marco.
+
+**Qué cambia**:
+
+- **Portada:** la sección del roster se queda en titular, entradilla y botón
+  «Talentos».
+  - Se van las diez tarjetas, las flechas y el raíl que se arrastraba con rebote,
+    con su código (`initRails`, `spring`, `.ph-rail`) y los textos de
+    accesibilidad de las flechas (`a11y.rail.*`), que añadió el rediseño y ya no
+    usa nadie.
+  - El raíl queda en el historial (`437a9dd`), por si Mochi lo quiere como pieza.
+- **Sin sombras:** todas las variables de sombra (`--mochi-shadow-*`,
+  `--ph-sh-*`) valen `0 0 #0000`. Así se apagan a la vez en todas partes, también
+  dentro de los botones de Mochi, y se pueden recuperar tocando solo esas
+  variables.
+- **Sin filo:** se quita el borde de 1 px (o su sombra interior equivalente) de:
+  - tarjetas, acordeones y el panel del Plan de acción;
+  - los desplegables y la cápsula de la cabecera;
+  - el menú móvil y sus botones de idioma;
+  - el buscador y los botones;
+  - las etiquetas de los pilares y los huecos de foto.
+
+  Lo que tenía un relleno casi transparente sube un poco (del 3 % al 6 % de
+  blanco) para seguir viéndose sin filo.
+- **Al pasar el ratón,** los botones se aclaran en vez de elevar la sombra.
+- **Se quedan:**
+  - las líneas finas que separan filas por dentro;
+  - el anillo dorado del foco del teclado;
+  - la elevación de las tarjetas de jugador al pasar el ratón.
+- **También en los botones**, por coherencia: se lo dije a Mario al empezar,
+  porque al principio pidió «sombras estratégicas en botones». Si las quiere de
+  vuelta en los botones, basta con dar valor a `--ph-sh-accent` y
+  `--ph-sh-raise`.
+
+---
+
 ## 2026-10-02 · Esquina de 6 px, huecos de foto a la vista, sin rótulos ni letra monoespaciada, y el oro vuelve a clubes y viñetas
 
 **Decisión** (de Mario, al ver la ronda anterior, la entrada siguiente):
@@ -95,6 +140,9 @@ leído el resto.
 ---
 
 ## 2026-10-02 · Contra el aspecto de plantilla: fuera las ilustraciones de IA, tarjeta solo en lo que se toca, menos oro
+
+> **Sin sombras desde el mismo día** («Sin marco ni sombra…»): la sombra oscura
+> del botón dorado (`--ph-sh-accent`) también se apagó.
 
 > **Corregida en parte el mismo día** (entrada anterior): las ilustraciones siguen
 > fuera, pero sus huecos se ven; el oro vuelve al club de las tarjetas y a las
@@ -196,6 +244,10 @@ Eran así antes del rediseño. Están en `docs/hallazgos-abiertos.md`.
 ---
 
 ## 2026-10-01 · Rediseño con el lenguaje de Mochi: esquinas redondeadas, movimiento solo como respuesta, sin GSAP
+
+> **Sin sombras ni filo, y sin jugadores en la portada, desde el 2026-10-02**
+> («Sin marco ni sombra…»): las «sombras estratégicas en botones» y el raíl de
+> jugadores de esta entrada ya no están.
 
 > **Esquinas: 6 px desde el 2026-10-02** (entrada «Esquina de 6 px…»): el
 > «rectángulo con bordes redondeados» de esta entrada (de 8 a 28 px) quedó en una

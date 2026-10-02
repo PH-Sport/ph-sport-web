@@ -36,12 +36,15 @@
   --mochi-font-sans: 'Sohne', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --mochi-font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
-  /* Sombras para fondo oscuro: un filo de luz arriba y una caída larga. El oro
-     proyecta luz cálida en vez de sombra negra. */
-  --mochi-shadow-surface: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 1px 1.5px rgba(0, 0, 0, 0.35), 0 14px 32px -14px rgba(0, 0, 0, 0.8);
-  --mochi-shadow-thumb: 0 1px 2px rgba(0, 0, 0, 0.35), 0 3px 8px rgba(0, 0, 0, 0.25);
-  --mochi-shadow-pop: 0 6px 16px rgba(0, 0, 0, 0.55);
-  --mochi-shadow-overlay: 0 24px 60px -12px rgba(0, 0, 0, 0.75), 0 2px 6px rgba(0, 0, 0, 0.35);
+  /* Sin sombras (decisión de Mario, 2026-10-02): lo que flota es un recuadro de
+     color, «como la ventanilla de una puerta sin marco», sin filo ni sombra. Las
+     variables se quedan, con una sombra vacía (`0 0 #0000`, válida también dentro
+     de las listas de sombras de Mochi), para que todo lo que las usa se apague a la
+     vez y se puedan recuperar cambiando solo esto. */
+  --mochi-shadow-surface: 0 0 #0000;
+  --mochi-shadow-thumb: 0 0 #0000;
+  --mochi-shadow-pop: 0 0 #0000;
+  --mochi-shadow-overlay: 0 0 #0000;
 
   /* Esquinas de PHSPORT: rectángulo con la esquina apenas redondeada, 6 px en
      todo (decisión de Mario, 2026-10-02; antes iban de 8 a 28 px). Se mantienen
@@ -55,12 +58,9 @@
   --ph-r-lg: 6px;
   --ph-r-xl: 6px;
 
-  --ph-sh-raise: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 2px 4px rgba(0, 0, 0, 0.42), 0 24px 44px -16px rgba(0, 0, 0, 0.95);
-  /* Botón dorado: un filo de luz arriba y una sombra oscura, como el resto. Sin
-     halo dorado: sobre negro se lee como brillo de plantilla (revisión de diseño
-     del 2026-10-02; decisión de Mario). */
-  --ph-sh-accent: inset 0 1px 0 rgba(255, 255, 255, 0.42), inset 0 -1px 0 rgba(0, 0, 0, 0.16), 0 1px 2px rgba(0, 0, 0, 0.45), 0 12px 26px -12px rgba(0, 0, 0, 0.9);
-  --ph-sh-accent-raise: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.45), 0 22px 40px -14px rgba(0, 0, 0, 0.95);
+  --ph-sh-raise: 0 0 #0000;
+  --ph-sh-accent: 0 0 #0000;
+  --ph-sh-accent-raise: 0 0 #0000;
 }
 
 /* ── Ajustes provisionales sobre los botones de Mochi ────────────────────────
@@ -72,6 +72,9 @@
 .mochi-button[data-size="sm"] { border-radius: var(--ph-r-btn-sm); }
 .mochi-button[data-size="lg"] { border-radius: var(--ph-r-btn-lg); }
 .mochi-button[data-tone="accent"] { box-shadow: var(--ph-sh-accent); }
+/* Sin filo: Mochi dibuja el borde de los tonos claros con una sombra interior. */
+.mochi-button[data-tone="solid"],
+.mochi-button[data-tone="surface"] { box-shadow: none; }
 .mochi-button[data-tone="solid"],
 .mochi-button[data-tone="surface"],
 .mochi-button[data-tone="accent"] {
@@ -81,9 +84,10 @@
     background-color var(--mochi-duration-color) var(--mochi-ease-color);
 }
 @media (hover: hover) {
-  .mochi-button[data-tone="solid"]:hover,
-  .mochi-button[data-tone="surface"]:hover { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), var(--ph-sh-raise); }
-  .mochi-button[data-tone="accent"]:hover { background: var(--mochi-accent-strong); box-shadow: var(--ph-sh-accent-raise); }
+  /* Al pasar el ratón, el recuadro se aclara: sin marco ni sombra que crezca. */
+  .mochi-button[data-tone="surface"]:hover { background: var(--mochi-solid); }
+  .mochi-button[data-tone="solid"]:hover { background: #24282e; }
+  .mochi-button[data-tone="accent"]:hover { background: var(--mochi-accent-strong); }
   .mochi-button .mochi-button__label svg { transition: transform var(--mochi-duration-snappy) var(--mochi-ease-snappy); }
   .mochi-button:hover .mochi-button__label svg:last-child { transform: translateX(3px); }
 }

@@ -257,15 +257,16 @@ const selects = [
     padding: 0 6px 0 13px;
     box-sizing: border-box;
     border-radius: var(--ph-r-btn);
-    background: rgba(255, 255, 255, 0.03);
-    box-shadow: inset 0 0 0 1px var(--mochi-surface-border);
+    /* Campo relleno, sin filo: el anillo solo aparece con el foco. */
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 0 0 transparent;
     cursor: text;
     transition:
       box-shadow var(--mochi-duration-snappy) var(--mochi-ease-snappy),
       background-color var(--mochi-duration-color) var(--mochi-ease-color);
   }
   @media (hover: hover) {
-    .talents__search:hover { background: rgba(255, 255, 255, 0.05); }
+    .talents__search:hover { background: rgba(255, 255, 255, 0.09); }
   }
   .talents__search:focus-within {
     box-shadow: inset 0 0 0 2px var(--mochi-focus-ring);
@@ -441,9 +442,7 @@ const selects = [
     padding: clamp(32px, 4vw, 48px) 24px;
     text-align: center;
     background: var(--mochi-surface);
-    border: 1px solid var(--mochi-surface-border);
     border-radius: var(--ph-r-lg);
-    box-shadow: var(--mochi-shadow-surface);
   }
   .talents__empty-text {
     margin: 0;
@@ -452,7 +451,7 @@ const selects = [
     line-height: 1.6;
     color: var(--ph-ink-body);
   }
-  /* Botón de Mochi en tono «surface»: se eleva al pasar el ratón y se hunde al pulsar. */
+  /* Botón en tono «solid» de Mochi: se aclara al pasar el ratón y se hunde al pulsar. */
   .talents__reset {
     all: unset;
     box-sizing: border-box;
@@ -463,16 +462,15 @@ const selects = [
     border-radius: var(--ph-r-btn);
     background: var(--mochi-solid);
     color: var(--color-ph-white);
-    box-shadow: inset 0 0 0 1px var(--mochi-solid-border), var(--mochi-shadow-surface);
     font: 500 15px/1 var(--font-display);
     letter-spacing: -0.005em;
     cursor: pointer;
     transition:
       transform var(--mochi-duration-snappy) var(--mochi-ease-snappy),
-      box-shadow var(--mochi-duration-morph) var(--mochi-ease-morph);
+      background-color var(--mochi-duration-color) var(--mochi-ease-color);
   }
   @media (hover: hover) {
-    .talents__reset:hover { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), var(--ph-sh-raise); }
+    .talents__reset:hover { background: #24282e; }
   }
   .talents__reset:active {
     transform: scale(0.965);

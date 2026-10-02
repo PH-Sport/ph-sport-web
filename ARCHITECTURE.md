@@ -51,7 +51,7 @@ ph-sport-web/
 │   │   │   └── Footer.astro         # V3 editorial, social links
 │   │   ├── sections/
 │   │   │   ├── HeroSection.astro        # Vídeo del neón (encendido + bucle) y claim fijo
-│   │   │   ├── HomePlayersSection.astro    # Raíl arrastrable con los 10 primeros jugadores
+│   │   │   ├── HomePlayersSection.astro    # Titular, entradilla y botón a Talentos (sin jugadores)
 │   │   │   ├── HomeServicesSection.astro   # Acordeón de áreas + Plan de acción en pestañas
 │   │   │   ├── HomeAboutSection.astro      # Titular, texto y las cifras en una línea, sin contadores
 │   │   │   ├── HomeContactSection.astro    # «Hablemos.», botón de email y copiar
@@ -105,11 +105,11 @@ ph-sport-web/
 │   │
 │   ├── scripts/                     # Scripts vanilla para interacciones y animaciones
 │   │   ├── ph-ambient.ts            # Luz animada de fondo de Talentos, Servicios y Sobre nosotros (WebGL2 en directo)
-│   │   └── ph-motion.ts             # Interacción con el movimiento de Mochi: acordeón, pestañas, desplegable, raíl, etiquetas, copiar
+│   │   └── ph-motion.ts             # Interacción con el movimiento de Mochi: acordeón, pestañas, desplegable, etiquetas, copiar
 │   │
 │   └── styles/
 │       ├── global.css               # Reset + variables CSS + font-face + cabecera de sección
-│       ├── mochi-phsport.css        # Capa de marca sobre Mochi: paleta, Söhne, esquinas y sombras
+│       ├── mochi-phsport.css        # Capa de marca sobre Mochi: paleta, Söhne, esquinas; sombras apagadas
 │       ├── ph-ui.css                # Piezas compartidas con el lenguaje de Mochi (sus estilos)
 │       └── ph-ui-buttons.css
 │
@@ -371,8 +371,9 @@ El titular del hero se ve desde el primer pintado: ya no entra palabra a palabra
 ## Sistema de diseño y movimiento (Mochi)
 
 Desde el 2026-10-01 la web usa el lenguaje de **Mochi** (`mochi-ui`), el sistema
-de diseño propio de Mario: rectángulos con esquinas bien redondeadas, sombras que
-despegan las piezas del fondo y movimiento con muelles de rebote mínimo. La marca
+de diseño propio de Mario, con su movimiento de muelles de rebote mínimo. La forma
+es de PHSPORT: rectángulos con una esquina sutil de 6 px, sin filo ni sombra
+(2026-10-02). La marca
 no cambia: negro y oro, Söhne, logos y textos. El porqué y lo descartado, en
 `DECISIONS.md` («Rediseño con el lenguaje de Mochi»).
 
@@ -381,7 +382,7 @@ no cambia: negro y oro, Söhne, logos y textos. El porqué y lo descartado, en
 | Capa | Archivo | Qué pone |
 |---|---|---|
 | Mochi | `mochi-ui/styles.css` (importado en `BaseLayout`) | Tokens `--mochi-*`, curvas `--mochi-ease-*`, tiempos `--mochi-duration-*` y los botones (`LinkButton`, `Button`) |
-| Marca | `src/styles/mochi-phsport.css` | Los tokens de Mochi con la paleta PHSPORT (tema oscuro: `data-theme="dark"` en `<html>`; el oro hace de acento), Söhne, esquinas `--ph-r-*` y sombras `--ph-sh-*`. Al final, un bloque **provisional** que corrige lo que Mochi aún no permite (`docs/hallazgos-abiertos.md`) |
+| Marca | `src/styles/mochi-phsport.css` | Los tokens de Mochi con la paleta PHSPORT (tema oscuro: `data-theme="dark"` en `<html>`; el oro hace de acento), Söhne, esquinas `--ph-r-*` y las sombras apagadas (todas las variables de sombra valen `0 0 #0000`). Al final, un bloque **provisional** que corrige lo que Mochi aún no permite (`docs/hallazgos-abiertos.md`) |
 | Piezas | `src/styles/ph-ui.css` + `src/scripts/ph-motion.ts` | Lo interactivo, hecho aquí porque Mochi lo resuelve con React en el navegador |
 
 **React solo al construir.** Los componentes de Mochi son de React: Astro los
@@ -407,7 +408,6 @@ que arranca en cada `astro:page-load` y lo desmonta en `astro:before-swap`:
 | Acordeón | `.ph-acc` + `data-ph-accordion` | Uno abierto a la vez. El hueco se abre con la curva `morph` y el texto entra 60 ms después con un desenfoque corto. Flechas del teclado entre cabeceras |
 | Pestañas | `.ph-seg` + `data-ph-tabs`, paneles `data-ph-panel` | El indicador se desliza (un borde tira y el otro sigue) y el contenido llega desde el lado hacia el que vas |
 | Desplegable | `.ph-select` + `data-ph-select` | El botón crece hasta ser la lista. Emite `ph:select` con `{ value, label }` |
-| Raíl | `.ph-rail` + `data-ph-rail="<id>"`, flechas `data-ph-rail-step="<id>"` | Con ratón se arrastra, con rebote elástico en los extremos e inercia al soltar. En táctil es un scroll normal |
 | Etiqueta que viaja | `data-ph-tip-group` + `data-tip` | Una sola etiqueta que se desplaza de un icono a otro (pie de página) |
 | Copiar | `data-ph-copy`, aviso en `data-ph-copy-live` | El icono se convierte en un check dibujado y vuelve |
 | Tarjeta de jugador | `.ph-player` | Al pasar el ratón se eleva y la foto crece un poco |
@@ -417,8 +417,7 @@ que arranca en cada `astro:page-load` y lo desmonta en `astro:before-swap`:
 - **Solo como respuesta** a pulsar, abrir, pasar el ratón o cambiar de pestaña.
   Nada se anima al cargar ni al hacer scroll: todo se ve desde el primer pintado.
 - **Siempre las curvas y tiempos de Mochi** (`var(--mochi-ease-morph)`,
-  `var(--mochi-duration-morph)`…). Lo que se mueve con JavaScript usa los muelles
-  de `ph-motion.ts` (`SPRINGS`).
+  `var(--mochi-duration-morph)`…).
 - Pulsar: `scale(0.965)` con `press`; la vuelta, con `snappy`.
 - `prefers-reduced-motion`: sin movimiento.
 - **En los pseudos `::view-transition` la curva va escrita literal**, no con
@@ -661,9 +660,12 @@ botón.
   de las listas (2026-10-02). Números y códigos de país, en blanco tenue.
 - **Sin rótulos encima de los titulares ni letra monoespaciada** (2026-10-02): el
   titular se sostiene solo.
-- **Sombras**: despegan tarjetas y botones del fondo, siempre oscuras. El botón
-  dorado lleva un filo de luz arriba y sombra oscura (`--ph-sh-accent`), sin halo
-  dorado.
+- **Sin filo ni sombra** (2026-10-02): lo que flota es un recuadro de color,
+  «como la ventanilla de una puerta sin marco» (Mario). Tarjetas, paneles,
+  desplegables, botones, la cápsula del menú y los huecos de foto se distinguen
+  del fondo solo por el relleno. Al pasar el ratón, el relleno se aclara. Las
+  líneas finas que separan filas por dentro (acordeón, equipo, pilares) sí se
+  quedan, y el anillo dorado del foco del teclado también.
 - **Fotografía**: high-contrast sobre fondo oscuro. Ratio portrait `3:4` para jugadores.
 
 ---
@@ -738,7 +740,7 @@ que ejecutar nada a mano.
 | `Footer.astro` | ✅ Completo | Sello en grande, columnas legibles, redes como iconos con etiqueta que viaja |
 | `LogoReveal.astro` | ✅ Completo | Animación en CSS, sin JS. Una vez cada 18 h |
 | `HeroSection.astro` | ✅ Completo | Vídeo del neón (encendido y bucle) con encuadre apaisado y vertical; claim fijo, sin entrada animada ni botón «Scroll» (2026-10-02) |
-| `HomePlayersSection.astro` | ✅ Completo | Raíl arrastrable con los 10 primeros jugadores del roster, en su orden |
+| `HomePlayersSection.astro` | ✅ Completo | Titular, entradilla y botón a Talentos. Sin jugadores (2026-10-02) |
 | `HomeServicesSection.astro` | ✅ Completo | Acordeón de las cinco áreas + Plan de acción en pestañas |
 | `HomeAboutSection.astro` | ✅ Completo | Titular, texto y las cifras en una sola línea (sin cajas ni contadores) |
 | `HomeContactSection.astro` | ✅ Completo | «Hablemos.», botón de email y botón de copiar. A la derecha, el hueco de la foto (`contactImage`), hoy vacío a la vista |

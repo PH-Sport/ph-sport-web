@@ -374,14 +374,14 @@ const pillars = getServicesItems(lang).map((item, i) => ({ ...item, ...pillarArt
   }
   .srv-pillar__tags li {
     padding: 7px 12px;
-    border: 1px solid var(--mochi-surface-border-strong);
     border-radius: var(--ph-r-sm);
+    background: rgba(255, 255, 255, 0.06);
     font-size: 13px;
     line-height: 1.2;
     color: var(--ph-ink-body);
   }
 
-  /* La foto, o su hueco mientras no llegue: superficie lisa con su filo. Va en
+  /* La foto, o su hueco mientras no llegue: superficie lisa, sin filo. Va en
      `lazy` porque cae por debajo del primer pantallazo (regla de performance de
      ARCHITECTURE.md). */
   .srv-pillar__media {
@@ -390,7 +390,6 @@ const pillars = getServicesItems(lang).map((item, i) => ({ ...item, ...pillarArt
     border-radius: var(--ph-r-lg);
     background: var(--mochi-surface);
   }
-  .srv-pillar__media.is-empty { border: 1px solid var(--mochi-surface-border); }
   .srv-pillar__media img {
     display: block;
     width: 100%;

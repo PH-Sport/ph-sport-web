@@ -225,26 +225,28 @@ uno por uno:
   redondeado, no una píldora, así que lo pisa con `--ph-r-btn*`. Si Mochi cambia
   esas clases o su especificidad, los botones vuelven a salir en píldora sin que
   nada falle.
-- **El tono `accent` no tiene sombra propia**: usa la misma que `surface`. La web
-  le pone la suya (`--ph-sh-accent`: filo de luz arriba y sombra oscura) y otra
-  más profunda al pasar el ratón.
+- **Los tonos claros dibujan su filo con una sombra interior**, y el tono `accent`
+  no tiene sombra propia. Desde el 2026-10-02 la web va sin filo ni sombra: apaga
+  las variables de sombra de Mochi y quita esa sombra interior de los botones
+  `solid` y `surface`. Si Mochi cambia cómo dibuja el filo, volvería a verse.
 - **El peso 520 de las etiquetas** (`--mochi-text-label`, botón grande) no existe
   en Söhne, que solo trae 400, 600 y 700: el navegador pinta 600, algo más
   pesado de lo que Mochi diseñó.
 - **Los componentes interactivos de Mochi necesitan una island de React** para
   funcionar (su README). Como aquí no hay React en el navegador, el
   comportamiento está reescrito en `src/scripts/ph-motion.ts`: acordeón,
-  pestañas, desplegable, raíl con rebote, etiqueta que viaja y copiar. Son
-  candidatos a volver a Mochi como versión sin React.
+  pestañas, desplegable, etiqueta que viaja y copiar. Son candidatos a volver a
+  Mochi como versión sin React. (Hubo también un raíl arrastrable con rebote, que
+  se quitó con los jugadores de la portada el 2026-10-02; está en el historial,
+  commit `437a9dd`.)
 
 ### Rediseño: sin probar en un móvil real (2026-10-01)
 
 El rediseño se ha comprobado en Chromium con Playwright, en escritorio y a 390 px
 de ancho: sin desbordes ni errores de consola. **No se ha visto en un iPhone ni en
-un Android reales.** Lo que más puede cambiar allí: el raíl de jugadores de la
-portada (en táctil es un scroll normal, sin el arrastre con rebote del ratón),
-los desenfoques de entrada del contenido (`filter: blur`) en móviles modestos y
-el menú móvil que crece desde la cápsula.
+un Android reales.** Lo que más puede cambiar allí: los desenfoques de entrada del
+contenido (`filter: blur`) en móviles modestos y el menú móvil que crece desde la
+cápsula.
 
 ### Filtros de Talentos y detalles de móvil: pendientes de la revisión del 2026-10-02
 

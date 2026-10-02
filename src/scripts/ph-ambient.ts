@@ -70,8 +70,8 @@ void emit(vec3 c) {
 `;
 
 // Velo: la red de luz que deja un cristal (o el agua) al sol, a 45°, muy tenue y
-// lenta; casi una textura. Junto al ratón se concentra un poco, como bajo una lupa
-// (con un tercio de la fuerza de las demás escenas, a petición de Mario).
+// lenta; casi una textura. Junto al ratón se concentra apenas, como bajo una lupa
+// (al 10 % de la fuerza de las demás escenas, a petición de Mario).
 const VELO = `${HEADER}
 float caustic(vec2 uv, float t) {
   vec2 p = mod(uv * 6.28318, 6.28318) - 250.0;
@@ -89,7 +89,7 @@ void main() {
   vec2 p = gl_FragCoord.xy / uPx;
   float W = uRes.x / uPx, H = uRes.y / uPx;
   vec2 r = vec2(p.x + p.y, p.x - p.y) * 0.70710678;
-  float m = nearMouse(p, 240.0) * 0.35;
+  float m = nearMouse(p, 240.0) * 0.1;
   float k = caustic(r / (1000.0 - m * 220.0), uTime * 0.06 + 23.0);
   float k2 = caustic(r / 620.0 + 0.37, uTime * 0.045 + 11.0);
   float v = k * 0.7 + k2 * 0.3;
@@ -270,8 +270,9 @@ const SCENES: Record<SceneName, SceneDef> = {
 };
 
 /** El bombo: de aquí sale el fondo de cada página. Para quitar o añadir una
- *  escena, basta con esta lista. */
-const POOL: SceneName[] = ['velo', 'neon', 'trayectorias', 'estructura', 'calidez'];
+ *  escena, basta con esta lista. Calidez salió el 2026-10-02 (Mario); su shader se
+ *  queda por si vuelve, y se puede ver con `?fondo=calidez`. */
+const POOL: SceneName[] = ['velo', 'neon', 'trayectorias', 'estructura'];
 
 /** Tope de densidad de píxeles: más allá no se nota en algo tan tenue y cuesta GPU. */
 const MAX_DPR = 1.5;

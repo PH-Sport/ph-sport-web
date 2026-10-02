@@ -232,8 +232,11 @@ leerlo antes de tocar el fichero que se nombra.
 - **`LogoReveal.astro` — su CSS va en línea en el `<head>` de `BaseLayout`**, no en el
   `<style>` del componente → desde el componente no se aplica hasta los 838 ms y el
   overlay se pinta sin tapar nada.
-- **`LogoReveal.astro` — el overlay va fuera de `<main>`** → dentro, `transition:name`
-  crea un contexto de apilamiento y su `z-index` no le gana al header.
+- **`LogoReveal.astro` — el overlay va fuera de `<main>`** → `<main>` es un contexto
+  de apilamiento y dentro su `z-index` no le gana al header.
+- **Nada de `transition:name` fijo en `<main>`** → impide que los paneles esmerilen
+  el fondo animado. El nombre `page-main` va solo mientras se navega (`ph-vt`), y
+  `<main>` necesita `isolation: isolate` o el fondo desaparece.
 - **`animationend` burbujea** → un listener `{ once: true }` en el overlay se gasta en
   la primera animación de un hijo.
 - **iOS fuera de Safari: ninguna unidad de viewport aguanta**, `svh` incluido → el alto

@@ -357,7 +357,7 @@ Fue una island de React hasta el 2026-06-25 (`2b74656`), GSAP vanilla hasta el 2
 
 | Cómo está | Por qué |
 |---|---|
-| El overlay se monta desde `BaseLayout` (prop `intro`), **fuera de `<main>`** | `transition:name` en `<main>` crea un contexto de apilamiento, así que dentro el `z-index: 9999` no le ganaba al header y hacía falta un parche para ocultarlo. Fuera, el z-index manda solo |
+| El overlay se monta desde `BaseLayout` (prop `intro`), **fuera de `<main>`** | `<main>` es un contexto de apilamiento (antes por `transition:name`; desde el 2026-10-02, por `isolation`), así que dentro el `z-index: 9999` no le ganaba al header y hacía falta un parche para ocultarlo. Fuera, el z-index manda solo |
 | Su CSS va **en línea en el `<head>`**, no en el `<style>` del componente | Desde el componente viaja en el bundle común: medido, no se aplicaba hasta los 838 ms y el overlay se pintaba antes como un div suelto, sin tapar nada |
 | Los estilos **nunca** en el atributo `style` del elemento | Una declaración inline gana a cualquier regla de hoja: la que oculta el overlay en visita repetida no se aplicaría, y la home se quedaría en negro |
 | `stroke-dasharray` escrito a mano (753 y 637) | Son los perímetros reales de los dos polígonos, y son constantes. Antes se medían en ejecución con `getTotalLength()`, con 32 reintentos y dos valores de reserva que estaban un 22 % pasados. `pathLength="1"` sería lo elegante, pero en WebKit/iOS no es de fiar |
@@ -490,11 +490,11 @@ Cada escena es un shader de WebGL2 que se dibuja en directo:
 
 | Escena | Qué se ve | Con el ratón (ordenador) |
 |---|---|---|
-| `velo` | La red de luz que deja un cristal al sol, a 45°, muy tenue y lenta | Se concentra un poco (un tercio de fuerza) |
+| `velo` | La red de luz que deja un cristal al sol, a 45°, muy tenue y lenta | Apenas se concentra (10 % de fuerza) |
 | `neon` | El contorno del logo en grande, con ecos paralelos; una luz recorre el tubo | Se encienden los trazos cercanos |
 | `trayectorias` | Líneas finas a 45° por las que suben destellos dorados | Líneas y destellos se avivan |
 | `estructura` | La retícula a 45° del logo con un barrido de luz que enciende sus cruces | Una linterna enciende la retícula |
-| `calidez` | Un haz de luz cálida que se mece, con motas de polvo | El haz se inclina hacia el cursor |
+| `calidez` (fuera del bombo desde el 2026-10-02; se ve con `?fondo=calidez`) | Un haz de luz cálida que se mece, con motas de polvo | El haz se inclina hacia el cursor |
 
 Para quitar o añadir una escena del bombo, basta con la lista `POOL`. Se probaron y
 descartaron otras diez; están en `DECISIONS.md`.
@@ -506,7 +506,9 @@ Cómo convive con la página, todo dentro del módulo:
   encima al hacer scroll. Las secciones tienen el fondo transparente; si una
   vuelve a llevar fondo opaco, tapa la luz.
 - **Los paneles son translúcidos y esmerilados** (`--ph-panel*`, 60 %) para que la
-  luz se vea pasar por detrás. Los desplegables y el menú móvil van al 90 %, y los
+  luz se vea pasar por detrás. Para que el esmerilado funcione, `<main>` no lleva
+  nombre de View Transition en reposo: `page-main` se le pone solo mientras se
+  navega (`docs/trampas-conocidas.md`, «View Transitions»). Los desplegables y el menú móvil van al 90 %, y los
   botones, opacos. Con `prefers-reduced-transparency` los paneles son opacos.
 - **La luz es la misma en toda la pantalla**, con las intensidades del prototipo
   que aprobó Mario. Bajo el menú se apaga siempre (`stageMask`). Hasta el

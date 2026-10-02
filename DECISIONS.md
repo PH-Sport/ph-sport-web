@@ -13,7 +13,47 @@ leído el resto.
 
 ---
 
+## 2026-10-02 · Calidez sale del bombo, Velo casi no reacciona al ratón, y el esmerilado de los paneles por fin funciona
+
+**Decisión** (de Mario, al ver el bombo de la entrada siguiente):
+
+- «Quitaría la de Calidez». Sale de `POOL`; su shader se queda en
+  `ph-ambient.ts` por si vuelve (`?fondo=calidez`).
+- «Reduce bastante más la reacción al ratón de Cáusticas»: Velo pasa de un tercio
+  al 10 % de la fuerza de las demás escenas.
+- «El esmerilado de los contenedores no difumina igual que el de la topbar; los
+  contenedores parecen simples contenedores transparentes». Tenía razón.
+
+**Qué estaba pasando**:
+
+- `<main>` llevaba `transition:name="page-main"` (el telón entre páginas), y con
+  ese nombre puesto todo el tiempo el navegador no deja que los paneles de dentro
+  desenfoquen el fondo animado.
+- Medido con capturas del mismo panel con y sin `backdrop-filter`: salía idéntico,
+  con las líneas del fondo nítidas.
+- La cabecera esmerila porque está fuera de `<main>`.
+
+**Arreglo**:
+
+- El nombre `page-main` se le pone a `<main>` solo mientras se navega: clase
+  `ph-vt` en `<html>`, que pone `ph-motion.ts` al empezar a navegar y quita al
+  acabar la transición.
+- `<main>` lleva `isolation: isolate`, para seguir siendo contexto de apilamiento:
+  sin eso, el fondo animado queda por detrás del fondo negro y desaparece.
+- **Comprobado:**
+  - en reposo los paneles desenfocan;
+  - el telón sigue animando la salida y la entrada;
+  - la clase se quita al terminar;
+  - «atrás» vuelve a su altura.
+- La trampa, con el error de medición en que es fácil caer, está en
+  `docs/trampas-conocidas.md`.
+
+---
+
 ## 2026-10-02 · Bombo de fondos animados en toda la web y paneles translúcidos
+
+> **Matizada el mismo día** (entrada anterior): Calidez sale del bombo, Velo
+> reacciona al ratón al 10 %, y el esmerilado, que no funcionaba, se arregla.
 
 **Decisión** (de Mario):
 

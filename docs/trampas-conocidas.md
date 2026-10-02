@@ -25,8 +25,10 @@ div suelto, sin tapar nada.
 
 ### El overlay va fuera de `<main>`
 
-`transition:name` crea un contexto de apilamiento *siempre*, no solo durante una
-transición, así que dentro su `z-index: 9999` no le gana al header.
+`<main>` es un contexto de apilamiento *siempre*, así que dentro el `z-index:
+9999` del overlay no le gana al header. Antes lo era por `transition:name`, que lo
+crea siempre y no solo durante una transición; desde el 2026-10-02 lo es por
+`isolation: isolate` (ver «View Transitions» más abajo).
 
 ### `animationend` burbujea
 
@@ -50,8 +52,23 @@ puede funcionar.**
 - **`var()` no hereda de forma fiable en el árbol de pseudos `::view-transition`.**
   Usar **valores literales** (duración y curva) en `::view-transition-old/new(...)`.
   Un `var()` ahí hace que la animación no aplique y salga un corte seco.
-- Dar `transition:name` a `<main>` sin `transition:animate` permite definir las
-  animaciones del grupo por CSS.
+- **Un nombre de View Transition puesto en reposo impide el esmerilado de lo que
+  hay dentro.** Con `view-transition-name` en `<main>` todo el tiempo (era
+  `transition:name="page-main"`), el `backdrop-filter` de los paneles no
+  desenfocaba el fondo animado: se veían como cristales semitransparentes
+  normales. Medido el 2026-10-02 con capturas del mismo panel con y sin
+  `backdrop-filter`: el mismo píxel. La cabecera sí esmerila porque está fuera de
+  `<main>`.
+  - **Arreglo:** el nombre `page-main` va solo mientras se navega (`html.ph-vt`,
+    ph-motion.ts: se pone en `astro:before-preparation` y en el documento entrante,
+    y se quita con `viewTransition.finished`). El telón sigue igual.
+  - **No quitar el nombre sin poner `isolation: isolate` en `<main>`**: sin
+    contexto de apilamiento, el fondo animado (`z-index: -1`) queda por detrás del
+    fondo negro del body y desaparece. Ojo al medir: eso también hace que «se vean
+    menos líneas» dentro del panel, y parece que el esmerilado funciona cuando lo
+    que pasa es que no hay fondo.
+- Las animaciones del grupo `page-main` se definen por CSS (`BaseLayout`), sin
+  `transition:animate`.
 
 ## Verificar animaciones
 

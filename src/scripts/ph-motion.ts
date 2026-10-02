@@ -272,6 +272,23 @@ function destroy() {
 document.addEventListener('astro:page-load', init);
 document.addEventListener('astro:before-swap', destroy);
 
+// ── Nombre de View Transition de <main>, solo mientras se navega ─────────────
+// `page-main` (el telón entre páginas, BaseLayout) se pone al empezar a navegar,
+// antes de que el navegador fotografíe la página vieja, y también en la nueva
+// antes del swap; se quita cuando acaba la transición. Puesto todo el tiempo
+// impedía que los paneles esmerilaran el fondo animado (BaseLayout, «<main> y el
+// esmerilado»).
+document.addEventListener('astro:before-preparation', () => {
+  document.documentElement.classList.add('ph-vt');
+});
+document.addEventListener('astro:before-swap', (e) => {
+  const ev = e as Event & { newDocument?: Document; viewTransition?: ViewTransition };
+  ev.newDocument?.documentElement.classList.add('ph-vt');
+  const done = () => document.documentElement.classList.remove('ph-vt');
+  if (ev.viewTransition) ev.viewTransition.finished.then(done, done);
+  else window.setTimeout(done, 600);
+});
+
 // ── `ph-js` en el documento ENTRANTE, antes del swap ─────────────────────────
 // El swap resetea los atributos de <html> a los de la página nueva, que no trae
 // `ph-js` (la pone el script inline del <head> solo en la primera carga). Si se

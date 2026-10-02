@@ -249,10 +249,13 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
         Como hermano de main, el z-index manda y no hace falta nada de eso. */}
     {intro && <LogoReveal />}
     <Header />
+    {/* Sin `transition:name`: el nombre de View Transition `page-main` se le pone
+        solo mientras dura el cambio de página (clase `ph-vt`, ph-motion.ts). Un
+        elemento con ese nombre impide que lo de dentro esmerile el fondo animado
+        (ver «.ph-vt» en el <style> de abajo). */}
     <main
       id="main-content"
       class:list={[!hasHero && 'main--padded']}
-      transition:name="page-main"
     >
       {/* Fondo animado de toda la página: fijo a la pantalla, por detrás del
           contenido. La escena la elige `ph-ambient.ts` al cargar. */}
@@ -392,6 +395,18 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
     /* 5rem reserva la zona del header; +0.875rem el margen superior de la cápsula flotante */
     padding-top: calc(5rem + 0.875rem);
   }
+
+  /* ── <main> y el esmerilado de los paneles ────────────────────────────────
+     Con `view-transition-name` puesto todo el tiempo (era `transition:name`), el
+     navegador no deja que los paneles de dentro desenfoquen el fondo animado: se
+     veían como simples cristales semitransparentes (medido el 2026-10-02: con y
+     sin `backdrop-filter`, mismo píxel). Por eso el nombre va solo durante el
+     cambio de página (`html.ph-vt`, la pone ph-motion.ts al empezar a navegar y
+     la quita al acabar el fundido). `isolation` mantiene a <main> como contexto de
+     apilamiento: sin él, el fondo animado (z-index -1) quedaría por detrás del
+     fondo negro del body y no se vería. */
+  #main-content { isolation: isolate; }
+  html.ph-vt #main-content { view-transition-name: page-main; }
 
   /* ── Telón de transición entre páginas ──────────────────────────────────
      Fundido a oscuro: el contenido viejo (page-main) baja de opacidad hasta

@@ -174,7 +174,10 @@ html {
 }
 
 body {
-  background-color: var(--color-ph-black);
+  /* Sin fondo propio: el negro lo pone <html> (mismo color). Con el body opaco, el
+     fondo animado (z-index -1) queda por debajo del negro del body y no se ve
+     (2026-10-02; ver docs/trampas-conocidas.md, «View Transitions»). */
+  background-color: transparent;
   color: var(--color-ph-white);
   font-family: var(--font-body);
   font-size: 1rem;

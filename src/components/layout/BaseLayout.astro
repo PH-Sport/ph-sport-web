@@ -402,10 +402,12 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
      veían como simples cristales semitransparentes (medido el 2026-10-02: con y
      sin `backdrop-filter`, mismo píxel). Por eso el nombre va solo durante el
      cambio de página (`html.ph-vt`, la pone ph-motion.ts al empezar a navegar y
-     la quita al acabar el fundido). `isolation` mantiene a <main> como contexto de
-     apilamiento: sin él, el fondo animado (z-index -1) quedaría por detrás del
-     fondo negro del body y no se vería. */
-  #main-content { isolation: isolate; }
+     la quita al acabar el fundido).
+     En reposo, <main> NO es contexto de apilamiento: el fondo animado (z-index -1)
+     pertenece al de la página y se pinta justo encima del negro de <html>, que es
+     el único fondo opaco (el body es transparente, global.css). Con `isolation:
+     isolate` en <main>, Chrome con tarjeta gráfica dejaba de pintarlo: la web se
+     veía negra (medido el mismo día). */
   html.ph-vt #main-content { view-transition-name: page-main; }
 
   /* ── Telón de transición entre páginas ──────────────────────────────────

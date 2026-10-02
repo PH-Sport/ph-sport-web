@@ -235,8 +235,9 @@ leerlo antes de tocar el fichero que se nombra.
 - **`LogoReveal.astro` — el overlay va fuera de `<main>`** → `<main>` es un contexto
   de apilamiento y dentro su `z-index` no le gana al header.
 - **Nada de `transition:name` fijo en `<main>`** → impide que los paneles esmerilen
-  el fondo animado. El nombre `page-main` va solo mientras se navega (`ph-vt`), y
-  `<main>` necesita `isolation: isolate` o el fondo desaparece.
+  el fondo animado. El nombre `page-main` va solo mientras se navega (`ph-vt`).
+  Y ni `isolation` en `<main>` ni fondo propio en el `body` (el negro lo pone
+  `<html>`): con cualquiera de los dos, el fondo animado desaparece.
 - **`animationend` burbujea** → un listener `{ once: true }` en el overlay se gasta en
   la primera animación de un hijo.
 - **iOS fuera de Safari: ninguna unidad de viewport aguanta**, `svh` incluido → el alto

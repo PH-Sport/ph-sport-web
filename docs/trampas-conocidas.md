@@ -25,10 +25,11 @@ div suelto, sin tapar nada.
 
 ### El overlay va fuera de `<main>`
 
-`<main>` es un contexto de apilamiento *siempre*, así que dentro el `z-index:
-9999` del overlay no le gana al header. Antes lo era por `transition:name`, que lo
-crea siempre y no solo durante una transición; desde el 2026-10-02 lo es por
-`isolation: isolate` (ver «View Transitions» más abajo).
+Dentro de `<main>`, el `z-index: 9999` del overlay no le ganaba al header porque
+`transition:name` hacía de `<main>` un contexto de apilamiento siempre. Desde el
+2026-10-02 `<main>` solo lleva nombre de View Transition mientras se navega (ver
+«View Transitions» más abajo), pero el overlay sigue fuera: así su z-index manda en
+cualquier momento.
 
 ### `animationend` burbujea
 
@@ -62,11 +63,18 @@ puede funcionar.**
   - **Arreglo:** el nombre `page-main` va solo mientras se navega (`html.ph-vt`,
     ph-motion.ts: se pone en `astro:before-preparation` y en el documento entrante,
     y se quita con `viewTransition.finished`). El telón sigue igual.
-  - **No quitar el nombre sin poner `isolation: isolate` en `<main>`**: sin
-    contexto de apilamiento, el fondo animado (`z-index: -1`) queda por detrás del
-    fondo negro del body y desaparece. Ojo al medir: eso también hace que «se vean
-    menos líneas» dentro del panel, y parece que el esmerilado funciona cuando lo
-    que pasa es que no hay fondo.
+  - **El negro de la página lo pone `<html>`, no el `body`** (`background:
+    transparent`). En reposo `<main>` no es contexto de apilamiento y el fondo
+    animado (`z-index: -1`) se pinta justo encima del fondo de `<html>`; si el
+    `body` tuviera color, lo taparía.
+  - **Tampoco vale `isolation: isolate` en `<main>`** para lo mismo: en las pruebas
+    sin tarjeta gráfica funcionaba, pero en Chrome con tarjeta gráfica la web se
+    veía negra. Se publicó así y Mario lo vio el mismo día.
+  - **Ojo al medir:** si el fondo no se pinta, dentro del panel «se ven menos
+    líneas» y parece que el esmerilado funciona. Comparar siempre el mismo panel
+    con y sin `backdrop-filter` y comprobar a la vez que el fondo se ve fuera del
+    panel, en un navegador con tarjeta gráfica (Playwright con `--use-angle=metal`,
+    o el navegador integrado de la app).
 - Las animaciones del grupo `page-main` se definen por CSS (`BaseLayout`), sin
   `transition:animate`.
 

@@ -357,7 +357,7 @@ Fue una island de React hasta el 2026-06-25 (`2b74656`), GSAP vanilla hasta el 2
 
 | Cómo está | Por qué |
 |---|---|
-| El overlay se monta desde `BaseLayout` (prop `intro`), **fuera de `<main>`** | `<main>` es un contexto de apilamiento (antes por `transition:name`; desde el 2026-10-02, por `isolation`), así que dentro el `z-index: 9999` no le ganaba al header y hacía falta un parche para ocultarlo. Fuera, el z-index manda solo |
+| El overlay se monta desde `BaseLayout` (prop `intro`), **fuera de `<main>`** | `<main>` era siempre un contexto de apilamiento por `transition:name` (desde el 2026-10-02, solo mientras se navega), así que dentro el `z-index: 9999` no le ganaba al header y hacía falta un parche para ocultarlo. Fuera, el z-index manda solo |
 | Su CSS va **en línea en el `<head>`**, no en el `<style>` del componente | Desde el componente viaja en el bundle común: medido, no se aplicaba hasta los 838 ms y el overlay se pintaba antes como un div suelto, sin tapar nada |
 | Los estilos **nunca** en el atributo `style` del elemento | Una declaración inline gana a cualquier regla de hoja: la que oculta el overlay en visita repetida no se aplicaría, y la home se quedaría en negro |
 | `stroke-dasharray` escrito a mano (753 y 637) | Son los perímetros reales de los dos polígonos, y son constantes. Antes se medían en ejecución con `getTotalLength()`, con 32 reintentos y dos valores de reserva que estaban un 22 % pasados. `pathLength="1"` sería lo elegante, pero en WebKit/iOS no es de fiar |
@@ -508,7 +508,9 @@ Cómo convive con la página, todo dentro del módulo:
 - **Los paneles son translúcidos y esmerilados** (`--ph-panel*`, 60 %) para que la
   luz se vea pasar por detrás. Para que el esmerilado funcione, `<main>` no lleva
   nombre de View Transition en reposo: `page-main` se le pone solo mientras se
-  navega (`docs/trampas-conocidas.md`, «View Transitions»). Los desplegables y el menú móvil van al 90 %, y los
+  navega. Y para que el fondo se vea, el negro de la página lo pone `<html>` (el
+  `body` es transparente) y `<main>` no lleva `isolation`
+  (`docs/trampas-conocidas.md`, «View Transitions»). Los desplegables y el menú móvil van al 90 %, y los
   botones, opacos. Con `prefers-reduced-transparency` los paneles son opacos.
 - **La luz es la misma en toda la pantalla**, con las intensidades del prototipo
   que aprobó Mario. Bajo el menú se apaga siempre (`stageMask`). Hasta el

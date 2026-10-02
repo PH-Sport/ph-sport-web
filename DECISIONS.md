@@ -13,7 +13,54 @@ leído el resto.
 
 ---
 
+## 2026-10-02 · Corrección: con el arreglo del esmerilado, la web se veía sin fondo
+
+**Qué pasó:**
+
+- Tras publicar el arreglo de la entrada siguiente, Mario: «Ahora, directamente no
+  veo el fondo».
+- El fondo animado estaba vivo y dibujando, pero no se veía en ningún sitio.
+
+**Causa:** el `isolation: isolate` que se puso en `<main>` para mantenerlo como
+contexto de apilamiento.
+
+- **Navegador integrado de la app** (Chrome con tarjeta gráfica): con
+  `isolation`, todo negro; sin `isolation` y con el `body` transparente, el fondo
+  se ve.
+- **Mis pruebas automáticas:** usaban un Chrome sin tarjeta gráfica (SwiftShader),
+  donde `isolation` sí funcionaba. Por eso el fallo no salió antes de publicar.
+
+**Arreglo:**
+
+- `<main>` sin `isolation`.
+- El `body` sin fondo propio: el negro lo pone `<html>`, mismo color.
+
+En reposo, el fondo animado (`z-index: -1`) se pinta justo encima del negro de
+`<html>` y nada lo tapa.
+
+**Comprobado con tarjeta gráfica** (Playwright con Metal y el navegador de la
+app), con la linterna del ratón de Estructura justo detrás de un panel:
+
+| | Brillo máximo | Brillo medio |
+|---|---|---|
+| Panel con esmerilado | 44 | 25,9 |
+| Panel sin esmerilado | 109 (líneas nítidas) | 25,8 |
+| Fuera del panel | — | El fondo se ve |
+
+El telón entre páginas sigue animando entrada y salida, y «atrás» vuelve a su
+altura.
+
+**Lo aprendido**, en `docs/trampas-conocidas.md`: lo visual del fondo y del
+esmerilado se mide en un navegador con tarjeta gráfica, no solo en el entorno de
+pruebas habitual.
+
+---
+
 ## 2026-10-02 · Calidez sale del bombo, Velo casi no reacciona al ratón, y el esmerilado de los paneles por fin funciona
+
+> **Corregida el mismo día** (entrada anterior): el `isolation: isolate` de
+> `<main>` que se describe aquí dejaba la web sin fondo en Chrome con tarjeta
+> gráfica. Se quitó; el negro pasa a ponerlo `<html>`.
 
 **Decisión** (de Mario, al ver el bombo de la entrada siguiente):
 

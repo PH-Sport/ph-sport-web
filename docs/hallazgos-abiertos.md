@@ -106,117 +106,29 @@ aplicar cambios a ciegas: si se hubiera hecho, se habría borrado el club de tre
 jugadores que sí lo tienen.
 
 
-### Fotos de jugadores con la camiseta del club anterior (2026-09-04)
+### Fotos de talentos en AVIF: más lentas con 4G lento (2026-10-01)
 
-Encargo de Mario, en curso. El 2026-09-03 se actualizó el club de 29 jugadores
-(commit `3f0668e`), pero **la foto sigue siendo la del club de antes**, así que en
-`/talentos` hay tarjetas que dicen un club y enseñan la camiseta de otro.
+Consecuencia medida del paso a AVIF 90 (`DECISIONS.md`, 2026-10-01), pendiente de que
+Mario decida. Simulado en Chrome de escritorio, no en un móvil real: Android de gama
+media (412 px a 2,625×, recibe la variante de 720), CPU ×4, «Slow 4G» de DevTools
+(1,6 Mbps, 150 ms) y bajando por el grid a 400 px por segundo:
 
-**Desde el 2026-09-25 solo se muestra una selección de 51** (`DECISIONS.md`,
-misma fecha): lo pendiente de esta sección solo importa para los que estén
-visibles. De ellos, cuatro no tienen foto ninguna a 2026-09-30 (Fran Manzanara,
-Santi Pallarés, Boston Billups y Álex Domínguez) y el resto va pasando a la serie de
-estudio de abajo.
+| | WebP 85 (antes) | AVIF 90 (ahora) |
+|---|---|---|
+| Primeras cuatro fotos cargadas | 2,2-3,0 s | 4,2-4,6 s |
+| Tarjetas vacías más de 1 s al bajar | 1 de 51 | 23 de 51, y 6 sin cargar al terminar |
+| Espera más larga | 1,5 s | 9,8 s |
+| Fotos descargadas | 2,6 MB | 4,4 MB (sin completar) |
 
-**Desde el 2026-09-25 las fotos son una serie de estudio que prepara Mario**: todas
-con el mismo fondo oscuro, posado de brazos cruzados y la camiseta del club actual.
-Las va entregando por tandas y se sustituyen en el orden del grid. Mientras no
-estén todas, el grid mezcla las de estudio con las antiguas.
+El LCP no cambia (1,7-1,8 s): es el fondo de la cabecera, no una tarjeta. El coste de
+decodificar es parecido (7 frente a 6 ms por foto con CPU ×4), aunque esa emulación no
+frena del todo la decodificación. **El problema es la red, no el procesador.**
 
-**Hechas con la serie de estudio (34)**, las posiciones 1 a 34 del grid a
-2026-10-01: Juan Cruz, Dani Requena, Mati Barzic, Iker Luque, Javi Hernández, Alberto
-Del Moral, Thiago Helguera, Owen Emeka, Salim El-Jebari, Damián Cáceres, Juanjo
-Sánchez, Carlos Guirao, Francisco Dias, Dani Muñoz, Christian Manrique, Dimitar
-Danev, Roberto Olabe, Alessandro Burlamaqui, Axel Montaña, Luis Quintero, Abde
-Raihani, Abdoulaye Keita, Dani Rebollo, Jordi Ferrer, Gonzalo Rodríguez, Lawson
-Sunderland, Rayan Zinebi, Aimar García, Jorge Rajado, Pablo Pascual, Eneko Ortiz,
-Hugo Ríos, Iker Vidal y José Rey. Con ellas se cierran pendientes de la vía anterior:
-la foto de Alberto Del Moral que esperaba visto bueno, la de Mati Barzic, que era
-corta de resolución (619×825), las de Carlos Guirao y Rayan Zinebi, que enseñaban el
-club anterior (Leganés y Granada), y tres jugadores que no tenían ninguna (Abde
-Raihani, Dani Rebollo y Gonzalo Rodríguez).
-
-**Las diez primeras llegaron dos veces.** La primera versión llevaba un resplandor
-dorado muy fuerte detrás; Mario las rehízo más suaves (cinco el 2026-09-28 y las
-otras cinco el 2026-09-30) y las nuevas sustituyeron a las primeras. Desde la
-posición 11 ya llegan con el resplandor suave. Una foto ya aplicada puede volver a
-llegar retocada: se sustituye igual.
-
-**Cómo se aplica una tanda**: llegan en PNG de unos 1085×1450 (3:4; alguna varía en
-un par de píxeles), sin perfil de color,
-con el nombre `<Nombre> Web.png`. Se convierten a JPEG de calidad 92 y se guardan
-**encima del archivo que ya existe, con su misma extensión** (ver «Sustituir, no
-añadir» más abajo); si el que existe es `.png` (Rayan Zinebi), se copia el PNG tal
-cual, sin convertir. Cada JPEG queda en unos 300-400 kB. **El nombre del PNG no
-siempre coincide con el del roster** —en la primera tanda venía «Salim El Jabari»
-para `Salim El-Jebari`—, así que el emparejamiento se hace por posición en el grid y
-comprobando la camiseta, no por el nombre del archivo. **Tampoco garantiza que el
-contenido sea el suyo**: en la tanda del 2026-09-30 dos PNG con nombres distintos
-eran el mismo archivo. Antes de aplicar, comparar las sumas (`md5 -q *.png`) y
-buscar repetidos. Si el jugador no tenía foto, el archivo nuevo se crea como
-`<slug>.jpg`.
-
-**Revisar cada camiseta contra el club de la ficha antes de aplicar**, ampliando el
-escudo. En la tanda del 2026-09-30 llegaron así Carlos Guirao con la del Leganés (su
-club anterior; la ficha dice CD Eldense) y Dimitar Danev con la de la selección de
-Macedonia del Norte (la ficha dice Vardar Skopje). Mario las rehízo con el club
-correcto esa misma noche. Si una no cuadra, se le dice a Mario; no se cambia el club
-de la ficha para que encaje con la foto.
-
-Los 29 nombres salen de ese commit; los más visibles son los que cambiaron de acera:
-Iker Luque (Atlético → Racing), Aimar García y Jorge Rajado (Atlético → Real Madrid),
-Rayan Zinebi (Granada → Real Madrid) y Javi Hernández (Panathinaikos → Cerezo Osaka).
-
-Las fotos viven en `src/assets/images/players/` (113 archivos a 2026-09-30, `nombre-apellido.jpg`
-o `.jpeg`) y las resuelve `getAllRosterEntries()` en `src/lib/playerDetail.ts`, que
-cae a `avatar-placeholder.svg` cuando no encuentra ninguna. No están en `public/`:
-las procesa el build, así que **sustituir el archivo basta y no hay que tocar código**.
-
-**Sustituir, no añadir**: `playerPhotos.ts` indexa por el nombre **sin extensión**, así
-que dejar `dani-requena.jpg` y `dani-requena.jpeg` a la vez hace que se pisen y gane
-uno u otro según el orden del glob. Si la foto nueva viene en otra extensión, se
-guarda con la del archivo que ya existe.
-
-**Renombrar a un jugador le quita la foto.** El nombre del archivo es
-`slugify(row.name)`, así que pasar de `"Eneko"` a `"Eneko Ortiz"` hace que la ficha
-busque `eneko-ortiz.jpeg` en vez de `eneko.jpeg`. No falla el build ni avisa nadie: la
-tarjeta cae al avatar genérico en silencio. Al cambiar un nombre en `jugadores.json`
-hay que renombrar el archivo de foto en el mismo commit.
-
-Ese avatar genérico **no se puede buscar por «avatar-placeholder» en el HTML**: pesa
-menos de 4 kB, así que Vite lo incrusta como `data:image/svg+xml`. Para contar cuántas
-fichas se quedan sin foto hay que cruzar `jugadores.json` con el listado de
-`src/assets/images/players/`, no hacer grep sobre `dist/`. A 2026-09-05 eran 13;
-a 2026-09-25, con la selección de 51, eran 7; a 2026-09-30, 4.
-
-No confundir con los otros 16 jugadores de más arriba: ahí lo que está en duda es el
-club, no la foto.
-
-**De dónde salían las fotos antes de la serie de estudio.** Del Drive de PH, carpeta
-«JUGADORES PH SPORT» en *Compartido conmigo*, con una subcarpeta por jugador titulada
-`NOMBRE (CLUB)`. Sigue siendo la vía si a alguien no le llega foto de estudio. Dos
-trampas comprobadas el 2026-09-05:
-
-- **El título de la carpeta no dice qué hay dentro.** «RAYAN ZINEBI (REAL MADRID C)»
-  contiene solo fotos del Granada. La equipación se valida mirando el escudo y el
-  patrocinador, nunca por el nombre de la carpeta.
-- **Los nombres de archivo tampoco** (`WhatsApp Image 2026-07-20 at 20.54.31 (2).jpeg`).
-  Hay que verlas. La vista de cuadrícula de Drive sirve para triar de un vistazo.
-
-**Criterio de selección en Drive** (el que aplicó Mario al elegir las seis primeras,
-antes de la serie de estudio): equipación
-del club actual, cara visible y encuadre 3:4. Se prefiere acción en el campo con balón
-y cuerpo entero, pero **un posado de presentación vale cuando es lo único que hay** —
-Javi Hernández, Thiago Helguera e Iker Luque son de sesión de estudio o de fichaje. Y
-entre dos de acción gana la del jugador aislado sobre la que tiene un rival encima.
-
-**Siete de los que quedan no tienen ninguna foto del club nuevo en Drive** (barrido del
-2026-09-05, carpeta por carpeta): Carlos Guirao, Víctor García, Jesús Bernal, Jorge
-Delgado, Ognjen Teofilovic, Rayan Zinebi y Salim El-Jebari. En todos ellos el material
-es del club anterior. No es que no se hayan buscado: no están. Volver a mirar cuando el
-fotógrafo suba material nuevo. De los siete, a 2026-09-25 están visibles todos
-menos Ognjen Teofilovic. Salim El-Jebari, Carlos Guirao y Rayan Zinebi ya tienen la de
-estudio con la camiseta del club actual.
+Propuesta hecha a Mario, sin aplicar: AVIF 80 solo para la variante de 720. Medido al
+tamaño en que la pinta ese móvil (483 px), AVIF 80 y AVIF 90 quedan casi iguales (SSIM
+cara 0,989 frente a 0,991; pecho 0,971 frente a 0,975; WebP 85: 0,976 y 0,946), y esa
+variante pasaría de ~109 a ~59 KB, lo que pesaba el WebP. Si se aplica, repetir esta
+misma simulación para confirmarlo.
 
 ### Backlog de rendimiento (medido el 2026-08-18)
 

@@ -285,11 +285,12 @@ Lo que hay que saber **antes de tocar nada**:
   aplicar cambios de roster a ciegas. Hay 12 fichas de jugadores pendientes de que
   el equipo de PH valide el club.
 
-Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: fotos de jugadores
-con la camiseta del club anterior, backlog de rendimiento del 2026-08-18, fuga de
-listeners de scroll en la home, SEO P1/P2, el vídeo del hero, los fondos
-animados de sección y el rediseño sin probar en un móvil real (2026-10-01), y lo
-que la web ajusta por fuera de Mochi mientras Mochi no lo trae.
+Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: backlog de
+rendimiento del 2026-08-18, fuga de listeners de scroll en la home, SEO P1/P2, el
+vídeo del hero, los fondos animados de sección y el rediseño sin probar en un móvil
+real (2026-10-01), las fotos de talentos en AVIF, que con 4G lento tardan bastante
+más en aparecer (2026-10-01), y lo que la web ajusta por fuera de Mochi mientras
+Mochi no lo trae.
 
 ## Convenciones
 

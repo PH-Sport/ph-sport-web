@@ -148,7 +148,7 @@ ph-sport-web/
 El roster vive en **JSON plano** dentro de `data/`, no en Content Collections:
 
 - `data/jugadores.json` — jugadores. Campo opcional `"hidden": true` los oculta sin borrar. **El orden del archivo es el orden del grid.** Desde el 2026-09-25 solo está visible una selección en el orden de la lista de Mario (al principio del archivo); el resto lleva `hidden` + `hiddenReason` (`DECISIONS.md`, 2026-09-10 y 2026-09-25).
-- `data/entrenadores.json` — cuerpo técnico.
+- `data/entrenadores.json` — cuerpo técnico. Sus visibles van detrás de los jugadores en el grid; hoy solo Thomas Christiansen (`DECISIONS.md`, 2026-10-02).
 
 Ambos comparten esquema: `{ name, club: { name } | null, nationalTeamCodes?: string[] }`, más los opcionales `hidden`, `hiddenReason` y `note` (ver `RosterJsonRow` en `playerDetail.ts`).
 
@@ -173,9 +173,9 @@ El slug se genera con `slugify(name)` y es la clave común con la foto en `src/a
 
 ### Fotos de jugadores
 
-**Desde el 2026-10-01 las 51 tarjetas visibles llevan foto de la serie de estudio**
+**Desde el 2026-10-01 las tarjetas visibles llevan foto de la serie de estudio**
 que prepara Mario: fondo oscuro con resplandor dorado suave, brazos cruzados y la
-camiseta del club de la ficha. Los jugadores ocultos conservan su foto antigua; si
+camiseta del club de la ficha (el entrenador, con traje). Los jugadores ocultos conservan su foto antigua; si
 alguno vuelve al grid, hay que pedirle la de estudio. El build las sirve en AVIF 90
 con WebP 85 de reserva (`DECISIONS.md`, 2026-10-01).
 
@@ -682,7 +682,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
-| Fotos jugadores | ✅ 51 de los 51 visibles | Serie de estudio de Mario, todas con la camiseta del club de la ficha (2026-10-01). Ver «Fotos de jugadores» arriba |
+| Fotos jugadores | ✅ 52 de las 52 tarjetas visibles | 51 jugadores y el entrenador, todos de la serie de estudio de Mario y con la camiseta del club de la ficha (2026-10-02). Ver «Fotos de jugadores» arriba |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
 | OG image (1200×630px) | ❌ Pendiente | |

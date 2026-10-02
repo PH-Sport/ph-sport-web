@@ -13,6 +13,27 @@ leído el resto.
 
 ---
 
+## 2026-10-02 · El entrenador vuelve al grid de `/talentos`, al final
+
+**Decisión**: Thomas Christiansen (Seleccionador de Panamá) vuelve a mostrarse en
+`/talentos`, detrás de los 51 jugadores. Lo pidió Mario el 2026-10-02. Basta con
+quitarle `hidden` y `hiddenReason` en `data/entrenadores.json`:
+`getAllRosterEntries()` ya pone los entrenadores después de los jugadores, y el
+filtro «Entrenadores» del grid ya existía. Su foto es de la misma serie de estudio
+que la de los jugadores, con traje en vez de camiseta.
+
+**Qué cambia respecto a la vez anterior.** El 2026-09-21 Mario lo sacó para que el
+grid fuera solo de jugadores (entrada de ese día, «Mantener al entrenador en el
+grid», descartada). Ahora el grid tiene la selección de jugadores cerrada y con foto
+de estudio, y Mario quiere al seleccionador al final. Se le recordó la decisión
+anterior antes de hacerlo y la mantuvo.
+
+**Consecuencias**: 52 tarjetas. Cierra en móvil (2 columnas), y deja una suelta en
+tablet (3) y dos en escritorio (5); con 51 eran una en móvil, ninguna en tablet y
+una en escritorio. Nacho Castro, el otro entrenador, sigue oculto (`on-hold`).
+
+---
+
 ## 2026-10-01 · Cabecera de sección legible: el contenido empieza en la primera pantalla y la luz es el fondo de toda la página
 
 **Decisión** (de Mario, sobre la cabecera «Escenario» de la entrada siguiente):
@@ -820,6 +841,7 @@ pero son cambios de comportamiento que no se han pedido.
 > de la lista de Mario, y los escudos solo entran si la lista los pone delante.
 > Siguen vigentes el campograma como referencia, el entrenador fuera del grid y
 > las altas y cambios de club de este día. Ver la entrada del 2026-09-25.
+> **El entrenador vuelve al grid el 2026-10-02**: ver esa entrada.
 
 **Decisión**: la web deja de enseñar el roster entero (114 jugadores visibles,
 sin orden declarado) y muestra **una selección** ordenada por los bloques que

@@ -1,4 +1,4 @@
 [
-  { "name": "Thomas Christiansen", "club": { "name": "Seleccionador Panamá" }, "nationalTeamCodes": ["PA"], "hidden": true, "hiddenReason": "on-hold", "note": "Ocultado 2026-09-21: el grid de /talentos pasa a ser solo de jugadores, a petición de Mario. Sigue en PH." },
+  { "name": "Thomas Christiansen", "club": { "name": "Seleccionador Panamá" }, "nationalTeamCodes": ["PA"], "note": "Oculto del 2026-09-21 al 2026-10-02 (grid solo de jugadores); vuelve al final del grid a petición de Mario (DECISIONS.md, 2026-10-02)." },
   { "name": "Nacho Castro", "club": null, "nationalTeamCodes": [], "hidden": true, "hiddenReason": "on-hold", "note": "Ocultado 2026-09-10: sin equipo de momento, pero sigue en PH." }
 ]

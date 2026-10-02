@@ -109,7 +109,7 @@ ph-sport-web/
 │   │
 │   └── styles/
 │       ├── global.css               # Reset + variables CSS + font-face + cabecera de sección
-│       ├── mochi-phsport.css        # Capa de marca sobre Mochi: paleta, Söhne, esquinas; sombras apagadas
+│       ├── mochi-phsport.css        # Capa de marca sobre Mochi: paleta, Söhne, esquinas y sombras
 │       ├── ph-ui.css                # Piezas compartidas con el lenguaje de Mochi (sus estilos)
 │       └── ph-ui-buttons.css
 │
@@ -372,7 +372,7 @@ El titular del hero se ve desde el primer pintado: ya no entra palabra a palabra
 
 Desde el 2026-10-01 la web usa el lenguaje de **Mochi** (`mochi-ui`), el sistema
 de diseño propio de Mario, con su movimiento de muelles de rebote mínimo. La forma
-es de PHSPORT: rectángulos con una esquina sutil de 6 px, sin filo ni sombra
+es de PHSPORT: rectángulos con una esquina sutil de 6 px, sin filo y con sombra
 (2026-10-02). La marca
 no cambia: negro y oro, Söhne, logos y textos. El porqué y lo descartado, en
 `DECISIONS.md` («Rediseño con el lenguaje de Mochi»).
@@ -382,7 +382,7 @@ no cambia: negro y oro, Söhne, logos y textos. El porqué y lo descartado, en
 | Capa | Archivo | Qué pone |
 |---|---|---|
 | Mochi | `mochi-ui/styles.css` (importado en `BaseLayout`) | Tokens `--mochi-*`, curvas `--mochi-ease-*`, tiempos `--mochi-duration-*` y los botones (`LinkButton`, `Button`) |
-| Marca | `src/styles/mochi-phsport.css` | Los tokens de Mochi con la paleta PHSPORT (tema oscuro: `data-theme="dark"` en `<html>`; el oro hace de acento), Söhne, esquinas `--ph-r-*` y las sombras apagadas (todas las variables de sombra valen `0 0 #0000`). Al final, un bloque **provisional** que corrige lo que Mochi aún no permite (`docs/hallazgos-abiertos.md`) |
+| Marca | `src/styles/mochi-phsport.css` | Los tokens de Mochi con la paleta PHSPORT (tema oscuro: `data-theme="dark"` en `<html>`; el oro hace de acento), Söhne, esquinas `--ph-r-*` y sombras en dos capas (`--mochi-shadow-*`, `--ph-sh-*`). Al final, un bloque **provisional** que corrige lo que Mochi aún no permite (`docs/hallazgos-abiertos.md`) |
 | Piezas | `src/styles/ph-ui.css` + `src/scripts/ph-motion.ts` | Lo interactivo, hecho aquí porque Mochi lo resuelve con React en el navegador |
 
 **React solo al construir.** Los componentes de Mochi son de React: Astro los
@@ -660,12 +660,18 @@ botón.
   de las listas (2026-10-02). Números y códigos de país, en blanco tenue.
 - **Sin rótulos encima de los titulares ni letra monoespaciada** (2026-10-02): el
   titular se sostiene solo.
-- **Sin filo ni sombra** (2026-10-02): lo que flota es un recuadro de color,
-  «como la ventanilla de una puerta sin marco» (Mario). Tarjetas, paneles,
-  desplegables, botones, la cápsula del menú y los huecos de foto se distinguen
-  del fondo solo por el relleno. Al pasar el ratón, el relleno se aclara. Las
-  líneas finas que separan filas por dentro (acordeón, equipo, pilares) sí se
-  quedan, y el anillo dorado del foco del teclado también.
+- **Sin filo, con sombra** (2026-10-02): lo que flota es un recuadro de color,
+  «como la ventanilla de una puerta sin marco» (Mario), con profundidad.
+  - Tarjetas, paneles, desplegables, botones y la cápsula del menú llevan un tono
+    un punto más claro que el fondo (`--mochi-surface` `#1a1d22`, `--mochi-solid`
+    `#21252b`) y una sombra en dos capas: una corta y densa y otra larga y difusa.
+    Sobre un fondo casi negro una sombra suave sola no se ve: es el tono del
+    recuadro el que lo despega.
+  - Al pasar el ratón, la sombra crece (`--ph-sh-raise`) y el relleno se aclara.
+  - Sin sombra: los huecos de foto (son huecos, no piezas) y el buscador (un
+    campo va hundido).
+  - Se quedan las líneas finas que separan filas por dentro (acordeón, equipo,
+    pilares) y el anillo dorado del foco del teclado.
 - **Fotografía**: high-contrast sobre fondo oscuro. Ratio portrait `3:4` para jugadores.
 
 ---

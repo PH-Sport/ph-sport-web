@@ -274,6 +274,7 @@ const isActive = (href: string): boolean => {
     transform: translateX(var(--x, 0px));
     border-radius: var(--ph-r-sm);
     background: rgba(255, 255, 255, 0.075);
+    box-shadow: var(--mochi-shadow-thumb);
     opacity: 0;
     pointer-events: none;
     /* Nombre propio de View Transition: el navegador morfea su geometría de la
@@ -308,6 +309,7 @@ const isActive = (href: string): boolean => {
     padding: 0 12px;
     border-radius: var(--ph-r-btn-sm);
     background: rgba(255, 255, 255, 0.06);
+    box-shadow: var(--mochi-shadow-surface);
     color: var(--color-ph-white);
     cursor: pointer;
     touch-action: manipulation;
@@ -340,6 +342,7 @@ const isActive = (href: string): boolean => {
     padding: 6px;
     border-radius: var(--ph-r-md);
     background: var(--mochi-solid);
+    box-shadow: var(--mochi-shadow-overlay);
     /* Cerrado, el recorte tiene exactamente la forma del botón, en su esquina. */
     clip-path: inset(0 0 calc(100% - 40px) calc(100% - var(--bw, 76px)) round var(--ph-r-btn-sm));
     opacity: 0;
@@ -429,6 +432,7 @@ const isActive = (href: string): boolean => {
     border: 0;
     border-radius: var(--ph-r-btn);
     background: var(--mochi-solid);
+    box-shadow: var(--mochi-shadow-surface);
     color: var(--color-ph-white);
     cursor: pointer;
     touch-action: manipulation;
@@ -493,7 +497,7 @@ const isActive = (href: string): boolean => {
     max-height: calc(100dvh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     overflow-y: auto;
     border-radius: var(--ph-r-md);
-    background: rgba(21, 23, 27, 0.97);
+    background: rgba(26, 29, 34, 0.97);
     box-shadow: var(--mochi-shadow-overlay);
     clip-path: inset(0 0 calc(100% - var(--cap-h, 62px)) 0 round var(--ph-r-md));
     transition: clip-path var(--mochi-duration-morph) var(--mochi-ease-morph);
@@ -584,6 +588,7 @@ const isActive = (href: string): boolean => {
   .lang-switch--mobile[aria-current='true'] {
     background: var(--mochi-thumb);
     color: var(--mochi-on-thumb);
+    box-shadow: var(--mochi-shadow-thumb);
   }
 
   @media (prefers-reduced-motion: reduce) {

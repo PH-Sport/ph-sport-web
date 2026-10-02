@@ -226,9 +226,9 @@ uno por uno:
   esas clases o su especificidad, los botones vuelven a salir en píldora sin que
   nada falle.
 - **Los tonos claros dibujan su filo con una sombra interior**, y el tono `accent`
-  no tiene sombra propia. Desde el 2026-10-02 la web va sin filo ni sombra: apaga
-  las variables de sombra de Mochi y quita esa sombra interior de los botones
-  `solid` y `surface`. Si Mochi cambia cómo dibuja el filo, volvería a verse.
+  no tiene sombra propia. Desde el 2026-10-02 la web va sin filo: quita esa sombra
+  interior de los botones `solid` y `surface` y deja solo la de profundidad, y al
+  dorado le da la misma. Si Mochi cambia cómo dibuja el filo, volvería a verse.
 - **El peso 520 de las etiquetas** (`--mochi-text-label`, botón grande) no existe
   en Söhne, que solo trae 400, 600 y 700: el navegador pinta 600, algo más
   pesado de lo que Mochi diseñó.

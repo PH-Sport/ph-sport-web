@@ -12,13 +12,15 @@
   --mochi-on-canvas: #ffffff;
   --mochi-on-canvas-muted: rgba(255, 255, 255, 0.62);
 
-  --mochi-solid: #1c1f24;
+  /* Superficies un punto más claras que el fondo (2026-10-02): sin filo, es el
+     tono el que las despega del negro, y la sombra de debajo hace el resto. */
+  --mochi-solid: #21252b;
   --mochi-on-solid: #ffffff;
   --mochi-on-solid-muted: rgba(255, 255, 255, 0.62);
   --mochi-solid-subtle: rgba(255, 255, 255, 0.06);
   --mochi-solid-border: rgba(255, 255, 255, 0.08);
 
-  --mochi-surface: #15171b;
+  --mochi-surface: #1a1d22;
   --mochi-on-surface: #ffffff;
   --mochi-on-surface-muted: rgba(255, 255, 255, 0.62);
   --mochi-surface-border: rgba(255, 255, 255, 0.08);
@@ -36,15 +38,14 @@
   --mochi-font-sans: 'Sohne', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --mochi-font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
-  /* Sin sombras (decisión de Mario, 2026-10-02): lo que flota es un recuadro de
-     color, «como la ventanilla de una puerta sin marco», sin filo ni sombra. Las
-     variables se quedan, con una sombra vacía (`0 0 #0000`, válida también dentro
-     de las listas de sombras de Mochi), para que todo lo que las usa se apague a la
-     vez y se puedan recuperar cambiando solo esto. */
-  --mochi-shadow-surface: 0 0 #0000;
-  --mochi-shadow-thumb: 0 0 #0000;
-  --mochi-shadow-pop: 0 0 #0000;
-  --mochi-shadow-overlay: 0 0 #0000;
+  /* Sombras: lo que flota es un recuadro de color sin filo, «como la ventanilla de
+     una puerta sin marco», pero con profundidad (decisión de Mario, 2026-10-02).
+     Sobre un fondo casi negro una sombra suave no se ve, así que van dos capas: una
+     corta y densa pegada al borde y otra larga y difusa por debajo. */
+  --mochi-shadow-surface: 0 1px 2px rgba(0, 0, 0, 0.6), 0 10px 24px -4px rgba(0, 0, 0, 0.75), 0 30px 60px -12px rgba(0, 0, 0, 0.95);
+  --mochi-shadow-thumb: 0 1px 2px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.35);
+  --mochi-shadow-pop: 0 2px 4px rgba(0, 0, 0, 0.4), 0 12px 28px -6px rgba(0, 0, 0, 0.65);
+  --mochi-shadow-overlay: 0 4px 10px rgba(0, 0, 0, 0.5), 0 32px 72px -12px rgba(0, 0, 0, 0.9);
 
   /* Esquinas de PHSPORT: rectángulo con la esquina apenas redondeada, 6 px en
      todo (decisión de Mario, 2026-10-02; antes iban de 8 a 28 px). Se mantienen
@@ -58,9 +59,11 @@
   --ph-r-lg: 6px;
   --ph-r-xl: 6px;
 
-  --ph-sh-raise: 0 0 #0000;
-  --ph-sh-accent: 0 0 #0000;
-  --ph-sh-accent-raise: 0 0 #0000;
+  /* Al pasar el ratón: la sombra crece, como si el recuadro subiera. */
+  --ph-sh-raise: 0 2px 4px rgba(0, 0, 0, 0.55), 0 16px 32px -6px rgba(0, 0, 0, 0.7), 0 44px 84px -20px rgba(0, 0, 0, 0.9);
+  /* Botón dorado: la misma sombra oscura, sin halo dorado (revisión del 2026-10-02). */
+  --ph-sh-accent: var(--mochi-shadow-surface);
+  --ph-sh-accent-raise: var(--ph-sh-raise);
 }
 
 /* ── Ajustes provisionales sobre los botones de Mochi ────────────────────────
@@ -72,9 +75,10 @@
 .mochi-button[data-size="sm"] { border-radius: var(--ph-r-btn-sm); }
 .mochi-button[data-size="lg"] { border-radius: var(--ph-r-btn-lg); }
 .mochi-button[data-tone="accent"] { box-shadow: var(--ph-sh-accent); }
-/* Sin filo: Mochi dibuja el borde de los tonos claros con una sombra interior. */
+/* Sin filo: Mochi dibuja el borde de los tonos claros con una sombra interior; aquí
+   solo queda la sombra de profundidad. */
 .mochi-button[data-tone="solid"],
-.mochi-button[data-tone="surface"] { box-shadow: none; }
+.mochi-button[data-tone="surface"] { box-shadow: var(--mochi-shadow-surface); }
 .mochi-button[data-tone="solid"],
 .mochi-button[data-tone="surface"],
 .mochi-button[data-tone="accent"] {
@@ -84,10 +88,10 @@
     background-color var(--mochi-duration-color) var(--mochi-ease-color);
 }
 @media (hover: hover) {
-  /* Al pasar el ratón, el recuadro se aclara: sin marco ni sombra que crezca. */
-  .mochi-button[data-tone="surface"]:hover { background: var(--mochi-solid); }
-  .mochi-button[data-tone="solid"]:hover { background: #24282e; }
-  .mochi-button[data-tone="accent"]:hover { background: var(--mochi-accent-strong); }
+  /* Al pasar el ratón, el recuadro se aclara y su sombra crece. */
+  .mochi-button[data-tone="surface"]:hover { background: var(--mochi-solid); box-shadow: var(--ph-sh-raise); }
+  .mochi-button[data-tone="solid"]:hover { background: #292d34; box-shadow: var(--ph-sh-raise); }
+  .mochi-button[data-tone="accent"]:hover { background: var(--mochi-accent-strong); box-shadow: var(--ph-sh-accent-raise); }
   .mochi-button .mochi-button__label svg { transition: transform var(--mochi-duration-snappy) var(--mochi-ease-snappy); }
   .mochi-button:hover .mochi-button__label svg:last-child { transform: translateX(3px); }
 }

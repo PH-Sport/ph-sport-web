@@ -13,7 +13,40 @@ leído el resto.
 
 ---
 
+## 2026-10-02 · Sin marco, pero con sombra: superficies con profundidad
+
+**Decisión** (de Mario, al ver la entrada siguiente): «lo veo muy plano. Buscaba
+algo más de profundidad, con algo de sombra».
+
+**El malentendido:** Mario dijo «la estética de cuadro flotante con sombra no
+pega» y, a la vez, «un recuadro de ese estilo, pero sin el borde». Lo leí como
+«sin filo y sin sombra». Lo que quería era sin filo y con sombra.
+
+**Qué cambia**:
+
+- **Vuelve la sombra, más marcada que la del 2026-10-01**, en dos capas (una corta
+  y densa, otra larga y difusa).
+  - Afecta a: tarjetas, acordeones, el Plan de acción, tarjetas de jugador,
+    botones (también el dorado, sin halo), desplegables, la cápsula del menú y el
+    menú móvil.
+  - Al pasar el ratón crece (`--ph-sh-raise`).
+- **Las superficies suben un punto de tono:**
+  - `--mochi-surface` pasa de `#15171b` a `#1a1d22`;
+  - `--mochi-solid` pasa de `#1c1f24` a `#21252b`;
+  - la cápsula y el menú móvil, igual.
+
+  **Por qué:** sobre `#0d0f12` una sombra negra apenas puede oscurecer, así que
+  sola no se percibe. Medido en capturas: con el tono antiguo la sombra existía,
+  pero casi no se veía.
+- **Siguen sin filo** y sin sombra los huecos de foto y el buscador.
+
+---
+
 ## 2026-10-02 · Sin marco ni sombra, y el roster de la portada sin jugadores
+
+> **Sombras recuperadas el mismo día** (entrada anterior): sin filo se queda;
+> sin sombra, no. Las superficies vuelven a tener sombra, más marcada, y un tono
+> un punto más claro.
 
 **Decisión** (de Mario):
 

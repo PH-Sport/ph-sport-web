@@ -443,6 +443,7 @@ const selects = [
     text-align: center;
     background: var(--mochi-surface);
     border-radius: var(--ph-r-lg);
+    box-shadow: var(--mochi-shadow-surface);
   }
   .talents__empty-text {
     margin: 0;
@@ -451,7 +452,8 @@ const selects = [
     line-height: 1.6;
     color: var(--ph-ink-body);
   }
-  /* Botón en tono «solid» de Mochi: se aclara al pasar el ratón y se hunde al pulsar. */
+  /* Botón en tono «solid» de Mochi: se aclara y su sombra crece al pasar el ratón;
+     se hunde al pulsar. */
   .talents__reset {
     all: unset;
     box-sizing: border-box;
@@ -462,15 +464,17 @@ const selects = [
     border-radius: var(--ph-r-btn);
     background: var(--mochi-solid);
     color: var(--color-ph-white);
+    box-shadow: var(--mochi-shadow-surface);
     font: 500 15px/1 var(--font-display);
     letter-spacing: -0.005em;
     cursor: pointer;
     transition:
       transform var(--mochi-duration-snappy) var(--mochi-ease-snappy),
-      background-color var(--mochi-duration-color) var(--mochi-ease-color);
+      background-color var(--mochi-duration-color) var(--mochi-ease-color),
+      box-shadow var(--mochi-duration-morph) var(--mochi-ease-morph);
   }
   @media (hover: hover) {
-    .talents__reset:hover { background: #24282e; }
+    .talents__reset:hover { background: #292d34; box-shadow: var(--ph-sh-raise); }
   }
   .talents__reset:active {
     transform: scale(0.965);

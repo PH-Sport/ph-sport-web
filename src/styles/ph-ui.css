@@ -37,6 +37,7 @@
 .ph-card {
   background: var(--mochi-surface);
   border-radius: var(--ph-r-lg);
+  box-shadow: var(--mochi-shadow-surface);
 }
 
 /* ── Tarjeta de jugador (portada y Talentos) ─────────────────────────────── */
@@ -46,7 +47,10 @@
   overflow: hidden;
   border-radius: var(--ph-r-lg);
   background: var(--mochi-surface);
-  transition: translate var(--mochi-duration-morph) var(--mochi-ease-morph);
+  box-shadow: var(--mochi-shadow-surface);
+  transition:
+    translate var(--mochi-duration-morph) var(--mochi-ease-morph),
+    box-shadow var(--mochi-duration-morph) var(--mochi-ease-morph);
 }
 .ph-player__photo { position: relative; aspect-ratio: 3 / 4; overflow: hidden; }
 .ph-player__photo img {
@@ -70,12 +74,12 @@
 .ph-player__badges { position: absolute; top: 12px; right: 12px; display: flex; gap: 4px; pointer-events: none; }
 .ph-player__badges img { display: block; width: 22px; height: 22px; object-fit: contain; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55)); }
 @media (hover: hover) {
-  .ph-player:hover { translate: 0 -6px; }
+  .ph-player:hover { translate: 0 -6px; box-shadow: var(--ph-sh-raise); }
   .ph-player:hover .ph-player__photo img { scale: 1.035; }
 }
 
 /* ── Acordeón en tarjeta: el hueco se abre con «morph» y el texto entra después ─ */
-.ph-acc { background: var(--mochi-surface); border-radius: var(--ph-r-lg); }
+.ph-acc { background: var(--mochi-surface); border-radius: var(--ph-r-lg); box-shadow: var(--mochi-shadow-surface); }
 .ph-acc__item { position: relative; }
 .ph-acc__item + .ph-acc__item::before { content: ""; position: absolute; top: 0; left: clamp(16px, 1.6vw, 24px); right: clamp(16px, 1.6vw, 24px); height: 1px; background: var(--mochi-surface-border); }
 .ph-acc__head {
@@ -155,7 +159,7 @@ html:not(.ph-js) .ph-seg__tab[aria-selected="true"] { color: var(--color-ph-whit
   all: unset; box-sizing: border-box;
   display: inline-flex; align-items: center; gap: 8px;
   height: 40px; padding: 0 12px; border-radius: var(--ph-r-btn-sm);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.06); box-shadow: var(--mochi-shadow-surface);
   font: 500 13px/1 var(--font-display); letter-spacing: 0.03em; color: var(--color-ph-white);
   cursor: pointer;
   transition: background-color var(--mochi-duration-color) var(--mochi-ease-color), transform var(--mochi-duration-snappy) var(--mochi-ease-snappy);
@@ -169,7 +173,7 @@ html:not(.ph-js) .ph-seg__tab[aria-selected="true"] { color: var(--color-ph-whit
   position: absolute; top: 0; z-index: 30;
   min-width: max(100%, 200px); padding: 6px;
   border-radius: var(--ph-r-md);
-  background: var(--mochi-solid);
+  background: var(--mochi-solid); box-shadow: var(--mochi-shadow-overlay);
   clip-path: var(--closed, inset(0 0 calc(100% - 40px) 0 round var(--ph-r-btn-sm)));
   opacity: 0; pointer-events: none;
   transition: clip-path var(--mochi-duration-morph) var(--mochi-ease-morph), opacity var(--mochi-duration-fade-out) var(--mochi-ease-fade-out) 90ms;
@@ -240,10 +244,11 @@ html:not(.ph-js) .ph-seg__tab[aria-selected="true"] { color: var(--color-ph-whit
   all: unset; box-sizing: border-box;
   display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: var(--ph-r-btn);
   background: var(--mochi-solid); color: var(--color-ph-white);
+  box-shadow: var(--mochi-shadow-surface);
   cursor: pointer;
-  transition: transform var(--mochi-duration-snappy) var(--mochi-ease-snappy), background-color var(--mochi-duration-color) var(--mochi-ease-color);
+  transition: transform var(--mochi-duration-snappy) var(--mochi-ease-snappy), background-color var(--mochi-duration-color) var(--mochi-ease-color), box-shadow var(--mochi-duration-morph) var(--mochi-ease-morph);
 }
-@media (hover: hover) { .ph-icon-btn:hover { background: #24282e; } }
+@media (hover: hover) { .ph-icon-btn:hover { background: #292d34; box-shadow: var(--ph-sh-raise); } }
 .ph-icon-btn:active { transform: scale(0.965); transition-duration: var(--mochi-duration-press); transition-timing-function: var(--mochi-ease-press); }
 .ph-icon-btn:focus-visible { outline: 2px solid var(--mochi-focus-ring); outline-offset: 3px; }
 .ph-icon-btn--sm { width: 40px; height: 40px; border-radius: var(--ph-r-btn-sm); }

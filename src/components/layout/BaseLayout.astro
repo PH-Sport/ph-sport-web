@@ -22,6 +22,9 @@ interface Props {
   /** Monta el telón de intro (sólo la home). Va aquí y no en la página para que
    *  quede fuera de <main> — ver el comentario junto a <LogoReveal />. */
   intro?: boolean;
+  /** Fondo animado (el «bombo» de `ph-ambient.ts`). Todas las páginas lo llevan
+   *  salvo los textos legales, que van planos (decisión de Mario, 2026-10-02). */
+  ambient?: boolean;
   /**
    * Imagen LCP a precargar. Si la imagen tiene variantes responsive,
    * pasa { mobile, desktop } y se emiten dos preloads media-aware
@@ -30,7 +33,7 @@ interface Props {
   preloadImage?: string | { mobile: string; desktop: string; mobileMaxWidth?: number };
 }
 
-const { title, description, lang, canonical, ogImage, hasHero = false, noIndex = false, intro = false, preloadImage } = Astro.props;
+const { title, description, lang, canonical, ogImage, hasHero = false, noIndex = false, intro = false, ambient = true, preloadImage } = Astro.props;
 const preloadIsResponsive = typeof preloadImage === 'object' && preloadImage !== null;
 const preloadMobile = preloadIsResponsive ? preloadImage.mobile : null;
 const preloadDesktop = preloadIsResponsive ? preloadImage.desktop : null;
@@ -251,6 +254,13 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
       class:list={[!hasHero && 'main--padded']}
       transition:name="page-main"
     >
+      {/* Fondo animado de toda la página: fijo a la pantalla, por detrás del
+          contenido. La escena la elige `ph-ambient.ts` al cargar. */}
+      {ambient && (
+        <div class="ph-page-bg" aria-hidden="true">
+          <canvas class="ph-ambient" data-ambient=""></canvas>
+        </div>
+      )}
       <slot />
     </main>
     <Footer />
@@ -258,6 +268,11 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
     <script>
       // Comportamiento de las piezas compartidas (acordeones, pestañas, desplegables…).
       import '@/scripts/ph-motion';
+    </script>
+
+    <script>
+      // Fondo animado: elige escena del bombo en cada página (si hay canvas).
+      import '@/scripts/ph-ambient';
     </script>
 
     <script>
@@ -458,7 +473,7 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
      en Header.astro). Arriba del todo es transparente y ancha, alineada con el texto. */
   [data-header].header--solid .header-shell {
     width: min(calc(100% - var(--ph-section-px)), 1200px);
-    background-color: rgba(26, 29, 34, 0.8);
+    background-color: var(--ph-panel);
     backdrop-filter: blur(18px) saturate(1.15);
     -webkit-backdrop-filter: blur(18px) saturate(1.15);
     box-shadow: var(--mochi-shadow-surface);

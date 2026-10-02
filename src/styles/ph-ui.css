@@ -35,7 +35,9 @@
 
 /* ── Tarjeta: superficie que se despega del fondo ─────────────────────────── */
 .ph-card {
-  background: var(--mochi-surface);
+  background: var(--ph-panel);
+  -webkit-backdrop-filter: var(--ph-panel-blur);
+  backdrop-filter: var(--ph-panel-blur);
   border-radius: var(--ph-r-lg);
   box-shadow: var(--mochi-shadow-surface);
 }
@@ -79,7 +81,8 @@
 }
 
 /* ── Acordeón en tarjeta: el hueco se abre con «morph» y el texto entra después ─ */
-.ph-acc { background: var(--mochi-surface); border-radius: var(--ph-r-lg); box-shadow: var(--mochi-shadow-surface); }
+/* Translúcido y esmerilado: el fondo animado pasa por detrás. */
+.ph-acc { background: var(--ph-panel); -webkit-backdrop-filter: var(--ph-panel-blur); backdrop-filter: var(--ph-panel-blur); border-radius: var(--ph-r-lg); box-shadow: var(--mochi-shadow-surface); }
 .ph-acc__item { position: relative; }
 .ph-acc__item + .ph-acc__item::before { content: ""; position: absolute; top: 0; left: clamp(16px, 1.6vw, 24px); right: clamp(16px, 1.6vw, 24px); height: 1px; background: var(--mochi-surface-border); }
 .ph-acc__head {
@@ -173,7 +176,8 @@ html:not(.ph-js) .ph-seg__tab[aria-selected="true"] { color: var(--color-ph-whit
   position: absolute; top: 0; z-index: 30;
   min-width: max(100%, 200px); padding: 6px;
   border-radius: var(--ph-r-md);
-  background: var(--mochi-solid); box-shadow: var(--mochi-shadow-overlay);
+  background: var(--ph-panel-strong); -webkit-backdrop-filter: var(--ph-panel-blur); backdrop-filter: var(--ph-panel-blur);
+  box-shadow: var(--mochi-shadow-overlay);
   clip-path: var(--closed, inset(0 0 calc(100% - 40px) 0 round var(--ph-r-btn-sm)));
   opacity: 0; pointer-events: none;
   transition: clip-path var(--mochi-duration-morph) var(--mochi-ease-morph), opacity var(--mochi-duration-fade-out) var(--mochi-ease-fade-out) 90ms;

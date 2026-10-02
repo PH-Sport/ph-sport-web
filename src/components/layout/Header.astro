@@ -341,7 +341,9 @@ const isActive = (href: string): boolean => {
     width: 212px;
     padding: 6px;
     border-radius: var(--ph-r-md);
-    background: var(--mochi-solid);
+    background: var(--ph-panel-strong);
+    -webkit-backdrop-filter: var(--ph-panel-blur);
+    backdrop-filter: var(--ph-panel-blur);
     box-shadow: var(--mochi-shadow-overlay);
     /* Cerrado, el recorte tiene exactamente la forma del botón, en su esquina. */
     clip-path: inset(0 0 calc(100% - 40px) calc(100% - var(--bw, 76px)) round var(--ph-r-btn-sm));
@@ -497,7 +499,9 @@ const isActive = (href: string): boolean => {
     max-height: calc(100dvh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     overflow-y: auto;
     border-radius: var(--ph-r-md);
-    background: rgba(26, 29, 34, 0.97);
+    background: var(--ph-panel-strong);
+    -webkit-backdrop-filter: var(--ph-panel-blur);
+    backdrop-filter: var(--ph-panel-blur);
     box-shadow: var(--mochi-shadow-overlay);
     clip-path: inset(0 0 calc(100% - var(--cap-h, 62px)) 0 round var(--ph-r-md));
     transition: clip-path var(--mochi-duration-morph) var(--mochi-ease-morph);

@@ -13,6 +13,73 @@ leído el resto.
 
 ---
 
+## 2026-10-02 · Bombo de fondos animados en toda la web y paneles translúcidos
+
+**Decisión** (de Mario):
+
+- **El fondo:** quería «animaciones de motion graphics para mostrar constantemente
+  en el fondo de la web, para no tener algo plano y negro», mezcladas con los
+  contenedores con «un ligero efecto traslúcido, para que estas animaciones
+  interactuasen con el resto de la web».
+- **Cómo se decidió:** sobre un prototipo navegable fuera de la web, con cinco
+  rondas de escenas.
+- **Al elegir:** pidió un bombo: «cada vez que se navegue entre páginas, caiga una
+  distinta, sin que pueda repetirse la última anterior».
+- **Además:**
+  - los textos legales, planos;
+  - en ordenador, que reaccione al ratón;
+  - paneles al 60 % y esmerilados, también en móvil.
+
+**Qué cambia**:
+
+- **El bombo** (`POOL` en `src/scripts/ph-ambient.ts`) tiene cinco escenas:
+  - **Velo:** la red de luz de un cristal al sol, muy tenue. Es la única que salió
+    de las rondas nuevas, aligerada a petición de Mario y con un tercio de la
+    reacción al ratón.
+  - **Neón:** el contorno del logo con ecos, y una luz que lo recorre.
+  - **Trayectorias, Estructura y Calidez:** las que ya tenían Talentos, Servicios y
+    Sobre nosotros.
+- **La elección:** en cada carga de página sale una al azar, nunca la de la página
+  anterior (memoria y `sessionStorage`). `?fondo=<escena>` fuerza una para
+  revisarla.
+- **Dónde:** el canvas lo monta `BaseLayout` en todas las páginas, también la
+  portada bajo el vídeo. Las legales lo apagan (`ambient={false}`). Talentos,
+  Servicios y Sobre nosotros ya no llevan su canvas propio.
+- **El ratón** (solo con puntero fino) llega amortiguado por un muelle. Cada escena
+  reacciona a su manera: se encienden trazos, la retícula se ilumina como con una
+  linterna o el haz se inclina hacia el cursor.
+- **La luz es la misma en toda la pantalla**, como en el prototipo aprobado. Se
+  quita la regla que la bajaba al 32 % fuera del titular («Cabecera de sección
+  legible», 2026-10-01). Bajo el menú se sigue apagando.
+- **Paneles translúcidos** (`--ph-panel*`), con desenfoque de lo de detrás:
+  - al 60 %: tarjetas, acordeones, el Plan de acción, la cápsula del menú y el
+    estado vacío de Talentos;
+  - al 90 %: los desplegables y el menú móvil;
+  - opacos: botones, tarjetas de jugador y huecos de foto;
+  - con `prefers-reduced-transparency`, todo opaco.
+- **Nombres nuevos:** `--ph-panel*`, porque `global.css` ya tenía un sistema
+  `--ph-glass*` antiguo, sin uso, con el mismo nombre y otro formato.
+
+**Escenas probadas y descartadas**:
+
+| Escenas | Qué dijo Mario |
+|---|---|
+| Campo (líneas de un campo y un pase con estela) | «Me molan bastante todas, excepto la de Campo» |
+| Red (las siete sedes unidas desde Madrid), Avance (las esquinas de las flechas del logo flotando) | «No me convence ninguna» |
+| Ecos (Neón con doce ecos), Hilos (diagonales que se mecen), Estelas (larga exposición) | «Muy similares a los que ya tenemos» |
+| Seda (satén negro), Niebla (focos de estadio en niebla), Bokeh (motas desenfocadas), Ola (puntos en perspectiva) | Solo le convenció Cáusticas, «aligerándola bastante» |
+| Cáusticas original, Ligera, Filamentos | Eligió Velo |
+
+El prototipo no está en el repo: era un archivo suelto con la marca de PHSPORT y
+no se publicó. Los shaders de las escenas elegidas viven en `ph-ambient.ts`.
+
+**Coste**: el fondo se dibuja en todas las páginas y el esmerilado obliga a
+redesenfocarlo detrás de cada panel en cada fotograma, también en móvil. Está sin
+medir en un teléfono real; las palancas para aligerar, en
+`docs/hallazgos-abiertos.md`.
+
+---
+
 ## 2026-10-02 · Sin marco, pero con sombra: superficies con profundidad
 
 **Decisión** (de Mario, al ver la entrada siguiente): «lo veo muy plano. Buscaba
@@ -408,6 +475,10 @@ Eran así antes del rediseño. Están en `docs/hallazgos-abiertos.md`.
 
 ## 2026-10-01 · Cabecera de sección legible: el contenido empieza en la primera pantalla y la luz es el fondo de toda la página
 
+> **La luz ya no baja al 32 % fuera del titular desde el 2026-10-02** («Bombo de
+> fondos animados»): es la misma en toda la pantalla, y los paneles son
+> translúcidos.
+
 > **La fila índice se retiró el 2026-10-02** (entrada «Esquina de 6 px…»): la
 > cabecera pasa a ser titular y entradilla, sin rótulo encima. El resto de esta
 > entrada (tamaños, luz de fondo en toda la página) sigue vigente.
@@ -624,6 +695,10 @@ la home del idioma elegido, porque quien elige idioma pide leer en él.
 ---
 
 ## 2026-10-01 · Fondos animados en directo para Talentos, Servicios y Sobre nosotros
+
+> **Superada en parte el 2026-10-02** («Bombo de fondos animados»): las tres
+> escenas siguen, pero ya no van una por página. Están en un bombo con Velo y Neón,
+> y la escena sale al azar en todas las páginas salvo las legales.
 
 > ⚠️ **Composición SUPERADA el mismo día** por la entrada «Cabecera «Escenario»…»
 > (arriba): el fondo ya no va en el contenedor de las fotos, sino en toda la

@@ -379,10 +379,10 @@ strong {
 }
 
 /* ── Fondo animado de página (src/scripts/ph-ambient.ts) ──────────────────────
-   Talentos, Servicios y Sobre nosotros: la luz es el fondo de toda la página. Va
-   fija a la pantalla, por detrás de todo el contenido de <main>, y el contenido
-   pasa por encima al hacer scroll. Sin máscaras de CSS: dónde brilla y dónde se
-   atenúa lo decide la propia animación. */
+   Todas las páginas salvo las legales (lo monta BaseLayout): la luz es el fondo de
+   toda la página. Va fija a la pantalla, por detrás de todo el contenido de
+   <main>, y el contenido pasa por encima al hacer scroll. Sin máscaras de CSS:
+   dónde brilla lo decide la propia animación. */
 .ph-page-bg {
   position: fixed;
   inset: 0;

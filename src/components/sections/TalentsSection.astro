@@ -52,9 +52,6 @@ const selects = [
 ---
 
 <section class="talents" aria-labelledby="talents-title">
-  <div class="ph-page-bg" aria-hidden="true">
-    <canvas class="ph-ambient" data-ambient="trayectorias"></canvas>
-  </div>
 
   <header class="talents__head">
     <h1 class="talents__title ph-head-title" id="talents-title">
@@ -441,7 +438,9 @@ const selects = [
     margin: 0;
     padding: clamp(32px, 4vw, 48px) 24px;
     text-align: center;
-    background: var(--mochi-surface);
+    background: var(--ph-panel);
+    -webkit-backdrop-filter: var(--ph-panel-blur);
+    backdrop-filter: var(--ph-panel-blur);
     border-radius: var(--ph-r-lg);
     box-shadow: var(--mochi-shadow-surface);
   }
@@ -683,7 +682,3 @@ const selects = [
   document.addEventListener('astro:page-load', initTalents);
 </script>
 
-<script>
-  // Fondo animado de la página (se inicia solo en cada astro:page-load).
-  import '@/scripts/ph-ambient';
-</script>

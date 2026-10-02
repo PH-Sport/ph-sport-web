@@ -104,7 +104,7 @@ ph-sport-web/
 │   │           └── index.astro      # /it/talenti/
 │   │
 │   ├── scripts/                     # Scripts vanilla para interacciones y animaciones
-│   │   ├── ph-ambient.ts            # Luz animada de fondo de Talentos, Servicios y Sobre nosotros (WebGL2 en directo)
+│   │   ├── ph-ambient.ts            # Fondo animado: bombo de escenas en WebGL2, una al azar por página (no en las legales)
 │   │   └── ph-motion.ts             # Interacción con el movimiento de Mochi: acordeón, pestañas, desplegable, etiquetas, copiar
 │   │
 │   └── styles/
@@ -475,47 +475,61 @@ contenido empiece ya en la primera pantalla y que todo se lea sin esfuerzo:
   (Filosofía y Presencia en Sobre nosotros), el `h2` sigue en el HTML con
   `sr-only`, para que la jerarquía no salte de `h1` a `h3`.
 
-El fondo es un `<canvas class="ph-ambient" data-ambient="<escena>">` dentro de
-`<div class="ph-page-bg">`. Lo dibuja en directo `src/scripts/ph-ambient.ts` con
-un shader de WebGL2:
+**El fondo animado es un «bombo» de escenas** (desde el 2026-10-02; `DECISIONS.md`,
+«Bombo de fondos»).
 
-| Sección | Escena | Qué se ve |
+- **Dónde:** en todas las páginas salvo los textos legales, que van planos.
+  `BaseLayout` monta un único `<canvas class="ph-ambient" data-ambient>` dentro
+  de `<div class="ph-page-bg">`; una página lo apaga con `ambient={false}`.
+- **Qué escena:** en cada carga de página, `src/scripts/ph-ambient.ts` elige una
+  al azar del bombo (`POOL`), sin repetir la de la página anterior. La última se
+  recuerda en memoria y en `sessionStorage`.
+- **Para revisar una escena concreta,** `?fondo=<escena>` en la URL.
+
+Cada escena es un shader de WebGL2 que se dibuja en directo:
+
+| Escena | Qué se ve | Con el ratón (ordenador) |
 |---|---|---|
-| Talentos | `trayectorias` | Líneas finas a 45° (la diagonal del logo) por las que suben destellos dorados |
-| Servicios | `estructura` | La retícula a 45° del logo, casi invisible, que barre una luz lenta encendiendo sus cruces |
-| Sobre nosotros | `calidez` | Un haz de luz cálida que se mece, con motas de polvo dentro |
+| `velo` | La red de luz que deja un cristal al sol, a 45°, muy tenue y lenta | Se concentra un poco (un tercio de fuerza) |
+| `neon` | El contorno del logo en grande, con ecos paralelos; una luz recorre el tubo | Se encienden los trazos cercanos |
+| `trayectorias` | Líneas finas a 45° por las que suben destellos dorados | Líneas y destellos se avivan |
+| `estructura` | La retícula a 45° del logo con un barrido de luz que enciende sus cruces | Una linterna enciende la retícula |
+| `calidez` | Un haz de luz cálida que se mece, con motas de polvo | El haz se inclina hacia el cursor |
+
+Para quitar o añadir una escena del bombo, basta con la lista `POOL`. Se probaron y
+descartaron otras diez; están en `DECISIONS.md`.
 
 Cómo convive con la página, todo dentro del módulo:
 
 - **Es el fondo de toda la página**: `.ph-page-bg` va fijo a la pantalla
   (`position: fixed`, `z-index: -1` dentro de `<main>`) y el contenido pasa por
-  encima al hacer scroll. Por eso las secciones `.talents` y `.srv` tienen el fondo
-  transparente; si una vuelve a llevar fondo opaco, tapa la luz.
-- **Dónde brilla lo decide el shader** (`stageMask`):
-  - La luz está entera solo detrás del titular (el `<h1>` de la sección, medido en
-    px de página).
-  - En el resto de la página baja al 32 % (`OUTSIDE_TITLE`), para que no ensucie
-    los párrafos.
-  - Bajo el menú se apaga siempre.
-  - El shader recibe el scroll en cada fotograma.
-  - No hay `mask-image` ni fondo de color en el contenedor: con una caja con
-    fundidos de CSS se veía su borde (la «placa» gris de la primera versión).
-- **Dibuja mientras la pestaña está visible**, a la frecuencia de la pantalla. Como
-  ocupa la pantalla entera, ya no se pausa al hacer scroll: es el coste de que la
-  luz esté siempre (ver `docs/hallazgos-abiertos.md`).
-- **`prefers-reduced-motion`**: un fotograma fijo, sin animación, que se repinta al
-  hacer scroll porque la zona brillante se mueve con el titular.
+  encima al hacer scroll. Las secciones tienen el fondo transparente; si una
+  vuelve a llevar fondo opaco, tapa la luz.
+- **Los paneles son translúcidos y esmerilados** (`--ph-panel*`, 60 %) para que la
+  luz se vea pasar por detrás. Los desplegables y el menú móvil van al 90 %, y los
+  botones, opacos. Con `prefers-reduced-transparency` los paneles son opacos.
+- **La luz es la misma en toda la pantalla**, con las intensidades del prototipo
+  que aprobó Mario. Bajo el menú se apaga siempre (`stageMask`). Hasta el
+  2026-10-02 bajaba al 32 % fuera del titular; se quitó porque lo aprobado se vio
+  sin esa regla.
+- **El ratón** solo cuenta con puntero fino (`(hover: hover) and (pointer:
+  fine)`). Llega amortiguado por un muelle crítico, sin saltos, y su presencia
+  sube y baja suave al entrar y salir de la ventana. En táctil no hay reacción.
+- **Dibuja mientras la pestaña está visible**, a la frecuencia de la pantalla. El
+  coste en un móvil real está sin medir (ver `docs/hallazgos-abiertos.md`).
+- **`prefers-reduced-motion`**: un fotograma fijo, sin animación.
 - **Se suma al fondo**: salida premultiplicada, así que no tapa nada.
-- **ClientRouter**: al cambiar de página destruye los contextos de WebGL de la que
-  se va (el navegador tiene un tope de contextos vivos).
+- **ClientRouter**: al cambiar de página destruye el contexto de WebGL de la que se
+  va (el navegador tiene un tope de contextos vivos) y la nueva elige escena.
 - **Sin WebGL2**: el canvas queda transparente y se ve un halo dorado de CSS
   (`.ph-ambient:not(.is-live)`); con la animación en marcha lleva `is-live` y el
   halo desaparece.
-- **Densidad**: resolución interna con tope de 1,5 px por px CSS (y al 75 % en
-  `calidez`, que es suave). Más no se nota en algo tan tenue y cuesta GPU.
+- **Densidad**: resolución interna con tope de 1,5 px por px CSS, y menos en las
+  escenas suaves (`scale` de cada una). Más no se nota en algo tan tenue y cuesta
+  GPU.
 
 Para tocar una escena: su shader está en el mismo archivo. Se ve en directo con
-`npm run dev`.
+`npm run dev` y `?fondo=<escena>`.
 
 **El logo del menú cae en la misma vertical que los textos.** La cápsula del
 menú se aparta medio margen de sección del borde y deja medio margen de relleno
@@ -672,6 +686,13 @@ botón.
     campo va hundido).
   - Se quedan las líneas finas que separan filas por dentro (acordeón, equipo,
     pilares) y el anillo dorado del foco del teclado.
+- **Paneles translúcidos y esmerilados** (2026-10-02): tarjetas, acordeones, el
+  Plan de acción, la cápsula del menú y el estado vacío de Talentos van al 60 %
+  con desenfoque de lo de detrás (`--ph-panel`, `--ph-panel-solid`,
+  `--ph-panel-blur`), para que el fondo animado se vea pasar. Los desplegables y
+  el menú móvil, al 90 % (`--ph-panel-strong`). Los botones, las tarjetas de
+  jugador y los huecos de foto siguen opacos. También en móvil, por decisión de
+  Mario.
 - **Fotografía**: high-contrast sobre fondo oscuro. Ratio portrait `3:4` para jugadores.
 
 ---

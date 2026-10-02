@@ -151,21 +151,28 @@ desenfoque. No se han vuelto a medir las páginas después del cambio.
 - Una página `/faq` con preguntas y respuestas literales.
 - Auditar los `alt=""` de Header, Footer y Hero para confirmar que son decorativos.
 
-### Fondos animados de sección: sin medir en un móvil real (2026-10-01)
+### Fondo animado y paneles esmerilados: sin medir en un móvil real (2026-10-01, ampliado el 2026-10-02)
 
-Los fondos en directo de Talentos, Servicios y Sobre nosotros (`DECISIONS.md`,
-2026-10-01) están comprobados en Chromium y WebKit con Playwright, en escritorio y
-con un iPhone 14 y un Pixel 7 emulados: arrancan, se pausan fuera de la vista,
-quedan fijos con movimiento reducido y liberan su contexto al navegar. **No se ha
-medido el coste en un móvil real**: ni batería ni temperatura tras unos minutos
-con la página abierta, ni si un móvil modesto mantiene la fluidez. Desde la
-cabecera de sección legible (2026-10-01) el lienzo es el fondo de toda la página:
-ocupa la pantalla entera y se dibuja mientras la página está abierta, no solo con
-la cabecera a la vista, así que el coste es mayor que en las versiones anteriores.
-Si hiciera falta aligerar, la primera palanca es la resolución interna (`scale` de
-cada escena y `MAX_DPR` en `src/scripts/ph-ambient.ts`); la segunda, volver a
-pausarlo cuando el titular queda lejos, aunque entonces la luz dejaría de estar
-siempre, que es lo que se pidió.
+El fondo en directo (`src/scripts/ph-ambient.ts`) está comprobado en Chromium y
+WebKit con Playwright, en escritorio y con un iPhone 14 y un Pixel 7 emulados:
+arranca, se pausa con la pestaña oculta, queda fijo con movimiento reducido y
+libera su contexto al navegar. **No se ha medido el coste en un móvil real**: ni
+batería ni temperatura tras unos minutos con la página abierta, ni si un móvil
+modesto mantiene la fluidez al hacer scroll.
+
+Desde el 2026-10-02 el coste es mayor que en las versiones anteriores:
+
+- el fondo está en todas las páginas salvo las legales, a pantalla completa;
+- Neón y Velo hacen más cálculos por píxel que las demás (sin medir cuánto se nota);
+- los paneles están esmerilados también en móvil (decisión de Mario), así que el
+  navegador redesenfoca la animación detrás de cada panel en cada fotograma.
+
+Si hiciera falta aligerar, de más barata a más visible:
+
+1. Quitar el esmerilado en móvil (`--ph-panel-blur: none` bajo un `@media` de
+   puntero grueso) y dejar el 60 % de opacidad.
+2. Bajar la resolución interna (`scale` de cada escena y `MAX_DPR`).
+3. Sacar del bombo la escena que más cueste.
 
 ### Textos en italiano sin revisión nativa (2026-10-01)
 

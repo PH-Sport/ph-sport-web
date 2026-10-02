@@ -89,9 +89,6 @@ const pillars = getServicesItems(lang).map((item, i) => ({ ...item, ...pillarArt
 ---
 
 <section class="srv" aria-labelledby="srv-hero-title">
-  <div class="ph-page-bg" aria-hidden="true">
-    <canvas class="ph-ambient" data-ambient="estructura"></canvas>
-  </div>
 
   {/* 01 — Hero: misma cabecera que Talentos y Sobre nosotros (global.css). */}
   <div class="srv-hero">
@@ -429,7 +426,3 @@ const pillars = getServicesItems(lang).map((item, i) => ({ ...item, ...pillarArt
   }
 </style>
 
-<script>
-  // Fondo animado de la cabecera (se inicia solo en cada astro:page-load).
-  import '@/scripts/ph-ambient';
-</script>

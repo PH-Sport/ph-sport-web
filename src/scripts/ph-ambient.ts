@@ -1,29 +1,32 @@
 /**
- * Fondo animado de Talentos, Servicios y Sobre nosotros.
+ * Fondo animado de la web: un «bombo» de escenas.
  *
- * Cada fondo es un `<canvas data-ambient="<escena>">` que se dibuja en directo con
- * un shader de WebGL2: va a la frecuencia de la pantalla (60 o 120 Hz), no pesa
- * nada en descargas y se ve nítido a cualquier tamaño. Por qué en directo y no en
- * vídeo como el hero: DECISIONS.md (2026-10-01).
+ * Cada página (salvo los textos legales) lleva un único `<canvas data-ambient>`
+ * que monta `BaseLayout`. Al cargar la página se elige una escena al azar del
+ * bombo (`POOL`), sin repetir la de la página anterior (decisión de Mario,
+ * 2026-10-02; DECISIONS.md). Se dibuja en directo con un shader de WebGL2: va a la
+ * frecuencia de la pantalla, no pesa nada en descargas y se ve nítido a cualquier
+ * tamaño.
  *
  * Reglas de convivencia con la página:
  * - Es el fondo de TODA la página: el canvas va fijo a la pantalla (`.ph-page-bg`)
- *   y el contenido pasa por encima al hacer scroll. La luz brilla entera detrás del
- *   titular (el `<h1>` de la sección) y baja a un tercio en el resto, para que no
- *   ensucie la lectura; bajo el menú siempre se apaga (`stageMask`).
+ *   y el contenido pasa por encima. Los paneles son translúcidos y esmerilados
+ *   (60 %), así que la luz se ve pasar por detrás de ellos. Bajo el menú se apaga
+ *   siempre (`stageMask`).
+ * - En ordenador (puntero fino), la luz reacciona al ratón: le llega amortiguada
+ *   por un muelle, sin saltos. En táctil no hay ratón y no reacciona.
  * - Solo se dibuja con la pestaña visible.
- * - Con `prefers-reduced-motion` se pinta un fotograma fijo y no se anima (se
- *   vuelve a pintar al hacer scroll, porque la zona brillante se mueve con él).
+ * - Con `prefers-reduced-motion` se pinta un fotograma fijo y no se anima.
  * - La luz se suma al fondo de la página (salida premultiplicada): el canvas no
  *   tapa nada.
- * - Al navegar con el ClientRouter se destruyen los contextos de la página que se
- *   va, para no acumular contextos de WebGL ni listeners.
+ * - Al navegar con el ClientRouter se destruye el contexto de la página que se va,
+ *   para no acumular contextos de WebGL ni listeners.
  * - Sin WebGL2, el canvas se queda transparente y se ve el halo de CSS de
- *   `.ph-ambient:not(.is-live)` (global.css). Con la animación en marcha lleva
- *   `is-live` y el halo desaparece.
+ *   `.ph-ambient:not(.is-live)` (global.css).
+ * - Para revisar una escena concreta: `?fondo=<escena>` en la URL.
  */
 
-type SceneName = 'trayectorias' | 'estructura' | 'calidez';
+type SceneName = 'velo' | 'neon' | 'trayectorias' | 'estructura' | 'calidez';
 
 interface SceneDef {
   fs: string;
@@ -41,26 +44,21 @@ void main() {
 
 const HEADER = `#version 300 es
 precision highp float;
-uniform vec2 uRes;    // px internos del canvas
-uniform float uPx;    // px internos por px CSS
-uniform float uTime;  // segundos
+uniform vec2 uRes;     // px internos del canvas
+uniform float uPx;     // px internos por px CSS
+uniform float uTime;   // segundos
 uniform float uScroll; // px CSS desplazados en la página
-uniform vec3 uBand;   // titular en px CSS de página (arriba, abajo) y la luz fuera de él (0-1)
+uniform vec3 uMouse;   // ratón en px CSS (origen abajo a la izquierda) y presencia 0-1
 out vec4 o;
 const vec3 GOLD = vec3(0.839, 0.698, 0.369);   // --color-ph-gold #D6B25E
 const vec3 WHITE = vec3(1.0);
 float hash11(float p) { p = fract(p * 0.1031); p *= p + 33.33; p *= p + p; return fract(p); }
 float hash12(vec2 p) { vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
-// Dónde hay luz. El canvas es fijo y cubre la pantalla: la luz brilla entera
-// detrás del titular y baja a uBand.z en el resto de la página, así los párrafos se
-// leen limpios; bajo el menú se apaga siempre. p, W y H en px CSS, con el origen
-// abajo a la izquierda.
+// Cerca del ratón: campana suave de radio r (px CSS).
+float nearMouse(vec2 p, float r) { vec2 d = p - uMouse.xy; return uMouse.z * exp(-dot(d, d) / (2.0 * r * r)); }
+// Bajo el menú la luz se apaga siempre. p y H en px CSS, origen abajo a la izquierda.
 float stageMask(vec2 p, float W, float H) {
-  float fromTop = H - p.y;
-  float pageY = uScroll + fromTop;
-  float nav = smoothstep(30.0, W < 768.0 ? 120.0 : 190.0, fromTop);
-  float band = smoothstep(uBand.x - 90.0, uBand.x, pageY) * (1.0 - smoothstep(uBand.y, uBand.y + 70.0, pageY));
-  return nav * mix(uBand.z, 1.0, band);
+  return smoothstep(30.0, W < 768.0 ? 120.0 : 150.0, H - p.y);
 }
 // Salida premultiplicada: la luz se suma al fondo de la página, que se ve a través.
 // El tramado evita escalones en degradados tan oscuros.
@@ -71,9 +69,108 @@ void emit(vec3 c) {
 }
 `;
 
-// Talentos — «Trayectorias»: líneas finas a 45°, la diagonal del logo, por las que
-// suben destellos dorados hacia arriba a la derecha. Dos capas a distinta velocidad
-// dan profundidad.
+// Velo: la red de luz que deja un cristal (o el agua) al sol, a 45°, muy tenue y
+// lenta; casi una textura. Junto al ratón se concentra un poco, como bajo una lupa
+// (con un tercio de la fuerza de las demás escenas, a petición de Mario).
+const VELO = `${HEADER}
+float caustic(vec2 uv, float t) {
+  vec2 p = mod(uv * 6.28318, 6.28318) - 250.0;
+  vec2 i = p; float c = 1.0; float inten = 0.005;
+  for (int n = 0; n < 5; n++) {
+    float tt = t * (1.0 - (3.5 / float(n + 1)));
+    i = p + vec2(cos(tt - i.x) + sin(tt + i.y), sin(tt - i.y) + cos(tt + i.x));
+    c += 1.0 / length(vec2(p.x / (sin(i.x + tt) / inten), p.y / (cos(i.y + tt) / inten)));
+  }
+  c /= 5.0;
+  c = 1.17 - pow(c, 1.4);
+  return pow(abs(c), 8.0);
+}
+void main() {
+  vec2 p = gl_FragCoord.xy / uPx;
+  float W = uRes.x / uPx, H = uRes.y / uPx;
+  vec2 r = vec2(p.x + p.y, p.x - p.y) * 0.70710678;
+  float m = nearMouse(p, 240.0) * 0.35;
+  float k = caustic(r / (1000.0 - m * 220.0), uTime * 0.06 + 23.0);
+  float k2 = caustic(r / 620.0 + 0.37, uTime * 0.045 + 11.0);
+  float v = k * 0.7 + k2 * 0.3;
+  vec3 c = GOLD * v * (0.1 + m * 0.14) + WHITE * v * 0.008;
+  emit(c * stageMask(p, W, H));
+}`;
+
+// Neón: el contorno del logo en grande, con ecos paralelos como curvas de nivel, y
+// una luz que recorre el tubo como el rótulo al encenderse. Con el ratón se
+// encienden los trazos cercanos.
+const NEON = `${HEADER}
+const vec2 A[9] = vec2[9](vec2(0.0,206.1), vec2(58.2,206.1), vec2(57.9,145.5), vec2(158.1,45.4), vec2(112.7,0.0), vec2(0.0,0.0), vec2(0.0,52.6), vec2(76.9,52.6), vec2(0.0,128.7));
+const vec2 B[13] = vec2[13](vec2(122.6,206.1), vec2(200.1,206.1), vec2(152.2,157.8), vec2(173.0,137.1), vec2(182.4,146.4), vec2(259.8,146.4), vec2(169.6,55.6), vec2(130.5,94.2), vec2(131.8,95.6), vec2(141.1,105.4), vec2(120.3,125.8), vec2(109.8,115.4), vec2(70.8,153.9));
+float segPoint(vec2 q, vec2 a, vec2 b, out float t) {
+  vec2 ab = b - a; t = clamp(dot(q - a, ab) / dot(ab, ab), 0.0, 1.0);
+  return length(q - a - ab * t);
+}
+// Distancia al contorno (en unidades del logo, public/logo.svg) y posición a lo
+// largo de él, para que la luz lo recorra.
+float polyA(vec2 q, out float s, out float L) {
+  float best = 1e9; float cum = 0.0; s = 0.0;
+  for (int i = 0; i < 9; i++) {
+    vec2 a = A[i]; vec2 b = A[i == 8 ? 0 : i + 1];
+    a.y = 206.1 - a.y; b.y = 206.1 - b.y;
+    float t; float d = segPoint(q, a, b, t); float len = length(b - a);
+    if (d < best) { best = d; s = cum + t * len; }
+    cum += len;
+  }
+  L = cum; return best;
+}
+float polyB(vec2 q, out float s, out float L) {
+  float best = 1e9; float cum = 0.0; s = 0.0;
+  for (int i = 0; i < 13; i++) {
+    vec2 a = B[i]; vec2 b = B[i == 12 ? 0 : i + 1];
+    a.y = 206.1 - a.y; b.y = 206.1 - b.y;
+    float t; float d = segPoint(q, a, b, t); float len = length(b - a);
+    if (d < best) { best = d; s = cum + t * len; }
+    cum += len;
+  }
+  L = cum; return best;
+}
+float rings(float dpx, float m) {
+  float acc = 0.0;
+  for (int n = 0; n < 4; n++) {
+    float fn = float(n);
+    float w = mix(1.0, 0.16, fn / 3.0);
+    acc += w * (1.0 - smoothstep(0.45, 1.35 + m * 0.6, abs(dpx - fn * 26.0)));
+  }
+  return acc;
+}
+float pulse(float s, float L, float k, float speed, float phase) {
+  float Lp = L * k;
+  float head = fract(uTime * speed + phase) * Lp;
+  float behind = mod(head - s * k, Lp);
+  return exp(-behind / 240.0) * (1.0 - exp(-(Lp - behind) / 6.0));
+}
+void main() {
+  vec2 p = gl_FragCoord.xy / uPx;
+  float W = uRes.x / uPx, H = uRes.y / uPx;
+  float portrait = step(W, H);
+  float k = max(H * 1.35, 760.0) / 206.1;
+  vec2 C = vec2(W * mix(0.70, 0.56, portrait), H * 0.46 + uScroll * 0.08);
+  vec2 q = (p - C) / k + vec2(129.9, 103.05);
+  float sA, LA, sB, LB;
+  float dA = polyA(q, sA, LA) * k;
+  float dB = polyB(q, sB, LB) * k;
+  float m = nearMouse(p, 200.0);
+  float rA = rings(dA, m), rB = rings(dB, m);
+  float pA = pulse(sA, LA, k, 0.035, 0.0);
+  float pB = pulse(sB, LB, k, 0.028, 0.37);
+  float flick = 0.9 + 0.1 * step(0.985, hash11(floor(uTime * 9.0)));
+  vec3 c = WHITE * (rA + rB) * 0.026
+         + GOLD * (rA * pA + rB * pB) * 0.55 * flick
+         + GOLD * (exp(-dA / 3.0) * pA + exp(-dB / 3.0) * pB) * 0.22
+         + GOLD * (rA + rB) * m * 0.22;
+  emit(c * stageMask(p, W, H));
+}`;
+
+// Trayectorias: líneas finas a 45°, la diagonal del logo, por las que suben
+// destellos dorados. Dos capas a distinta velocidad dan profundidad. Cerca del
+// ratón, las líneas y los destellos se avivan.
 const TRAYECTORIAS = `${HEADER}
 float layer(vec2 p, float S, float speed, float tail, float density, float seed, out float base) {
   float u = (p.x + p.y) * 0.70710678;   // avanza hacia arriba a la derecha
@@ -86,22 +183,26 @@ float layer(vec2 p, float S, float speed, float tail, float density, float seed,
   float on = step(1.0 - density, hash11(id * 7.91 + seed * 3.1));
   float sp = speed * mix(0.6, 1.4, h);
   float L = mix(900.0, 1700.0, hash11(id * 3.3 + seed));
-  float ph = fract((uTime * sp - u) / L + h) * L;            // px por detrás de la cabeza
+  float ph = fract((uTime * sp - u) / L + h) * L;
   float trail = exp(-ph / tail) * (1.0 - exp(-(L - ph) / 2.5));
   float glow = exp(-abs(dv) / 2.2);
   return on * trail * (core * 0.9 + glow * 0.35);
 }
 void main() {
   vec2 p = gl_FragCoord.xy / uPx;
+  float W = uRes.x / uPx, H = uRes.y / uPx;
   float b1, b2;
   float l1 = layer(p, 34.0, 120.0, 150.0, 0.35, 1.0, b1);
   float l2 = layer(p + vec2(13.0, 0.0), 21.0, 70.0, 90.0, 0.25, 7.0, b2);
-  vec3 c = WHITE * (b1 * 0.030 + b2 * 0.016) + GOLD * (l1 * 0.55 + l2 * 0.28);
-  emit(c * stageMask(p, uRes.x / uPx, uRes.y / uPx));
+  float m = nearMouse(p, 220.0);
+  vec3 c = WHITE * (b1 * 0.030 + b2 * 0.016) * (1.0 + m * 3.0)
+         + GOLD * (l1 * 0.55 + l2 * 0.28) * (1.0 + m * 1.6)
+         + GOLD * (b1 + b2) * m * 0.12;
+  emit(c * stageMask(p, W, H));
 }`;
 
-// Servicios — «Estructura»: la retícula a 45° con la que se construye el logo, casi
-// invisible, y una luz lenta que la barre en diagonal y enciende sus cruces.
+// Estructura: la retícula a 45° con la que se construye el logo, casi invisible, y
+// una luz lenta que la barre y enciende sus cruces. El ratón lleva una linterna.
 const ESTRUCTURA = `${HEADER}
 void main() {
   vec2 p = gl_FragCoord.xy / uPx;
@@ -119,20 +220,24 @@ void main() {
   float x1 = mod(uTime * 70.0, span) - 600.0;
   float x2 = span - mod(uTime * 38.0 + span * 0.5, span) - 600.0;
   float light = exp(-pow((diag - x1) / 220.0, 2.0)) + 0.5 * exp(-pow((diag - x2) / 340.0, 2.0));
+  light += 1.3 * nearMouse(p, 190.0);
   float tw = 0.5 + 0.5 * sin(uTime * 1.3 + hash12(floor(q / S + 0.5)) * 6.2832);
   vec3 c = WHITE * lines * 0.022 + GOLD * (lines * light * 0.32 + node * light * tw * 0.9);
   emit(c * stageMask(p, W, H));
 }`;
 
-// Sobre nosotros — «Calidez»: un haz de luz cálida que se mece despacio, con motas
-// de polvo flotando dentro, en la línea del neón de la portada.
+// Calidez: un haz de luz cálida que se mece despacio, con motas de polvo flotando
+// dentro, en la línea del neón de la portada. El haz se inclina hacia el ratón.
 const CALIDEZ = `${HEADER}
 void main() {
   vec2 p = gl_FragCoord.xy / uPx;
   float W = uRes.x / uPx, H = uRes.y / uPx;
-  float sway = sin(uTime * 0.21) * 0.05 + sin(uTime * 0.13 + 1.7) * 0.03;
   float portrait = step(W, H * 1.1);
-  vec2 d = p - vec2(W * mix(0.72, 0.62, portrait), H + 40.0);
+  vec2 origin = vec2(W * mix(0.72, 0.62, portrait), H + 40.0);
+  float sway = sin(uTime * 0.21) * 0.05 + sin(uTime * 0.13 + 1.7) * 0.03;
+  float toMouse = clamp((uMouse.x - origin.x) / max(origin.y - uMouse.y, 120.0), -0.6, 0.6);
+  sway = mix(sway, toMouse, uMouse.z * 0.85);
+  vec2 d = p - origin;
   float depth = max(-d.y, 1.0);
   float beam = exp(-pow((d.x / depth - sway) / 0.33, 2.0)) * exp(-depth / (H * 1.1));
   float dust = 0.0;
@@ -151,21 +256,51 @@ void main() {
     float m = smoothstep(r * 1.8, r * 0.2, length(f - off * 0.7)) * step(0.55, h);
     dust += m * (0.6 + 0.4 * sin(uTime * (0.8 + h) + h * 20.0)) * mix(0.9, 0.5, fk * 0.5);
   }
-  vec3 c = GOLD * beam * 0.22 + mix(GOLD, WHITE, 0.4) * dust * (0.08 + beam * 0.9);
+  float m = nearMouse(p, 200.0);
+  vec3 c = GOLD * beam * 0.22 + mix(GOLD, WHITE, 0.4) * dust * (0.08 + beam * 0.9 + m * 0.8);
   emit(c * stageMask(p, W, H));
 }`;
 
 const SCENES: Record<SceneName, SceneDef> = {
+  velo: { fs: VELO, scale: 0.7, still: 30 },
+  neon: { fs: NEON, scale: 0.8, still: 7 },
   trayectorias: { fs: TRAYECTORIAS, scale: 1, still: 6 },
   estructura: { fs: ESTRUCTURA, scale: 1, still: 9 },
   calidez: { fs: CALIDEZ, scale: 0.75, still: 4 },
 };
 
+/** El bombo: de aquí sale el fondo de cada página. Para quitar o añadir una
+ *  escena, basta con esta lista. */
+const POOL: SceneName[] = ['velo', 'neon', 'trayectorias', 'estructura', 'calidez'];
+
 /** Tope de densidad de píxeles: más allá no se nota en algo tan tenue y cuesta GPU. */
 const MAX_DPR = 1.5;
 
-/** Intensidad de la luz fuera del titular: detrás de los párrafos, a un tercio. */
-const OUTSIDE_TITLE = 0.32;
+const LAST_KEY = 'ph-ambient-ultima';
+let lastScene: SceneName | null = null;
+
+/** Escena al azar del bombo, sin repetir la de la página anterior. La última se
+ *  guarda en memoria (navegaciones del ClientRouter) y en sessionStorage (recargas
+ *  y enlaces abiertos en la misma pestaña). `?fondo=<escena>` fuerza una. */
+function pickScene(): SceneName {
+  const forced = new URLSearchParams(window.location.search).get('fondo') as SceneName | null;
+  if (forced && forced in SCENES) return forced;
+  let last = lastScene;
+  try {
+    last = (sessionStorage.getItem(LAST_KEY) as SceneName | null) ?? last;
+  } catch {
+    /* almacenamiento bloqueado: basta con la memoria */
+  }
+  const options = POOL.filter((s) => s !== last);
+  const pick = options[Math.floor(Math.random() * options.length)];
+  lastScene = pick;
+  try {
+    sessionStorage.setItem(LAST_KEY, pick);
+  } catch {
+    /* sin almacenamiento */
+  }
+  return pick;
+}
 
 interface Instance {
   destroy(): void;
@@ -186,8 +321,9 @@ function compile(gl: WebGL2RenderingContext, type: number, src: string): WebGLSh
 }
 
 function create(canvas: HTMLCanvasElement, reduceMotion: boolean): Instance | null {
-  const scene = SCENES[canvas.dataset.ambient as SceneName];
-  if (!scene) return null;
+  const name = pickScene();
+  const scene = SCENES[name];
+  canvas.dataset.ambient = name;
   const gl = canvas.getContext('webgl2', {
     alpha: true,
     premultipliedAlpha: true,
@@ -213,24 +349,46 @@ function create(canvas: HTMLCanvasElement, reduceMotion: boolean): Instance | nu
   const uPx = gl.getUniformLocation(prog, 'uPx');
   const uTime = gl.getUniformLocation(prog, 'uTime');
   const uScroll = gl.getUniformLocation(prog, 'uScroll');
-  const uBand = gl.getUniformLocation(prog, 'uBand');
+  const uMouse = gl.getUniformLocation(prog, 'uMouse');
 
-  // El titular de la sección: detrás de él la luz brilla entera. Su posición se
-  // guarda en px de página y se vuelve a medir cuando cambia de tamaño.
-  const title = canvas.closest('section')?.querySelector<HTMLElement>('h1') ?? null;
-  let bandTop = 0;
-  let bandBottom = 0;
-  const measureBand = () => {
-    if (!title) return;
-    const r = title.getBoundingClientRect();
-    bandTop = r.top + window.scrollY;
-    bandBottom = r.bottom + window.scrollY;
+  // Ratón (solo con puntero fino): la posición se acerca al cursor con un muelle
+  // crítico y la presencia sube o baja suave al entrar o salir de la ventana.
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const mouse = { x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, z: 0, tz: 0 };
+  const onMove = (e: PointerEvent) => {
+    if (e.pointerType !== 'mouse') return;
+    if (mouse.tz === 0 && mouse.z < 0.01) {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    }
+    mouse.tx = e.clientX;
+    mouse.ty = e.clientY;
+    mouse.tz = 1;
+    if (reduceMotion) drawStill();
   };
+  const onLeave = () => {
+    mouse.tz = 0;
+  };
+  const stepMouse = (dt: number) => {
+    const w = 9; // rigidez del muelle (1/s)
+    const ax = w * w * (mouse.tx - mouse.x) - 2 * w * mouse.vx;
+    const ay = w * w * (mouse.ty - mouse.y) - 2 * w * mouse.vy;
+    mouse.vx += ax * dt;
+    mouse.vy += ay * dt;
+    mouse.x += mouse.vx * dt;
+    mouse.y += mouse.vy * dt;
+    mouse.z += (mouse.tz - mouse.z) * (1 - Math.exp(-dt * 4));
+  };
+  if (finePointer) {
+    window.addEventListener('pointermove', onMove, { passive: true });
+    document.documentElement.addEventListener('pointerleave', onLeave);
+  }
 
   let pxRatio = 1;
   let raf = 0;
   let onScreen = false;
-  const epoch = performance.now();
+  let last = performance.now();
+  const epoch = last;
 
   const draw = (t: number) => {
     gl.viewport(0, 0, canvas.width, canvas.height);
@@ -238,12 +396,14 @@ function create(canvas: HTMLCanvasElement, reduceMotion: boolean): Instance | nu
     gl.uniform1f(uPx, pxRatio);
     gl.uniform1f(uTime, t);
     gl.uniform1f(uScroll, window.scrollY);
-    gl.uniform3f(uBand, bandTop, bandBottom - 8, OUTSIDE_TITLE);
+    const mx = reduceMotion ? mouse.tx : mouse.x;
+    const my = reduceMotion ? mouse.ty : mouse.y;
+    gl.uniform3f(uMouse, mx, canvas.clientHeight - my, reduceMotion ? mouse.tz : mouse.z);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   };
+  const drawStill = () => draw(scene.still);
 
   const resize = () => {
-    measureBand();
     const rect = canvas.getBoundingClientRect();
     pxRatio = Math.min(window.devicePixelRatio || 1, MAX_DPR) * scene.scale;
     const w = Math.max(1, Math.round(rect.width * pxRatio));
@@ -252,31 +412,34 @@ function create(canvas: HTMLCanvasElement, reduceMotion: boolean): Instance | nu
       canvas.width = w;
       canvas.height = h;
     }
-    if (reduceMotion) draw(scene.still);
+    if (reduceMotion) drawStill();
   };
 
   const frame = (now: number) => {
     raf = 0;
     if (!onScreen || document.hidden) return;
+    stepMouse(Math.min(0.05, (now - last) / 1000));
+    last = now;
     draw((now - epoch) / 1000);
     raf = requestAnimationFrame(frame);
   };
   const kick = () => {
-    if (!reduceMotion && !raf && onScreen && !document.hidden) raf = requestAnimationFrame(frame);
+    if (!reduceMotion && !raf && onScreen && !document.hidden) {
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    }
   };
 
   const ro = new ResizeObserver(resize);
   ro.observe(canvas);
-  if (title) ro.observe(title);
-  document.fonts?.ready.then(resize);
   // Con movimiento reducido no hay bucle: el fotograma fijo se repinta al hacer
-  // scroll, porque la zona brillante (el titular) se mueve con la página.
+  // scroll, porque Neón se desplaza un poco con la página.
   let stillRaf = 0;
   const onScroll = () => {
     if (stillRaf) return;
     stillRaf = requestAnimationFrame(() => {
       stillRaf = 0;
-      draw(scene.still);
+      drawStill();
     });
   };
   if (reduceMotion) window.addEventListener('scroll', onScroll, { passive: true });
@@ -304,6 +467,8 @@ function create(canvas: HTMLCanvasElement, reduceMotion: boolean): Instance | nu
       raf = 0;
       ro.disconnect();
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('pointermove', onMove);
+      document.documentElement.removeEventListener('pointerleave', onLeave);
       io.disconnect();
       document.removeEventListener('visibilitychange', kick);
       canvas.removeEventListener('webglcontextlost', onLost);

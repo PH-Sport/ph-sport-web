@@ -59,11 +59,31 @@
   --ph-r-lg: 6px;
   --ph-r-xl: 6px;
 
+  /* Paneles translúcidos y esmerilados (decisión de Mario, 2026-10-02): al 60 %,
+     para que el fondo animado se vea pasar por detrás. Los desplegables y el menú
+     móvil, al 90 %: tapan contenido y tienen que leerse sin esfuerzo. Los botones
+     siguen opacos. */
+  --ph-panel: rgba(26, 29, 34, 0.6);
+  --ph-panel-solid: rgba(33, 37, 43, 0.6);
+  --ph-panel-strong: rgba(33, 37, 43, 0.9);
+  --ph-panel-blur: blur(16px) saturate(1.15);
+
   /* Al pasar el ratón: la sombra crece, como si el recuadro subiera. */
   --ph-sh-raise: 0 2px 4px rgba(0, 0, 0, 0.55), 0 16px 32px -6px rgba(0, 0, 0, 0.7), 0 44px 84px -20px rgba(0, 0, 0, 0.9);
   /* Botón dorado: la misma sombra oscura, sin halo dorado (revisión del 2026-10-02). */
   --ph-sh-accent: var(--mochi-shadow-surface);
   --ph-sh-accent-raise: var(--ph-sh-raise);
+}
+
+/* Quien pide menos transparencias en su sistema ve los paneles opacos y sin
+   esmerilar. */
+@media (prefers-reduced-transparency: reduce) {
+  :root[data-theme="dark"] {
+    --ph-panel: rgb(26, 29, 34);
+    --ph-panel-solid: rgb(33, 37, 43);
+    --ph-panel-strong: rgb(33, 37, 43);
+    --ph-panel-blur: none;
+  }
 }
 
 /* ── Ajustes provisionales sobre los botones de Mochi ────────────────────────

@@ -152,7 +152,9 @@ const servicesHref = localizePath('/servicios/', lang);
     gap: 20px;
     padding: clamp(20px, 1.6vw, 24px);
     border-radius: var(--ph-r-lg);
-    background: var(--mochi-solid);
+    background: var(--ph-panel-solid);
+    -webkit-backdrop-filter: var(--ph-panel-blur);
+    backdrop-filter: var(--ph-panel-blur);
     box-shadow: var(--mochi-shadow-surface);
   }
   .home-services__plan-head { display: grid; gap: 6px; }

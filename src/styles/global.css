@@ -90,8 +90,8 @@
   /* Secciones página: transparente para ver el fondo (body / logo parallax) a través de main */
   --ph-section-bg: transparent;
 
-  /* Cabecera de Talentos, Servicios y Sobre nosotros: fila índice, titular,
-     entradilla debajo y el contenido empieza ya en la primera pantalla. Las tres
+  /* Cabecera de Talentos, Servicios y Sobre nosotros: titular, entradilla
+     debajo y el contenido empieza ya en la primera pantalla. Las tres
      usan estas cifras, así que al pasar de una a otra no cambia nada de sitio. Van
      de móvil (390 px) a escritorio (1440 px) en línea recta. Ver ARCHITECTURE.md,
      «Cabecera de sección y fondo animado». */

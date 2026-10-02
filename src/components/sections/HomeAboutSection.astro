@@ -14,20 +14,9 @@ const aboutHref = localizePath('/sobre-nosotros/', lang);
 // resto de menciones (ver la nota de `about.team.meta` en es.ts).
 const countriesValue = Number(t('home.about.stats.countries.value'));
 
-/** «04 · Sobre PHSPORT»: el número y la etiqueta van en estilos distintos en la fila índice. */
-const [eyebrowNum, ...eyebrowRest] = t('home.about.eyebrow').split(' · ');
-const eyebrowLabel = eyebrowRest.join(' · ');
 ---
 
 <section class="home-about" id="sobre-nosotros" aria-labelledby="home-about-title">
-  <p class="ph-rowline">
-    <span class="ph-rowline__group">
-      <span class="ph-rowline__num">{eyebrowNum}</span>
-      <span class="ph-rowline__sep" aria-hidden="true">·</span>
-      <span class="ph-rowline__label">{eyebrowLabel}</span>
-    </span>
-  </p>
-
   <div class="home-about__grid">
     <h2 class="ph-h2 home-about__title" id="home-about-title">
       <span>{t('home.about.title')}</span>
@@ -56,11 +45,6 @@ const eyebrowLabel = eyebrowRest.join(' · ');
       </div>
     </dl>
 
-    <ul class="ph-rowline home-about__values" aria-label={t('home.about.values.aria')} role="list">
-      <li class="ph-rowline__meta">{t('home.about.values.v1')}</li>
-      <li class="ph-rowline__meta">{t('home.about.values.v2')}</li>
-      <li class="ph-rowline__meta">{t('home.about.values.v3')}</li>
-    </ul>
   </div>
 </section>
 
@@ -79,7 +63,6 @@ const eyebrowLabel = eyebrowRest.join(' · ');
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: clamp(16px, 2vw, 32px);
     row-gap: clamp(28px, 3vw, 48px);
-    margin-top: var(--ph-head-title-gap);
   }
   .home-about__title { grid-column: 1 / 11; }
   .home-about__title span,
@@ -102,11 +85,16 @@ const eyebrowLabel = eyebrowRest.join(' · ');
   .home-about__figure { display: flex; align-items: baseline; gap: 0.3em; }
   .home-about__figure dt { font-variant-numeric: tabular-nums; }
   .home-about__figure dd { margin: 0; color: var(--ph-ink-lead); }
-  .home-about__figure-sep { color: var(--ph-ink-meta); }
+  .home-about__figure-sep { color: var(--color-ph-gold); }
 
-  .home-about__values { grid-column: 1 / 13; justify-content: flex-start; gap: 6px 32px; margin: 0; list-style: none; }
 
   @media (max-width: 900px) {
     .home-about__grid { display: flex; flex-direction: column; }
+  }
+  /* En estrecho las dos cifras no caben en una línea: una debajo de otra y sin
+     el punto, que se quedaba colgando al final del renglón. */
+  @media (max-width: 600px) {
+    .home-about__figures { flex-direction: column; align-items: flex-start; }
+    .home-about__figure-sep { display: none; }
   }
 </style>

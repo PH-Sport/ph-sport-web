@@ -64,8 +64,8 @@ puede funcionar.**
 
 ## El scroll suave se apaga durante la navegación, y hay que dejarlo apagado
 
-`global.css` pone `scroll-behavior: smooth` en `html` para el indicador del hero y
-el skip-link. El problema es quién más lo hereda: el `ClientRouter` de Astro
+`global.css` pone `scroll-behavior: smooth` en `html` para el skip-link (y, hasta
+el 2026-10-02, para el botón «Scroll» del hero). El problema es quién más lo hereda: el `ClientRouter` de Astro
 restaura la posición al pulsar atrás con `scrollTo(x, y)` **en forma de dos
 argumentos**, que no admite `behavior`, así que esa restauración se **anima**. Sus
 otras llamadas sí pasan `behavior: 'instant'`; esa no

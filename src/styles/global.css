@@ -95,8 +95,7 @@
      usan estas cifras, así que al pasar de una a otra no cambia nada de sitio. Van
      de móvil (390 px) a escritorio (1440 px) en línea recta. Ver ARCHITECTURE.md,
      «Cabecera de sección y fondo animado». */
-  --ph-head-top:        clamp(76px, calc(3.8vw + 61px), 116px);
-  --ph-head-index-pad:  clamp(14px, calc(0.4vw + 12.5px), 18px);
+  --ph-head-top:        clamp(104px, calc(4vw + 80px), 144px);
   --ph-head-title-gap:  clamp(28px, calc(1.9vw + 20.6px), 48px);
   --ph-head-title-size: clamp(46px, calc(5.6vw + 26px), 106px);
   --ph-head-lead-gap:   clamp(16px, calc(0.76vw + 13px), 24px);
@@ -405,54 +404,13 @@ strong {
 }
 
 /* ── Cabecera de sección (Talentos, Servicios, Sobre nosotros) ─────────────────
-   Cinco papeles con un tamaño cada uno, para que se distingan sin leerlos:
-   fila índice, titular, entradilla, texto corrido y datos. Cifras en `:root`
+   Titular y entradilla, sin rótulo encima: desde el 2026-10-02 no hay filas de
+   rótulos (número de sección, «Áreas de gestión», valores en mayúsculas). Se
+   leían como plantilla y el titular se sostiene solo. Cifras en `:root`
    (`--ph-head-*`). */
 
-/* Fila índice: una línea fina con una etiqueta a la izquierda y un dato a la
-   derecha. Ordena la página: número de sección, «Áreas de gestión», valores. */
-.ph-rowline {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 6px 24px;
-  margin: 0;
-  /* A veces es un <p>: sin esto heredaría el tope de 65ch de los párrafos y la
-     línea se cortaría a media pantalla. */
-  max-width: none;
-  padding-top: var(--ph-head-index-pad);
-  border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-}
-.ph-rowline__group {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 8px;
-}
-/* Números (02, 05 disciplinas…): lo único que va en monoespaciada. */
-.ph-rowline__num {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  color: var(--color-ph-gold);
-}
-.ph-rowline__sep {
-  color: rgba(255, 255, 255, 0.3);
-}
-.ph-rowline__label {
-  font-size: clamp(14px, calc(0.1vw + 13.6px), 15px);
-  letter-spacing: 0.005em;
-  color: rgba(255, 255, 255, 0.86);
-}
-/* Datos en mayúsculas (los valores de Sobre nosotros): algo de aire, no más. */
-.ph-rowline__meta {
-  font-size: 13px;
-  letter-spacing: 0.05em;
-  color: var(--ph-ink-meta);
-}
-
 .ph-head-title {
-  margin: var(--ph-head-title-gap) 0 0 -0.05em;
+  margin: 0 0 0 -0.05em;
   max-width: 10em;
   font-family: var(--font-display);
   font-weight: 500;

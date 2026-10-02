@@ -184,7 +184,8 @@ function initSelects(root: ParentNode) {
       const ph = panel.offsetHeight;
       const end = sel.dataset.align === 'end';
       const sides = end ? `0 0 ${ph - btn.offsetHeight}px ${pw - w}px` : `0 ${pw - w}px ${ph - btn.offsetHeight}px 0`;
-      panel.style.setProperty('--closed', `inset(${sides} round 12px)`);
+      // Misma esquina que el botón, leída de él: si cambia el radio, no hay que tocar esto.
+      panel.style.setProperty('--closed', `inset(${sides} round ${getComputedStyle(btn).borderTopLeftRadius})`);
     };
     const open = (state: boolean, focusSelected = true) => {
       if (state) setClosedShape();

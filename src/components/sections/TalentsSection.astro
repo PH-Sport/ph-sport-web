@@ -11,9 +11,6 @@ interface Props {
 const { lang, players } = Astro.props;
 const t = useTranslations(lang);
 
-/** «02 · Talentos»: el número y la etiqueta van en estilos distintos en la fila índice. */
-const [eyebrowNum, ...eyebrowRest] = t('talents.eyebrow').split(' · ');
-const eyebrowLabel = eyebrowRest.join(' · ');
 
 /** Ancho real de la tarjeta en cada grid (2/3/5 columnas); lo comparten AVIF y WebP. */
 const photoSizes = '(max-width: 720px) 50vw, (max-width: 1200px) 33vw, 240px';
@@ -60,13 +57,6 @@ const selects = [
   </div>
 
   <header class="talents__head">
-    <p class="ph-rowline talents__index">
-      <span class="ph-rowline__group">
-        <span class="ph-rowline__num">{eyebrowNum}</span>
-        <span class="ph-rowline__sep" aria-hidden="true">·</span>
-        <span class="ph-rowline__label">{eyebrowLabel}</span>
-      </span>
-    </p>
     <h1 class="talents__title ph-head-title" id="talents-title">
       {t('talents.title')}<em>{t('talents.titleAccent')}</em>.
     </h1>
@@ -227,8 +217,7 @@ const selects = [
   .talents__empty { position: relative; z-index: 1; }
 
   /* Cabecera igual en Talentos, Servicios y Sobre nosotros (estilos y cifras en
-     global.css: `.ph-rowline`, `.ph-head-*`): fila índice, titular y entradilla
-     debajo. Los controles y las primeras tarjetas caben ya en la primera pantalla. */
+     global.css: `.ph-head-*`): titular y entradilla debajo. Los controles y las primeras tarjetas caben ya en la primera pantalla. */
   .talents__title em {
     color: var(--color-ph-gold, #d6b25e);
     font-style: italic;

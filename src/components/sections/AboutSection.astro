@@ -11,13 +11,9 @@ const t = useTranslations(lang);
 
 const teamMembers = getTeamMembers(lang);
 
-/** «04 · Sobre nosotros»: el número y la etiqueta van en estilos distintos en la fila índice. */
-const [eyebrowNum, ...eyebrowRest] = t('about.hero.eyebrow').split(' · ');
-const eyebrowLabel = eyebrowRest.join(' · ');
-
-/** «05 · Presencia»: mismo reparto que la cabecera. */
-const [presenciaNum, ...presenciaRest] = t('about.presencia.eyebrow').split(' · ');
-const presenciaLabel = presenciaRest.join(' · ');
+/** «05 · Presencia» → «Presencia»: nombre del encabezado (solo para lectores de
+    pantalla) sin el número de sección. */
+const presenciaLabel = t('about.presencia.eyebrow').split(' · ').slice(1).join(' · ');
 
 /* Los tres bloques se leen de arriba abajo como el lema de la marca
    («Now. Next. Forever Football.»), así que el último lleva el mismo acento
@@ -45,42 +41,25 @@ const internationalCountries = [
     <canvas class="ph-ambient" data-ambient="calidez"></canvas>
   </div>
 
-  <!-- 01 HERO: misma cabecera que Talentos y Servicios (global.css): fila índice,
-       titular y entradilla debajo. Sin `data-reveal`: ya no hay animación de
-       entrada que la revele, y el guardia global la dejaría oculta. -->
+  <!-- 01 HERO: misma cabecera que Talentos y Servicios (global.css): titular y
+       entradilla debajo. -->
   <div class="abt-hero">
-    <p class="ph-rowline abt-hero__index">
-      <span class="ph-rowline__group">
-        <span class="ph-rowline__num">{eyebrowNum}</span>
-        <span class="ph-rowline__sep" aria-hidden="true">·</span>
-        <span class="ph-rowline__label">{eyebrowLabel}</span>
-      </span>
-    </p>
     <h1 id="about-hero-title" class="abt-hero__title ph-head-title">
       {t('about.hero.titlePre')}<span class="abt-gold">{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
     </h1>
     <p class="abt-hero__lead ph-head-lead">{t('about.hero.body1')}</p>
   </div>
 
-  <!-- Valores y pie en una fila índice, y el resto de la presentación en dos
-       columnas. Mismo texto y mismo orden que antes. -->
-  <div class="ph-rowline abt-hero__rail">
-    <span class="ph-rowline__meta abt-hero__values">{t('about.hero.values')}</span>
-    <span class="ph-rowline__meta abt-hero__caption">{t('about.hero.caption')}</span>
-  </div>
+  <!-- El resto de la presentación, en dos columnas. -->
   <div class="abt-intro">
     <p class="abt-hero__body">{t('about.hero.body2')}</p>
     <p class="abt-hero__body">{t('about.hero.body3')}</p>
   </div>
 
-  <!-- 02 FILOSOFÍA (Now. Next. Forever Football.). La fila índice es el h2 de la
-       sección: así el h1 no salta directo a los h3 de los bloques. -->
+  <!-- 02 FILOSOFÍA (Now. Next. Forever Football.). Su h2 no se ve (el lema habla
+       solo), pero está: así el h1 no salta directo a los h3 de los bloques. -->
   <section class="abt-block abt-manifesto" id="historia" aria-labelledby="about-manifesto-title">
-    <div class="ph-rowline">
-      <h2 id="about-manifesto-title" class="abt-index-heading">
-        <span class="ph-rowline__label">{t('about.manifesto.eyebrow')}</span>
-      </h2>
-    </div>
+    <h2 id="about-manifesto-title" class="sr-only">{t('about.manifesto.eyebrow')}</h2>
 
     <ol class="abt-manifesto__blocks" role="list">
       {manifestoBlocks.map((block) => (
@@ -92,13 +71,8 @@ const internationalCountries = [
     </ol>
   </section>
 
-  <!-- 03 EQUIPO: la etiqueta y el recuento van en la fila índice, separados del
-       titular (antes eran un rótulo pegado encima). -->
+  <!-- 03 EQUIPO: el titular habla solo, sin rótulo encima. -->
   <section class="abt-block abt-team" id="equipo" aria-labelledby="about-team-title">
-    <div class="ph-rowline">
-      <span class="ph-rowline__label">{t('about.team.eyebrow')}</span>
-      <span class="ph-rowline__meta">{t('about.team.meta')}</span>
-    </div>
     <h2 id="about-team-title" class="ph-h2 abt-block__title">
       {t('about.team.titlePre')}<span class="ph-accent">{t('about.team.titleAccent')}</span>{t('about.team.titlePost')}
     </h2>
@@ -119,13 +93,7 @@ const internationalCountries = [
 
   <!-- 04 PRESENCIA: una sola lista sobre el fondo, con Madrid como encabezado. -->
   <section class="abt-block abt-presencia" id="presencia" aria-labelledby="about-presencia-title">
-    <div class="ph-rowline">
-      <h2 id="about-presencia-title" class="ph-rowline__group abt-index-heading">
-        <span class="ph-rowline__num">{presenciaNum}</span>
-        <span class="ph-rowline__sep" aria-hidden="true">·</span>
-        <span class="ph-rowline__label">{presenciaLabel}</span>
-      </h2>
-    </div>
+    <h2 id="about-presencia-title" class="sr-only">{presenciaLabel}</h2>
 
     <div class="abt-presencia__hq">
       <h3 class="abt-presencia__madrid">{t('about.presencia.madridTitle')}</h3>
@@ -145,8 +113,8 @@ const internationalCountries = [
 </section>
 
 <style>
-  /* Mismo sistema que el resto de páginas (global.css: `.ph-rowline`,
-     `.ph-head-*`; ph-ui.css: `.ph-h2`, tarjetas). Todo se ve nada más cargar:
+  /* Mismo sistema que el resto de páginas (global.css: `.ph-head-*`; ph-ui.css:
+     `.ph-h2`). Todo se ve nada más cargar:
      sin titulares palabra a palabra, sin párrafos que se desenfocan ni filas que
      aparecen al hacer scroll. Lo único que se mueve responde al ratón. */
   .about-section {
@@ -168,15 +136,10 @@ const internationalCountries = [
   }
 
   /* ── 01 HERO: misma cabecera que Talentos y Servicios (estilos y cifras en
-     global.css: `.ph-rowline`, `.ph-head-*`) ── */
+     global.css: `.ph-head-*`) ── */
   .abt-hero {
     position: relative;
     padding: var(--ph-head-top) var(--edge) 0;
-  }
-
-  /* Valores y pie en una fila índice, nada más acabar la entradilla. */
-  .abt-hero__rail {
-    margin: var(--ph-head-after) var(--edge) 0;
   }
 
   /* El resto de la presentación, en dos columnas de lectura cómoda. Sin línea
@@ -186,7 +149,7 @@ const internationalCountries = [
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: clamp(16px, 2vw, 32px);
     row-gap: 18px;
-    margin-top: clamp(24px, calc(1.14vw + 19.5px), 36px);
+    margin-top: var(--ph-head-after);
     padding: 0 var(--edge);
   }
   .abt-hero__body {
@@ -207,7 +170,7 @@ const internationalCountries = [
     .abt-intro .abt-hero__body:nth-child(2) { grid-column: 1 / -1; }
   }
 
-  /* ── Bloques (Filosofía, Equipo, Presencia): fila índice arriba ── */
+  /* ── Bloques (Filosofía, Equipo, Presencia): sin rótulo encima ── */
   .abt-block {
     padding: var(--abt-block-gap) var(--edge) 0;
   }
@@ -216,23 +179,15 @@ const internationalCountries = [
   .abt-block:last-of-type {
     padding-bottom: clamp(48px, 4vw, 88px);
   }
-  /* Cuando la fila índice es el encabezado de la sección, el h2 no impone su
-     letra: manda la de la fila (`.ph-rowline__label` y compañía). */
-  .abt-index-heading {
-    margin: 0;
-    font: inherit;
-    letter-spacing: inherit;
-    color: inherit;
-  }
   .abt-block__title {
-    margin-top: var(--ph-head-title-gap);
+    margin-top: 0;
   }
 
   /* ── 02 FILOSOFÍA: el lema puesto en filas, sin cajas ──
      Cada palabra del lema a la izquierda, en grande, y su texto a la derecha:
      se lee de arriba abajo como «Now. Next. Forever Football.». */
   .abt-manifesto__blocks {
-    margin: var(--ph-head-title-gap) 0 0;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
@@ -355,7 +310,6 @@ const internationalCountries = [
     align-items: baseline;
     justify-content: space-between;
     gap: 12px 32px;
-    margin-top: var(--ph-head-title-gap);
   }
   .abt-presencia__madrid {
     margin: 0;
@@ -398,8 +352,7 @@ const internationalCountries = [
     color: var(--color-ph-white);
   }
   .abt-presencia__iso {
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 13px;
     letter-spacing: 0.04em;
     color: var(--ph-ink-meta);
   }

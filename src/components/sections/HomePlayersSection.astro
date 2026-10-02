@@ -13,10 +13,6 @@ const t = useTranslations(lang);
 
 const listHref = localizePath('/talentos/', lang);
 
-/** «02 · Talentos»: el número y la etiqueta van en estilos distintos en la fila índice. */
-const [eyebrowNum, ...eyebrowRest] = t('home.players.eyebrow').split(' · ');
-const eyebrowLabel = eyebrowRest.join(' · ');
-
 /** Los primeros jugadores del roster, en el orden del archivo (el de la lista de
  *  Mario, ver CLAUDE.md): la portada enseña a quién representa la agencia. */
 const RAIL_SIZE = 10;
@@ -38,14 +34,6 @@ const railLabel = `${t('talents.title')}${t('home.players.titleAccent')}`;
 ---
 
 <section class="home-players" id="talentos" aria-labelledby="home-players-title">
-  <p class="ph-rowline">
-    <span class="ph-rowline__group">
-      <span class="ph-rowline__num">{eyebrowNum}</span>
-      <span class="ph-rowline__sep" aria-hidden="true">·</span>
-      <span class="ph-rowline__label">{eyebrowLabel}</span>
-    </span>
-  </p>
-
   <div class="home-players__head">
     <div class="home-players__titles">
       <h2 class="ph-h2" id="home-players-title">
@@ -107,8 +95,8 @@ const railLabel = `${t('talents.title')}${t('home.players.titleAccent')}`;
 </section>
 
 <style>
-  /* Mismo sistema que las cabeceras de sección (global.css: `.ph-rowline`,
-     `.ph-head-*`; ph-ui.css: `.ph-h2`, `.ph-player`, `.ph-rail`). */
+  /* Mismo sistema que las cabeceras de sección (global.css: `.ph-head-*`;
+     ph-ui.css: `.ph-h2`, `.ph-player`, `.ph-rail`). */
   .home-players {
     position: relative;
     padding: clamp(88px, 9vw, 156px) var(--ph-section-px) 0;
@@ -121,7 +109,6 @@ const railLabel = `${t('talents.title')}${t('home.players.titleAccent')}`;
     column-gap: clamp(16px, 2vw, 32px);
     row-gap: 24px;
     align-items: end;
-    margin-top: var(--ph-head-title-gap);
   }
   .home-players__titles { grid-column: 1 / 9; display: grid; gap: var(--ph-head-lead-gap); }
   .home-players__titles .ph-head-lead { margin: 0; }

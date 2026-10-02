@@ -72,9 +72,8 @@
   letter-spacing: -0.005em;
   color: var(--color-ph-white);
 }
-/* El club en blanco tenue: en la rejilla serían 51 dorados; el oro se reserva para
-   la palabra destacada y un solo botón por pantalla. */
-.ph-player__club { font-size: clamp(12px, calc(0.1vw + 11.6px), 13px); line-height: 1.4; color: var(--ph-ink-meta); }
+/* El club en oro: es la firma de cada tarjeta (decisión de Mario, 2026-10-02). */
+.ph-player__club { font-size: clamp(12px, calc(0.1vw + 11.6px), 13px); line-height: 1.4; color: var(--color-ph-gold); }
 .ph-player__badges { position: absolute; top: 12px; right: 12px; display: flex; gap: 4px; pointer-events: none; }
 .ph-player__badges img { display: block; width: 22px; height: 22px; object-fit: contain; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55)); }
 @media (hover: hover) {
@@ -88,12 +87,11 @@
 .ph-acc__item + .ph-acc__item::before { content: ""; position: absolute; top: 0; left: clamp(16px, 1.6vw, 24px); right: clamp(16px, 1.6vw, 24px); height: 1px; background: var(--mochi-surface-border); }
 .ph-acc__head {
   all: unset; box-sizing: border-box; width: 100%;
-  display: grid; grid-template-columns: 28px 1fr 20px; align-items: center; gap: clamp(12px, 1vw + 8px, 16px);
+  display: grid; grid-template-columns: 1fr 20px; align-items: center; gap: clamp(12px, 1vw + 8px, 16px);
   padding: clamp(18px, 1vw + 14px, 24px) clamp(16px, 1.6vw, 24px);
   border-radius: var(--ph-r-lg); cursor: pointer; color: var(--color-ph-white);
 }
 .ph-acc__head:focus-visible { outline: 2px solid var(--mochi-focus-ring); outline-offset: -2px; }
-.ph-acc__num { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--ph-ink-meta); font-variant-numeric: tabular-nums; }
 .ph-acc__title { font: 500 clamp(19px, calc(0.6vw + 16px), 24px)/1.2 var(--font-display); letter-spacing: -0.012em; transition: color var(--mochi-duration-color) var(--mochi-ease-color); }
 @media (hover: hover) { .ph-acc__head:hover .ph-acc__title { color: var(--mochi-accent-strong); } }
 .ph-acc__plus { position: relative; width: 20px; height: 20px; }
@@ -104,7 +102,7 @@
 .ph-acc__item.is-open .ph-acc__body { grid-template-rows: 1fr; }
 .ph-acc__inner { min-height: 0; overflow: hidden; }
 .ph-acc__content {
-  padding: 0 clamp(16px, 1.6vw, 24px) clamp(20px, 1vw + 16px, 26px) calc(clamp(16px, 1.6vw, 24px) + 28px + clamp(12px, 1vw + 8px, 16px));
+  padding: 0 clamp(16px, 1.6vw, 24px) clamp(20px, 1vw + 16px, 26px);
   opacity: 0; filter: blur(6px); translate: 0 -6px;
   transition:
     opacity var(--mochi-duration-fade-out) var(--mochi-ease-fade-out),
@@ -126,7 +124,7 @@ html:not(.ph-js) .ph-acc__content { opacity: 1; filter: none; translate: none; }
       el lado hacia el que va ──────────────────────────────────────────────── */
 .ph-seg-scroll { overflow-x: auto; scrollbar-width: none; margin: 0 -8px; padding: 0 8px; }
 .ph-seg-scroll::-webkit-scrollbar { display: none; }
-.ph-seg { position: relative; display: inline-flex; gap: 2px; padding: 4px; border-radius: 14px; background: rgba(255, 255, 255, 0.05); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35); }
+.ph-seg { position: relative; display: inline-flex; gap: 2px; padding: 4px; border-radius: var(--ph-r-sm); background: rgba(255, 255, 255, 0.05); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35); }
 .ph-seg__thumb { position: absolute; top: 4px; bottom: 4px; left: var(--l, 4px); right: var(--r, 50%); border-radius: var(--ph-r-sm); background: var(--mochi-thumb); box-shadow: var(--mochi-shadow-thumb); }
 html:not(.ph-js) .ph-seg__thumb { display: none; }
 .ph-seg__tab {
@@ -170,7 +168,7 @@ html:not(.ph-js) .ph-seg__tab[aria-selected="true"] { color: var(--color-ph-whit
 .ph-select__btn {
   all: unset; box-sizing: border-box;
   display: inline-flex; align-items: center; gap: 8px;
-  height: 40px; padding: 0 12px; border-radius: 12px;
+  height: 40px; padding: 0 12px; border-radius: var(--ph-r-btn-sm);
   border: 1px solid var(--mochi-surface-border); background: rgba(255, 255, 255, 0.03);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   font: 500 13px/1 var(--font-display); letter-spacing: 0.03em; color: var(--color-ph-white);
@@ -187,7 +185,7 @@ html:not(.ph-js) .ph-seg__tab[aria-selected="true"] { color: var(--color-ph-whit
   min-width: max(100%, 200px); padding: 6px;
   border-radius: var(--ph-r-md); border: 1px solid var(--mochi-surface-border-strong);
   background: var(--mochi-solid); box-shadow: var(--mochi-shadow-overlay);
-  clip-path: var(--closed, inset(0 0 calc(100% - 40px) 0 round 12px));
+  clip-path: var(--closed, inset(0 0 calc(100% - 40px) 0 round var(--ph-r-btn-sm)));
   opacity: 0; pointer-events: none;
   transition: clip-path var(--mochi-duration-morph) var(--mochi-ease-morph), opacity var(--mochi-duration-fade-out) var(--mochi-ease-fade-out) 90ms;
 }

@@ -20,13 +20,8 @@ const t = useTranslations(lang);
 >
   <article class="legal" aria-labelledby="legal-title">
     <header class="legal__head">
-      <p class="ph-rowline">
-        <span class="ph-rowline__group">
-          <span class="ph-rowline__label">Legal</span>
-        </span>
-        <span class="ph-rowline__meta legal__updated">Last updated: June 2026</span>
-      </p>
       <h1 id="legal-title" class="ph-head-title legal__title">Privacy Policy</h1>
+      <p class="legal__updated">Last updated: June 2026</p>
     </header>
 
     <div class="legal__body">
@@ -94,10 +89,12 @@ const t = useTranslations(lang);
     padding: var(--ph-head-top) var(--ph-section-px) clamp(80px, calc(5.7vw + 58px), 140px);
   }
 
-  /* El dato de la derecha es una frase en minúsculas, no un valor en mayúsculas:
-     sin el espaciado extra de `.ph-rowline__meta`. */
+  /* La fecha de actualización, bajo el título como una línea normal: es dato
+     legal, no un rótulo. */
   .legal__updated {
-    letter-spacing: 0.01em;
+    margin: 16px 0 0;
+    font-size: 14px;
+    color: var(--ph-ink-meta);
   }
 
   /* Más contenido que las cabeceras de sección: el titular aquí es una etiqueta
@@ -137,11 +134,9 @@ const t = useTranslations(lang);
     letter-spacing: -0.015em;
     color: var(--color-ph-white);
   }
+  /* El número del apartado, en la letra del título y más apagado. */
   .legal__num {
     flex: none;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.04em;
     font-variant-numeric: tabular-nums;
     color: var(--ph-ink-meta);
   }

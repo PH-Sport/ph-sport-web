@@ -286,7 +286,7 @@ Lo que hay que saber **antes de tocar nada**:
   el equipo de PH valide el club.
 
 Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: backlog de
-rendimiento del 2026-08-18, fuga de listeners de scroll en la home, SEO P1/P2, el
+rendimiento del 2026-08-18, SEO P1/P2, el
 vídeo del hero, los fondos animados de sección y el rediseño sin probar en un móvil
 real (2026-10-01), las fotos de talentos en AVIF, que con 4G lento tardan bastante
 más en aparecer (2026-10-01), lo que la web ajusta por fuera de Mochi mientras

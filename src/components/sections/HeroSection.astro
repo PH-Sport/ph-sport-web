@@ -57,11 +57,6 @@ const t = useTranslations(lang);
       <span class="hero-claim__accent">{t('hero.claim.accent')}</span>
     </h1>
   </div>
-
-  <a class="hero-scroll" href="#talentos" data-hero-scroll-indicator>
-    <span class="hero-scroll__label">{t('hero.scroll.label')}</span>
-    <svg class="hero-scroll__arrow" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
-  </a>
 </section>
 
 <style>
@@ -173,55 +168,10 @@ const t = useTranslations(lang);
     font-weight: 400;
   }
 
-  /* Aviso de scroll: una pieza quieta, como un botón. Sin bucles de adorno: el
-     movimiento de la web responde a lo que haces (DECISIONS.md, 2026-10-01). */
-  .hero-scroll {
-    position: absolute;
-    right: var(--ph-section-px, clamp(20px, 4vw, 48px));
-    bottom: clamp(40px, 5vw, 72px);
-    z-index: 4;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    height: 40px;
-    padding: 0 12px 0 14px;
-    border: 1px solid var(--mochi-surface-border);
-    border-radius: var(--ph-r-btn-sm, 12px);
-    background: rgba(21, 23, 27, 0.55);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    color: rgba(255, 255, 255, 0.78);
-    font-family: var(--font-display);
-    font-size: 13px;
-    letter-spacing: 0.03em;
-    text-decoration: none;
-    transition:
-      opacity var(--mochi-duration-fade-out) var(--mochi-ease-fade-out),
-      color var(--mochi-duration-color) var(--mochi-ease-color),
-      transform var(--mochi-duration-snappy) var(--mochi-ease-snappy);
-  }
-  .hero-scroll:hover { color: var(--color-ph-white); }
-  .hero-scroll:active { transform: scale(0.965); transition-duration: var(--mochi-duration-press); transition-timing-function: var(--mochi-ease-press); }
-  .hero-scroll__arrow {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.6;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    transition: transform var(--mochi-duration-snappy) var(--mochi-ease-snappy);
-  }
-  .hero-scroll:hover .hero-scroll__arrow { transform: translateY(2px); }
-  .hero-scroll.is-hidden {
-    opacity: 0;
-    pointer-events: none;
-  }
-
   @media (max-width: 720px) {
     .hero-content {
       bottom: clamp(24px, 4vw, 48px);
-      right: 120px;
     }
-    .hero-scroll { bottom: clamp(24px, 4vw, 48px); }
   }
 
   @media (min-width: 1024px) {
@@ -235,14 +185,6 @@ const t = useTranslations(lang);
 </style>
 
 <script>
-  function initHeroScrollCue(): void {
-    const cue = document.querySelector<HTMLElement>('[data-hero-scroll-indicator]');
-    if (!cue) return;
-    const toggle = () => cue.classList.toggle('is-hidden', window.scrollY > 48);
-    toggle();
-    document.addEventListener('scroll', toggle, { passive: true });
-  }
-
   /* El rótulo se enciende una vez (vídeo de encendido) y luego queda encendido en
    * bucle (otro vídeo). Si algo impide reproducir, la portada pasa al póster
    * encendido: nunca se queda con el rótulo apagado. */
@@ -319,7 +261,6 @@ const t = useTranslations(lang);
   }
 
   document.addEventListener('astro:page-load', () => {
-    initHeroScrollCue();
     initHeroNeon();
   });
 </script>

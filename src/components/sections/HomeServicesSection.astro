@@ -28,20 +28,9 @@ const actionPlanSub = (['press', 'media', 'psych', 'performance', 'familyOffice'
 
 const servicesHref = localizePath('/servicios/', lang);
 
-/** «03 · Servicios»: el número y la etiqueta van en estilos distintos en la fila índice. */
-const [eyebrowNum, ...eyebrowRest] = t('home.services.eyebrow').split(' · ');
-const eyebrowLabel = eyebrowRest.join(' · ');
 ---
 
 <section class="home-services" id="servicios" aria-labelledby="home-services-title">
-  <p class="ph-rowline">
-    <span class="ph-rowline__group">
-      <span class="ph-rowline__num">{eyebrowNum}</span>
-      <span class="ph-rowline__sep" aria-hidden="true">·</span>
-      <span class="ph-rowline__label">{eyebrowLabel}</span>
-    </span>
-  </p>
-
   <div class="home-services__head">
     <div class="home-services__titles">
       <h2 class="ph-h2" id="home-services-title">{t('home.services.title')}</h2>
@@ -69,7 +58,6 @@ const eyebrowLabel = eyebrowRest.join(' · ');
               aria-expanded={idx === 0 ? 'true' : 'false'}
               aria-controls={`hs-area-${idx}`}
             >
-              <span class="ph-acc__num">{String(idx + 1).padStart(2, '0')}</span>
               <span class="ph-acc__title">{item.title}</span>
               <span class="ph-acc__plus" aria-hidden="true"></span>
             </button>
@@ -128,8 +116,8 @@ const eyebrowLabel = eyebrowRest.join(' · ');
 </section>
 
 <style>
-  /* Mismo sistema que el resto de secciones (global.css: `.ph-rowline`,
-     `.ph-head-*`; ph-ui.css: `.ph-h2`, `.ph-acc`, `.ph-seg`, `.ph-swap`). */
+  /* Mismo sistema que el resto de secciones (global.css: `.ph-head-*`;
+     ph-ui.css: `.ph-h2`, `.ph-acc`, `.ph-seg`, `.ph-swap`). */
   .home-services {
     position: relative;
     padding: clamp(88px, 9vw, 156px) var(--ph-section-px) 0;
@@ -142,7 +130,6 @@ const eyebrowLabel = eyebrowRest.join(' · ');
     column-gap: clamp(16px, 2vw, 32px);
     row-gap: 24px;
     align-items: end;
-    margin-top: var(--ph-head-title-gap);
   }
   .home-services__titles { grid-column: 1 / 9; display: grid; gap: var(--ph-head-lead-gap); }
   .home-services__titles .ph-head-lead { margin: 0; }
@@ -187,7 +174,7 @@ const eyebrowLabel = eyebrowRest.join(' · ');
     line-height: 1.5;
     color: var(--ph-ink-body);
   }
-  .home-services__bullets li::before { content: ''; width: 18px; height: 1.5px; background: rgba(255, 255, 255, 0.32); translate: 0 -4px; }
+  .home-services__bullets li::before { content: ''; width: 18px; height: 1.5px; background: var(--color-ph-gold); translate: 0 -4px; }
 
   @media (max-width: 900px) {
     .home-services__head,

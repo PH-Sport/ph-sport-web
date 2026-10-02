@@ -13,28 +13,17 @@ const email = t('home.contact.email');
 
 /** Foto de la sección. **Sin foto a propósito** (2026-10-02): la que había era una
  *  ilustración generada por IA y se quitó hasta tener una real (`DECISIONS.md`).
- *  Sin foto, el bloque ocupa todo el ancho, sin hueco. Para poner una: dejar en
+ *  Mientras tanto se ve su hueco: un recuadro oscuro del mismo tamaño, para que la
+ *  maqueta no cambie al llegar la foto (lo pidió Mario). Para ponerla: dejar en
  *  `public/` una imagen cuadrada de unos 1200 px con un nombre NUEVO —no
  *  `contact-image.webp`: `public/` se sirve con 7 días de caché y quien ya visitó
  *  la web seguiría viendo la vieja— y escribir aquí su ruta, p. ej.
- *  `'/contacto/2026-11.webp'`. Aparece a la derecha en escritorio y debajo en móvil. */
+ *  `'/contacto/2026-11.webp'`. */
 const contactImage: string | null = null;
-
-/** «05 · Contacto»: el número y la etiqueta van en estilos distintos en la fila índice. */
-const [eyebrowNum, ...eyebrowRest] = t('home.contact.eyebrow').split(' · ');
-const eyebrowLabel = eyebrowRest.join(' · ');
 ---
 
 <section class="home-contact" id="contacto" aria-labelledby="home-contact-title">
-  <p class="ph-rowline">
-    <span class="ph-rowline__group">
-      <span class="ph-rowline__num">{eyebrowNum}</span>
-      <span class="ph-rowline__sep" aria-hidden="true">·</span>
-      <span class="ph-rowline__label">{eyebrowLabel}</span>
-    </span>
-  </p>
-
-  <div class:list={['home-contact__grid', { 'has-media': contactImage }]}>
+  <div class="home-contact__grid">
     <div class="home-contact__main">
       <h2 class="home-contact__title" id="home-contact-title">{t('home.contact.title')}</h2>
       <div class="home-contact__mail">
@@ -52,11 +41,9 @@ const eyebrowLabel = eyebrowRest.join(' · ');
       </div>
     </div>
 
-    {contactImage && (
-      <div class="home-contact__image" aria-hidden="true">
-        <img src={contactImage} alt="" width="1200" height="1200" loading="lazy" decoding="async" />
-      </div>
-    )}
+    <div class:list={['home-contact__image', { 'is-empty': !contactImage }]} aria-hidden="true">
+      {contactImage && <img src={contactImage} alt="" width="1200" height="1200" loading="lazy" decoding="async" />}
+    </div>
   </div>
 </section>
 
@@ -75,11 +62,8 @@ const eyebrowLabel = eyebrowRest.join(' · ');
     column-gap: clamp(16px, 2vw, 32px);
     row-gap: 40px;
     align-items: end;
-    margin-top: var(--ph-head-title-gap);
   }
-  /* Sin foto, el titular y el email ocupan todo el ancho; con foto, la izquierda. */
-  .home-contact__main { grid-column: 1 / 13; display: grid; gap: clamp(28px, 2.5vw, 44px); }
-  .home-contact__grid.has-media .home-contact__main { grid-column: 1 / 8; }
+  .home-contact__main { grid-column: 1 / 8; display: grid; gap: clamp(28px, 2.5vw, 44px); }
   .home-contact__title {
     margin: 0;
     font: 500 clamp(72px, calc(9vw + 20px), 176px)/0.9 var(--font-display);
@@ -108,6 +92,8 @@ const eyebrowLabel = eyebrowRest.join(' · ');
     border-radius: var(--ph-r-xl);
     background: var(--mochi-surface);
   }
+  /* El hueco de la foto, mientras no llegue: superficie lisa con su filo. */
+  .home-contact__image.is-empty { border: 1px solid var(--mochi-surface-border); }
   .home-contact__image img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
   @media (max-width: 900px) {

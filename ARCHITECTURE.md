@@ -411,7 +411,6 @@ que arranca en cada `astro:page-load` y lo desmonta en `astro:before-swap`:
 | Etiqueta que viaja | `data-ph-tip-group` + `data-tip` | Una sola etiqueta que se desplaza de un icono a otro (pie de página) |
 | Copiar | `data-ph-copy`, aviso en `data-ph-copy-live` | El icono se convierte en un check dibujado y vuelve |
 | Tarjeta de jugador | `.ph-player` | Al pasar el ratón se eleva y la foto crece un poco |
-| Fila índice | `.ph-rowline` (`global.css`) | Línea fina con número y etiqueta, en lugar de un rótulo encima del titular |
 
 **Reglas del movimiento** (las de Mochi):
 
@@ -456,30 +455,26 @@ Talentos, Servicios y Sobre nosotros comparten la misma cabecera desde el
 2026-10-01 (`DECISIONS.md`, «Cabecera de sección legible»). El objetivo es que el
 contenido empiece ya en la primera pantalla y que todo se lea sin esfuerzo:
 
-- **Fila índice → titular → entradilla.** Arriba, una línea fina con el número y
-  el nombre de la sección («02 · Talentos»); debajo el titular grande y, justo
-  debajo, la entradilla. Después, sin hueco de por medio, lo propio de cada página:
-  los controles y las tarjetas en Talentos; «Áreas de gestión» en Servicios; los
-  valores y la presentación en Sobre nosotros.
+- **Titular → entradilla.** El titular grande y, justo debajo, la entradilla.
+  Después, sin hueco de por medio, lo propio de cada página: los controles y las
+  tarjetas en Talentos; «Áreas de gestión» en Servicios; la presentación en Sobre
+  nosotros. **Sin rótulo encima** desde el 2026-10-02: la fila índice («02 ·
+  Talentos») y las filas de datos en mayúsculas se quitaron por leerse como
+  plantilla (`DECISIONS.md`).
 - **Cinco papeles, un tamaño cada uno**, para que se distingan sin leerlos:
   - Titular: Söhne, 46–106 px.
   - Entradilla: Söhne, 18–22 px, blanco al 90 %.
   - Texto corrido: Helvetica, 16–18 px, blanco al 82 %, como mucho 62 caracteres por línea.
   - Etiquetas: letra normal, 13–15 px.
-  - Números (02, 01–05, «05 disciplinas · 01 equipo»): lo único en monoespaciada.
-- **La fila índice es una pieza reutilizable** (`.ph-rowline` en `global.css`):
-  línea fina, etiqueta a la izquierda y dato a la derecha. Abre cada bloque de
-  todas las páginas en lugar de un rótulo encima del titular: el número de
-  sección, «Áreas de gestión» y el modelo operativo en Servicios, Filosofía, el
-  equipo y Presencia en Sobre nosotros, la franja de valores y los textos
-  legales.
+  - **Sin letra monoespaciada** en ninguna parte (2026-10-02): los números van en
+    la letra del texto que acompañan.
 - **Mismas cifras en las tres páginas**: alturas, separaciones y tamaños salen de
   `--ph-head-*` en `global.css`, y los tonos de texto de `--ph-ink-*`. Los estilos
-  compartidos son `.ph-rowline`, `.ph-head-title` y `.ph-head-lead`. Cambiarlos
-  ahí cambia las tres páginas a la vez.
-- **«02 · Talentos» se parte en el componente** por « · », para dar al número y a
-  la etiqueta estilos distintos. Si un idioma cambiara ese separador en el rótulo,
-  saldría entero como número.
+  compartidos son `.ph-head-title` y `.ph-head-lead`. Cambiarlos ahí cambia las
+  tres páginas a la vez.
+- **Encabezados que no se ven:** donde la fila índice era el `h2` de una sección
+  (Filosofía y Presencia en Sobre nosotros), el `h2` sigue en el HTML con
+  `sr-only`, para que la jerarquía no salte de `h1` a `h3`.
 
 El fondo es un `<canvas class="ph-ambient" data-ambient="<escena>">` dentro de
 `<div class="ph-page-bg">`. Lo dibuja en directo `src/scripts/ph-ambient.ts` con
@@ -633,17 +628,21 @@ Usar siempre `.ph-section` o las variables CSS. No hardcodear valores de secció
 
 ### Radios de borde
 
-Desde el 2026-10-01, **rectángulo con esquinas bien redondeadas**: ni la píldora
-de Mochi ni la esquina casi viva de antes (`DECISIONS.md`, «Rediseño con el
-lenguaje de Mochi»). Tokens en `src/styles/mochi-phsport.css`:
+Desde el 2026-10-02, **rectángulo con una esquina sutil: 6 px en todo**
+(decisión de Mario; del 2026-10-01 al 02 fueron de 8 a 28 px, y antes de Mochi
+6–8 px). Tokens en `src/styles/mochi-phsport.css`, todos a 6 px. Se mantienen
+los nombres por tamaño por si vuelven a separarse:
 
-| Token CSS | Valor | Uso |
-|---|---|---|
-| `--ph-r-xs` / `--ph-r-sm` | 8 / 10 px | Piezas pequeñas: opciones de lista, chips |
-| `--ph-r-btn-sm` / `--ph-r-btn` / `--ph-r-btn-lg` | 12 / 14 / 16 px | Botones por tamaño, campos de búsqueda |
-| `--ph-r-md` | 16 px | Paneles y desplegables |
-| `--ph-r-lg` | 22 px | Tarjetas |
-| `--ph-r-xl` | 28 px | Tarjetas grandes e imágenes destacadas |
+| Token CSS | Uso |
+|---|---|
+| `--ph-r-xs` / `--ph-r-sm` | Piezas pequeñas: opciones de lista, etiquetas |
+| `--ph-r-btn-sm` / `--ph-r-btn` / `--ph-r-btn-lg` | Botones por tamaño, campos de búsqueda |
+| `--ph-r-md` | Paneles, desplegables, la cápsula de la cabecera y el menú móvil |
+| `--ph-r-lg` / `--ph-r-xl` | Tarjetas, huecos de foto |
+
+Los recortes animados (`clip-path: … round`) de los desplegables y del menú
+móvil usan las mismas variables; el de `.ph-select` lee el radio del propio
+botón.
 
 ### Principios visuales
 
@@ -657,8 +656,11 @@ lenguaje de Mochi»). Tokens en `src/styles/mochi-phsport.css`:
   desplegables y tarjetas de jugador. Lo que solo se lee (Filosofía, Presencia,
   pilares, cifras, manifiesto, datos legales) va sobre el fondo, con líneas finas.
   Una caja en todo se lee como plantilla.
-- **Oro**: el logo, la palabra destacada del titular y un solo botón por pantalla.
-  Clubes, números, códigos de país y rayas de viñeta van en blanco tenue.
+- **Oro**: el logo, la palabra destacada del titular, un solo botón por pantalla,
+  el club de cada tarjeta de jugador, las rayas de las viñetas y los separadores
+  de las listas (2026-10-02). Números y códigos de país, en blanco tenue.
+- **Sin rótulos encima de los titulares ni letra monoespaciada** (2026-10-02): el
+  titular se sostiene solo.
 - **Sombras**: despegan tarjetas y botones del fondo, siempre oscuras. El botón
   dorado lleva un filo de luz arriba y sombra oscura (`--ph-sh-accent`), sin halo
   dorado.
@@ -735,13 +737,13 @@ que ejecutar nada a mano.
 | `Header.astro` | ✅ Completo | Cápsula flotante que se estrecha al bajar, indicador que sigue al ratón, desplegable de idioma que crece desde el botón, botón de contacto, menú móvil que crece desde la cápsula |
 | `Footer.astro` | ✅ Completo | Sello en grande, columnas legibles, redes como iconos con etiqueta que viaja |
 | `LogoReveal.astro` | ✅ Completo | Animación en CSS, sin JS. Una vez cada 18 h |
-| `HeroSection.astro` | ✅ Completo | Vídeo del neón (encendido y bucle) con encuadre apaisado y vertical; claim fijo, sin entrada animada |
+| `HeroSection.astro` | ✅ Completo | Vídeo del neón (encendido y bucle) con encuadre apaisado y vertical; claim fijo, sin entrada animada ni botón «Scroll» (2026-10-02) |
 | `HomePlayersSection.astro` | ✅ Completo | Raíl arrastrable con los 10 primeros jugadores del roster, en su orden |
 | `HomeServicesSection.astro` | ✅ Completo | Acordeón de las cinco áreas + Plan de acción en pestañas |
 | `HomeAboutSection.astro` | ✅ Completo | Titular, texto y las cifras en una sola línea (sin cajas ni contadores) |
-| `HomeContactSection.astro` | ✅ Completo | «Hablemos.», botón de email y botón de copiar. Sitio preparado para una foto real (`contactImage`), hoy vacío |
+| `HomeContactSection.astro` | ✅ Completo | «Hablemos.», botón de email y botón de copiar. A la derecha, el hueco de la foto (`contactImage`), hoy vacío a la vista |
 | `AboutSection.astro` | ✅ Completo | Cabecera, Filosofía en filas (Now. Next. Forever Football.), equipo en tabla sin numerar (21 integrantes) y Presencia como lista con Madrid de encabezado |
-| `ServicesSection.astro` | ✅ Completo | Cabecera, áreas de gestión en acordeón, modelo operativo con cinco pilares en filas y manifiesto. Sitio preparado para fotos reales de los pilares (`pillarArt`), hoy vacío |
+| `ServicesSection.astro` | ✅ Completo | Cabecera, áreas de gestión en acordeón, modelo operativo con cinco pilares (texto y hueco de foto, alternando lados) y manifiesto. Los huecos (`pillarArt`) se ven vacíos hasta que lleguen las fotos |
 | `TalentsSection.astro` | ✅ Completo | Buscador (en móvil, icono que se despliega), desplegables Ver y Orden (`.ph-select`) y grid 3:4 no clicable con escudos de selección siempre visibles |
 | `Button.astro` | ⚠️ Sin uso | Nadie lo importa. Los botones son `LinkButton` de Mochi (2026-10-01) |
 | `SectionHeader.astro` | ✅ Completo | |
@@ -772,7 +774,7 @@ que ejecutar nada a mano.
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
 | OG image (1200×630px) | ❌ Pendiente | |
-| Fotos de Servicios y Contacto | ❌ Pendientes | Las ilustraciones generadas por IA se quitaron el 2026-10-02. Sitio preparado en el código; cómo poner una foto, en el comentario de `pillarArt` y `contactImage` |
+| Fotos de Servicios y Contacto | ❌ Pendientes | Las ilustraciones generadas por IA se quitaron el 2026-10-02. Sus huecos se ven vacíos; cómo poner una foto, en el comentario de `pillarArt` y `contactImage` |
 
 ### Pendientes
 

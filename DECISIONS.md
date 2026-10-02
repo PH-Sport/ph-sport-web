@@ -13,7 +13,93 @@ leído el resto.
 
 ---
 
+## 2026-10-02 · Esquina de 6 px, huecos de foto a la vista, sin rótulos ni letra monoespaciada, y el oro vuelve a clubes y viñetas
+
+**Decisión** (de Mario, al ver la ronda anterior, la entrada siguiente):
+
+- **Lo que dijo:**
+  - «Ahora la web es prácticamente solo texto».
+  - Prefiere «un rectángulo con una esquina sutil redondeada» antes que los
+    radios grandes.
+  - Ve «muy poco uso del dorado», quitado de sitios donde sí correspondía.
+  - Las filas de rótulos en letra monoespaciada y mayúsculas, y el botón
+    «Scroll», son «patrón IA de manual».
+  - Sobre las ilustraciones: «te dije que quitases las fotos pero dejases los
+    huecos».
+- **Lo de los huecos fue un error mío.** En la pregunta de seguimiento le
+  recomendé «sitio preparado, sin hueco visible», y esa recomendación lo llevó a
+  lo contrario de lo que pedía.
+
+**Qué cambia**:
+
+- **Esquinas: 6 px en todo** (tokens `--ph-r-*`): tarjetas, paneles, botones,
+  desplegables, la cápsula de la cabecera y el menú móvil.
+- **Huecos de foto a la vista:**
+  - Cada pilar de Servicios vuelve a tener el texto a un lado y el recuadro de la
+    foto al otro, alternando lados y sin tarjeta.
+  - Contacto vuelve a tener su recuadro cuadrado a la derecha.
+  - Sin foto, el recuadro es una superficie oscura lisa con su filo.
+  - Cómo poner las fotos: en el comentario de `pillarArt` y de `contactImage`.
+- **Fuera los rótulos de encima de los titulares y la letra monoespaciada:**
+  - Se quita la fila índice («02 · Talentos», «03 · Servicios»…) en todas las
+    páginas.
+  - Dejan de verse estos textos (siguen en el i18n, sin usar):
+    - «Áreas de gestión · 05 disciplinas · 01 equipo»;
+    - «Modelo operativo PHSPORT»;
+    - «ACOMPAÑAMIENTO 360° · SERVICIO 365», que salía dos veces;
+    - «EXCELENCIA · CERCANÍA · RIGOR» y «PHSPORT · IDENTIDAD»;
+    - los valores de la portada;
+    - «EL EQUIPO» y «21 INTEGRANTES · 7 PAÍSES»;
+    - «Legal».
+  - Se quitan los números de los acordeones.
+  - Los números de los textos legales y los códigos de país pasan a la letra
+    normal.
+  - Mario lo eligió sabiendo que esos textos dejan de verse; conviene que los
+    jefes lo sepan.
+  - **Se queda** la fecha de «Última actualización» de los textos legales, como
+    línea normal bajo el título, porque es información legal.
+- **Fuera el botón «Scroll» del hero**, y con él la función que registraba un
+  listener de scroll nuevo en cada visita a la portada. Esa era la fuga anotada
+  en `docs/hallazgos-abiertos.md` desde agosto, que queda cerrada.
+- **El oro vuelve:**
+  - al club de cada tarjeta de jugador;
+  - a las rayas de las viñetas (acordeón de Servicios y Plan de acción);
+  - al separador de las cifras de la portada.
+
+  Mario eligió estos sitios de una lista de cuatro. Los numerales de los
+  pilares y el subrayado del menú siguen sin oro.
+- **Detalle de móvil:** las cifras de la portada van una debajo de otra, porque
+  el punto se quedaba colgando al final del renglón.
+
+**Alternativas que se le ofrecieron y no eligió:**
+
+- Esquinas: 4 px (casi recto), o 8 px en tarjetas y 4 px en botones.
+- Rótulos:
+  - mantener los textos integrados de otra forma;
+  - quitar solo la letra monoespaciada y el botón «Scroll».
+- Peso visual:
+  - más fotos de estudio de jugadores;
+  - paneles en los bloques clave;
+  - recuperar las ilustraciones;
+  - el logo 3D como pieza visual.
+
+  Mario no eligió ninguna de estas: respondió con lo de los huecos.
+
+**Pendiente**:
+
+- **Etiquetas en mayúsculas que vienen así en el i18n:** «SEDE CENTRAL · ES»,
+  «PRESENCIA INTERNACIONAL CON SEDE EN:» y los países del equipo («ESPAÑA»). No
+  son filas de rótulos, pero tienen el mismo aire.
+- **El hueco propio del pie** antes del lema, unos 215 px.
+
+---
+
 ## 2026-10-02 · Contra el aspecto de plantilla: fuera las ilustraciones de IA, tarjeta solo en lo que se toca, menos oro
+
+> **Corregida en parte el mismo día** (entrada anterior): las ilustraciones siguen
+> fuera, pero sus huecos se ven; el oro vuelve al club de las tarjetas y a las
+> viñetas; las esquinas pasan a 6 px; fuera los rótulos, la letra monoespaciada y
+> el botón «Scroll».
 
 **Decisión** (de Mario, tras una revisión de «AI slop», es decir, de patrones que
 delatan un diseño generado por IA, sobre el rediseño de la entrada siguiente):
@@ -110,6 +196,10 @@ Eran así antes del rediseño. Están en `docs/hallazgos-abiertos.md`.
 ---
 
 ## 2026-10-01 · Rediseño con el lenguaje de Mochi: esquinas redondeadas, movimiento solo como respuesta, sin GSAP
+
+> **Esquinas: 6 px desde el 2026-10-02** (entrada «Esquina de 6 px…»): el
+> «rectángulo con bordes redondeados» de esta entrada (de 8 a 28 px) quedó en una
+> esquina sutil a petición de Mario.
 
 > **Matizada el 2026-10-02** («Contra el aspecto de plantilla», entrada anterior):
 > los pilares de Servicios y Contacto ya no llevan ilustración, lo que solo se lee
@@ -232,6 +322,10 @@ Eran así antes del rediseño. Están en `docs/hallazgos-abiertos.md`.
 ---
 
 ## 2026-10-01 · Cabecera de sección legible: el contenido empieza en la primera pantalla y la luz es el fondo de toda la página
+
+> **La fila índice se retiró el 2026-10-02** (entrada «Esquina de 6 px…»): la
+> cabecera pasa a ser titular y entradilla, sin rótulo encima. El resto de esta
+> entrada (tamaños, luz de fondo en toda la página) sigue vigente.
 
 **Decisión** (de Mario, sobre la cabecera «Escenario» de la entrada siguiente):
 

@@ -144,12 +144,6 @@ rediseño: ScrollTrigger cargado en las cuatro páginas para un solo uso, y el t
 de 217-359 ms al entrar en `/sobre-nosotros` por los 135 spans que se animaban con
 desenfoque. No se han vuelto a medir las páginas después del cambio.
 
-### Fuga de listeners de scroll en la home
-
-Uno nuevo por visita: `initHeroScrollCue` registra una función nueva en cada
-`astro:page-load` sin quitar la anterior. Comprobado contando listeners reales:
-**3 → 4 → 6**.
-
 ### SEO pendiente (P1/P2)
 
 - Analítica sin cookies (Plausible o GA4).

@@ -141,6 +141,8 @@ Por rentabilidad, de mayor a menor:
    usa **dos veces, las dos en el hero** (el desplazamiento del titular y el
    acercamiento al neón, desde el 2026-10-02); el resto son entradas con
    `{ start: 'top 85%', once: true }`, lo que ya hace un `IntersectionObserver`.
+   *No aplica en la rama `feat/variante-b-titulos`*: allí las escenas van ligadas
+   al scroll en todas las páginas y ScrollTrigger es necesario.
 3. Cuatro imágenes con margen de compresión real.
 
 El tirón al entrar en `/sobre-nosotros` (135 spans con `filter: blur()`) se
@@ -154,17 +156,26 @@ resolvió el 2026-10-02: los párrafos ya no entran palabra a palabra. Cifras en
 - Una página `/faq` con preguntas y respuestas literales.
 - Auditar los `alt=""` de Header, Footer y Hero para confirmar que son decorativos.
 
-### Lenguaje de movimiento «Marcador»: sin probar en un móvil real (2026-10-02)
+### Variante B «Títulos»: sin probar en un móvil real (2026-10-03)
 
-En la rama `feat/rediseno-motion` (`DECISIONS.md`, 2026-10-02). Comprobado con
-Playwright en Chromium y WebKit, en escritorio y a 390 px con toque: la intro y su
-corte sobre el neón, las paletas, el menú móvil, la luz entre páginas en los dos
-sentidos, el reordenado del grid, movimiento reducido y JS bloqueado. **Falta un
-iPhone y un Android de verdad**: que la intro se pliegue fluida en 3D, que las
-paletas no tiren con muchas en pantalla (la tabla del equipo, 21 a la vez) y que
-el revelado por `filter` de las fotos aguante en un móvil modesto con el fondo
-animado de Talentos detrás. Si algo tira, la primera palanca es el revelado:
-quitar `contrast` y `saturate` y dejar solo `brightness`.
+En la rama `feat/variante-b-titulos` (`DECISIONS.md`, 2026-10-03), propuesta sin
+fusionar. Comprobado con Playwright en Chromium y WebKit, a 360-1440 px y con
+movimiento reducido y sin JS: la intro y su corte sobre el neón, la secuencia del
+lema, los cortes, el cartón entre páginas en los dos sentidos, la vuelta atrás a
+mitad de una escena fijada, «Hablemos.» (nítido en WebKit), los acordeones, los
+filtros del grid y el menú móvil. Bajando a ritmo de dedo con la CPU ×4 en
+Chromium sin cabeza, las cuatro páginas se quedan en 16,7 ms por fotograma de
+mediana (p95 18,5). **Falta un iPhone y un Android de verdad**:
+
+- Que las escenas fijadas (`position: sticky`) no se sientan como un secuestro
+  del scroll en un iPhone, ni salten al aparecer y desaparecer la barra del
+  navegador (el alto va congelado en `--ph-viewport-h`, pero no se ha visto en
+  uno).
+- Que «Hablemos.» se mantenga fluido: es una capa en `mix-blend-mode: multiply`
+  que llega a escalarse 30-70 veces, con otra en `lighten` encima. Si tira, la
+  primera palanca es quitar la capa `lighten` (el negro de fuera de las letras
+  quedaría un punto más oscuro que la página).
+- Que la entrada del lema no compita con el arranque del vídeo en un móvil modesto.
 
 ### Sin control para pausar el movimiento continuo (WCAG 2.2.2)
 
@@ -176,6 +187,10 @@ A) pide además un control en la página. Arreglarlo es añadir un botón, y su 
 no existe en las traducciones: es decisión de Mario.
 
 ### Fondos animados de sección: sin medir en un móvil real (2026-10-01)
+
+> En la rama `feat/variante-b-titulos` las tres escenas se sustituyen por una,
+> «proyección» (grano a 24 fps y un halo): dibuja menos (solo cuando cambia el
+> fotograma de cine o la página se mueve), pero tampoco está medida en un móvil.
 
 Los fondos en directo de Talentos, Servicios y Sobre nosotros (`DECISIONS.md`,
 2026-10-01) están comprobados en Chromium y WebKit con Playwright, en escritorio y

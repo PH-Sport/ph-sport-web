@@ -28,136 +28,83 @@ const socialLabel = (id: SocialId) => {
   const key = id === 'instagram' ? 'footer.social.instagram' : 'footer.social.linkedin';
   return t(key);
 };
-
-/** El lema, palabra a palabra, para que ruede en CSS al entrar en pantalla (el pie
- *  está también en las páginas legales, que no cargan GSAP). */
-const words = (text: string) => text.split(' ').filter(Boolean);
-const leadWords = words(t('hero.claim.lead'));
-const accentWords = words(t('hero.claim.accent'));
 ---
 
-{/* El cierre de la retransmisión: la línea dorada se dibuja, el lema entra
-    rodando y el logo se vuelve a dibujar como en la intro de la portada. */}
+{/* El pie son los créditos finales: el lema en tipografía gigante que deriva en
+    horizontal con el scroll (una línea hacia cada lado) y, debajo, las columnas
+    suizas —Páginas, Contacto, Síguenos— con el logo que se dibuja. El pie está
+    también en las páginas legales, que no cargan GSAP: la deriva va sin él. */}
 <footer class="footer">
-  <div class="footer-gold-rule ph-seam" aria-hidden="true" data-inview></div>
+  <div class="footer__rule ph-rule" aria-hidden="true" data-inview></div>
 
-  <div class="footer-logo-bg" aria-hidden="true">
-    <img
-      src="/logo-ph-3d.webp"
-      srcset="/logo-ph-3d-sm.webp 820w, /logo-ph-3d.webp 1640w"
-      sizes="min(92vw, 620px)"
-      alt=""
-      width="1640"
-      height="1321"
-      loading="lazy"
-      decoding="async"
-      fetchpriority="low"
-    />
+  <p class="footer__lema" data-footer-lema>
+    <span class="footer__line" data-drift="1">{t('hero.claim.lead')}</span>
+    <span class="footer__line footer__line--gold" data-drift="-1">{t('hero.claim.accent')}</span>
+  </p>
+
+  <div class="footer__cols ph-grid">
+    <div class="footer__brand">
+      {/* Se dibuja al entrar en pantalla: trazo y después relleno. Los perímetros
+          (753 y 637) son los reales de los dos polígonos del logo. */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 259.8 206.1"
+        fill="currentColor"
+        stroke="currentColor"
+        stroke-width="4"
+        stroke-linejoin="bevel"
+        aria-hidden="true"
+        class="footer__logo"
+        data-inview
+      >
+        <polygon class="footer__logo-line" points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" stroke-dasharray="753" />
+        <polygon class="footer__logo-line footer__logo-line--2" points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" stroke-dasharray="637" />
+      </svg>
+    </div>
+
+    <nav class="footer__col footer__col--pages" aria-label={t('footer.nav.label')}>
+      <span class="footer__label">{t('footer.pages')}</span>
+      <ul class="footer__list">
+        {nav.map((item) => (
+          <li>
+            <a href={item.href} class="footer__link">{item.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="footer__col footer__col--contact">
+      <span class="footer__label">{t('footer.contact')}</span>
+      <a href={`mailto:${t('footer.email')}`} class="footer__link footer__email">{t('footer.email')}</a>
+    </div>
+
+    <div class="footer__col footer__col--social">
+      <span class="footer__label">{t('footer.social.heading')}</span>
+      <ul class="footer__social" role="list" aria-label={t('footer.social.label')}>
+        {SOCIAL_LINKS.map((s) => (
+          <li>
+            {isSocialPlaceholder(s.href) ? (
+              <span class="footer__social-link footer__social-link--disabled" aria-disabled="true" title={socialLabel(s.id)}>
+                <FooterSocialIcon id={s.id} />
+              </span>
+            ) : (
+              <a href={s.href} class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label={socialLabel(s.id)}>
+                <FooterSocialIcon id={s.id} />
+              </a>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
   </div>
 
-  <div class="ph-section">
-    <!-- 02 · Sello editorial -->
-    <p class="footer-sello" data-inview data-footer-sello>
-      {leadWords.map((w, i) => (
-        <><span class="footer-sello__slot"><span class="footer-sello__word" style={`--w: ${i}`}>{w}</span></span>{' '}</>
+  <div class="footer__bottom">
+    <p>&copy; {year} {t('site.name')}. {t('footer.rights')}</p>
+    <nav class="footer__legal" aria-label={t('footer.legal.label')}>
+      {legalLinks.map((link) => (
+        <a href={link.href} hreflang={link.hreflang} class="footer__legal-link">{link.label}</a>
       ))}
-      <span class="footer-sello__accent">
-        {accentWords.map((w, i) => (
-          <><span class="footer-sello__slot"><span class="footer-sello__word" style={`--w: ${i + leadWords.length}`}>{w}</span></span>{i < accentWords.length - 1 ? ' ' : ''}</>
-        ))}
-      </span>
-    </p>
-
-    <!-- 03 · 3-col funcional -->
-    <div class="footer-grid">
-      <!-- Col 1: brand -->
-      <div class="footer-brand">
-        {/* Se dibuja al entrar en pantalla: trazo y después relleno, como la
-            intro. Los perímetros (753 y 637) son los de LogoReveal.astro. */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 259.8 206.1"
-          fill="currentColor"
-          stroke="currentColor"
-          stroke-width="4"
-          stroke-linejoin="bevel"
-          aria-hidden="true"
-          class="footer-logo"
-          data-inview
-        >
-          <polygon class="footer-logo__line" points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" stroke-dasharray="753" />
-          <polygon class="footer-logo__line footer-logo__line--2" points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" stroke-dasharray="637" />
-        </svg>
-      </div>
-
-      <!-- Col 2: páginas -->
-      <nav class="footer-col" aria-label={t('footer.nav.label')}>
-        <span class="footer-col-label">{t('footer.pages')}</span>
-        <ul class="footer-nav">
-          {nav.map((item) => (
-            <li>
-              <a href={item.href} class="footer-link">
-                <span>{item.label}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      <!-- Col 3: contacto + social -->
-      <div class="footer-col">
-        <span class="footer-col-label">{t('footer.contact')}</span>
-        <div class="footer-contact">
-          <a href={`mailto:${t('footer.email')}`} class="footer-email">
-            {t('footer.email')}
-          </a>
-        </div>
-
-        <span class="footer-col-label footer-col-label--social">{t('footer.social.heading')}</span>
-        <ul class="footer-social-list" role="list" aria-label={t('footer.social.label')}>
-          {
-            SOCIAL_LINKS.map((s) => (
-              <li>
-                {isSocialPlaceholder(s.href) ? (
-                  <span
-                    class="footer-social-link footer-social-link--disabled"
-                    aria-disabled="true"
-                    title={socialLabel(s.id)}
-                  >
-                    <FooterSocialIcon id={s.id} />
-                  </span>
-                ) : (
-                  <a
-                    href={s.href}
-                    class="footer-social-link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={socialLabel(s.id)}
-                  >
-                    <FooterSocialIcon id={s.id} />
-                  </a>
-                )}
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-    </div>
-
-    <!-- 04 · Copyright + legal -->
-    <div class="footer-bottom">
-      <p>&copy; {year} {t('site.name')}. {t('footer.rights')}</p>
-      <nav class="footer-legal" aria-label={t('footer.legal.label')}>
-        {legalLinks.map((link, i) => (
-          <>
-            {i > 0 && <span class="footer-legal-sep" aria-hidden="true">·</span>}
-            <a href={link.href} hreflang={link.hreflang} class="footer-legal-link">
-              {link.label}
-            </a>
-          </>
-        ))}
-      </nav>
-    </div>
+    </nav>
   </div>
 </footer>
 
@@ -165,116 +112,184 @@ const accentWords = words(t('hero.claim.accent'));
   .footer {
     position: relative;
     z-index: 1;
-    overflow: hidden;
+    padding: 0 var(--ph-section-px) calc(1.25rem + env(safe-area-inset-bottom));
+    background: var(--color-ph-black);
+    overflow-x: hidden; /* Safari < 16 no conoce `clip` */
+    overflow-x: clip;
   }
 
-  .footer-logo-bg {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 6%;
-    opacity: 0.18;
-  }
-
-  .footer-logo-bg img {
-    width: min(70vw, 620px);
-    height: auto;
-    user-select: none;
-  }
-
-  .footer > *:not(.footer-logo-bg) {
-    position: relative;
-    z-index: 1;
-  }
-
-  @media (max-width: 767px) {
-    .footer-logo-bg {
-      padding-right: 0;
-      justify-content: center;
-      opacity: 0.12;
-    }
-    .footer-logo-bg img {
-      width: min(90vw, 480px);
-    }
-  }
-
-  /* 01 · La línea dorada de arriba, que se dibuja al llegar al pie. */
-  .footer-gold-rule {
-    --ph-seam-color: rgba(214, 178, 94, 0.5);
+  .footer__rule {
     height: 1px;
+    margin-inline: calc(-1 * var(--ph-section-px));
   }
 
-  /* 02 · Sello: el lema, a escala de rótulo, entra palabra a palabra. */
-  .footer-sello {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(2.25rem, 8.6vw, 5.5rem);
-    line-height: 1.02;
-    letter-spacing: -0.01em;
-    text-transform: uppercase;
-    color: var(--color-ph-white);
+  /* ── El lema, a escala de créditos ──
+     Sin JS (o con movimiento reducido) va partido en líneas y entero. Con el
+     núcleo de movimiento en marcha (`ph-motion`), cada línea va en una sola fila,
+     entra desplazada desde un lado y se asienta alineada al llegar al final de la
+     página. El tamaño es el que hace caber «Forever Football.» entero en el ancho
+     de la columna (mide 6,93 veces su cuerpo; 7,1 deja aire): el lema se lee
+     completo justo donde la página termina y uno se para. */
+  .footer__lema {
+    display: flex;
+    flex-direction: column;
+    gap: 0.04em;
     max-width: none;
-    margin: 0;
-    padding-block: clamp(3rem, 7vw, 5rem) clamp(2.25rem, 5vw, 3.5rem);
+    margin: 0 calc(-1 * var(--ph-section-px));
+    padding: clamp(3.5rem, 9vw, 7rem) var(--ph-section-px) clamp(2.5rem, 6vw, 5rem);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(56px, 15vw, 240px);
+    line-height: 0.86;
+    letter-spacing: var(--ph-giant-track);
+    color: var(--color-ph-white);
   }
 
-  .footer-sello__accent {
+  .footer__line {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+  }
+
+  .footer__line--gold {
     color: var(--color-ph-gold);
   }
 
-  .footer-sello__slot {
-    display: inline-block;
-    overflow: hidden;
-    vertical-align: bottom;
-    padding-right: 0.06em;
-    margin-right: -0.06em;
+  :global(html.ph-anim.ph-motion) .footer__lema {
+    font-size: calc((100vw - 2 * var(--ph-section-px)) / 7.1);
   }
 
-  .footer-sello__word {
-    display: inline-block;
-    transition: transform var(--ph-dur-roll) var(--ph-ease-out) calc(var(--w, 0) * 70ms);
+  :global(html.ph-anim.ph-motion) .footer__line {
+    max-width: none;
+    white-space: nowrap;
+    will-change: transform;
   }
 
-  :global(html.ph-anim) .footer-sello:not(.is-inview) .footer-sello__word {
-    transform: translateY(110%);
-  }
-
-  :global(html.ph-anim:not(.ph-motion)) .footer-sello__word {
-    animation: ph-motion-failsafe 0s linear 2.5s forwards;
-  }
-
-  /* 03 · 3-col funcional */
-  .footer-grid {
-    display: grid;
-    gap: 2.5rem;
+  /* ── Columnas suizas ── */
+  .footer__cols {
+    row-gap: 2.25rem;
     padding-block: clamp(2rem, 4vw, 3rem);
-    border-top: 1px solid var(--color-ph-white-10);
+    border-top: 1px solid var(--ph-hair);
   }
 
-  @media (min-width: 768px) {
-    .footer-grid {
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: clamp(2rem, 4vw, 3rem);
-      align-items: start;
-    }
+  /* Móvil: el logo arriba; Páginas a la izquierda y, a su lado, Contacto y
+     Síguenos apilados. Escritorio: cuatro columnas en la retícula de 12. */
+  .footer__brand { grid-column: 1 / -1; }
+  .footer__col--pages { grid-column: 1 / 3; grid-row: 2 / span 2; }
+  .footer__col--contact { grid-column: 3 / 5; grid-row: 2; }
+  .footer__col--social { grid-column: 3 / 5; grid-row: 3; }
+
+  @media (min-width: 1024px) {
+    .footer__brand { grid-column: 1 / 4; }
+    .footer__col--pages { grid-column: 5 / 8; grid-row: 1; }
+    .footer__col--contact { grid-column: 8 / 11; grid-row: 1; }
+    .footer__col--social { grid-column: 11 / 13; grid-row: 1; }
   }
 
-  .footer-brand {
+  .footer__col {
     display: flex;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
   }
 
-  .footer-logo {
+  .footer__label {
+    font-family: var(--font-body);
+    font-size: var(--ph-small);
+    letter-spacing: 0.02em;
+    color: var(--ph-ink-meta);
+  }
+
+  .footer__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Enlaces del pie: Söhne 600 a escala intermedia; al señalarlos, un hilo se
+     dibuja debajo. */
+  .footer__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    width: fit-content;
+    max-width: 100%;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(18px, calc(0.4vw + 16.4px), 22px);
+    letter-spacing: -0.015em;
+    color: var(--color-ph-white);
+    overflow-wrap: anywhere;
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
+  }
+
+  .footer__link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.45rem;
+    height: 1px;
+    background: var(--color-ph-gold);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform var(--ph-dur-move) var(--ph-ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .footer__link:hover::after { transform: scaleX(1); }
+  }
+
+  .footer__link:focus-visible::after { transform: scaleX(1); }
+  .footer__link:active { color: var(--color-ph-gold); }
+
+  .footer__social {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0 0 0 -0.75rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer__social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    color: var(--color-ph-white);
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .footer__social-link:hover { color: var(--color-ph-gold); }
+  }
+
+  .footer__social-link:active { color: var(--color-ph-gold); }
+
+  .footer__social-link--disabled {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .footer__social-link :global(svg) {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  /* El logo se dibuja al entrar: trazo y después relleno. */
+  .footer__logo {
     height: 2.25rem;
     width: auto;
     overflow: visible;
-    color: var(--color-ph-white);
+    color: var(--color-ph-gold);
   }
 
-  .footer-logo__line {
+  .footer__logo-line {
     stroke-dashoffset: 0;
     fill-opacity: 1;
     stroke-opacity: 0;
@@ -284,21 +299,21 @@ const accentWords = words(t('hero.claim.accent'));
       stroke-opacity 200ms linear 1100ms;
   }
 
-  .footer-logo__line--2 {
+  .footer__logo-line--2 {
     transition-delay: 180ms, 820ms, 1100ms;
   }
 
-  :global(html.ph-anim) .footer-logo:not(.is-inview) .footer-logo__line {
+  :global(html.ph-anim) .footer__logo:not(.is-inview) .footer__logo-line {
     stroke-dashoffset: 753;
     fill-opacity: 0;
     stroke-opacity: 1;
   }
 
-  :global(html.ph-anim) .footer-logo:not(.is-inview) .footer-logo__line--2 {
+  :global(html.ph-anim) .footer__logo:not(.is-inview) .footer__logo-line--2 {
     stroke-dashoffset: 637;
   }
 
-  :global(html.ph-anim:not(.ph-motion)) .footer-logo__line {
+  :global(html.ph-anim:not(.ph-motion)) .footer__logo-line {
     animation: ph-footer-logo-failsafe 0s linear 2.5s forwards;
   }
 
@@ -306,213 +321,117 @@ const accentWords = words(t('hero.claim.accent'));
     to { stroke-dashoffset: 0; fill-opacity: 1; stroke-opacity: 0; }
   }
 
-  .footer-col {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .footer-col-label {
-    font-family: var(--font-body);
-    font-size: 0.8125rem;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    color: var(--color-ph-gold);
-  }
-
-  .footer-col-label--social {
-    margin-top: 1.5rem;
-  }
-
-  .footer-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-    margin: 0.875rem 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  /* Enlaces del pie: al señalarlos, una línea se dibuja debajo, de izquierda a
-     derecha, como las del tablero. */
-  .footer-link {
-    position: relative;
-    display: inline-block;
-    padding-block: 0.125rem;
-    font-family: var(--font-display);
-    font-size: 1rem;
-    font-weight: 400;
-    color: var(--color-ph-white-60);
-    transition: color var(--ph-dur-state) var(--ph-ease-std);
-  }
-
-  .footer-link::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 1px;
-    background: currentColor;
-    transform: scaleX(0);
-    transform-origin: 0 50%;
-    transition: transform var(--ph-dur-move) var(--ph-ease-out);
-  }
-
-  @media (hover: hover) {
-    .footer-link:hover {
-      color: var(--color-ph-white);
-    }
-    .footer-link:hover::after {
-      transform: scaleX(1);
-    }
-  }
-
-  .footer-link:active {
-    color: var(--color-ph-gold);
-  }
-
-  .footer-contact {
-    margin-top: 0.875rem;
-  }
-
-  .footer-email {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    color: var(--color-ph-white-60);
-    transition: color var(--ph-dur-state) var(--ph-ease-std);
-  }
-
-  @media (hover: hover) {
-    .footer-email:hover {
-      color: var(--color-ph-gold);
-    }
-  }
-
-  .footer-social-list {
+  /* ── Legales y copyright, en pequeño ── */
+  .footer__bottom {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
-    margin: 0.875rem 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .footer-social-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: var(--radius-sm);
-    color: var(--color-ph-white-60);
-    border: 1px solid var(--color-ph-white-10);
-    transition:
-      color var(--ph-dur-state) var(--ph-ease-std),
-      border-color var(--ph-dur-state) var(--ph-ease-std),
-      background var(--ph-dur-state) var(--ph-ease-std),
-      transform var(--ph-dur-tap) var(--ph-ease-std);
-  }
-
-  .footer-social-link:active {
-    transform: scale(0.94);
-  }
-
-  @media (hover: hover) {
-    .footer-social-link:hover {
-      color: var(--color-ph-gold);
-      border-color: var(--color-ph-gold-muted);
-      background: rgba(214, 178, 94, 0.06);
-    }
-  }
-
-  .footer-social-link--disabled {
-    opacity: 0.45;
-    pointer-events: none;
-  }
-
-  .footer-social-link svg {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
-
-  /* 04 · Copyright */
-  .footer-bottom {
-    margin-top: clamp(2rem, 4vw, 2.5rem);
-    padding-top: 1.25rem;
-    padding-bottom: 1rem;
-    border-top: 1px solid var(--color-ph-white-10);
-  }
-
-  .footer-bottom {
-    display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
+    gap: 0.25rem 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--ph-hair);
   }
 
-  .footer-bottom p {
-    font-family: var(--font-body);
-    font-size: 0.8125rem;
-    color: var(--color-ph-white-60);
+  .footer__bottom p {
     margin: 0;
+    font-size: var(--ph-small);
+    color: var(--ph-ink-meta);
   }
 
-  .footer-legal {
+  .footer__legal {
     display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.25rem;
+  }
+
+  .footer__legal-link {
+    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    min-height: 44px;
+    font-size: var(--ph-small);
+    color: var(--ph-ink-meta);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.3em;
+    transition:
+      color var(--ph-dur-state) var(--ph-ease-std),
+      text-decoration-color var(--ph-dur-state) var(--ph-ease-std);
   }
 
-  .footer-legal-link {
-    font-family: var(--font-body);
-    font-size: 0.8125rem;
-    color: var(--color-ph-white-60);
-    transition: color var(--ph-dur-state) var(--ph-ease-std);
-  }
-
-  @media (hover: hover) {
-    .footer-legal-link:hover {
+  @media (hover: hover) and (pointer: fine) {
+    .footer__legal-link:hover {
       color: var(--color-ph-white);
+      text-decoration-color: currentColor;
     }
-  }
-
-  .footer-legal-sep {
-    font-size: 0.8125rem;
-    color: var(--color-ph-white-20);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .footer-sello__word,
-    .footer-logo__line,
-    .footer-link,
-    .footer-link::after,
-    .footer-social-link {
+    .footer__logo-line,
+    .footer__link,
+    .footer__link::after,
+    .footer__social-link,
+    .footer__legal-link {
       transition: none;
     }
   }
 </style>
 
 <script>
-  /* El pie está en todas las páginas: el núcleo de movimiento (sin GSAP) vigila lo
-     que entra en pantalla. Al terminar de rodar el lema, la luz cruza la parte
-     dorada, una vez. */
-  import { glint } from '@/scripts/ph-motion';
+  /* La deriva del lema: cada línea entra desplazada hacia un lado (`data-drift`:
+     1 viene de la derecha, -1 de la izquierda) y se asienta alineada cuando el pie
+     llega al final de la página, donde el lema se lee entero. Sin GSAP —el pie
+     está en las páginas legales, que no lo cargan—: un listener de scroll pasivo
+     que solo trabaja mientras el pie está cerca de la pantalla, y solo
+     `transform`. Con movimiento reducido no se mueve: el lema va partido y entero
+     (CSS). */
+  let driftCleanup: (() => void) | null = null;
 
-  function initFooter(): void {
-    const sello = document.querySelector<HTMLElement>('[data-footer-sello]');
-    const accent = sello?.querySelector<HTMLElement>('.footer-sello__accent');
-    if (!sello || !accent) return;
-    const io = new IntersectionObserver((entries) => {
-      if (!entries.some((e) => e.isIntersecting)) return;
+  function initFooterDrift(): void {
+    driftCleanup?.();
+    driftCleanup = null;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const lema = document.querySelector<HTMLElement>('[data-footer-lema]');
+    const footer = lema?.closest('footer');
+    if (!lema || !footer) return;
+    const lines = Array.from(lema.querySelectorAll<HTMLElement>('[data-drift]'));
+
+    let raf = 0;
+    let near = false;
+    const update = () => {
+      raf = 0;
+      const vh = window.innerHeight;
+      const rect = footer.getBoundingClientRect();
+      // 0 cuando el pie asoma por abajo; 1 al llegar al final de la página.
+      const p = Math.min(1, Math.max(0, (vh - rect.top) / Math.max(1, rect.height)));
+      const shift = window.innerWidth * 0.35;
+      lines.forEach((line) => {
+        const dir = Number(line.dataset.drift);
+        const x = dir * shift * (1 - p);
+        line.style.transform = `translate3d(${x.toFixed(1)}px, 0, 0)`;
+      });
+    };
+    const onScroll = () => {
+      if (near && !raf) raf = requestAnimationFrame(update);
+    };
+    const io = new IntersectionObserver(([entry]) => {
+      near = entry.isIntersecting;
+      if (near) onScroll();
+    }, { rootMargin: '0px 0px 50% 0px' });
+    io.observe(footer);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+    driftCleanup = () => {
       io.disconnect();
-      window.setTimeout(() => {
-        accent.querySelectorAll<HTMLElement>('.footer-sello__word').forEach((word, i) => glint(word, i * 140));
-      }, 760);
-    }, { rootMargin: '0px 0px -8% 0px' });
-    io.observe(sello);
-    document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
   }
 
-  document.addEventListener('astro:page-load', initFooter);
+  document.addEventListener('astro:page-load', initFooterDrift);
+  document.addEventListener('astro:before-swap', () => {
+    driftCleanup?.();
+    driftCleanup = null;
+  });
 </script>

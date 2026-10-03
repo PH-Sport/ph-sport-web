@@ -1,7 +1,7 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
-import Slate from '@/components/ui/Slate.astro';
-import Key from '@/components/ui/Key.astro';
+import SceneLabel from '@/components/ui/SceneLabel.astro';
+import TitleLink from '@/components/ui/TitleLink.astro';
 
 interface Props {
   lang: Lang;
@@ -13,84 +13,112 @@ const t = useTranslations(lang);
 const listHref = localizePath('/talentos/', lang);
 ---
 
-{/* Bloque de paso hacia /talentos: la pizarra abre el segmento y el titular
-    ocupa la pantalla del móvil. Sin fotos a propósito: el grid destacado de la
-    portada se quitó en abril para llevar a la lista completa (commit 453e928). */}
-<section class="home-players" id="talentos" aria-labelledby="home-players-title">
-  <Slate text={t('home.players.eyebrow')} />
-  <div class="home-players__row">
-    <header class="home-players__head">
-      <h2 class="home-players__title" id="home-players-title" data-m="title" data-reveal>
-        {t('talents.title')}<em>{t('home.players.titleAccent')}</em>.
-      </h2>
-      <p class="home-players__lead" data-m="lead" data-reveal>{t('home.players.lead')}</p>
-    </header>
-
-    <div class="home-players__cta-wrap" data-m="item" data-reveal>
-      <Key href={listHref} label={t('home.players.cta')} tone="gold" />
+{/* Segunda escena de la portada: «El roster.» a un tamaño más ancho que la
+    pantalla, que viaja en horizontal con el scroll para leerse entero. Es la
+    escena que corta al hero: con movimiento, sube por encima de la escena
+    fijada con un borde duro, y su contenido va un poco por detrás del borde
+    (se lee como una máscara que avanza). Sin fotos a propósito: el grid
+    destacado de la portada se quitó en abril para llevar a la lista completa
+    (commit 453e928). */}
+<section class="hp" id="talentos" aria-labelledby="home-players-title">
+  <div class="hp__inner" data-hp-inner>
+    <SceneLabel text={t('home.players.eyebrow')} />
+    <h2 class="hp__title ph-giant" id="home-players-title">
+      <span class="hp__travel" data-hp-travel>{t('talents.title')}<span class="ph-gold">{t('home.players.titleAccent')}</span>.</span>
+    </h2>
+    <div class="hp__foot ph-grid">
+      <p class="hp__lead ph-lead" data-reveal>{t('home.players.lead')}</p>
+      <div class="hp__cta">
+        <TitleLink href={listHref} label={t('home.players.cta')} />
+      </div>
     </div>
   </div>
 </section>
 
 <style>
-  .home-players {
-    padding: clamp(64px, 9vw, 128px) var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(72px, 10vw, 136px);
-    background: var(--color-ph-black, #0d0f12);
-    color: var(--color-ph-white, #ffffff);
+  .hp {
+    position: relative;
+    z-index: 2;
+    overflow: hidden; /* Safari < 16 no conoce `clip` */
+    overflow: clip;
+    background: var(--color-ph-black);
+    padding: clamp(32px, 5vw, 64px) var(--ph-section-px) clamp(96px, 12vw, 168px);
   }
 
-  .home-players__row {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(32px, 4vw, 48px);
-    align-items: flex-start;
-    margin-top: clamp(28px, 4vw, 48px);
+  /* El corte: con movimiento, la escena empieza una pantalla antes, encima de la
+     última pantalla de la escena fijada del hero, y sube por encima de ella. El
+     hilo marca el borde del corte. */
+  :global(html.ph-anim) .hp {
+    margin-top: calc(var(--ph-viewport-h) * -1);
+    box-shadow: inset 0 1px 0 var(--ph-hair-strong);
   }
 
-  .home-players__head { max-width: 980px; }
-
-  /* El titular a escala de rótulo: «El roster.» llena el ancho del móvil. */
-  .home-players__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(72px, 24vw, 144px);
-    letter-spacing: -0.045em;
-    line-height: 0.86;
-    margin: 0 0 0 -0.04em;
-  }
-  .home-players__title em {
-    color: var(--color-ph-gold, #d6b25e);
-    font-style: italic;
-    font-weight: 400;
+  /* Sin movimiento (o sin JS), «El roster.» cabe entero en la pantalla. */
+  .hp__title {
+    margin: clamp(32px, 6vw, 72px) calc(-1 * var(--ph-section-px)) 0;
+    padding-inline: var(--ph-section-px);
+    overflow-x: hidden; /* Safari < 16 no conoce `clip` */
+    overflow-x: clip;
+    font-size: 21vw;
   }
 
-  .home-players__lead {
-    margin: clamp(20px, 2.5vw, 28px) 0 0;
-    color: var(--ph-ink-lead);
-    font-family: var(--font-display);
-    font-size: var(--ph-head-lead-size);
-    line-height: 1.45;
-    max-width: 30ch;
-    text-wrap: balance;
+  /* Con movimiento, más ancho que la pantalla: a sangre, recortado a los lados,
+     y viaja con el scroll para leerse entero. */
+  :global(html.ph-anim) .hp__title {
+    font-size: 38vw;
   }
 
-  .home-players__cta-wrap {
-    display: flex;
+  :global(html.ph-anim) .hp__travel {
+    display: inline-block;
+    white-space: nowrap;
   }
 
-  @media (min-width: 900px) {
-    .home-players__row {
-      flex-direction: row;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: clamp(32px, 5vw, 72px);
+  @media (min-width: 1024px) {
+    :global(html.ph-anim) .hp__title {
+      font-size: 30vw;
     }
-    .home-players__title {
-      font-size: clamp(96px, 10vw, 144px);
+  }
+
+  /* Red de seguridad: si el JS de movimiento no llega, a los 2,5 s vuelve a
+     caber entero (no viajaría nunca). */
+  :global(html.ph-anim:not(.ph-motion)) .hp__title {
+    animation: hp-fit-title 0s linear 2.5s forwards;
+  }
+
+  :global(html.ph-anim:not(.ph-motion)) .hp__travel {
+    animation: hp-fit-line 0s linear 2.5s forwards;
+  }
+
+  @keyframes hp-fit-title {
+    to { font-size: 21vw; }
+  }
+
+  @keyframes hp-fit-line {
+    to { white-space: normal; }
+  }
+
+  .hp__foot {
+    row-gap: 32px;
+    margin-top: clamp(32px, 5vw, 64px);
+  }
+
+  .hp__lead {
+    grid-column: 1 / -1;
+  }
+
+  .hp__cta {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 1024px) {
+    .hp__lead {
+      grid-column: 1 / 6;
     }
-    .home-players__cta-wrap {
-      flex-shrink: 0;
-      padding-bottom: 8px;
+
+    .hp__cta {
+      grid-column: 9 / 13;
+      align-self: end;
+      justify-self: start;
     }
   }
 </style>
@@ -99,17 +127,37 @@ const listHref = localizePath('/talentos/', lang);
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, stage, mountSection, afterTransitionPaint,
+    reducedMotion, travel, fadeUp, mountSection, afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
 
-  function initHomePlayersAnimations(): void {
-    const section = document.querySelector<HTMLElement>('.home-players');
+  function initHomePlayers(): void {
+    const section = document.querySelector<HTMLElement>('.hp');
     if (!section) return;
-    if (!reducedMotion()) stage(section, { glint: true });
+    if (!reducedMotion()) {
+      const inner = section.querySelector<HTMLElement>('[data-hp-inner]');
+      const line = section.querySelector<HTMLElement>('[data-hp-travel]');
+      const title = line?.parentElement as HTMLElement | null;
+      // El corte: mientras la escena sube por encima del hero, su contenido va un
+      // poco por detrás del borde. Ligado al scroll.
+      if (inner) {
+        gsap.fromTo(
+          inner,
+          { y: () => -window.innerHeight * 0.32 },
+          {
+            y: 0,
+            ease: 'none',
+            scrollTrigger: { trigger: section, start: 'top bottom', end: 'top top', scrub: true, invalidateOnRefresh: true },
+          },
+        );
+      }
+      // «El roster.» viaja hacia la izquierda mientras la escena cruza la pantalla.
+      if (line && title) travel(line, { container: title, trigger: section, start: 'top bottom', end: 'bottom top' });
+      fadeUp(section.querySelectorAll<HTMLElement>('.hp__lead'), { trigger: section.querySelector('.hp__foot') ?? section });
+    }
     mountSection(section);
   }
 
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomePlayersAnimations));
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomePlayers));
 </script>

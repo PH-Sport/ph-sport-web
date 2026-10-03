@@ -1,13 +1,22 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CustomEase } from 'gsap/CustomEase';
-import { watchInView, glint } from './ph-motion';
+import { watchInView } from './ph-motion';
 
 gsap.registerPlugin(ScrollTrigger, CustomEase);
 
-// ── Curvas del lenguaje «Marcador» ────────────────────────────────────────────
+/**
+ * Infraestructura GSAP de la web y el vocabulario de «Títulos» que necesita GSAP:
+ * titulares que suben de su línea base, lectura cinética, tipografía que viaja,
+ * enfoque y el reflujo sin saltos de los acordeones. Lo que no necesita GSAP
+ * (entrar en pantalla, el cartón entre páginas) vive en `ph-motion.ts`. Por qué
+ * así: DECISIONS.md (2026-10-03); cómo encaja: ARCHITECTURE.md, «Sistema de
+ * animaciones».
+ */
+
+// ── Curvas de la casa ─────────────────────────────────────────────────────────
 // Las mismas que `--ph-ease-*` de global.css, con el mismo nombre, para que lo
-// que mueve GSAP y lo que mueve CSS frenen igual. Ver ph-motion.ts.
+// que mueve GSAP y lo que mueve CSS frenen igual.
 CustomEase.create('ph-out', '0.16, 1, 0.3, 1');
 CustomEase.create('ph-emph', '0.05, 0.7, 0.1, 1');
 CustomEase.create('ph-std', '0.2, 0, 0, 1');
@@ -15,14 +24,13 @@ CustomEase.create('ph-in', '0.3, 0, 0.8, 0.15');
 
 export const EASE = { out: 'ph-out', emph: 'ph-emph', std: 'ph-std', in: 'ph-in' } as const;
 /** Segundos (los mismos que `--ph-dur-*`). */
-export const DUR = { tap: 0.12, state: 0.2, move: 0.32, draw: 0.64, roll: 0.76 } as const;
+export const DUR = { tap: 0.12, state: 0.2, move: 0.32, draw: 0.6, rise: 0.7 } as const;
 
 // ── Config global de ScrollTrigger ────────────────────────────────────────────
 // ignoreMobileResize: en móvil, mostrar/ocultar la barra de direcciones del
 // navegador cambia la altura del viewport y, por defecto, dispara un
-// ScrollTrigger.refresh() (reflow completo recalculando todos los triggers) en
-// pleno scroll → microcortes. Ese resize es solo chrome del navegador, no un
-// cambio real de layout que justifique recalcular, así que lo ignoramos.
+// ScrollTrigger.refresh() en pleno scroll → microcortes. Ese resize es solo
+// chrome del navegador, no un cambio real de layout, así que se ignora.
 ScrollTrigger.config({ ignoreMobileResize: true });
 
 // ── Reduced motion ────────────────────────────────────────────────────────────
@@ -30,13 +38,10 @@ export const reducedMotion = (): boolean =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ── Coalesced ScrollTrigger.refresh ───────────────────────────────────────────
-// Cada sección llamaba a su propio `requestAnimationFrame(() => ScrollTrigger.refresh())`
-// al terminar de montar sus animaciones. En home eso eran 5 refreshes (uno por
-// sección) en el mismo batch de navegación, y cada refresh fuerza un reflow
-// completo recalculando TODOS los triggers. Esta versión los coalesce en un único
-// refresh por frame, sea cual sea el nº de secciones que lo pidan.
-// El flag vive a nivel de módulo: como Vite instancia este módulo una sola vez y
-// lo comparte entre todos los <script> de sección, el coalescing es global.
+// Cada sección pide su refresh al terminar de montarse; aquí se juntan en uno
+// por fotograma, sea cual sea el nº de secciones que lo pidan (cada refresh
+// fuerza un reflow completo). El flag vive a nivel de módulo: Vite instancia este
+// módulo una sola vez y lo comparte entre todos los <script> de sección.
 let refreshScheduled = false;
 export function scheduleScrollTriggerRefresh(): void {
   if (refreshScheduled) return;
@@ -61,21 +66,34 @@ export function scheduleScrollTriggerRefresh(): void {
 //
 // En vez de pelearse con la caché interna de GSAP —se probó `clearScrollMemory()`
 // y NO lo arregla— se fija la posición buena y se reafirma después del refresh.
-// La buena es la que deja el ClientRouter, que ya ha corrido cuando salta
-// `astro:after-swap`: 0 en una navegación normal, la guardada al volver atrás.
+// La buena es la que pide el ClientRouter: 0 en una navegación normal (o la del
+// ancla), y al volver atrás o adelante, la guardada en la entrada del historial.
 //
-// La ventana entre el swap y el refresh son ~60 ms tapados por el telón, así que
-// no hay un scroll del usuario que pisar. Se limpia al usarla para no reafirmar
-// nada en los refreshes posteriores (los de resize), donde el usuario sí manda.
+// Esa última se lee de `history.state` y no de `scrollY`: en WebKit, cuando el
+// router restaura el scroll (justo después del swap), los CSS de componente de la
+// página que vuelve aún no se aplican, la página es más corta y la restauración
+// se queda recortada (medido el 2026-10-03: 3.894 en vez de 5.529 en la portada).
+// Por eso la posición se reafirma en cuanto la página vuelve a medir lo que tiene
+// que medir, también desde el observador del alto, y se olvida a los 2,5 s.
 let scrollDeLlegada: number | null = null;
+let llegadaCaduca = 0;
+let tipoDeNavegacion: string | null = null;
 
 document.addEventListener('astro:after-swap', () => {
-  scrollDeLlegada = window.scrollY;
+  const guardada = (history.state as { scrollY?: unknown } | null)?.scrollY;
+  scrollDeLlegada = tipoDeNavegacion === 'traverse' && typeof guardada === 'number' ? guardada : window.scrollY;
+  llegadaCaduca = performance.now() + 2500;
 });
 
 function reafirmarScrollDeLlegada(): void {
   if (scrollDeLlegada === null) return;
+  if (performance.now() > llegadaCaduca) {
+    scrollDeLlegada = null;
+    return;
+  }
   const objetivo = scrollDeLlegada;
+  // Si la página aún no llega hasta ahí, se espera al siguiente cambio de alto.
+  if (objetivo > document.documentElement.scrollHeight - window.innerHeight + 1) return;
   scrollDeLlegada = null;
   if (Math.abs(window.scrollY - objetivo) > 1) {
     window.scrollTo({ top: objetivo, left: 0, behavior: 'instant' });
@@ -94,26 +112,39 @@ document.addEventListener('astro:page-load', () => {
   window.setTimeout(permitirScrollSuave, 1000);
 });
 
-// ── Init: durante el telón en navegación, diferido en carga inicial ───────────
-// El init de animaciones (crear ScrollTriggers, wrapWords, gsap.set + el
-// ScrollTrigger.refresh que fuerza un reflow) es el bloque más pesado del hilo
-// principal al montar una página.
-//
-// NAVEGACIÓN SPA: el telón (fundido a oscuro sobre page-main) corre en el
-// compositor → es inmune al trabajo del hilo principal y ADEMÁS lo enmascara.
-// Por eso lanzamos el init cuanto antes, DURANTE el telón, para que los reveals
-// de GSAP ya estén animando cuando el contenido aparece. Si se difiere hasta
-// después de la transición, el contenido llega (fundido del telón) y solo
-// DESPUÉS animan los títulos → entrance en dos fases percibido como "el texto se
-// muestra sin animar y luego empieza la animación". Correrlo pronto une ambas
-// cosas en un único movimiento; el telón oculta cualquier trompicón del init.
-//
-// CARGA INICIAL: no hay telón que enmascare el primer paint, así que ahí sí
-// diferimos en idle (requestIdleCallback, timeout 200 ms) para no competir con
-// el render inicial.
-//
-// Failsafe (revealFailsafe, 2 s) revela el contenido pase lo que pase; lo que
-// tiene reveal arranca en visibility:hidden (guard) hasta que GSAP toma control.
+// ── Reajuste cuando cambia el alto de la página ───────────────────────────────
+// Las escenas ligadas al scroll guardan dónde empiezan y acaban. Si algo cambia
+// el alto de lo que hay encima (abrir un acordeón, filtrar el grid, que llegue la
+// fuente), esas marcas se quedan viejas: se pide un refresh cuando el alto del
+// documento se asienta. Espera más que el reflujo de los acordeones (320 ms): el
+// refresh mide con `getBoundingClientRect`, que incluye los `transform` a medias.
+let layoutTimer = 0;
+let lastBodyHeight = 0;
+const layoutObserver = new ResizeObserver(() => {
+  const h = document.body.offsetHeight;
+  if (Math.abs(h - lastBodyHeight) < 2) return;
+  lastBodyHeight = h;
+  // Una restauración que se quedó recortada (arriba) se completa ya.
+  reafirmarScrollDeLlegada();
+  window.clearTimeout(layoutTimer);
+  layoutTimer = window.setTimeout(() => {
+    ScrollTrigger.refresh();
+    reafirmarScrollDeLlegada();
+  }, 420);
+});
+layoutObserver.observe(document.body);
+document.addEventListener('astro:after-swap', () => {
+  layoutObserver.disconnect();
+  lastBodyHeight = document.body.offsetHeight;
+  layoutObserver.observe(document.body);
+});
+
+// ── Init: durante el cartón en navegación, diferido en carga inicial ──────────
+// NAVEGACIÓN SPA: el cartón de título tapa la página mientras se monta, así que
+// el init (crear ScrollTriggers, partir titulares, el refresh) corre cuanto
+// antes, debajo de él.
+// CARGA INICIAL: no hay nada que lo tape, así que se difiere en idle
+// (requestIdleCallback, 200 ms como mucho) para no competir con el primer pintado.
 let navInProgress = false;
 
 export function afterTransitionPaint(cb: () => void): void {
@@ -130,217 +161,293 @@ export function afterTransitionPaint(cb: () => void): void {
 }
 
 // ── FOUC guard (reveal) ───────────────────────────────────────────────────────
-// El contenido con animación de entrada arranca oculto vía CSS
-// (`html.ph-anim [data-reveal] { visibility: hidden }`, fijado antes del primer
-// paint por un script inline en BaseLayout). Sin esto, GSAP aplica el estado
-// "from" DESPUÉS del paint y se ve el contenido en su estado final un instante
-// antes de que arranque la animación (el parpadeo). Cada init llama a
-// `revealReveals(section)` al terminar de montar sus tweens: para entonces los
-// from-states ya están aplicados de forma síncrona, así que quitar el atributo
-// revela los elementos sin parpadeo (siguen ocultos por opacity/transform de GSAP
-// hasta que animan).
+// Lo que entra con GSAP arranca oculto por CSS (`html.ph-anim [data-reveal]`,
+// global.css). Cada sección llama a `revealReveals` al terminar de montar sus
+// tweens: los estados iniciales ya están puestos, así que quitar el atributo no
+// produce parpadeo. Si el módulo no llega, global.css lo destapa a los 2,5 s.
 export function revealReveals(root: ParentNode = document): void {
   root.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => el.removeAttribute('data-reveal'));
 }
 
-// Failsafe (defensa en profundidad): pase lo que pase con las animaciones de
-// entrada —un ScrollTrigger que no dispara, el script de sección que carga tarde,
-// el ticker de GSAP pausado en una pestaña throttled— garantizamos que el
-// contenido above-the-fold acaba en su estado final visible. El margen es mayor
-// que la animación más larga (~1.5 s), así que solo actúa sobre lo que se quedó
-// realmente atascado, nunca corta una animación legítima.
+// Red de seguridad en JS (defensa en profundidad): pase lo que pase con las
+// entradas —un ScrollTrigger que no dispara, el ticker pausado en una pestaña en
+// segundo plano—, lo que ya está en pantalla acaba en su estado final.
 function revealFailsafe(): void {
   revealReveals(document);
-  // Títulos: si las palabras del clip siguen desplazadas (yPercent:115) y están en
-  // viewport, deberían haber animado ya → forzamos su estado final. Los que están
-  // fuera de pantalla se dejan: siguen esperando su animación de scroll.
-  document.querySelectorAll<HTMLElement>('.ph-clip-inner').forEach((el) => {
+  document.querySelectorAll<HTMLElement>('.ph-m__in, [data-rise-char]').forEach((el) => {
     const r = el.getBoundingClientRect();
     const inView = r.top < window.innerHeight && r.bottom > 0;
-    if (inView) gsap.set(el, { clearProps: 'transform,opacity' });
+    if (inView && gsap.getProperty(el, 'yPercent') !== 0) gsap.set(el, { yPercent: 0 });
   });
 }
 document.addEventListener('astro:page-load', () => {
-  window.setTimeout(revealFailsafe, 2000);
+  window.setTimeout(revealFailsafe, 2400);
 });
 
-// ── DOM helpers ───────────────────────────────────────────────────────────────
+// ── Partir el texto ───────────────────────────────────────────────────────────
+// Recorren los nodos de texto conservando los elementos que haya dentro (la
+// palabra dorada de un titular sigue siendo su `<span>`, con sus palabras
+// partidas dentro).
 
-/**
- * Wraps each word in an overflow:hidden clip container (.ph-clip / .ph-clip-inner)
- * so GSAP can slide each word up independently (curtain-reveal effect). Walks
- * child nodes so existing inline elements (e.g. `<span class="abt-gold">`) are
- * preserved: their inner words get wrapped, but the wrapper element survives.
- */
-export function wrapWords(el: HTMLElement): HTMLElement[] {
-  const makeClip = (word: string): HTMLSpanElement => {
-    const clip = document.createElement('span');
-    clip.className = 'ph-clip';
-    const inner = document.createElement('span');
-    inner.className = 'ph-clip-inner';
-    inner.textContent = word;
-    clip.appendChild(inner);
-    return clip;
-  };
-
-  const transformTextNode = (node: Text): Node[] =>
-    (node.textContent ?? '')
-      .split(/(\s+)/)
-      .filter((p) => p.length > 0)
-      .map((p) => (/^\s+$/.test(p) ? document.createTextNode(p) : makeClip(p)));
-
+function splitTextNodes(el: HTMLElement, make: (word: string) => Node): void {
   const transform = (parent: Element) => {
     Array.from(parent.childNodes).forEach((child) => {
       if (child.nodeType === Node.TEXT_NODE) {
-        const replacements = transformTextNode(child as Text);
-        replacements.forEach((r) => parent.insertBefore(r, child));
+        const parts = (child.textContent ?? '').split(/(\s+)/).filter((p) => p.length > 0);
+        parts.forEach((p) => parent.insertBefore(/^\s+$/.test(p) ? document.createTextNode(p) : make(p), child));
         parent.removeChild(child);
       } else if (child.nodeType === Node.ELEMENT_NODE) {
         transform(child as Element);
       }
     });
   };
-
   transform(el);
-  return Array.from(el.querySelectorAll<HTMLElement>('.ph-clip-inner'));
 }
 
-// ── Magnetic hover disposers ──────────────────────────────────────────────────
-const magneticDisposers: Array<() => void> = [];
-
-// ── Magnetic hover ────────────────────────────────────────────────────────────
 /**
- * Attaches pointer-follow "magnetic" hover to el. Only active on devices with
- * real hover + fine pointer (skipped on touch). Returns a cleanup function; the
- * cleanup is also registered module-globally so `astro:before-swap` reverts it.
+ * Cada palabra en su máscara (`.ph-m` > `.ph-m__in`, global.css): la máscara
+ * recorta la línea base y la palabra sube desde debajo. Devuelve los interiores.
  */
-export function magneticHover(el: HTMLElement, strength = 0.3): () => void {
-  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    return () => {};
+function maskWords(el: HTMLElement): HTMLElement[] {
+  if (!el.querySelector('.ph-m')) {
+    splitTextNodes(el, (word) => {
+      const mask = document.createElement('span');
+      mask.className = 'ph-m';
+      const inner = document.createElement('span');
+      inner.className = 'ph-m__in';
+      inner.textContent = word;
+      mask.append(inner);
+      return mask;
+    });
   }
-
-  const onMove = (e: PointerEvent) => {
-    const rect = el.getBoundingClientRect();
-    const x = (e.clientX - rect.left - rect.width / 2) * strength;
-    const y = (e.clientY - rect.top - rect.height / 2) * strength;
-    gsap.to(el, { x, y, duration: 0.4, ease: 'power2.out' });
-  };
-
-  const onLeave = () => {
-    gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: 'power3.out' });
-  };
-
-  el.addEventListener('pointermove', onMove);
-  el.addEventListener('pointerleave', onLeave);
-
-  const dispose = () => {
-    el.removeEventListener('pointermove', onMove);
-    el.removeEventListener('pointerleave', onLeave);
-    gsap.set(el, { x: 0, y: 0, clearProps: 'transform' });
-  };
-  magneticDisposers.push(dispose);
-  return dispose;
+  return Array.from(el.querySelectorAll<HTMLElement>('.ph-m__in'));
 }
 
-// ── Clip-path reveal ──────────────────────────────────────────────────────────
-/**
- * Animates `clipPath: inset(…)` from fully clipped (from a side) to fully open.
- * Caller is responsible for gating on `reducedMotion()` — follows the same
- * pattern as `trackingReveal` and `counterReveal` in this module.
- */
-export function clipPathReveal(
-  el: HTMLElement,
-  direction: 'left' | 'right' = 'left',
-  scrollTrigger?: ScrollTrigger.Vars,
-): gsap.core.Tween {
-  const from = direction === 'left' ? 'inset(0 100% 0 0)' : 'inset(0 0 0 100%)';
-  return gsap.fromTo(
-    el,
-    { clipPath: from },
-    {
-      clipPath: 'inset(0 0 0 0)',
-      duration: 1.2,
-      ease: 'expo.out',
-      scrollTrigger,
-    },
-  );
+/** Cada palabra en un `<span>` en línea, sin máscara: para la lectura cinética. */
+function inlineWords(el: HTMLElement): HTMLElement[] {
+  if (!el.querySelector('.ph-kw')) {
+    splitTextNodes(el, (word) => {
+      const span = document.createElement('span');
+      span.className = 'ph-kw';
+      span.textContent = word;
+      return span;
+    });
+  }
+  return Array.from(el.querySelectorAll<HTMLElement>('.ph-kw'));
 }
-
-// ── «Marcador»: titulares que ruedan y cabeceras de bloque ───────────────────
-// El vocabulario sin GSAP (paletas, líneas, destello, la luz entre páginas) vive
-// en ph-motion.ts; aquí, lo que necesita GSAP.
 
 /** ¿Está ya en pantalla (o casi)? Lo que lo está anima ya; lo demás, al llegar. */
 function nearView(el: Element): boolean {
   return el.getBoundingClientRect().top < window.innerHeight * 0.92;
 }
 
+// ── Titulares que suben de su línea base ──────────────────────────────────────
+
 /**
- * Titular que entra rodando: cada palabra sube por su ranura y frena. Si ya está
- * en pantalla, arranca ya (un ScrollTrigger `once` cuyo inicio no se alcanza lo
- * dejaría invisible); si no, al llegar al 85 % de la pantalla.
+ * Las palabras de un titular suben desde su línea base enmascarada (600-800 ms,
+ * `ph-emph`, escalón de 40-60 ms). Si ya está en pantalla arranca ya; si no, al
+ * llegar al 85 % de la pantalla.
  */
-export function rollIn(
+export function riseWords(
   el: HTMLElement,
   opts: { delay?: number; stagger?: number; duration?: number; trigger?: Element } = {},
 ): gsap.core.Tween {
-  const { delay = 0, stagger = 0.055, duration = DUR.roll } = opts;
-  const words = wrapWords(el);
+  const { delay = 0, stagger = 0.05, duration = DUR.rise } = opts;
+  const words = maskWords(el);
   el.style.visibility = 'visible';
   const trigger = opts.trigger ?? el;
   const now = nearView(trigger);
   return gsap.from(words, {
-    yPercent: 112,
+    yPercent: 150,
     duration,
-    ease: EASE.out,
+    ease: EASE.emph,
     stagger,
     delay: now ? delay : 0,
     scrollTrigger: now ? undefined : { trigger, start: 'top 85%', once: true },
   });
 }
 
-/** Sube y aparece (texto corrido, piezas sueltas), con el mismo disparo. */
-export function riseIn(
+/**
+ * Entrada por letras: cada letra sube desde la línea base de su palabra. Al
+ * terminar se devuelve el HTML original, porque partir en letras pierde el
+ * interletraje de la fuente (los pares «Ta», «ro»…).
+ */
+export function riseLetters(el: HTMLElement, opts: { delay?: number; stagger?: number } = {}): void {
+  const { delay = 0, stagger = 0.032 } = opts;
+  const original = el.innerHTML;
+  const words = maskWords(el);
+  const letters: HTMLElement[] = [];
+  words.forEach((word) => {
+    const chars = [...(word.textContent ?? '')];
+    word.replaceChildren(
+      ...chars.map((ch) => {
+        const span = document.createElement('span');
+        span.dataset.riseChar = '';
+        span.style.display = 'inline-block';
+        span.textContent = ch;
+        letters.push(span);
+        return span;
+      }),
+    );
+  });
+  el.style.visibility = 'visible';
+  gsap.from(letters, {
+    yPercent: 150,
+    duration: DUR.rise,
+    ease: EASE.emph,
+    stagger,
+    delay,
+    onComplete: () => {
+      el.innerHTML = original;
+    },
+  });
+}
+
+/** Un bloque de texto sube y aparece (entradillas, párrafos, piezas sueltas). */
+export function fadeUp(
   els: HTMLElement | ArrayLike<HTMLElement>,
   opts: { delay?: number; stagger?: number; y?: number; trigger?: Element } = {},
 ): gsap.core.Tween | null {
   const list = els instanceof HTMLElement ? [els] : Array.from(els);
   if (!list.length) return null;
-  const { delay = 0, stagger = 0.07, y = 14 } = opts;
+  const { delay = 0, stagger = 0.06, y = 16 } = opts;
   const trigger = opts.trigger ?? list[0];
   const now = nearView(trigger);
+  list.forEach((el) => { el.style.visibility = 'visible'; });
   return gsap.from(list, {
     opacity: 0,
     y,
-    duration: 0.7,
+    duration: 0.6,
     ease: EASE.out,
     stagger,
     delay: now ? delay : 0,
-    scrollTrigger: now ? undefined : { trigger, start: 'top 85%', once: true },
+    scrollTrigger: now ? undefined : { trigger, start: 'top 88%', once: true },
   });
 }
 
+// ── Lectura cinética ──────────────────────────────────────────────────────────
 /**
- * La coreografía común de una cabecera de bloque, marcada en el HTML con
- * `data-m`: `title` rueda, `lead` sube después y `item` cierra la cascada. La
- * pizarra (`Slate.astro`) se dibuja sola al entrar en pantalla. Escalonado a
- * propósito: la jerarquía se lee en el orden en que llega. Con `glint`, la
- * palabra dorada del titular (`em` o `[data-glint]`) recibe la luz al terminar.
+ * Cada palabra de la frase pasa de 0,16 a 1 de opacidad según avanza el scroll:
+ * quien lee marca el ritmo. Ligado al scroll sin retardo (`scrub: true`). Con
+ * movimiento reducido no se llama: la frase se queda entera a 1.
  */
-export function stage(block: HTMLElement, opts: { delay?: number; glint?: boolean } = {}): void {
-  const title = block.querySelector<HTMLElement>('[data-m="title"]');
-  const leads = block.querySelectorAll<HTMLElement>('[data-m="lead"]');
-  const items = block.querySelectorAll<HTMLElement>('[data-m="item"]');
-  const delay = opts.delay ?? 0;
-  if (title) {
-    const tween = rollIn(title, { delay: delay + 0.08 });
-    if (opts.glint) {
-      const accent = title.querySelector<HTMLElement>('[data-glint], em');
-      if (accent) tween.eventCallback('onComplete', () => glint(accent));
+export function kinetic(
+  el: HTMLElement,
+  opts: { start?: string; end?: string; trigger?: Element } = {},
+): void {
+  const words = inlineWords(el);
+  el.style.visibility = 'visible';
+  gsap.fromTo(
+    words,
+    { opacity: 0.16 },
+    {
+      opacity: 1,
+      duration: 0.4,
+      ease: 'none',
+      stagger: 0.1,
+      scrollTrigger: {
+        trigger: opts.trigger ?? el,
+        start: opts.start ?? 'top 82%',
+        end: opts.end ?? 'bottom 48%',
+        scrub: true,
+      },
+    },
+  );
+}
+
+// ── Tipografía que viaja ──────────────────────────────────────────────────────
+/**
+ * Una línea más ancha que la pantalla se desplaza en horizontal con el scroll
+ * para leerse entera. El contenedor lleva `overflow-x: clip` (cero scroll
+ * horizontal de página). `dir` 1 la lleva hacia la izquierda; -1, al revés.
+ */
+export function travel(
+  line: HTMLElement,
+  opts: { container?: HTMLElement; trigger?: Element; start?: string; end?: string; dir?: 1 | -1; lead?: number } = {},
+): void {
+  const container = opts.container ?? (line.parentElement as HTMLElement);
+  const dir = opts.dir ?? 1;
+  // Lo que sobra de ancho, más un poco de margen para que la deriva se note
+  // aunque la línea quepa casi entera.
+  const overflow = () => Math.max(0, line.scrollWidth - container.clientWidth) + window.innerWidth * (opts.lead ?? 0.06);
+  gsap.fromTo(
+    line,
+    { x: () => (dir === 1 ? window.innerWidth * (opts.lead ?? 0.06) * 0.5 : -overflow()) },
+    {
+      x: () => (dir === 1 ? -overflow() : window.innerWidth * (opts.lead ?? 0.06) * 0.5),
+      ease: 'none',
+      scrollTrigger: {
+        trigger: opts.trigger ?? container,
+        start: opts.start ?? 'top bottom',
+        end: opts.end ?? 'bottom top',
+        scrub: 0.4,
+        invalidateOnRefresh: true,
+      },
+    },
+  );
+}
+
+// ── Enfoque ───────────────────────────────────────────────────────────────────
+/**
+ * «Rack focus»: la pieza entra de desenfoque (10 px) y escala 1,15 a nítida y a
+ * su tamaño, en 700 ms. El desenfoque va acotado a la pieza.
+ */
+export function rackFocus(
+  els: HTMLElement | ArrayLike<HTMLElement>,
+  opts: { trigger?: Element; stagger?: number; delay?: number } = {},
+): void {
+  const list = els instanceof HTMLElement ? [els] : Array.from(els);
+  if (!list.length) return;
+  const trigger = opts.trigger ?? list[0];
+  gsap.fromTo(
+    list,
+    { opacity: 0, scale: 1.15, filter: 'blur(10px)' },
+    {
+      opacity: 1,
+      scale: 1,
+      filter: 'blur(0px)',
+      duration: 0.7,
+      ease: EASE.out,
+      stagger: opts.stagger ?? 0.14,
+      delay: opts.delay ?? 0,
+      clearProps: 'filter',
+      scrollTrigger: { trigger, start: 'top 82%', once: true },
+    },
+  );
+}
+
+// ── Reflujo sin saltos ────────────────────────────────────────────────────────
+/**
+ * Cambia el layout (`mutate`) y desliza a su sitio nuevo lo que tenía debajo, en
+ * vez de dejarlo saltar: mide la posición de lo que sigue a `anchor` (sus
+ * hermanos y los de sus antepasados), aplica el cambio y anima la diferencia con
+ * `transform`. Es la forma de abrir un acordeón sin animar `height`.
+ */
+export function reflow(anchor: HTMLElement, mutate: () => void, duration: number = DUR.move): void {
+  if (reducedMotion()) { mutate(); return; }
+  const followers: HTMLElement[] = [];
+  let node: HTMLElement | null = anchor;
+  while (node && node !== document.body) {
+    let sib = node.nextElementSibling;
+    while (sib) {
+      if (sib instanceof HTMLElement && !(sib instanceof HTMLScriptElement) && getComputedStyle(sib).position !== 'fixed') {
+        followers.push(sib);
+      }
+      sib = sib.nextElementSibling;
     }
+    node = node.parentElement;
   }
-  riseIn(leads, { delay: delay + 0.24, trigger: title ?? undefined });
-  riseIn(items, { delay: delay + 0.36, stagger: 0.06, y: 10, trigger: title ?? undefined });
+  const vh = window.innerHeight;
+  const before = followers.map((el) => el.getBoundingClientRect().top);
+  mutate();
+  followers.forEach((el, i) => {
+    const after = el.getBoundingClientRect().top;
+    const delta = before[i] - after;
+    if (Math.abs(delta) < 1) return;
+    // Solo lo que se ve, antes o después: lo de fuera de pantalla salta sin coste.
+    if (Math.min(before[i], after) > vh) return;
+    gsap.fromTo(el, { y: delta }, { y: 0, duration, ease: EASE.out, clearProps: 'transform' });
+  });
 }
 
 /** Cierre del montaje de una sección: vigilar lo que entra en pantalla, destapar
@@ -354,20 +461,18 @@ export function mountSection(root: HTMLElement): void {
 
 // ── Cleanup on View Transitions swap ─────────────────────────────────────────
 document.addEventListener('astro:before-swap', (e) => {
-  // Marca que la próxima carga es una navegación SPA (hay telón que enmascara el
-  // init) → afterTransitionPaint lo lanzará pronto en vez de diferirlo. Se queda
-  // en true para el resto de navegaciones; una recarga completa resetea el módulo.
+  // Marca que la próxima carga es una navegación SPA (el cartón tapa el init) →
+  // afterTransitionPaint lo lanzará pronto en vez de diferirlo. Se queda en true
+  // para el resto de navegaciones; una recarga completa resetea el módulo.
   navInProgress = true;
+  tipoDeNavegacion = (e as { navigationType?: string }).navigationType ?? null;
 
-  magneticDisposers.forEach((d) => d());
-  magneticDisposers.length = 0;
   ScrollTrigger.getAll().forEach((t) => t.kill());
 
   // El FOUC guard (.ph-anim en <html>) lo añade un script inline en el head, pero
   // Astro RESETEA los atributos de <html> en cada swap a los del documento
   // entrante (que no la trae, al ser una clase de runtime). Sin esto, .ph-anim se
-  // pierde en cada navegación SPA y el CSS deja de ocultar [data-reveal] → vuelve
-  // el parpadeo. La copiamos al documento entrante ANTES del swap (y del paint).
+  // pierde en cada navegación SPA. Se copia al documento entrante ANTES del swap.
   const newDoc = (e as { newDocument?: Document }).newDocument;
   if (newDoc) {
     // Y por la misma vía, el scroll suave se apaga mientras dura la navegación.
@@ -376,7 +481,7 @@ document.addEventListener('astro:before-swap', (e) => {
     // `scroll-behavior: smooth` de global.css y la restauración se ANIMA. Unos
     // 60 ms después, el refresh de ScrollTrigger hace su ciclo guardar → ir a 0 →
     // restaurar, fotografía esa animación a medio camino y deja la página clavada
-    // en y≈2. Medido en producción el 2026-09-03.
+    // en y≈2. Medido en producción el 2026-09-03 (docs/trampas-conocidas.md).
     // Va en el documento ENTRANTE, no en el actual, porque el swap resetea los
     // atributos de <html> y el `scrollTo` del router corre DESPUÉS del swap.
     newDoc.documentElement.style.scrollBehavior = 'auto';

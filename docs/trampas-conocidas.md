@@ -56,10 +56,11 @@ puede funcionar.**
   `data-astro-transition="forward"` o `"back"` en `<html>` y lo quita al acabar la
   View Transition, no al acabar las animaciones de la página. Una animación de CSS
   que dependa de ese atributo y dure más que la transición se reinicia a mitad con
-  otra: le pasó a la luz entre páginas (`.ph-stinger`), que al volver atrás
-  arrancaba al revés y a los 420 ms saltaba a la de avanzar (medido con eventos
-  `animationstart`, 2026-10-02). El sentido se apunta en el propio elemento al
-  empezar (`is-back`).
+  otra: le pasó a la luz entre páginas del «Marcador» (`.ph-stinger`), que al
+  volver atrás arrancaba al revés y a los 420 ms saltaba a la de avanzar (medido
+  con eventos `animationstart`, 2026-10-02). Lo que dependa del sentido se apunta
+  en el propio elemento al empezar. Desde la variante «Títulos» (2026-10-03),
+  `.ph-stinger` es un cartón de título que no depende del sentido.
 - **La foto de la página nueva se toma después de restaurar el scroll**
   (`moveToLocation` corre dentro del callback de la transición, en
   `astro/dist/transitions/router.js`). El grupo `page-main` queda entonces
@@ -77,8 +78,8 @@ puede funcionar.**
 - **Medir timing con la extensión de Chrome no es fiable**: al operar, la pestaña
   pasa a segundo plano, `rAF` se pausa y `setTimeout` se throttlea a ~1s.
 - **Lo mismo con el navegador integrado de Claude cuando su panel está oculto**: las
-  animaciones se quedan congeladas a medias y las capturas enseñan paletas
-  paradas en un número intermedio o titulares cortados que no existen. Para ver
+  animaciones se quedan congeladas a medias y las capturas enseñan piezas
+  paradas a mitad de camino o titulares cortados que no existen. Para ver
   el movimiento de verdad: Playwright sin cabeza (Chromium y WebKit) grabando
   vídeo (`recordVideo`) y sacando fotogramas con `ffmpeg`. Las grabaciones
   tampoco incluyen la capa de las View Transitions.
@@ -121,6 +122,17 @@ capturada en `astro:after-swap`.
 Método para reproducirlo, si hace falta otra vez: envolver `window.scrollTo` para
 registrar cada llamada con su traza y sus tiempos. La secuencia es legible de un
 vistazo y dice quién pisa a quién; con capturas de pantalla no se ve nada.
+
+**En WebKit, la restauración al volver atrás se puede quedar recortada** (medido el
+2026-10-03, rama `feat/variante-b-titulos`, sobre el build): el router restaura el
+scroll justo después del swap, cuando los CSS de componente de la página que vuelve
+todavía no se han aplicado. La página mide menos de lo que medirá y `scrollTo` se
+queda en el máximo posible (3.894 en vez de 5.529 en la portada, con sus escenas
+fijadas). Chromium los aplica a tiempo y no lo sufre; en `npm run dev` tampoco se
+ve, porque ahí los estilos llegan de otra forma. Por eso la posición que se
+reafirma después del refresh es la **guardada en `history.state`** cuando la
+navegación es de historial, no el `scrollY` de ese momento, y se reafirma también
+en cuanto el alto de la página cambia (el observador de `ph-text-animations.ts`).
 
 ## Rendimiento: no fiarse de un LCP bueno sin mirar qué elemento es
 

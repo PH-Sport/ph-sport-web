@@ -11,76 +11,110 @@ interface Props {
 
 const { lang, sectionId } = Astro.props;
 const t = useTranslations(lang);
+
+// El lema, palabra a palabra: «Now.» y «Next.» van cada una a un lado y
+// «Forever Football.» abajo, en oro.
+const leadWords = t('hero.claim.lead').split(/\s+/).filter(Boolean);
+const accentWords = t('hero.claim.accent').split(/\s+/).filter(Boolean);
 ---
 
-<section
-  id={sectionId}
-  class="hero hero--home"
->
-  <div class="hero-media" aria-hidden="true">
-    <div class="hero-backdrop" />
-    {/* El póster es un fotograma exacto del vídeo con el mismo encuadre: apagado
-        mientras el vídeo no arranca, encendido con movimiento reducido. Los
-        <video> no llevan atributo `poster` a propósito: el navegador lo
-        descarga nada más crear el elemento. Sin datos ni póster, un <video> es
-        transparente y se ve esta imagen de debajo. */}
-    <picture>
-      <source srcset={HERO_POSTER.on.portrait} media={`${HERO_PORTRAIT_MEDIA} and (prefers-reduced-motion: reduce)`} width={HERO_SIZE.portrait.width} height={HERO_SIZE.portrait.height} />
-      <source srcset={HERO_POSTER.on.landscape} media="(prefers-reduced-motion: reduce)" width={HERO_SIZE.landscape.width} height={HERO_SIZE.landscape.height} />
-      <source srcset={HERO_POSTER.off.portrait} media={HERO_PORTRAIT_MEDIA} width={HERO_SIZE.portrait.width} height={HERO_SIZE.portrait.height} />
-      <img class="hero-poster" data-hero-poster src={HERO_POSTER.off.landscape} alt="" width={HERO_SIZE.landscape.width} height={HERO_SIZE.landscape.height} loading="eager" fetchpriority="high" decoding="async" />
-    </picture>
-    {/* Sin JavaScript nadie arrancaría el vídeo: el rótulo se queda encendido. */}
-    <noscript>
+{/* Primera escena de la portada: el rótulo de neón a sangre y la secuencia del
+    lema. Con movimiento, la escena se queda fijada (sticky) durante 1,5
+    pantallas de scroll: «Now.» sale por la izquierda, «Next.» por la derecha,
+    «Forever Football.» crece, el neón se oscurece y la escena siguiente sube
+    por encima con un borde duro (el corte). El alto de la pista depende de
+    `html.ph-anim`, que se decide antes del primer pintado: así la restauración
+    del scroll al volver atrás cae en su sitio. */}
+<section id={sectionId} class="hero" aria-labelledby="hero-title">
+  <div class="hero__stage">
+    <div class="hero__media" aria-hidden="true">
+      <div class="hero__backdrop"></div>
+      {/* El póster es un fotograma exacto del vídeo con el mismo encuadre: apagado
+          mientras el vídeo no arranca, encendido con movimiento reducido. Los
+          <video> no llevan atributo `poster` a propósito: el navegador lo
+          descarga nada más crear el elemento. Sin datos ni póster, un <video> es
+          transparente y se ve esta imagen de debajo. */}
       <picture>
-        <source srcset={HERO_POSTER.on.portrait} media={HERO_PORTRAIT_MEDIA} />
-        <img class="hero-poster hero-poster--noscript" src={HERO_POSTER.on.landscape} alt="" width={HERO_SIZE.landscape.width} height={HERO_SIZE.landscape.height} />
+        <source srcset={HERO_POSTER.on.portrait} media={`${HERO_PORTRAIT_MEDIA} and (prefers-reduced-motion: reduce)`} width={HERO_SIZE.portrait.width} height={HERO_SIZE.portrait.height} />
+        <source srcset={HERO_POSTER.on.landscape} media="(prefers-reduced-motion: reduce)" width={HERO_SIZE.landscape.width} height={HERO_SIZE.landscape.height} />
+        <source srcset={HERO_POSTER.off.portrait} media={HERO_PORTRAIT_MEDIA} width={HERO_SIZE.portrait.width} height={HERO_SIZE.portrait.height} />
+        <img class="hero__poster" data-hero-poster src={HERO_POSTER.off.landscape} alt="" width={HERO_SIZE.landscape.width} height={HERO_SIZE.landscape.height} loading="eager" fetchpriority="high" decoding="async" />
       </picture>
-    </noscript>
-    <video class="hero-video hero-video--loop" data-hero-loop muted loop playsinline preload="none">
-      {HERO_LOOP_SOURCES.map((s) => (
-        <source src={s.src} type={s.type} media={s.media} />
-      ))}
-    </video>
-    <video class="hero-video hero-video--intro" data-hero-intro muted playsinline preload="none">
-      {HERO_INTRO_SOURCES.map((s) => (
-        <source src={s.src} type={s.type} media={s.media} />
-      ))}
-    </video>
-  </div>
+      {/* Sin JavaScript nadie arrancaría el vídeo: el rótulo se queda encendido. */}
+      <noscript>
+        <picture>
+          <source srcset={HERO_POSTER.on.portrait} media={HERO_PORTRAIT_MEDIA} />
+          <img class="hero__poster hero__poster--noscript" src={HERO_POSTER.on.landscape} alt="" width={HERO_SIZE.landscape.width} height={HERO_SIZE.landscape.height} />
+        </picture>
+      </noscript>
+      <video class="hero__video hero__video--loop" data-hero-loop muted loop playsinline preload="none">
+        {HERO_LOOP_SOURCES.map((s) => (
+          <source src={s.src} type={s.type} media={s.media} />
+        ))}
+      </video>
+      <video class="hero__video hero__video--intro" data-hero-intro muted playsinline preload="none">
+        {HERO_INTRO_SOURCES.map((s) => (
+          <source src={s.src} type={s.type} media={s.media} />
+        ))}
+      </video>
+    </div>
 
-  <div class="hero-overlay" aria-hidden="true"></div>
-  {/* Velo que oscurece el neón al bajar: la cámara entra y la portada cede el
-      paso al bloque siguiente. Lo mueve el scroll (script de abajo). */}
-  <div class="hero-veil" aria-hidden="true"></div>
+    <div class="hero__shade" aria-hidden="true"></div>
+    {/* Velo que oscurece el neón al bajar: lo mueve el scroll (script de abajo). */}
+    <div class="hero__veil" aria-hidden="true"></div>
 
-  <div class="hero-content">
-    <h1 class="hero-claim">
-      <span class="hero-claim__lead">{t('hero.claim.lead')}</span>
-      <span class="hero-claim__accent" data-glint>{t('hero.claim.accent')}</span>
+    <h1 class="hero__claim" id="hero-title">
+      <span class="hero__lead">
+        {leadWords.map((word, i) => (
+          <>
+            <span class:list={['hero__w', i === 0 ? 'hero__w--now' : 'hero__w--next']}>
+              <span class="hero__wm"><span class="hero__wi">{word}</span></span>
+            </span>{' '}
+          </>
+        ))}
+      </span>
+      <span class="hero__accent ph-gold">
+        {accentWords.map((word, i) => (
+          <>
+            <span class="hero__wm"><span class="hero__wi">{word}</span></span>{i < accentWords.length - 1 ? ' ' : ''}
+          </>
+        ))}
+      </span>
     </h1>
-  </div>
 
-  <a class="hero-scroll" href="#talentos" data-hero-scroll-indicator>
-    <span class="hero-scroll__label">{t('hero.scroll.label')}</span>
-    <span class="hero-scroll__line" aria-hidden="true"></span>
-  </a>
+    <a class="hero__scroll" href="#talentos" data-hero-scroll-indicator>
+      <span class="hero__scroll-label">{t('hero.scroll.label')}</span>
+      <span class="hero__scroll-line" aria-hidden="true"></span>
+    </a>
+  </div>
 </section>
 
 <style>
-  .hero--home {
+  .hero {
     position: relative;
-    width: 100%;
+    z-index: 0;
+    background: var(--color-ph-black);
+  }
+
+  /* La pista de la escena fijada: 2,5 pantallas (1,5 de recorrido; la última la
+     comparte con la escena siguiente, que sube por encima). */
+  :global(html.ph-anim) .hero {
+    height: calc(var(--ph-viewport-h) * 2.5);
+  }
+
+  .hero__stage {
+    position: sticky;
+    top: 0;
     /* Alto de pantalla congelado (ver `--ph-viewport-h` en global.css): con `svh`
        a secas, el vaivén de la barra del navegador en iPhone cambiaba el alto del
        hero y arrastraba el documento entero. */
-    min-height: var(--ph-viewport-h);
-    overflow: hidden;
-    background: var(--color-ph-black, #0d0f12);
-    color: var(--color-ph-white, #ffffff);
+    height: var(--ph-viewport-h);
+    overflow: hidden; /* Safari < 16 no conoce `clip` */
+    overflow: clip;
+    color: var(--color-ph-white);
   }
 
-  .hero-media {
+  .hero__media {
     position: absolute;
     inset: 0;
     z-index: 0;
@@ -89,26 +123,21 @@ const t = useTranslations(lang);
   }
 
   /* Fondo bajo el póster: se ve mientras carga. */
-  .hero-backdrop {
+  .hero__backdrop {
     position: absolute;
     inset: 0;
-    z-index: 0;
     background:
-      radial-gradient(ellipse at 70% 80%, rgba(214, 178, 94, 0.06) 0%, transparent 42%),
-      radial-gradient(ellipse at 30% 20%, rgba(214, 178, 94, 0.10) 0%, transparent 48%),
-      radial-gradient(ellipse at 50% 100%, rgba(13, 15, 18, 0.9) 0%, transparent 55%),
-      var(--ph-section-bg, #0d0f12);
+      radial-gradient(ellipse at 50% 50%, rgba(214, 178, 94, 0.08) 0%, transparent 46%),
+      var(--color-ph-black);
   }
 
-  /* Póster y vídeos llenan el hero con `cover`, centrados. El render
+  /* Póster y vídeos llenan la escena con `cover`, centrados. El render
      (scripts/hero-neon/neon.html) pone el logo en el centro del encuadre y la
-     cámara orbita a su alrededor, así que sigue en el centro aunque gire. En el
-     apaisado, en su plano más cercano, el logo ocupa el ~45 % del ancho: cabe
-     entero hasta la proporción 9:10, donde pasa al encuadre vertical (9:19,5,
-     con el logo al 70 % del ancho): en pantallas menos alargadas que ese,
-     `cover` recorta pared por arriba y por abajo, nunca logo. */
-  .hero-poster,
-  .hero-video {
+     cámara orbita a su alrededor, así que sigue en el centro aunque gire. Por
+     debajo de 9:10 pasa al encuadre vertical (9:19,5, con el logo al 70 % del
+     ancho): en pantallas menos alargadas, `cover` recorta pared, nunca logo. */
+  .hero__poster,
+  .hero__video {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -117,191 +146,209 @@ const t = useTranslations(lang);
     object-position: 50% 50%;
   }
 
-  .hero-poster { z-index: 1; }
-  .hero-poster--noscript { z-index: 2; }
+  .hero__poster { z-index: 1; }
+  .hero__poster--noscript { z-index: 2; }
 
   /* Los vídeos aparecen cuando ya están pintando (`is-on`, desde el script de
      abajo): hasta entonces se ve el póster. El encendido va encima del bucle y
      se retira cuando el bucle ya se ve; como su último fotograma es el primero
      del bucle, el relevo no se nota. */
-  .hero-video {
+  .hero__video {
     z-index: 2;
     opacity: 0;
   }
-  .hero-video--intro { z-index: 3; }
-  .hero-video.is-on { opacity: 1; }
+  .hero__video--intro { z-index: 3; }
+  .hero__video.is-on { opacity: 1; }
 
-  /* Dark gradient overlay for legibility of the claim over the photo */
-  .hero-overlay {
+  /* Sombra arriba y abajo para que el lema se lea sobre el neón. */
+  .hero__shade {
     position: absolute;
     inset: 0;
     z-index: 3;
     pointer-events: none;
-    background:
-      linear-gradient(180deg,
-        rgba(13,15,18,0.55) 0%,
-        rgba(13,15,18,0) 30%,
-        rgba(13,15,18,0) 55%,
-        rgba(13,15,18,0.85) 100%),
-      linear-gradient(90deg,
-        rgba(13,15,18,0.35) 0%,
-        rgba(13,15,18,0) 55%);
+    background: linear-gradient(
+      180deg,
+      rgba(13, 15, 18, 0.62) 0%,
+      rgba(13, 15, 18, 0) 34%,
+      rgba(13, 15, 18, 0) 58%,
+      rgba(13, 15, 18, 0.74) 100%
+    );
   }
 
-  .hero-veil {
+  .hero__veil {
     position: absolute;
     inset: 0;
     z-index: 3;
-    background: var(--color-ph-black, #0d0f12);
+    background: var(--color-ph-black);
     opacity: 0;
     pointer-events: none;
   }
 
-  .hero-content {
+  /* ── El lema ──
+     Móvil: «Now.» arriba a la izquierda, «Next.» debajo a la derecha (34vw) y
+     «Forever Football.» en oro abajo, en dos líneas (17vw). Escritorio: «Now.» y
+     «Next.» en la misma línea base (16vw) y «Forever Football.» en una (11vw). */
+  .hero__claim {
     position: absolute;
-    left: var(--ph-section-px, clamp(20px, 4vw, 48px));
-    right: var(--ph-section-px, clamp(20px, 4vw, 48px));
-    bottom: clamp(72px, 10vw, 140px);
-    z-index: 4;
-    max-width: 980px;
-  }
-
-  /* El titular es el rótulo de la retransmisión: en el móvil, a casi todo el
-     ancho que deja libre la señal de scroll (tres líneas: «Now. Next.»,
-     «Forever», «Football.»); en escritorio, en dos. */
-  .hero-claim {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(48px, 14.5vw, 88px);
-    letter-spacing: -0.035em;
-    line-height: 0.94;
-    margin: 0;
-    text-wrap: balance;
-  }
-  .hero-claim__lead {
-    display: block;
-    color: var(--color-ph-white, #ffffff);
-  }
-  .hero-claim__accent {
-    display: block;
-    color: var(--color-ph-gold, #d6b25e);
-    font-style: italic;
-    font-weight: 400;
-  }
-
-  /* Vertical scroll cue — bottom-right */
-  .hero-scroll {
-    position: absolute;
-    right: var(--ph-section-px, clamp(20px, 4vw, 48px));
-    bottom: clamp(24px, 4vw, 48px);
+    inset: 0;
     z-index: 4;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    color: var(--color-ph-white, #ffffff);
-    opacity: 0.7;
-    transition: opacity 0.2s ease, color 0.2s ease;
-    text-decoration: none;
-  }
-  .hero-scroll:hover {
-    opacity: 1;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .hero-scroll__label {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    font-family: var(--font-body);
-    font-size: 13px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-  .hero-scroll__line {
-    position: relative;
-    width: 1px;
-    height: 56px;
-    background: currentColor;
-    overflow: hidden;
-  }
-  .hero-scroll__line::after {
-    content: "";
-    position: absolute;
-    top: -100%;
-    left: 0;
-    width: 1px;
-    height: 60%;
-    background: var(--color-ph-gold, #d6b25e);
-    animation: heroScrollCue 2.4s linear infinite;
-  }
-  @keyframes heroScrollCue {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(400%); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .hero-scroll__line::after { animation: none; }
-  }
-
-  .hero-scroll.is-hidden {
-    opacity: 0;
+    justify-content: space-between;
+    margin: 0;
+    padding:
+      calc(68px + env(safe-area-inset-top)) var(--ph-section-px)
+      calc(28px + env(safe-area-inset-bottom));
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 0.86;
+    letter-spacing: var(--ph-giant-track);
     pointer-events: none;
   }
 
-  /* Mientras el indicador está oculto (usuario ya scrolleó), pausar la
-     animación CSS infinita evita que mantenga el compositor activo
-     gastando ciclos de GPU para algo invisible. */
-  .hero-scroll.is-hidden .hero-scroll__line::after {
-    animation-play-state: paused;
+  .hero__lead {
+    display: block;
   }
 
-  @media (max-width: 720px) {
-    .hero-content {
-      bottom: clamp(24px, 4vw, 48px);
-      right: 64px;
-    }
+  .hero__w {
+    display: block;
+    font-size: min(34vw, calc(var(--ph-viewport-h) * 0.3));
   }
 
-  @media (min-width: 721px) {
-    .hero-claim {
-      font-size: clamp(56px, 8vw, 104px);
-    }
+  .hero__w--next {
+    text-align: right;
+  }
+
+  .hero__accent {
+    display: block;
+    font-size: min(17vw, calc(var(--ph-viewport-h) * 0.15));
+  }
+
+  .hero__accent .hero__wm {
+    display: block;
+    width: fit-content;
+  }
+
+  /* Cada palabra en su máscara: sube desde la línea base al entrar. El recorte
+     se abre por arriba y por abajo para no comerse acentos ni descendentes. */
+  .hero__wm {
+    display: inline-block;
+    clip-path: inset(-0.4em -0.2em -0.26em -0.2em);
+  }
+
+  .hero__wi {
+    display: inline-block;
   }
 
   @media (min-width: 1024px) {
-    .hero-content {
-      bottom: clamp(40px, 5vw, 72px);
+    .hero__claim {
+      padding-top: calc(104px + env(safe-area-inset-top));
+      padding-bottom: calc(40px + env(safe-area-inset-bottom));
     }
-    .hero-claim {
-      font-size: clamp(56px, 6.2vw, 104px);
+
+    .hero__lead {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .hero__w {
+      font-size: min(16vw, calc(var(--ph-viewport-h) * 0.26));
+    }
+
+    .hero__accent {
+      font-size: min(11vw, calc(var(--ph-viewport-h) * 0.18));
+      white-space: nowrap;
+    }
+
+    .hero__accent .hero__wm {
+      display: inline-block;
     }
   }
 
-  /* El titular arranca oculto para que GSAP controle su primer fotograma, con una
-     red de seguridad en CSS: pase lo que pase, a 1,5 s se muestra (el telón de
-     intro termina a 1,3 s).
-
-     Antes no hacía falta porque el telón de intro y este titular colgaban del
-     mismo evento (`astro:page-load` = `window.load`): cuando el telón se
-     levantaba, el titular ya estaba puesto. Ahora el telón es CSS y termina a
-     1,3 s por su cuenta, así que son dos relojes distintos: si el JS se retrasa
-     —y `window.load` es mucho más variable que el primer pintado—, el telón se
-     abriría sobre un hero mudo.
-
-     El retardo hace que esto no estorbe cuando todo va bien: durante la espera la
-     animación no aplica nada (no es `backwards`), así que el `visibility` que
-     pone GSAP manda y el efecto de entrada se ve igual que siempre. */
-  .hero-claim__lead,
-  .hero-claim__accent {
+  /* El lema espera al JS (que lo hace subir cuando corta la intro), con su red de
+     seguridad: pase lo que pase, a 1,6 s está a la vista. */
+  :global(html.ph-anim) .hero__wi {
     visibility: hidden;
-    animation: ph-hero-claim-visible 0s linear 1.5s forwards;
+    animation: ph-hero-claim-visible 0s linear 1.6s forwards;
   }
 
   @keyframes ph-hero-claim-visible {
     to { visibility: visible; }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .hero-claim__lead,
-    .hero-claim__accent { visibility: visible; animation: none; }
+  /* ── «Scroll»: pequeño, abajo a la derecha, con un hilo ── */
+  .hero__scroll {
+    position: absolute;
+    right: var(--ph-section-px);
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    min-width: 44px;
+    padding-top: 8px;
+    color: var(--color-ph-white);
+    text-decoration: none;
+    transition: opacity var(--ph-dur-state) var(--ph-ease-std), color var(--ph-dur-state) var(--ph-ease-std);
+  }
+
+  .hero__scroll-label {
+    font-family: var(--font-body);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--ph-ink-lead);
+  }
+
+  /* El hilo se dibuja una vez y una luz lo recorre dos veces hacia abajo; luego
+     se queda quieto (nada se mueve solo más de 5 s). */
+  .hero__scroll-line {
+    position: relative;
+    width: 1px;
+    height: 44px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.4);
+    transform-origin: 50% 0;
+  }
+
+  .hero__scroll-line::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -40%;
+    width: 1px;
+    height: 40%;
+    background: var(--color-ph-gold);
+    transform: translateY(-100%);
+  }
+
+  :global(html.ph-anim) .hero__scroll-line {
+    animation: ph-cue-draw 0.6s var(--ph-ease-out) 1.6s both;
+  }
+
+  :global(html.ph-anim) .hero__scroll-line::after {
+    animation: ph-cue-light 1.4s var(--ph-ease-std) 2.3s 2 both;
+  }
+
+  @keyframes ph-cue-draw {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+  }
+
+  @keyframes ph-cue-light {
+    from { transform: translateY(0); }
+    to { transform: translateY(360%); }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hero__scroll:hover { color: var(--color-ph-gold); }
+    .hero__scroll:hover .hero__scroll-label { color: var(--color-ph-gold); }
+  }
+
+  .hero__scroll.is-hidden {
+    opacity: 0;
+    pointer-events: none;
   }
 </style>
 
@@ -322,7 +369,7 @@ const t = useTranslations(lang);
    * bucle (otro vídeo). Si algo impide reproducir, la portada pasa al póster
    * encendido: nunca se queda con el rótulo apagado. */
   function initHeroNeon(): void {
-    const hero = document.querySelector<HTMLElement>('.hero--home');
+    const hero = document.querySelector<HTMLElement>('.hero');
     const intro = document.querySelector<HTMLVideoElement>('[data-hero-intro]');
     const loop = document.querySelector<HTMLVideoElement>('[data-hero-loop]');
     if (!hero || !intro || !loop) return;
@@ -403,14 +450,13 @@ const t = useTranslations(lang);
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, wrapWords, scheduleScrollTriggerRefresh, afterTransitionPaint, EASE,
+    reducedMotion, scheduleScrollTriggerRefresh, afterTransitionPaint, EASE,
   } from '@/scripts/ph-text-animations';
-  import { glint } from '@/scripts/ph-motion';
 
   gsap.registerPlugin(ScrollTrigger);
 
-  /** Segundos que faltan para que el telón de intro empiece a abrirse (0 si no
-   *  hay telón). El titular entra cuando el marcador se abre, no debajo de él. */
+  /** Segundos que faltan para que la intro corte al neón (0 si no hay intro).
+   *  El lema entra justo después del corte, no debajo del telón. */
   function introRemaining(): number {
     const overlay = document.querySelector<HTMLElement>('[data-logo-reveal-overlay]');
     if (!overlay || document.documentElement.classList.contains('ph-sin-intro')) return 0;
@@ -418,58 +464,46 @@ const t = useTranslations(lang);
       .getAnimations()
       .find((a) => (a as CSSAnimation).animationName === 'ph-intro-salir');
     if (!salida) return 0;
+    // `ph-intro-salir` empieza a 1,2 s y dura 0,04: el corte es a 1,24 s.
     const elapsed = Number(salida.currentTime ?? 0) / 1000;
-    // Las mitades se pliegan de 0,9 a 1,2 s: el titular arranca a mitad del pliegue.
-    return Math.max(0, 1.02 - elapsed);
+    return Math.max(0, 1.24 - elapsed);
   }
 
   function initHeroAnimations(): void {
-    const hero = document.querySelector<HTMLElement>('.hero--home');
+    const hero = document.querySelector<HTMLElement>('.hero');
     if (!hero) return;
     if (reducedMotion()) return;
 
-    const lead = hero.querySelector<HTMLElement>('.hero-claim__lead');
-    const accent = hero.querySelector<HTMLElement>('.hero-claim__accent');
-    const claim = hero.querySelector<HTMLElement>('.hero-claim');
-    const media = hero.querySelector<HTMLElement>('.hero-media');
-    const veil = hero.querySelector<HTMLElement>('.hero-veil');
+    const words = Array.from(hero.querySelectorAll<HTMLElement>('.hero__wi'));
+    const now = hero.querySelector<HTMLElement>('.hero__w--now');
+    const next = hero.querySelector<HTMLElement>('.hero__w--next');
+    const accent = hero.querySelector<HTMLElement>('.hero__accent');
+    const media = hero.querySelector<HTMLElement>('.hero__media');
+    const veil = hero.querySelector<HTMLElement>('.hero__veil');
 
-    // Reveal now so GSAP controls the first visible frame.
-    if (lead) lead.style.visibility = 'visible';
-    if (accent) accent.style.visibility = 'visible';
+    // La secuencia del lema: cada palabra sube de su línea base (700 ms) con
+    // escalones de 120 ms, en el orden en que se lee.
+    gsap.set(words, { visibility: 'visible' });
+    gsap.from(words, {
+      yPercent: 150,
+      duration: 0.7,
+      ease: EASE.emph,
+      stagger: 0.12,
+      delay: introRemaining() + 0.06,
+    });
 
-    // El rótulo entra en dos tiempos, como dos líneas de grafismo: «Now. Next.»
-    // y, detrás, «Forever Football.», que recibe la luz al asentarse.
-    const wait = introRemaining();
-    const tl = gsap.timeline({ delay: wait + 0.12 });
-    if (lead) {
-      tl.from(wrapWords(lead), { yPercent: 112, duration: 0.9, ease: EASE.out, stagger: 0.09 }, 0);
-    }
-    if (accent) {
-      tl.from(wrapWords(accent), { yPercent: 112, duration: 0.9, ease: EASE.out, stagger: 0.09 }, 0.2);
-      tl.add(() => glint(accent), 0.95);
-    }
-
-    if (claim) {
-      ScrollTrigger.create({
-        trigger: hero,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: 0.8,
-        onUpdate: (self) => {
-          gsap.set(claim, { yPercent: self.progress * 20 });
-        },
-      });
-    }
-    // La cámara entra en el neón mientras la portada se oscurece: el relevo al
-    // bloque siguiente. Solo transform y opacity.
-    if (media && veil) {
-      gsap.timeline({
-        scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.6 },
-      })
-        .to(media, { scale: 1.12, ease: 'none' }, 0)
-        .to(veil, { opacity: 0.7, ease: 'none' }, 0);
-    }
+    // Al bajar, con la escena fijada: «Now.» sale por la izquierda, «Next.» por la
+    // derecha, «Forever Football.» crece un poco y el neón se oscurece y se
+    // acerca. Ligado al scroll: avanza al ritmo del dedo.
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom bottom', scrub: 0.5 },
+    });
+    if (now) tl.to(now, { xPercent: -135, duration: 0.42 }, 0);
+    if (next) tl.to(next, { xPercent: 135, duration: 0.42 }, 0.02);
+    if (accent) tl.to(accent, { scale: 1.12, transformOrigin: '0% 100%', duration: 1 }, 0);
+    if (media) tl.to(media, { scale: 1.08, duration: 1 }, 0);
+    if (veil) tl.to(veil, { opacity: 0.72, duration: 0.8 }, 0.2);
 
     scheduleScrollTriggerRefresh();
   }

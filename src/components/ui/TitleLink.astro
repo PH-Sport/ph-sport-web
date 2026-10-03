@@ -1,0 +1,30 @@
+---
+/**
+ * Enlace tipográfico: «Talentos →». Söhne 600 a ~32 px con un hilo debajo; al
+ * señalarlo las letras suben 2 px en cascada, la flecha avanza y un subrayado
+ * dorado se dibuja encima del hilo. Estilos `.ph-tlink` en global.css.
+ *
+ * Las letras van una a una (para la cascada) y por eso el nombre accesible va en
+ * `aria-label`: así un lector de pantalla lee la palabra entera, no letra a letra.
+ */
+interface Props {
+  href: string;
+  label: string;
+  hreflang?: string;
+  class?: string;
+  [key: string]: unknown;
+}
+
+// `rest` lleva el atributo de ámbito del componente que lo usa (ver SceneLabel).
+const { href, label, hreflang, class: className, ...rest } = Astro.props;
+const chars = [...label];
+---
+
+<a href={href} hreflang={hreflang} class:list={['ph-tlink', className]} aria-label={label} data-inview {...rest}>
+  <span class="ph-tlink__text" aria-hidden="true">
+    {chars.map((ch, i) => <span class="ph-ltr" style={`--i:${i}`}>{ch === ' ' ? ' ' : ch}</span>)}
+  </span>
+  <svg class="ph-tlink__arrow" viewBox="0 0 16 16" aria-hidden="true">
+    <path d="M1.5 8h12M9 3.5 13.5 8 9 12.5" />
+  </svg>
+</a>

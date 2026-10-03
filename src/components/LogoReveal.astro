@@ -10,35 +10,20 @@
 // pase lo que pase. El JS que queda no la controla, sólo anota que ya se ha
 // visto.
 //
-// Desde el 2026-10-02 (lenguaje «Marcador», DECISIONS.md) el telón es una
-// paleta de marcador a pantalla completa: dos mitades negras partidas por una
-// bisagra horizontal en el centro. El trazo del logo se dibuja justo donde está
-// el rótulo de neón del vídeo de la portada, con su mismo tamaño, y al terminar
-// las dos mitades se pliegan hacia la bisagra y descubren el neón en el mismo
-// sitio: un corte a juego, del logo dibujado al logo de verdad. Por eso el logo
-// va dos veces, una en cada mitad, recortada en la bisagra.
+// Desde el 2026-10-03 (variante «Títulos», DECISIONS.md) la intro es un corte
+// seco de cine: negro, un hilo dorado se dibuja en el centro y el logo se abre
+// desde esa rendija, justo donde está el rótulo de neón del vídeo de la portada y
+// con su mismo tamaño; se sostiene y a 1,2 s corta en seco al neón en el mismo
+// sitio (un corte a juego). Ahí arranca el lema del hero.
 //
 // El overlay se monta como hermano de <main> (ver BaseLayout), no dentro. Con
 // `transition:name` en <main> se forma un contexto de apilamiento propio y el
-// z-index del overlay no podía ganar al header; había un parche de CSS para
-// taparlo que ya no hace falta.
-//
-// Longitudes del trazo: son constantes (el viewBox y los puntos están fijos), así
-// que van escritas. Antes se medían con getTotalLength() en tiempo de ejecución,
-// con 32 reintentos por si el SVG aún no tenía layout y dos valores de reserva
-// que, de paso, estaban un 22% pasados. Nada de eso hace falta.
+// z-index del overlay no podía ganar al header.
 const LOGO_VIEWBOX = '0 0 259.8 206.1';
 const POLYGON_1_POINTS =
   '0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7';
 const POLYGON_2_POINTS =
   '122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9';
-
-/** Perímetros reales, redondeados HACIA ARRIBA: por debajo asomaría una esquirla
- *  del segmento de cierre del polígono en el offset máximo. */
-const LEN_1 = 753; // real 752,4284
-const LEN_2 = 637; // real 636,0980
-
-const halves = ['top', 'bottom'] as const;
 ---
 
 {/*
@@ -48,24 +33,12 @@ const halves = ['top', 'bottom'] as const;
   más frecuente. Ver docs/trampas-conocidas.md.
 */}
 <div data-logo-reveal-overlay aria-hidden="true" inert>
-  {halves.map((half) => (
-    <div class={`intro-half intro-half--${half}`}>
-      <div class="logo-reveal-container">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox={LOGO_VIEWBOX}
-          fill="currentColor"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="butt"
-          stroke-linejoin="bevel"
-        >
-          <polygon data-logo-line1 points={POLYGON_1_POINTS} stroke-dasharray={LEN_1} stroke-dashoffset={LEN_1} />
-          <polygon data-logo-line2 points={POLYGON_2_POINTS} stroke-dasharray={LEN_2} stroke-dashoffset={LEN_2} />
-        </svg>
-      </div>
-    </div>
-  ))}
+  <div class="logo-reveal-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox={LOGO_VIEWBOX} fill="currentColor">
+      <polygon points={POLYGON_1_POINTS} />
+      <polygon points={POLYGON_2_POINTS} />
+    </svg>
+  </div>
 </div>
 
 {/* El CSS del telón NO vive aquí sino en línea en el <head> de BaseLayout.

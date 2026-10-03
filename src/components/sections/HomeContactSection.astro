@@ -1,6 +1,6 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
-import Slate from '@/components/ui/Slate.astro';
+import SceneLabel from '@/components/ui/SceneLabel.astro';
 
 interface Props {
   lang: Lang;
@@ -10,160 +10,252 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 ---
 
-{/* El cierre de la portada: «Hablemos.» a escala de rótulo y el correo como
-    la acción. La imagen sale del negro al entrar (revelado); en el móvil va
-    debajo, en franja. */}
-<section class="home-contact" id="contacto" aria-labelledby="home-contact-title">
-  <div class="home-contact__grid">
-    <header class="home-contact__head">
-      <Slate text={t('home.contact.eyebrow')} />
-      <h2 class="home-contact__title" id="home-contact-title" data-m="title" data-reveal>{t('home.contact.title')}</h2>
-      <div class="home-contact__email ph-seam" data-inview>
-        <span class="home-contact__email-label">{t('home.contact.emailLabel')}</span>
-        <a href={`mailto:${t('home.contact.email')}`} class="home-contact__email-link">
-          <span class="home-contact__email-text">{t('home.contact.email')}</span>
-          <span class="home-contact__email-arrow" aria-hidden="true">
-            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"><path d="M2.5 9.5 9.5 2.5M4 2.5h5.5V8" /></svg>
-          </span>
-        </a>
-      </div>
-    </header>
+{/* Última escena de la portada y su pieza de autor: «Hablemos.» a todo lo ancho,
+    con la foto del sobre DENTRO de las letras. Al bajar, con la escena fijada,
+    la cámara entra en la palabra por su punto final: las letras crecen hasta que
+    el punto llena la pantalla y la foto queda a pantalla completa; entonces
+    aparecen, sobre una veladura, «Email directo» y el correo.
 
-    <div class="home-contact__image ph-develop" aria-hidden="true" data-inview>
-      <div class="home-contact__photo ph-develop__media"></div>
+    Cómo: una capa negra con el texto en blanco y `mix-blend-mode: multiply` sobre
+    la foto (la foto solo se ve por las letras), escalada hacia el centro del
+    punto (se mide en el navegador, en cada idioma). Encima, el negro de la página
+    en `lighten`: lo que no es letra queda exactamente del color del fondo.
+
+    Sin movimiento (o sin JS) la escena es quieta: «Hablemos.» en blanco, la foto
+    en un rectángulo debajo y el correo. */}
+<section class="hc" id="contacto" aria-labelledby="home-contact-title">
+  <div class="hc__stage">
+    <SceneLabel class="hc__label" text={t('home.contact.eyebrow')} />
+    <div class="hc__photo" aria-hidden="true">
+      <img src="/contact-image.webp" alt="" width="1600" height="1000" loading="lazy" decoding="async" />
+    </div>
+    <div class="hc__lift" aria-hidden="true" data-hc-lift></div>
+    <div class="hc__mask" data-hc-mask>
+      <h2 class="hc__word ph-giant" id="home-contact-title" data-hc-word>{t('home.contact.title')}<span class="hc__base" aria-hidden="true"></span></h2>
+    </div>
+    <div class="hc__veil" aria-hidden="true" data-hc-veil></div>
+    <div class="hc__tint" aria-hidden="true"></div>
+    <div class="hc__mail" data-hc-mail>
+      <span class="hc__mail-label">{t('home.contact.emailLabel')}</span>
+      <a href={`mailto:${t('home.contact.email')}`} class="hc__mail-link" data-hc-link>
+        {t('home.contact.email')}
+      </a>
     </div>
   </div>
 </section>
 
 <style>
-  .home-contact {
-    --home-contact-edge: var(--ph-section-px, clamp(20px, 4vw, 48px));
-    background: var(--color-ph-bg-2, #15171b);
-    color: var(--color-ph-white, #ffffff);
-    overflow: clip;
+  .hc {
+    position: relative;
+    z-index: 2;
+    background: var(--color-ph-black);
   }
 
-  .home-contact__grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .home-contact__head {
+  /* ── Escena quieta (sin movimiento o sin JS) ── */
+  .hc__stage {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    justify-content: center;
-    padding: clamp(64px, 9vw, 112px) var(--home-contact-edge) clamp(48px, 7vw, 96px);
+    gap: clamp(28px, 4vw, 48px);
+    padding: clamp(72px, 10vw, 144px) var(--ph-section-px) clamp(96px, 12vw, 160px);
   }
 
-  .home-contact__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(64px, 19vw, 144px);
-    letter-spacing: -0.05em;
-    line-height: 0.9;
-    margin: clamp(28px, 4vw, 44px) 0 0 -0.04em;
+  .hc__photo {
+    order: 2;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
   }
 
-  .home-contact__email {
-    margin-top: clamp(32px, 5vw, 56px);
-    padding-top: 24px;
+  .hc__photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hc__mask {
+    order: 1;
+  }
+
+  /* «Hablemos.» a todo lo ancho: el tamaño sale de lo que mide la palabra en
+     cada idioma (en em de Söhne 700 con su interletraje). */
+  .hc__word {
+    font-size: 18.4vw;
+    line-height: 0.86;
+    white-space: nowrap;
+    color: var(--color-ph-white);
+  }
+
+  .hc__word:lang(en) { font-size: 20.8vw; }
+  .hc__word:lang(it) { font-size: 16.6vw; }
+
+  /* Marca de la línea base, para medir el punto final (no ocupa nada). */
+  .hc__base {
+    display: inline-block;
+    width: 0;
+    height: 0;
+  }
+
+  .hc__lift,
+  .hc__veil,
+  .hc__tint {
+    display: none;
+  }
+
+  .hc__mail {
+    order: 3;
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
-  .home-contact__email-label {
-    font-size: 14px;
-    color: var(--ph-ink-meta);
+
+  .hc__mail-label {
+    font-family: var(--font-body);
+    font-size: var(--ph-small);
+    letter-spacing: 0.02em;
+    color: var(--ph-ink-lead);
   }
-  /* El correo es la acción de la página: grande, con su flecha hacia arriba a la
-     derecha que sale y vuelve al señalarlo, y una línea que se dibuja debajo. */
-  .home-contact__email-link {
+
+  /* El correo: Söhne 600, con un hilo debajo; al señalarlo, un subrayado dorado
+     se dibuja encima del hilo. */
+  .hc__mail-link {
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 14px;
     width: fit-content;
-    padding-bottom: 6px;
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-size: clamp(24px, 6.4vw, 40px);
-    font-weight: 500;
+    max-width: 100%;
+    min-height: 44px;
+    padding-bottom: 0.12em;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(28px, calc(2.4vw + 18.6px), 48px);
+    line-height: 1.05;
     letter-spacing: -0.02em;
-    color: var(--color-ph-white, #ffffff);
-    text-decoration: none;
+    color: var(--color-ph-white);
+    overflow-wrap: anywhere;
     transition: color var(--ph-dur-state) var(--ph-ease-std);
-    -webkit-tap-highlight-color: transparent;
   }
-  .home-contact__email-link::after {
+
+  .hc__mail-link::before,
+  .hc__mail-link::after {
     content: '';
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
     height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-    transform: scaleX(0);
     transform-origin: 0 50%;
-    transition: transform var(--ph-dur-move) var(--ph-ease-out);
-  }
-  .home-contact__email-arrow {
-    position: relative;
-    display: block;
-    width: 0.5em;
-    height: 0.5em;
-    overflow: hidden;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-contact__email-arrow svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-    transition: transform var(--ph-dur-move) var(--ph-ease-out);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .home-contact__email-link:hover { color: var(--color-ph-gold, #d6b25e); }
-    .home-contact__email-link:hover::after { transform: scaleX(1); }
-    .home-contact__email-link:hover .home-contact__email-arrow svg {
-      animation: ph-contact-arrow var(--ph-dur-move) var(--ph-ease-out);
-    }
-  }
-  .home-contact__email-link:active { color: var(--color-ph-gold, #d6b25e); }
-  .home-contact__email-link:active::after { transform: scaleX(1); transition-duration: var(--ph-dur-tap); }
-  @keyframes ph-contact-arrow {
-    0% { transform: translate(0, 0); }
-    49% { transform: translate(120%, -120%); }
-    50% { transform: translate(-120%, 120%); }
-    100% { transform: translate(0, 0); }
   }
 
-  .home-contact__image {
-    position: relative;
-    aspect-ratio: 16 / 10;
-    background: var(--color-ph-bg-3, #1c1f24);
+  .hc__mail-link::before {
+    background: rgba(255, 255, 255, 0.4);
   }
-  .home-contact__photo {
+
+  .hc__mail-link::after {
+    height: 2px;
+    background: var(--color-ph-gold);
+    transform: scaleX(0);
+    transition: transform var(--ph-dur-move) var(--ph-ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hc__mail-link:hover::after { transform: scaleX(1); }
+  }
+
+  .hc__mail-link:focus-visible::after { transform: scaleX(1); }
+  .hc__mail-link:active { color: var(--color-ph-gold); }
+
+  /* ── La escena fijada (con movimiento) ──
+     2,6 pantallas de pista: 1 para entrar en la palabra, el resto con el correo
+     a la vista. */
+  :global(html.ph-anim) .hc {
+    height: calc(var(--ph-viewport-h) * 2.6);
+  }
+
+  :global(html.ph-anim) .hc__stage {
+    position: sticky;
+    top: 0;
+    display: block;
+    height: var(--ph-viewport-h);
+    padding: 0;
+    overflow: hidden; /* Safari < 16 no conoce `clip` */
+    overflow: clip;
+    isolation: isolate;
+  }
+
+  :global(html.ph-anim) .hc__photo {
     position: absolute;
     inset: 0;
-    background:
-      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-      url('/contact-image.webp') center / cover no-repeat;
+    z-index: 0;
+    aspect-ratio: auto;
+  }
+
+  /* La foto es oscura: dentro de las letras se aclara (un blanco por encima, que
+     solo se ve a través de ellas) para que «Hablemos.» se lea, y se apaga a medida
+     que la cámara entra y la foto queda a pantalla completa. */
+  :global(html.ph-anim) .hc__lift {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: #fff;
+    opacity: 0.38;
+    pointer-events: none;
+  }
+
+  :global(html.ph-anim) .hc__mask {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    padding-inline: var(--ph-section-px);
+    background: #000;
+    mix-blend-mode: multiply;
+  }
+
+  :global(html.ph-anim) .hc__veil {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* El negro de la página por encima, en `lighten`: fuera de las letras queda el
+     #0d0f12 exacto (con `multiply` solo, el negro saldría más negro que la
+     página y con un fantasma de la foto). */
+  :global(html.ph-anim) .hc__tint {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: var(--color-ph-black);
+    mix-blend-mode: lighten;
+    pointer-events: none;
+  }
+
+  :global(html.ph-anim) .hc__label {
+    position: absolute;
+    top: calc(var(--ph-head-top) - 8px);
+    left: var(--ph-section-px);
+    right: var(--ph-section-px);
+    z-index: 4;
+  }
+
+  :global(html.ph-anim) .hc__mail {
+    position: absolute;
+    left: var(--ph-section-px);
+    right: var(--ph-section-px);
+    bottom: calc(clamp(56px, var(--ph-viewport-h) * 0.12, 140px) + env(safe-area-inset-bottom));
+    z-index: 4;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .home-contact__email-link,
-    .home-contact__email-link::after,
-    .home-contact__email-arrow svg { transition: none; animation: none; }
-  }
-
-  @media (min-width: 901px) {
-    .home-contact__grid {
-      grid-template-columns: 1fr 1fr;
-      min-height: clamp(520px, 58vw, 720px);
-    }
-    .home-contact__title { font-size: clamp(88px, 9vw, 144px); }
-    .home-contact__image {
-      aspect-ratio: auto;
-      border-left: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    .hc__mail-link,
+    .hc__mail-link::after {
+      transition: none;
     }
   }
 </style>
@@ -172,17 +264,130 @@ const t = useTranslations(lang);
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, stage, mountSection, afterTransitionPaint,
+    reducedMotion, mountSection, afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
 
-  function initHomeContactAnimations(): void {
-    const section = document.querySelector<HTMLElement>('.home-contact');
+  interface Geo { cx: number; cy: number; W: number; H: number; S: number }
+
+  /**
+   * Dónde está el punto final de la palabra y cuánto hay que acercarse para que
+   * llene la pantalla. La caja de tinta del «.» sale del canvas (las métricas de
+   * la fuente) y su posición, del texto real: el inicio del carácter (un Range) y
+   * la línea base (la marca `.hc__base`). Todo en px de la capa sin transformar.
+   */
+  function measure(mask: HTMLElement, word: HTMLElement): Geo | null {
+    const prev = mask.style.transform;
+    mask.style.transform = 'none';
+    const layer = mask.getBoundingClientRect();
+    const base = word.querySelector<HTMLElement>('.hc__base');
+    // El último nodo de texto con un «.».
+    const walker = document.createTreeWalker(word, NodeFilter.SHOW_TEXT);
+    let node: Text | null = null;
+    let offset = -1;
+    for (let n = walker.nextNode() as Text | null; n; n = walker.nextNode() as Text | null) {
+      const i = (n.textContent ?? '').lastIndexOf('.');
+      if (i >= 0) { node = n; offset = i; }
+    }
+    if (!node || offset < 0 || !base) {
+      mask.style.transform = prev;
+      return null;
+    }
+    const range = document.createRange();
+    range.setStart(node, offset);
+    range.setEnd(node, offset + 1);
+    const glyph = range.getBoundingClientRect();
+    const baseline = base.getBoundingClientRect().bottom;
+    const cs = getComputedStyle(word);
+    const ctx = document.createElement('canvas').getContext('2d');
+    if (!ctx) {
+      mask.style.transform = prev;
+      return null;
+    }
+    ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const m = ctx.measureText('.');
+    const w = m.actualBoundingBoxLeft + m.actualBoundingBoxRight;
+    const h = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+    mask.style.transform = prev;
+    if (!(w > 0 && h > 0)) return null;
+    const cx = glyph.left - m.actualBoundingBoxLeft + w / 2 - layer.left;
+    const cy = baseline - m.actualBoundingBoxAscent + h / 2 - layer.top;
+    const W = layer.width;
+    const H = layer.height;
+    // El punto acaba en el centro de la pantalla y la cubre con margen.
+    const S = Math.max(W / w, H / h) * 1.18;
+    return { cx, cy, W, H, S };
+  }
+
+  function initHomeContact(): void {
+    const section = document.querySelector<HTMLElement>('.hc');
     if (!section) return;
-    if (!reducedMotion()) stage(section);
+    if (!reducedMotion()) {
+      const mask = section.querySelector<HTMLElement>('[data-hc-mask]');
+      const word = section.querySelector<HTMLElement>('[data-hc-word]');
+      const photo = section.querySelector<HTMLElement>('.hc__photo img');
+      const veil = section.querySelector<HTMLElement>('[data-hc-veil]');
+      const lift = section.querySelector<HTMLElement>('[data-hc-lift]');
+      const mail = section.querySelector<HTMLElement>('[data-hc-mail]');
+      const link = section.querySelector<HTMLAnchorElement>('[data-hc-link]');
+      if (mask && word && photo && veil && lift && mail && link) {
+        let geo = measure(mask, word);
+        const zoom = { p: 0 };
+        // Acercamiento exponencial (la velocidad aparente es constante) y el punto
+        // se va centrando al principio del recorrido.
+        // El desplazamiento hacia el centro se limita a lo que permite la escala:
+        // la capa negra nunca deja ver la foto por sus bordes.
+        const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+        const render = () => {
+          if (!geo) return;
+          const p = zoom.p;
+          const s = Math.pow(geo.S, p);
+          const c = 1 - Math.pow(1 - Math.min(1, p * 1.4), 2);
+          const tx = clamp((geo.W / 2 - geo.cx) * c, (geo.W - geo.cx) * (1 - s), geo.cx * (s - 1));
+          const ty = clamp((geo.H / 2 - geo.cy) * c, (geo.H - geo.cy) * (1 - s), geo.cy * (s - 1));
+          mask.style.transformOrigin = `${geo.cx.toFixed(2)}px ${geo.cy.toFixed(2)}px`;
+          mask.style.transform = `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px) scale(${s.toFixed(4)})`;
+        };
+        const tl = gsap.timeline({
+          defaults: { ease: 'none' },
+          scrollTrigger: {
+            trigger: section,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 0.35,
+            onRefresh: () => {
+              geo = measure(mask, word);
+              render();
+            },
+            onUpdate: (self) => {
+              mail.style.pointerEvents = self.progress > 0.66 ? 'auto' : 'none';
+            },
+          },
+        });
+        tl.to(zoom, { p: 1, duration: 0.6, onUpdate: render }, 0)
+          .fromTo(photo, { scale: 1.14 }, { scale: 1, duration: 0.62 }, 0)
+          .fromTo(lift, { opacity: 0.38 }, { opacity: 0, duration: 0.5 }, 0.08)
+          .fromTo(veil, { opacity: 0 }, { opacity: 0.42, duration: 0.1 }, 0.58)
+          .fromTo(mail, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.1 }, 0.62)
+          .to({}, { duration: 0.28 });
+        render();
+        document.fonts?.ready.then(() => {
+          geo = measure(mask, word);
+          render();
+        });
+
+        // Con el teclado, el correo se puede alcanzar antes de verlo: al recibir
+        // el foco, la página baja hasta donde la escena lo enseña.
+        link.addEventListener('focus', () => {
+          const st = tl.scrollTrigger;
+          if (!st || st.progress >= 0.7) return;
+          window.scrollTo({ top: st.start + (st.end - st.start) * 0.78, behavior: 'instant' });
+        });
+      }
+    }
     mountSection(section);
   }
 
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeContactAnimations));
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeContact));
 </script>

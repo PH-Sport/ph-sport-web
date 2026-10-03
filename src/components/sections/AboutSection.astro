@@ -1,8 +1,7 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
 import { getTeamMembers } from '@/lib/teamMembers';
-import Slate from '@/components/ui/Slate.astro';
-import Flap from '@/components/ui/Flap.astro';
+import SceneLabel from '@/components/ui/SceneLabel.astro';
 
 interface Props {
   lang: Lang;
@@ -13,6 +12,12 @@ const t = useTranslations(lang);
 
 const teamMembers = getTeamMembers(lang);
 
+const manifesto = [
+  { idx: t('about.manifesto.blocks.now.idx'), title: t('about.manifesto.blocks.now.title'), body: t('about.manifesto.blocks.now.body') },
+  { idx: t('about.manifesto.blocks.next.idx'), title: t('about.manifesto.blocks.next.title'), body: t('about.manifesto.blocks.next.body') },
+  { idx: t('about.manifesto.blocks.forever.idx'), title: t('about.manifesto.blocks.forever.title'), body: t('about.manifesto.blocks.forever.body') },
+];
+
 const internationalCountries = [
   { key: 'portugal' as const, iso: 'PT' },
   { key: 'uk' as const,       iso: 'UK' },
@@ -21,528 +26,507 @@ const internationalCountries = [
   { key: 'arabia' as const,   iso: 'KSA' },
   { key: 'uruguay' as const,  iso: 'UY' },
 ];
-
 ---
 
-<section class="about-section" aria-labelledby="about-hero-title">
+<section class="ab" aria-labelledby="about-hero-title">
   <div class="ph-page-bg" aria-hidden="true">
-    <canvas class="ph-ambient" data-ambient="calidez"></canvas>
+    <canvas class="ph-ambient" data-ambient="proyeccion"></canvas>
   </div>
 
-  <!-- 01 HERO: misma cabecera que Talentos y Servicios (global.css): fila índice,
-       titular y entradilla debajo. -->
-  <div class="abt-hero">
-    <Slate text={t('about.hero.eyebrow')} class="abt-hero__index" />
-    <h1 id="about-hero-title" class="abt-hero__title ph-head-title" data-m="title" data-reveal>
-      {t('about.hero.titlePre')}<span class="abt-gold" data-glint>{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
+  {/* 01 — Cabecera: «Representar con propósito.» gigante («Representar» en oro;
+      en italiano «Rappresentare», la palabra que manda en el tamaño), la
+      entradilla, los dos rótulos y la presentación en dos columnas suizas. */}
+  <header class="ab-hero">
+    <SceneLabel text={t('about.hero.eyebrow')} />
+    <h1 id="about-hero-title" class="ab-hero__title ph-giant" data-reveal>
+      {t('about.hero.titlePre')}<span class="ph-gold">{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
     </h1>
-    <p class="abt-hero__lead ph-head-lead" data-m="lead" data-reveal>{t('about.hero.body1')}</p>
-  </div>
-
-  <!-- Valores y pie en una fila índice, y el resto de la presentación en dos
-       columnas. Mismo texto y mismo orden que antes. Los valores y el pie son
-       letras de tablero: pasan por el abecedario hasta la suya al entrar. -->
-  <div class="ph-rowline abt-hero__rail" data-inview>
-    <span class="ph-rowline__meta abt-hero__values" data-cycle>{t('about.hero.values')}</span>
-    <span class="ph-rowline__meta abt-hero__caption" data-cycle>{t('about.hero.caption')}</span>
-  </div>
-  <div class="abt-intro">
-    <p class="abt-hero__body" data-m="body" data-reveal>{t('about.hero.body2')}</p>
-    <p class="abt-hero__body" data-m="body" data-reveal>{t('about.hero.body3')}</p>
-  </div>
-
-  <!-- 02 MANIFESTO (Now. Next. Forever Football. — explicado por bloques) -->
-  <div class="abt-manifesto" id="historia">
-    <div class="abt-manifesto__head">
-      <Slate text={t('about.manifesto.eyebrow')} />
+    <p class="ab-hero__lead ph-lead" data-reveal>{t('about.hero.body1')}</p>
+    <div class="ab-hero__rail ph-rule" data-inview>
+      <span>{t('about.hero.values')}</span>
+      <span>{t('about.hero.caption')}</span>
     </div>
+    <div class="ab-intro ph-grid">
+      <p class="ab-intro__p ph-body" data-reveal>{t('about.hero.body2')}</p>
+      <p class="ab-intro__p ph-body" data-reveal>{t('about.hero.body3')}</p>
+    </div>
+  </header>
 
-    <div class="abt-manifesto__rows">
-      {[
-        { idx: t('about.manifesto.blocks.now.idx'),     title: t('about.manifesto.blocks.now.title'),     body: t('about.manifesto.blocks.now.body') },
-        { idx: t('about.manifesto.blocks.next.idx'),    title: t('about.manifesto.blocks.next.title'),    body: t('about.manifesto.blocks.next.body') },
-        { idx: t('about.manifesto.blocks.forever.idx'), title: t('about.manifesto.blocks.forever.title'), body: t('about.manifesto.blocks.forever.body') },
-      ].map((row) => (
-        <article class="abt-manifesto__row ph-seam" data-inview>
-          <span class="abt-manifesto__idx"><Flap value={row.idx} size="md" /></span>
-          <h3 class="abt-manifesto__title" data-m="title" data-reveal>{row.title}</h3>
-          <p class="abt-manifesto__body" data-m="body" data-reveal>{row.body}</p>
+  {/* 02 — Filosofía, la pieza de autor de la página: tres cartones de título,
+      «Now.», «Next.» y «Forever Football.», cada uno a pantalla completa con su
+      índice; el siguiente corta al anterior subiendo por encima con un borde
+      duro. Es la respuesta narrativa al lema de la portada. Los cartones se fijan
+      con `position: sticky` (sin JS); con movimiento reducido van apilados. */}
+  <div class="ab-philo" id="historia">
+    <div class="ab-philo__head">
+      <SceneLabel text={t('about.manifesto.eyebrow')} />
+    </div>
+    <div class="ab-philo__cards">
+      {manifesto.map((block, i) => (
+        <article class="ab-card" style={`--i:${i}`} data-card>
+          <div class="ab-card__inner" data-card-inner>
+            <p class="ab-card__idx ph-index">{block.idx}</p>
+            <h3 class:list={['ab-card__title ph-giant', i === 2 && 'ph-gold']} data-card-title>{block.title}</h3>
+            <p class="ab-card__body ph-lead" data-card-body>{block.body}</p>
+          </div>
         </article>
       ))}
     </div>
   </div>
 
-  <!-- 03 EQUIPO -->
-  <div class="abt-team" id="equipo" aria-labelledby="about-team-title">
-    <div class="abt-team__head">
-      <Slate text={t('about.team.eyebrow')} meta={t('about.team.meta')} />
-      <h2 id="about-team-title" class="abt-team__title" data-m="title" data-reveal>
-        {t('about.team.titlePre')}<span class="abt-gold" data-glint>{t('about.team.titleAccent')}</span>{t('about.team.titlePost')}
-      </h2>
-    </div>
-
-    {/* Tablero de salidas: cada fila entra detrás de su línea, con el número en
-        paletas y el destino en letras de tablero. */}
-    <div class="abt-team-table" role="list">
+  {/* 03 — El equipo, como créditos de película: en escritorio, el cargo alineado a
+      la derecha en la columna izquierda y el nombre a la izquierda en la derecha,
+      con un canal en medio; en el móvil, una columna centrada. Entran en cascada
+      suave según se ven, como un rodillo de créditos (sin moverse solos). */}
+  <div class="ab-team" id="equipo" aria-labelledby="about-team-title">
+    <SceneLabel text={t('about.team.eyebrow')} meta={t('about.team.meta')} />
+    <h2 id="about-team-title" class="ab-team__title ph-giant" data-reveal>
+      {t('about.team.titlePre')}<span class="ph-gold">{t('about.team.titleAccent')}</span>{t('about.team.titlePost')}
+    </h2>
+    <ol class="ab-credits" role="list">
       {teamMembers.map((m) => (
-        <div class="abt-team-row ph-seam" role="listitem" data-id={m.id} data-inview>
-          <span class="abt-team-row__idx"><Flap value={m.index} /></span>
-          <div class="abt-team-row__name">
-            <span class="abt-team-row__slot"><span class="abt-team-row__name-text">{m.name}</span></span>
-            <span class="abt-team-row__mobile-extras">
-              {m.role} · {m.country ?? m.defaultLocation}
-            </span>
-          </div>
-          <span class="abt-team-row__role">{m.role}</span>
-          <span class="abt-team-row__flag">
-            <span data-cycle>{(m.country ?? m.defaultLocation).toUpperCase()}</span>
+        <li class="ab-credit" data-id={m.id} data-credit>
+          <span class="ab-credit__left">
+            <span class="ab-credit__idx ph-index">{m.index}</span>
+            <span class="ab-credit__role">{m.role}</span>
           </span>
-        </div>
+          <span class="ab-credit__right">
+            <span class="ab-credit__name">{m.name}</span>
+            <span class="ab-credit__loc">{(m.country ?? m.defaultLocation).toUpperCase()}</span>
+          </span>
+        </li>
       ))}
-    </div>
+    </ol>
   </div>
 
-  <!-- 04 PRESENCIA -->
-  <div class="abt-presencia" id="presencia" aria-labelledby="about-presencia-title">
-    <div class="abt-presencia__eyebrow-row">
-      <Slate text={t('about.presencia.eyebrow')} />
+  {/* 04 — Presencia: «Madrid.» gigante con su rótulo y los seis países como
+      palabras grandes que alternan izquierda y derecha y entran desde su lado con
+      el scroll, con el código ISO en pequeño. */}
+  <div class="ab-pres" id="presencia" aria-labelledby="about-presencia-title">
+    <SceneLabel text={t('about.presencia.eyebrow')} />
+    <div class="ab-pres__hq">
+      <h3 id="about-presencia-title" class="ab-pres__madrid ph-giant" data-reveal>{t('about.presencia.madridTitle')}</h3>
+      <p class="ab-pres__label">{t('about.presencia.madridLabel')}</p>
     </div>
-    <div class="abt-presencia__grid">
-      <div class="abt-presencia__left">
-        <h3 id="about-presencia-title" class="abt-presencia__madrid" data-m="title" data-reveal>
-          {t('about.presencia.madridTitle')}
-        </h3>
-        <div class="abt-presencia__madrid-label" data-m="item" data-reveal>{t('about.presencia.madridLabel')}</div>
-      </div>
-      <div class="abt-presencia__right">
-        <div class="abt-presencia__intl-label" data-m="item" data-reveal>{t('about.presencia.internationalLabel')}</div>
-        {/* Las sedes como un tablero: cada país con su código en paletas. */}
-        <div class="abt-presencia__countries">
-          {internationalCountries.map((c) => (
-            <div class="abt-presencia__country ph-seam" data-inview>
-              <span class="abt-presencia__country-name">{t(`about.presencia.country.${c.key}` as const)}</span>
-              <Flap value={c.iso} class="abt-presencia__iso" />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+    <p class="ab-pres__label ab-pres__label--intl">{t('about.presencia.internationalLabel')}</p>
+    <ul class="ab-pres__list" role="list">
+      {internationalCountries.map((c, i) => (
+        <li class:list={['ab-pres__country ph-rule', i % 2 === 1 && 'is-right']} data-country data-inview>
+          <span class="ab-pres__name">{t(`about.presencia.country.${c.key}` as const)}</span>
+          <span class="ab-pres__iso ph-index">{c.iso}</span>
+        </li>
+      ))}
+    </ul>
   </div>
-
 </section>
 
 <style>
-  .about-section {
-    --abt-gold: var(--color-ph-gold);
-    --abt-ink: var(--color-ph-white);
-    --abt-ink-soft: var(--color-ph-white-80);
-    --abt-ink-faint: var(--color-ph-white-60);
-    --abt-line: var(--color-ph-white-10);
-    --abt-line-strong: var(--color-ph-white-20);
-    --abt-bg: transparent;
-    --abt-bg-2: rgba(255, 255, 255, 0.02);
-    --edge: var(--ph-section-px);
-
+  .ab {
     position: relative;
-    background: var(--abt-bg);
-    color: var(--abt-ink);
+    background: transparent;
+    color: var(--color-ph-white);
   }
 
-  .about-section .abt-gold {
-    color: var(--abt-gold);
-    font-weight: 400;
-    font-style: italic;
-  }
-
-
-  /* ── 01 HERO: misma cabecera que Talentos y Servicios (estilos y cifras en
-     global.css: `.ph-rowline`, `.ph-head-*`) ── */
-  .abt-hero {
+  .ab-hero,
+  .ab-philo,
+  .ab-team,
+  .ab-pres {
     position: relative;
-    padding: var(--ph-head-top) var(--edge) 0;
+    z-index: 1;
+    padding-inline: var(--ph-section-px);
   }
 
-  /* Valores y pie en una fila índice, nada más acabar la entradilla. Son letras
-     de tablero: cambian al entrar. */
-  .abt-hero__rail {
-    margin: var(--ph-head-after) var(--edge) 0;
+  /* ── 01 Cabecera ── */
+  .ab-hero {
+    padding-top: var(--ph-head-top);
+    padding-bottom: clamp(64px, 8vw, 120px);
   }
 
-  /* El resto de la presentación, en dos columnas de lectura cómoda. */
-  .abt-intro {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: clamp(16px, 2vw, 32px);
+  .ab-hero__title {
+    max-width: 12ch;
+    margin-top: clamp(20px, 2.6vw, 36px);
+    font-size: clamp(46px, 13.2vw, 200px);
+  }
+
+  .ab-hero__lead {
+    max-width: 40ch;
+    margin-top: clamp(18px, 2vw, 28px);
+  }
+
+  .ab-hero__rail {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px 24px;
+    margin-top: clamp(36px, 4vw, 56px);
+    padding-top: 14px;
+    font-family: var(--font-body);
+    font-size: var(--ph-small);
+    letter-spacing: 0.04em;
+    color: var(--ph-ink-meta);
+  }
+
+  .ab-intro {
     row-gap: 18px;
-    margin-top: clamp(24px, calc(1.14vw + 19.5px), 36px);
-    padding: 0 var(--edge) clamp(48px, 6vw, 88px);
-    border-bottom: 1px solid var(--abt-line);
-  }
-  .abt-hero__body {
-    margin: 0;
-    max-width: 62ch;
-    font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
-    line-height: 1.65;
-    letter-spacing: 0.003em;
-    color: var(--ph-ink-body);
-    text-wrap: pretty;
-  }
-  .abt-intro .abt-hero__body:nth-child(1) { grid-column: 1 / 7; }
-  .abt-intro .abt-hero__body:nth-child(2) { grid-column: 7 / 13; }
-
-  @media (max-width: 900px) {
-    .abt-intro { grid-template-columns: minmax(0, 1fr); }
-    .abt-intro .abt-hero__body:nth-child(1),
-    .abt-intro .abt-hero__body:nth-child(2) { grid-column: 1 / -1; }
+    margin-top: clamp(24px, 3vw, 40px);
   }
 
-  /* ── 02 MANIFESTO (Now. Next. Forever Football.) ── */
-  .abt-manifesto {
-    padding: clamp(72px, 10vw, 140px) var(--edge);
-    border-bottom: 1px solid var(--abt-line);
-  }
-  .abt-manifesto__head {
-    margin-bottom: clamp(40px, 6vw, 72px);
+  .ab-intro__p {
+    grid-column: 1 / -1;
   }
 
-  .abt-manifesto__rows {
-    border-bottom: 1px solid var(--abt-line);
-  }
-  /* Tres filas del tablero: Now, Next, Forever Football. Cada una con su línea
-     arriba, que se dibuja al entrar, y su número en paletas. */
-  .abt-manifesto__row {
-    --ph-seam-color: var(--abt-line-strong);
-    display: grid;
-    grid-template-columns: 80px 1.3fr 1.7fr;
-    gap: clamp(20px, 3vw, 40px);
-    align-items: start;
-    padding-block: clamp(36px, 5vw, 64px);
-    transition: background var(--ph-dur-move) var(--ph-ease-std);
-  }
-  .abt-manifesto__idx {
-    display: flex;
-    /* Alinea las paletas con la altura de las mayúsculas del título. */
-    padding-top: 0.35em;
-  }
-  /* Estado base (desktop con puntero): blanco display 500, sin itálica.
-     El lockup de marca (oro + itálico, idéntico a .hero-claim__accent) se
-     "desbloquea" al hacer hover. En mobile / touch (sin hover disponible)
-     se aplica directamente como base — ver media queries más abajo. */
-  .abt-manifesto__title {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(40px, 5.5vw, 72px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    margin: 0;
-    color: var(--abt-ink);
-    transition: color var(--ph-dur-move) var(--ph-ease-std);
-  }
-  .abt-manifesto__body {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--abt-ink-soft);
-    margin: 0;
-    max-width: 480px;
-    /* El body alinea ópticamente con el primer descender del título. */
-    padding-top: 0.4em;
+  @media (min-width: 1024px) {
+    .ab-hero__lead {
+      margin-left: calc((100% - 11 * var(--ph-gutter)) / 12 + var(--ph-gutter));
+    }
+
+    .ab-intro__p:nth-child(1) { grid-column: 1 / 7; }
+    .ab-intro__p:nth-child(2) { grid-column: 7 / 13; }
   }
 
-  @media (hover: hover) {
-    .abt-manifesto__row:hover {
-      background: rgba(214, 178, 94, 0.04);
-    }
-    /* Hover desbloquea el lockup de marca: gold + itálico + weight 400
-       (firma del eslogan, idéntica a .hero-claim__accent del home/footer). */
-    .abt-manifesto__row:hover .abt-manifesto__title {
-      color: var(--abt-gold);
-      font-style: italic;
-      font-weight: 400;
-    }
-  }
-  /* La fila que se está leyendo (la del centro de la pantalla) se enciende en
-     dorado: el tablero marca la línea en curso. La pone el script. */
-  .abt-manifesto__row.is-current .abt-manifesto__title {
-    color: var(--abt-gold);
+  /* ── 02 Filosofía: los cartones ── */
+  .ab-philo {
+    padding-top: clamp(40px, 5vw, 64px);
+    border-top: 1px solid var(--ph-hair);
   }
 
-  @media (max-width: 900px) {
-    .abt-manifesto__head {
-      margin-bottom: 40px;
-    }
-    .abt-manifesto__row {
-      grid-template-columns: 1fr;
-      gap: 14px;
-      padding-block: 32px;
-    }
-    /* Sin hover disponible: el lockup gold + itálico aplica como estado base
-       para que la firma de marca sea visible en touch sin necesidad de gesto. */
-    .abt-manifesto__title {
-      color: var(--abt-gold);
-      font-style: italic;
-      font-weight: 400;
-      font-size: clamp(34px, 9vw, 44px);
-    }
-    .abt-manifesto__body {
-      max-width: none;
-    }
-    .abt-manifesto__idx {
-      padding-top: 0;
-    }
+  .ab-philo__cards {
+    margin-inline: calc(-1 * var(--ph-section-px));
   }
 
-  /* ── 03 EQUIPO ── */
-  .abt-team {
-    padding: clamp(72px, 10vw, 140px) var(--edge);
-    border-bottom: 1px solid var(--abt-line);
-  }
-  .abt-team__head {
-    margin-bottom: clamp(32px, 5vw, 64px);
-  }
-  .abt-team__title {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(40px, 9vw, 72px);
-    letter-spacing: -0.035em;
-    margin: clamp(24px, 3vw, 36px) 0 0;
-    line-height: 0.98;
+  /* Sin movimiento: los tres, apilados. */
+  .ab-card {
+    position: relative;
+    z-index: calc(1 + var(--i, 0));
+    background: var(--color-ph-black);
   }
 
-  .abt-team-table {
-    border-bottom: 1px solid var(--abt-line);
-  }
-  /* Tablero de salidas: cada fila con su línea arriba. La fila entra detrás de
-     su línea; el nombre sube por su ranura y el destino pasa por el abecedario. */
-  /* Cuatro columnas: número, nombre, cargo y sede. Con tres, la sede caía en una
-     línea aparte debajo del número. */
-  .abt-team-row {
-    display: grid;
-    grid-template-columns: 60px minmax(0, 1.4fr) minmax(0, 1.2fr) minmax(7em, auto);
-    gap: 24px;
-    align-items: center;
-    padding-block: clamp(18px, 2.5vw, 28px);
-    transition: background var(--ph-dur-move) var(--ph-ease-std);
-  }
-  .abt-team-row > * {
-    transition: opacity 480ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 100ms);
-  }
-  :global(html.ph-anim) .abt-team-row:not(.is-inview) > * {
-    opacity: 0;
-  }
-  .abt-team-row__slot {
-    display: block;
-    overflow: hidden;
-  }
-  .abt-team-row__name-text {
-    display: block;
-    transition:
-      transform var(--ph-dur-roll) var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 120ms),
-      color var(--ph-dur-move) var(--ph-ease-std);
-  }
-  :global(html.ph-anim) .abt-team-row:not(.is-inview) .abt-team-row__name-text {
-    transform: translateY(110%);
-  }
-  /* Sin el JS de movimiento, a los 2,5 s en su sitio (global.css, «Red de
-     seguridad»). */
-  :global(html.ph-anim:not(.ph-motion)) .abt-team-row__name-text {
-    animation: ph-motion-failsafe 0s linear 2.5s forwards;
-  }
-  @media (hover: hover) {
-    .abt-team-row:hover {
-      background: rgba(214, 178, 94, 0.04);
-    }
-    .abt-team-row:hover .abt-team-row__name-text {
-      color: var(--abt-gold);
-    }
-  }
-  .abt-team-row__idx {
-    display: flex;
-  }
-  .abt-team-row__name-text {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(22px, 2.4vw, 34px);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    transition: color 300ms var(--ease-ph, ease);
-  }
-  .abt-team-row__role {
-    font-size: 13px;
-    line-height: 1.4;
-    color: var(--ph-ink-lead);
-  }
-  .abt-team-row__flag {
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
-    font-size: 13px;
-    letter-spacing: 0.06em;
-    color: var(--ph-ink-meta);
-  }
-  .abt-team-row__mobile-extras {
-    display: none;
-  }
-
-  @media (max-width: 900px) {
-    .abt-team-row {
-      grid-template-columns: 40px 1fr;
-      gap: 10px;
-      padding-block: 18px;
-    }
-    .abt-team-row__role,
-    .abt-team-row__flag {
-      display: none;
-    }
-    .abt-team-row__name {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .abt-team-row__mobile-extras {
-      display: block;
-      font-size: 13px;
-      color: var(--ph-ink-meta);
-      font-style: normal;
-      line-height: 1.5;
-    }
-  }
-
-  /* ── 04 PRESENCIA ── */
-  .abt-presencia {
-    padding: clamp(60px, 9vw, 100px) var(--edge);
-    border-bottom: 1px solid var(--abt-line);
-  }
-  .abt-presencia__eyebrow-row {
-    margin-bottom: 32px;
-  }
-  .abt-presencia__grid {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: clamp(40px, 6vw, 80px);
-    align-items: end;
-    padding-top: clamp(32px, 4vw, 48px);
-  }
-  .abt-presencia__madrid {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(64px, 12vw, 144px);
-    letter-spacing: -0.05em;
-    line-height: 0.9;
-    margin: 0 0 0 -0.04em;
-  }
-  .abt-presencia__madrid-label {
-    font-size: 13px;
-    letter-spacing: 0.05em;
-    color: var(--ph-ink-meta);
-    margin-top: 16px;
-  }
-  .abt-presencia__intl-label {
-    font-size: 13px;
-    letter-spacing: 0.05em;
-    color: var(--ph-ink-meta);
-    margin-bottom: 12px;
-  }
-  .abt-presencia__countries {
+  .ab-card__inner {
     display: flex;
     flex-direction: column;
-    border-bottom: 1px solid var(--abt-line);
-  }
-  /* Las sedes, como filas de tablero: el país a la izquierda y su código en
-     paletas a la derecha. */
-  .abt-presencia__countries {
-    gap: 0;
-  }
-  .abt-presencia__country {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-block: 10px;
-    font-family: var(--font-body);
-    font-size: 15px;
-    color: var(--abt-ink);
-  }
-  .abt-presencia__country-name {
-    transition: opacity 480ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 100ms);
-  }
-  :global(html.ph-anim) .abt-presencia__country:not(.is-inview) .abt-presencia__country-name {
-    opacity: 0;
+    justify-content: center;
+    gap: clamp(16px, 2vw, 28px);
+    padding: clamp(56px, 8vw, 104px) var(--ph-section-px);
   }
 
-  @media (max-width: 900px) {
-    .abt-presencia__grid {
-      grid-template-columns: 1fr;
-      align-items: stretch;
-      gap: 32px;
+  .ab-card__idx {
+    margin: 0;
+  }
+
+  .ab-card__title {
+    font-size: min(36vw, calc(var(--ph-viewport-h) * 0.42));
+    line-height: 0.84;
+    transform-origin: 0% 100%;
+  }
+
+  /* «Forever Football.» es más larga: va en dos líneas, a menos tamaño. */
+  .ab-card:last-child .ab-card__title {
+    font-size: min(18vw, calc(var(--ph-viewport-h) * 0.2));
+  }
+
+  .ab-card__body {
+    max-width: 34ch;
+    transition:
+      opacity 420ms var(--ph-ease-out),
+      transform 520ms var(--ph-ease-out);
+  }
+
+  @media (min-width: 1024px) {
+    .ab-card__title {
+      font-size: min(30vw, calc(var(--ph-viewport-h) * 0.6));
     }
 
+    .ab-card:last-child .ab-card__title {
+      font-size: min(15vw, calc(var(--ph-viewport-h) * 0.32));
+    }
+
+    .ab-card__body {
+      margin-left: calc((100% - 11 * var(--ph-gutter)) / 12 * 7 + var(--ph-gutter) * 7);
+    }
   }
 
+  /* Con movimiento: cada cartón ocupa la pantalla y se queda fijado; el
+     siguiente sube por encima con un borde duro (el corte). El margen de debajo
+     de cada uno es lo que dura en pantalla antes del corte. El contenido va al
+     centro, y el índice arriba a la izquierda, como el rótulo de escena. */
+  :global(html.ph-anim) .ab-philo__cards {
+    padding-bottom: calc(var(--ph-viewport-h) * 0.4);
+  }
+
+  :global(html.ph-anim) .ab-card {
+    position: sticky;
+    top: 0;
+    height: var(--ph-viewport-h);
+    overflow: hidden; /* Safari < 16 no conoce `clip` */
+    overflow: clip;
+  }
+
+  :global(html.ph-anim) .ab-card + .ab-card {
+    margin-top: calc(var(--ph-viewport-h) * 0.4);
+    box-shadow: inset 0 1px 0 var(--ph-hair-strong);
+  }
+
+  :global(html.ph-anim) .ab-card__inner {
+    position: relative;
+    height: 100%;
+    justify-content: center;
+    padding-block: calc(var(--ph-head-top) + 28px) 40px;
+  }
+
+  :global(html.ph-anim) .ab-card__idx {
+    position: absolute;
+    top: var(--ph-head-top);
+    left: var(--ph-section-px);
+  }
+
+  /* El texto de cada cartón aparece cuando el título asienta (lo marca el JS con
+     `is-set`). Sin JS, siempre a la vista. */
+  :global(html.ph-anim.ph-motion) .ab-card:not(.is-set) .ab-card__body {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  /* ── 03 Equipo: créditos ── */
+  .ab-team {
+    padding-top: clamp(72px, 10vw, 144px);
+    padding-bottom: clamp(72px, 10vw, 144px);
+  }
+
+  .ab-team__title {
+    margin-top: clamp(28px, 4vw, 56px);
+    font-size: clamp(56px, 16vw, 220px);
+  }
+
+  .ab-credits {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(22px, 2.6vw, 30px);
+    margin: clamp(48px, 7vw, 104px) 0 0;
+    padding: 0;
+    list-style: none;
+    text-align: center;
+  }
+
+  /* Móvil: una columna centrada; el cargo encima y el nombre debajo, con la sede
+     pequeña detrás. */
+  .ab-credit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ab-credit__left {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .ab-credit__role {
+    font-family: var(--font-body);
+    font-size: var(--ph-small);
+    line-height: 1.35;
+    letter-spacing: 0.02em;
+    color: var(--ph-ink-meta);
+  }
+
+  .ab-credit__right {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    gap: 4px 10px;
+  }
+
+  .ab-credit__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(20px, calc(0.4vw + 18.4px), 24px);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    color: var(--color-ph-white);
+  }
+
+  .ab-credit__loc {
+    font-family: var(--font-body);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--ph-ink-meta);
+  }
+
+  /* Escritorio: dos columnas con un canal central. Cargo a la derecha (y el
+     índice al borde izquierdo), nombre a la izquierda. */
+  @media (min-width: 768px) {
+    .ab-credits {
+      gap: clamp(14px, 1.4vw, 20px);
+      text-align: left;
+    }
+
+    .ab-credit {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: clamp(32px, 5vw, 80px);
+      align-items: baseline;
+    }
+
+    .ab-credit__left {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .ab-credit__role {
+      text-align: right;
+    }
+
+    .ab-credit__right {
+      justify-content: flex-start;
+    }
+  }
+
+  /* ── 04 Presencia ── */
+  .ab-pres {
+    padding-top: clamp(72px, 10vw, 144px);
+    padding-bottom: clamp(96px, 12vw, 176px);
+    border-top: 1px solid var(--ph-hair);
+  }
+
+  .ab-pres__hq {
+    margin-top: clamp(28px, 4vw, 56px);
+  }
+
+  /* «Madrid.» mide 3,3 em de Söhne 700: a 26vw cabe con sus márgenes. */
+  .ab-pres__madrid {
+    font-size: clamp(72px, 26vw, 380px);
+  }
+
+  .ab-pres__label {
+    margin: 14px 0 0;
+    font-family: var(--font-body);
+    font-size: var(--ph-small);
+    letter-spacing: 0.04em;
+    color: var(--ph-ink-lead);
+  }
+
+  .ab-pres__label--intl {
+    margin-top: clamp(48px, 7vw, 96px);
+  }
+
+  .ab-pres__list {
+    margin: 16px calc(-1 * var(--ph-section-px)) 0;
+    padding: 0 var(--ph-section-px);
+    list-style: none;
+    overflow-x: hidden; /* Safari < 16 no conoce `clip` */
+    overflow-x: clip;
+  }
+
+  .ab-pres__country {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding-block: clamp(10px, 1.4vw, 18px);
+  }
+
+  .ab-pres__country.is-right {
+    flex-direction: row-reverse;
+  }
+
+  .ab-pres__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(36px, 10vw, 150px);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--color-ph-white);
+  }
 </style>
 
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, stage, rollIn, riseIn, mountSection, afterTransitionPaint,
+    reducedMotion, riseWords, fadeUp, mountSection, afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
-  import { cascade } from '@/scripts/ph-motion';
 
   gsap.registerPlugin(ScrollTrigger);
 
-  let currentRowObserver: IntersectionObserver | null = null;
-
-  function initAboutAnimations(): void {
-    const section = document.querySelector<HTMLElement>('.about-section');
+  function initAbout(): void {
+    const section = document.querySelector<HTMLElement>('.ab');
     if (!section) return;
 
     if (!reducedMotion()) {
-      // Cabecera: pizarra, «Representar» rodando con su luz y la entradilla.
-      const hero = section.querySelector<HTMLElement>('.abt-hero');
-      if (hero) stage(hero, { glint: true });
-      // Los dos párrafos de la presentación suben enteros, uno tras otro. Antes
-      // entraban palabra a palabra con desenfoque (135 piezas con `filter: blur`):
-      // era el tirón de 217-359 ms al entrar en la página (docs/rendimiento.md).
-      riseIn(section.querySelectorAll<HTMLElement>('.abt-intro [data-m="body"]'), { delay: 0.45, stagger: 0.1 });
+      // Cabecera: el titular sube por palabras; detrás, la entradilla y los dos
+      // párrafos.
+      const title = section.querySelector<HTMLElement>('.ab-hero__title');
+      if (title) riseWords(title, { delay: 0.06, stagger: 0.06 });
+      fadeUp(section.querySelectorAll<HTMLElement>('.ab-hero__lead'), { delay: 0.32 });
+      fadeUp(section.querySelectorAll<HTMLElement>('.ab-intro__p'), { delay: 0.42, stagger: 0.1 });
 
-      // Manifiesto: cada fila rueda su título y sube su texto al entrar.
-      section.querySelectorAll<HTMLElement>('.abt-manifesto__row').forEach((row) => {
-        const title = row.querySelector<HTMLElement>('[data-m="title"]');
-        const body = row.querySelector<HTMLElement>('[data-m="body"]');
-        if (title) rollIn(title, { trigger: row, delay: 0.12 });
-        if (body) riseIn(body, { trigger: row, delay: 0.26 });
+      // Filosofía: cada cartón asienta su título mientras sube (ligado al scroll)
+      // y su contenido va por detrás del borde, como una máscara. El texto
+      // aparece cuando el cartón llega arriba.
+      section.querySelectorAll<HTMLElement>('[data-card]').forEach((card, i) => {
+        const inner = card.querySelector<HTMLElement>('[data-card-inner]');
+        const cardTitle = card.querySelector<HTMLElement>('[data-card-title]');
+        if (i > 0 && inner) {
+          gsap.fromTo(
+            inner,
+            { y: () => -window.innerHeight * 0.3 },
+            { y: 0, ease: 'none', scrollTrigger: { trigger: card, start: 'top bottom', end: 'top top', scrub: true, invalidateOnRefresh: true } },
+          );
+        }
+        if (cardTitle) {
+          gsap.fromTo(
+            cardTitle,
+            { scale: 1.08 },
+            { scale: 1, ease: 'none', scrollTrigger: { trigger: card, start: 'top bottom', end: 'top top', scrub: 0.3 } },
+          );
+        }
+        ScrollTrigger.create({
+          trigger: card,
+          start: 'top 12%',
+          onEnter: () => card.classList.add('is-set'),
+          onLeaveBack: () => card.classList.remove('is-set'),
+        });
       });
 
-      const team = section.querySelector<HTMLElement>('.abt-team');
-      if (team) stage(team, { glint: true });
-      cascade(section.querySelectorAll<HTMLElement>('.abt-team-row'), 45);
+      // El equipo: titular por palabras y los créditos entrando en tandas, según
+      // aparecen (un rodillo que mueve el scroll, no el tiempo).
+      const teamTitle = section.querySelector<HTMLElement>('.ab-team__title');
+      if (teamTitle) riseWords(teamTitle, { stagger: 0.06 });
+      const credits = section.querySelectorAll<HTMLElement>('[data-credit]');
+      gsap.set(credits, { opacity: 0, y: 14 });
+      ScrollTrigger.batch(credits, {
+        start: 'top 92%',
+        once: true,
+        onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration: 0.5, ease: 'ph-out', stagger: 0.06, overwrite: true }),
+      });
 
-      const presencia = section.querySelector<HTMLElement>('.abt-presencia');
-      if (presencia) stage(presencia);
-      cascade(section.querySelectorAll<HTMLElement>('.abt-presencia__country'), 70);
-
-      // La fila del manifiesto que está en el centro de la pantalla se enciende.
-      currentRowObserver?.disconnect();
-      currentRowObserver = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) entry.target.classList.toggle('is-current', entry.isIntersecting);
-        },
-        { rootMargin: '-45% 0px -45% 0px' },
-      );
-      section.querySelectorAll('.abt-manifesto__row').forEach((row) => currentRowObserver!.observe(row));
+      // Presencia: «Madrid.» sube y cada país entra desde su lado con el scroll.
+      const madrid = section.querySelector<HTMLElement>('.ab-pres__madrid');
+      if (madrid) riseWords(madrid);
+      section.querySelectorAll<HTMLElement>('[data-country]').forEach((country) => {
+        const fromRight = country.classList.contains('is-right');
+        gsap.fromTo(
+          country.children,
+          { x: () => (fromRight ? 1 : -1) * window.innerWidth * 0.22, opacity: 0.2 },
+          {
+            x: 0,
+            opacity: 1,
+            ease: 'none',
+            scrollTrigger: { trigger: country, start: 'top 98%', end: 'top 62%', scrub: 0.3, invalidateOnRefresh: true },
+          },
+        );
+      });
     }
 
     mountSection(section);
   }
 
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initAboutAnimations));
-  document.addEventListener('astro:before-swap', () => {
-    currentRowObserver?.disconnect();
-    currentRowObserver = null;
-  });
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initAbout));
 </script>
 
 <script>
-  // Fondo animado de la cabecera (se inicia solo en cada astro:page-load).
+  // Fondo vivo de la página (se inicia solo en cada astro:page-load).
   import '@/scripts/ph-ambient';
 </script>

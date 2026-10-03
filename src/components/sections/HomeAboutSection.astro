@@ -1,8 +1,7 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
-import Slate from '@/components/ui/Slate.astro';
-import Flap from '@/components/ui/Flap.astro';
-import Key from '@/components/ui/Key.astro';
+import SceneLabel from '@/components/ui/SceneLabel.astro';
+import TitleLink from '@/components/ui/TitleLink.astro';
 
 interface Props {
   lang: Lang;
@@ -12,182 +11,198 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const aboutHref = localizePath('/sobre-nosotros/', lang);
-// Países donde opera PHSPORT: sale del texto traducido, la misma fuente que el
-// resto de menciones (ver la nota de `about.team.meta` en es.ts).
-const countriesValue = t('home.about.stats.countries.value');
+const values = [t('home.about.values.v1'), t('home.about.values.v2'), t('home.about.values.v3')];
 ---
 
-{/* La declaración de la agencia y sus cifras, que caen en el marcador al entrar:
-    los países y el 360. En pantallas anchas, la declaración a la izquierda y el
-    marcador a la derecha; en el resto, uno debajo del otro. */}
-<section class="home-about" id="sobre-nosotros" aria-labelledby="home-about-title">
-  <Slate text={t('home.about.eyebrow')} />
-  <div class="home-about__inner">
-    <div class="home-about__head">
-      <h2 class="home-about__title" id="home-about-title" data-m="title" data-reveal>
-        <span>{t('home.about.title')}</span>
-        <em data-glint>{t('home.about.titleAccent')}</em>
-      </h2>
-      <p class="home-about__body" data-m="lead" data-reveal>{t('home.about.body')}</p>
-      <div class="home-about__cta" data-m="item" data-reveal>
-        <Key href={aboutHref} label={t('home.about.cta')} />
+{/* Cuarta escena de la portada: la declaración de la agencia a escala gigante,
+    que se enciende al leerla («pero las personas marcan.» en oro); el texto y el
+    enlace; y las cifras —7 y 360°— enormes, cada una con su etiqueta a la altura
+    de su línea base, en una composición asimétrica que entra de desenfoque a
+    nítido. Los valores cierran en una línea que también se lee encendiéndose. */}
+<section class="ha" id="sobre-nosotros" aria-labelledby="home-about-title">
+  <SceneLabel text={t('home.about.eyebrow')} />
+
+  <h2 class="ha__title ph-giant" id="home-about-title" data-kinetic>
+    {t('home.about.title')} <span class="ph-gold">{t('home.about.titleAccent')}</span>
+  </h2>
+
+  <div class="ha__grid ph-grid">
+    <div class="ha__text">
+      <p class="ha__body ph-lead" data-reveal>{t('home.about.body')}</p>
+      <div class="ha__cta">
+        <TitleLink href={aboutHref} label={t('home.about.cta')} />
       </div>
     </div>
 
-    <div class="home-about__board">
-      <dl class="home-about__stats" aria-label={t('home.about.stats.aria')}>
-        <div class="home-about__stat ph-seam" data-inview>
-          <dt class="home-about__stat-value">
-            <Flap value={countriesValue} size="xl" />
-          </dt>
-          <dd class="home-about__stat-label">{t('home.about.stats.countries.label')}</dd>
-        </div>
-        <div class="home-about__stat ph-seam" data-inview>
-          <dt class="home-about__stat-value">
-            <Flap value="360" size="xl" /><span class="home-about__stat-unit" aria-hidden="true">°</span>
-          </dt>
-          <dd class="home-about__stat-label">{t('home.about.stats.service.label')}</dd>
-        </div>
-      </dl>
-
-      <ul class="home-about__values ph-seam" aria-label={t('home.about.values.aria')} role="list" data-inview>
-        <li data-cycle>{t('home.about.values.v1')}</li>
-        <li aria-hidden="true" class="home-about__values-sep">·</li>
-        <li data-cycle>{t('home.about.values.v2')}</li>
-        <li aria-hidden="true" class="home-about__values-sep">·</li>
-        <li data-cycle>{t('home.about.values.v3')}</li>
-      </ul>
-    </div>
+    <dl class="ha__stats" aria-label={t('home.about.stats.aria')}>
+      <div class="ha__stat ha__stat--countries">
+        <dt class="ha__num" data-focus>{t('home.about.stats.countries.value')}</dt>
+        <dd class="ha__label">{t('home.about.stats.countries.label')}</dd>
+      </div>
+      <div class="ha__stat ha__stat--service">
+        <dt class="ha__num" data-focus>{t('home.about.stats.service.value')}</dt>
+        <dd class="ha__label">{t('home.about.stats.service.label')}</dd>
+      </div>
+    </dl>
   </div>
+
+  <ul class="ha__values" aria-label={t('home.about.values.aria')} role="list" data-kinetic>
+    {values.map((v, i) => (
+      <>
+        {i > 0 && <li class="ha__values-sep" aria-hidden="true">·</li>}
+        <li>{v}</li>
+      </>
+    ))}
+  </ul>
 </section>
 
 <style>
-  .home-about {
-    padding: clamp(64px, 9vw, 128px) var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(80px, 11vw, 150px);
-    background: var(--color-ph-black, #0d0f12);
-    color: var(--color-ph-white, #ffffff);
+  .ha {
+    position: relative;
+    z-index: 2;
+    background: var(--color-ph-black);
+    padding: clamp(72px, 10vw, 144px) var(--ph-section-px) clamp(96px, 12vw, 168px);
   }
 
-  .home-about__inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: clamp(48px, 7vw, 96px);
-    margin-top: clamp(28px, 4vw, 48px);
+  .ha__title {
+    max-width: 14ch;
+    margin-top: clamp(32px, 5vw, 64px);
+    font-size: 13vw;
+    line-height: 0.88;
+    text-wrap: balance;
   }
 
-  /* A dos columnas solo cuando el marcador cabe entero a la derecha: con 1024 px
-     el «360°» y su etiqueta se salían de la pantalla. */
-  @media (min-width: 1200px) {
-    .home-about__inner {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-      align-items: end;
+  @media (min-width: 1024px) {
+    .ha__title {
+      max-width: 16ch;
+      font-size: 7.5vw;
     }
   }
 
-  .home-about__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(40px, 10.5vw, 84px);
-    letter-spacing: -0.04em;
-    line-height: 0.98;
-    margin: 0;
-    text-wrap: balance;
-  }
-  .home-about__title span { display: block; }
-  .home-about__title em {
-    display: block;
-    color: var(--color-ph-gold, #d6b25e);
-    font-style: italic;
-    font-weight: 400;
+  .ha__grid {
+    row-gap: clamp(56px, 8vw, 96px);
+    margin-top: clamp(48px, 6vw, 88px);
   }
 
-  .home-about__body {
-    margin: clamp(22px, 2.5vw, 30px) 0 0;
-    max-width: 52ch;
-    color: var(--ph-ink-body);
-    font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
-    line-height: 1.65;
+  .ha__text {
+    grid-column: 1 / -1;
   }
 
-  .home-about__cta {
-    margin-top: clamp(28px, 4vw, 40px);
+  .ha__cta {
+    margin-top: clamp(28px, 3vw, 40px);
   }
 
-  /* El marcador: cada cifra en su fila, con la línea encima. */
-  .home-about__stats {
-    margin: 0;
-    padding: 0;
-  }
-
-  /* La cifra y su etiqueta, juntas: se leen como un par, no como dos cosas en
-     los extremos de la fila. */
-  .home-about__stat {
+  /* Las cifras: Söhne 700 enorme, la etiqueta pequeña en su línea base.
+     Asimétricas: el 7 a la izquierda con la etiqueta a su derecha; el 360° contra
+     el margen derecho, con la etiqueta a su izquierda. */
+  .ha__stats {
+    grid-column: 1 / -1;
     display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: clamp(16px, 2vw, 24px);
+    flex-direction: column;
+    gap: 4px;
     margin: 0;
-    padding: clamp(18px, 2.4vw, 28px) 0;
   }
 
-  .home-about__stat-value {
-    display: inline-flex;
-    align-items: flex-start;
+  .ha__stat {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
     margin: 0;
-    color: var(--color-ph-gold, #d6b25e);
   }
-  .home-about__stat-unit {
-    margin-left: 0.12em;
+
+  .ha__stat--service {
+    flex-direction: row-reverse;
+  }
+
+  .ha__num {
+    margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(28px, calc(2.4vw + 18px), 52px);
-    line-height: 1;
-    color: var(--color-ph-gold, #d6b25e);
+    font-weight: 700;
+    font-size: 44vw;
+    line-height: 0.8;
+    letter-spacing: -0.06em;
+    color: var(--color-ph-white);
+    transform-origin: 0% 100%;
   }
-  .home-about__stat-label {
+
+  .ha__stat--service .ha__num {
+    font-size: 26vw;
+    transform-origin: 100% 100%;
+  }
+
+  .ha__label {
     margin: 0;
-    font-size: clamp(14px, calc(0.1vw + 13.6px), 15px);
+    font-family: var(--font-body);
+    font-size: var(--ph-small);
+    letter-spacing: 0.02em;
     color: var(--ph-ink-lead);
   }
 
-  /* Valores: letras de tablero de salidas, que pasan por el abecedario hasta la
-     suya al entrar (el ancho se queda quieto mientras cambian). Letra normal: la
-     monoespaciada es solo para cifras. */
-  .home-about__values {
-    list-style: none;
+  @media (min-width: 1024px) {
+    .ha__text {
+      grid-column: 1 / 6;
+      align-self: end;
+    }
+
+    .ha__stats {
+      grid-column: 7 / 13;
+    }
+
+    .ha__num {
+      font-size: 22vw;
+    }
+
+    .ha__stat--service .ha__num {
+      font-size: 14vw;
+    }
+  }
+
+  /* Los valores: una línea de tamaño medio. */
+  .ha__values {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px 14px;
-    margin: 0;
-    padding: clamp(18px, 2.4vw, 24px) 0 0;
-    font-family: var(--font-body);
-    font-size: 13px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ph-ink-lead);
+    align-items: baseline;
+    gap: 0 0.5em;
+    margin: clamp(56px, 8vw, 104px) 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--ph-mid);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--color-ph-white);
   }
-  .home-about__values li { margin: 0; }
-  .home-about__values-sep { color: var(--color-ph-gold, #d6b25e); }
+
+  .ha__values li {
+    margin: 0;
+  }
+
+  .ha__values-sep {
+    color: var(--color-ph-gold);
+  }
 </style>
 
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, stage, mountSection, afterTransitionPaint,
+    reducedMotion, kinetic, fadeUp, rackFocus, mountSection, afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
-  import { cascade } from '@/scripts/ph-motion';
 
   gsap.registerPlugin(ScrollTrigger);
 
-  function initHomeAboutAnimations(): void {
-    const section = document.querySelector<HTMLElement>('.home-about');
+  function initHomeAbout(): void {
+    const section = document.querySelector<HTMLElement>('.ha');
     if (!section) return;
     if (!reducedMotion()) {
-      stage(section, { glint: true });
-      cascade(section.querySelectorAll<HTMLElement>('.home-about__board .ph-seam'), 110);
+      section.querySelectorAll<HTMLElement>('[data-kinetic]').forEach((el) => kinetic(el));
+      fadeUp(section.querySelectorAll<HTMLElement>('.ha__body'));
+      // Las cifras entran de desenfoque a nítido, una detrás de otra.
+      rackFocus(section.querySelectorAll<HTMLElement>('[data-focus]'), { trigger: section.querySelector('.ha__stats') ?? section });
     }
     mountSection(section);
   }
 
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeAboutAnimations));
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeAbout));
 </script>

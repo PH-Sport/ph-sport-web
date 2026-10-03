@@ -13,8 +13,178 @@ leído el resto.
 
 ---
 
+## 2026-10-03 · Variante B «Títulos»: la web como la secuencia de títulos de crédito de una película
+
+> **Estado: propuesta en la rama `feat/variante-b-titulos`, sin fusionar.** Es una
+> de las tres variantes completas que pidió Mario el 2026-10-03; las otras dos van
+> en sus propias ramas. Sale de `feat/rediseno-motion` (commit `e0c6360`). Si no se
+> elige, esta entrada se queda en esta rama y no existe en `preview` ni en `main`.
+
+**Qué pidió Mario.** Después de ver el «Marcador» (entrada siguiente), aclaró que
+«no tocar las secciones» quería decir no alterar la distribución de la web —las 4
+rutas con sus idiomas—, pero **sí** la del contenido dentro de cada una: los textos
+son los mismos y la innovación tenía que estar en el diseño. Su valoración del
+Marcador: «el rediseño actual apenas cambia nada». Pidió tres variantes completas,
+con todas las secciones, funciones y clics, y las decisiones de diseño delegadas.
+
+**La idea.** La web es la **secuencia de títulos de crédito de una película sobre
+PHSPORT**. La tipografía es la imagen: palabras gigantes de Söhne 700 que cortan la
+pantalla, se desplazan y cambian de escala con el scroll; frases que se encienden
+palabra a palabra mientras se leen; imágenes que se abren desde una rendija o se
+ven a través de las letras. Cada bloque es una escena con un solo enunciado
+dominante, y las escenas se suceden por **cortes**. Reglas del mundo:
+
+- Solo negro de fondo; el contraste lo dan la escala y los cortes, no el color.
+- Dos escalas y casi nada en medio: gigante (Söhne 700, interlineado 0,82-0,9,
+  interletraje −0,045 em) y pequeña (Helvetica 13-18 px), más un intermedio para
+  filas y nombres (Söhne 600, 20-40 px).
+- Retícula suiza visible por alineación: 4 columnas en el móvil, 12 en escritorio.
+- Los antetítulos son **rótulos de escena** (el número de escena de un guion):
+  siempre arriba a la izquierda, con un hilo corto que los une al borde.
+- Oro: una palabra o frase por escena, la que ya marca el contenido, **sin
+  cursiva** (las cursivas de Söhne eran sintéticas, `hallazgos-abiertos.md`).
+
+Cómo está hecho, pieza a pieza: `ARCHITECTURE.md` («Sistema de animaciones» y
+«Sistema de diseño»).
+
+**Qué cambia en cada página** (mismas rutas, mismos textos, mismo orden de bloques):
+
+- **Común**: cabecera casi invisible (sin cápsula ni cristal; las letras de cada
+  enlace suben en cascada al señalarlo; un hilo dorado bajo la página actual); el
+  selector de idioma es «ES» con su hilo y un panel que cae como una lista de
+  títulos, **sin banderas**; el menú móvil es negro a pantalla completa con las
+  cuatro páginas como palabras gigantes; el pie son los créditos finales (el lema
+  entra desde los lados con el scroll y se asienta entero al final de la página,
+  y columnas suizas); el **cambio de página es un
+  cartón de título** con el nombre de la página de destino; la **intro** es un
+  corte seco: un hilo, el logo se abre desde esa rendija y corta al neón en el
+  mismo sitio.
+- **Portada**: el lema «Now. / Next. / Forever Football.» compuesto a escala de
+  pantalla sobre el neón, en una escena fijada que lo descompone al bajar; la
+  escena de Talentos **corta** por encima; «El roster.» más ancho que la pantalla,
+  viajando; «Representamos con propósito.» y «Las marcas suman…» se encienden al
+  leerlas; las áreas, un índice tipográfico; 7 y 360° entran de desenfoque a
+  nítido; y la pieza de autor: **«Hablemos.» con la foto del sobre dentro de las
+  letras, y la cámara que entra por el punto final** hasta que la foto llena la
+  pantalla y aparece el correo.
+- **Talentos**: controles tipográficos (el buscador es una línea de escritura; rol
+  y orden, palabras conmutables como grupos de radio); las fotos se abren como una
+  persiana; al señalar una tarjeta, las demás bajan de tono (foco de escena).
+- **Servicios**: índice de áreas, una banda «ACOMPAÑAMIENTO 360º · SERVICIO 365»
+  que viaja, y cada pilar como escena: título gigante y su imagen abriéndose desde
+  una rendija a la altura del título, alternando lados.
+- **Sobre nosotros**: pieza de autor: **Filosofía como tres cartones de título**
+  («Now.», «Next.», «Forever Football.») fijados y cortados uno sobre otro; el
+  equipo como **créditos de película**; Presencia con los países entrando cada uno
+  desde su lado.
+- **Legales**: solo heredan cabecera y pie, como hasta ahora.
+
+**Decisiones de construcción** (las que no se deducen leyendo el código):
+
+- **Escenas fijadas con `position: sticky` y ScrollTrigger en modo scrub**, no con
+  el `pin` de GSAP: sin pin-spacer que mueva el layout al refrescar ni al navegar,
+  y el contenido se ve aunque falle el JS. El alto de las pistas depende de
+  `html.ph-anim` (se decide antes del primer pintado y se copia en cada
+  navegación), **no del JS**: así la restauración del scroll al volver atrás cae en
+  su sitio (medido en Chromium y WebKit: vuelve exacto y la escena se recompone).
+- **El corte entre escenas** es la escena siguiente subiendo por encima de la
+  fijada con un borde duro, y su contenido un poco por detrás del borde (se lee
+  como una máscara que avanza). Sin JS, el corte sigue siendo CSS puro.
+- **El cartón de título** es `.ph-stinger`, la pieza fija con nombre propio de View
+  Transition que ya existía. Sube en 100 ms y **el ClientRouter espera a que tape**
+  (se envuelve el `loader` de `astro:before-preparation`, que Astro deja
+  reescribir); en la página nueva sale por arriba (160 ms). Solo `transform`: no
+  depende del hilo principal mientras se monta la página. Como el cartón tapa el
+  cambio, `page-main` ya no se funde (la foto vieja se oculta y la nueva aparece
+  tal cual); con movimiento reducido no hay cartón y vuelve un fundido corto. **No
+  se toca cómo se fotografía la página**, que es lo que `hallazgos-abiertos.md`
+  pide no tocar sin Mario: solo la animación de esa foto.
+- **«Hablemos.»**: capa negra con el texto en blanco en `mix-blend-mode: multiply`
+  sobre la foto, escalada hacia el centro del punto final (medido en el navegador
+  con las métricas de la fuente, en cada idioma). Encima, el negro de la página en
+  `lighten`: con `multiply` solo, el negro saldría más negro que la página y con un
+  fantasma de la foto. El desplazamiento hacia el centro se limita a lo que
+  permite la escala, para que la capa nunca destape la foto por sus bordes.
+- **Acordeones sin animar `height`**: el panel ocupa su sitio y lo de debajo se
+  desliza con FLIP (`transform`); el texto aparece con una máscara. Sin JS, un
+  `<noscript>` deja los paneles abiertos.
+- **Lectura cinética** con palabras en `<span>` en línea, sin tocar ARIA: un lector
+  de pantalla lee la frase entera. No se usa el SplitText de GSAP, que pone
+  `aria-label` en el párrafo y oculta las palabras.
+- **Entrada por letras**: al terminar se devuelve el HTML original, porque partir
+  en letras pierde el interletraje de la fuente.
+- **El fondo vivo de las páginas interiores** pasa a una escena nueva,
+  «proyección»: grano de película a 24 fps y un halo cálido muy tenue detrás del
+  titular (`ph-ambient.ts`). Sustituye a las tres escenas doradas del 2026-10-01:
+  con titulares gigantes y fotos en rectángulos duros, las líneas y destellos
+  dorados competían con la tipografía, que aquí es la imagen.
+- **La cabecera va siempre por encima** (z-index 110): del menú móvil y del cartón,
+  para que el hilo de la página actual se deslice mientras el cartón tapa.
+
+**Alternativas descartadas**:
+
+- *El `pin` de GSAP* para las escenas fijadas: mete un contenedor que cambia el
+  alto de la página al refrescar y al navegar, y sin JS no hay escena.
+- *Cartón con `clip-path`*: en WebKit no va por la tarjeta gráfica, y justo en ese
+  momento el hilo principal monta la página nueva.
+- *Máscara SVG con `<text>`* o *`background-clip: text`* para «Hablemos.»: la
+  primera se redibuja entera en cada fotograma (lenta en WebKit); con la segunda la
+  foto crece con las letras y se pixela.
+- *Conservar las tres escenas doradas de fondo*: ver arriba.
+- *`<details>` para los acordeones*: el encargo pide botón + panel con
+  `aria-expanded`/`aria-controls`; el `<noscript>` cubre el caso sin JS.
+
+**Qué deja obsoleto del «Marcador»** (la entrada siguiente queda como registro):
+las paletas (`Flap`, `FlapText`), la pizarra (`Slate`), las teclas (`Key`), el
+revelado de fotos, el destello, las letras de tablero, la luz entre páginas (ahora
+el cartón), la intro de paleta y el menú que caía como una paleta. Se conserva su
+infraestructura: el observador de entrada en pantalla, la red de seguridad, la
+pieza fija `.ph-stinger`, el refresh coalescido y el manejo del scroll al navegar.
+Se borran también `clipPathReveal` y `magneticHover` (cero usos) y las banderas
+del selector (`LANG_FLAGS` y sus tres SVG).
+
+**Preferencias anotadas de Mario (2026-10-01)**:
+
+- *El contenido empieza en la primera pantalla*: **se mantiene**. En Talentos
+  asoma la primera fila de fotos a 390 y a 1440 px; en Servicios, el rótulo de las
+  áreas; en Sobre nosotros, la entradilla y los rótulos.
+- *Lectura*: **se mantiene**: entradillas de 18-22 px casi blancas (ahora en
+  Helvetica, como pide la dirección), ninguna etiqueta por debajo de 13 px, sin
+  mayúsculas diminutas muy espaciadas.
+- *Fondo vivo constantemente*: **se mantiene**, con otra escena (arriba). Se
+  aparta de «alta tasa de refresco» en el grano, que va a 24 fps a propósito (es
+  la cadencia del cine); el halo sí sigue al scroll a la frecuencia de la
+  pantalla.
+- *Grid de 2/3/5 columnas*: **se mantiene**.
+- *Titulares de cabecera de Talentos, Servicios y Sobre nosotros con tope de 106
+  px* (entrada «Marcador»): **se rompe** a propósito: la dirección pide titulares
+  gigantes (hasta 160-210 px en escritorio).
+
+**Costes y riesgos**:
+
+- **La portada es más larga**: el hero ocupa 2,5 pantallas de pista y el contacto
+  2,6 (recorridos de 1,5 y 1,6). Ninguna escena cambia la velocidad del scroll ni
+  lo bloquea. Servicios y Sobre nosotros, en cambio, quedan más cortas que antes.
+- **JS**: sin coste: comprimido con gzip, −2 a +1 KB por página frente a
+  `e0c6360`, medido con el mismo método sobre los dos builds. ScrollTrigger pasa a
+  ser necesario en todas las páginas animadas (las escenas van ligadas al scroll).
+- **Fluidez**: bajando la página a 12 px por fotograma con la CPU ×4 (Chromium sin
+  cabeza, a 390 px), las cuatro páginas se quedan en 16,7 ms de mediana y 18,5 de
+  p95, sin ningún fotograma de más de 33 ms; igual que `e0c6360`. **No es un móvil
+  real**: falta medirlo en uno (`hallazgos-abiertos.md`).
+- **Lectura cinética**: mientras no se ha leído, la frase está al 16 % de opacidad
+  (contraste bajo a propósito y pasajero); con movimiento reducido, entera.
+- **WCAG 2.2.2**: el grano del fondo se mueve mientras la página está abierta, como
+  los fondos anteriores; sigue abierto el hallazgo de que falta un botón de pausa.
+
+---
+
 ## 2026-10-02 · Lenguaje de movimiento «Marcador»: la web se mueve como el marcador de un estadio
 
+> ⚠️ **En la rama `feat/variante-b-titulos`, superada por la variante B «Títulos»**
+> (entrada anterior, 2026-10-03): su lenguaje visual y de movimiento se sustituye;
+> se conserva su infraestructura. Esta entrada queda como registro.
+>
 > **Estado: propuesta en la rama `feat/rediseno-motion`, sin fusionar.** Se hizo en
 > una rama paralela a `preview` a petición de Mario, para verla sin mezclarla con el
 > trabajo en curso. Si no se fusiona, esta entrada se queda en esa rama y no existe
@@ -372,6 +542,10 @@ la home del idioma elegido, porque quien elige idioma pide leer en él.
 
 ## 2026-10-01 · Fondos animados en directo para Talentos, Servicios y Sobre nosotros
 
+> ⚠️ **En la rama `feat/variante-b-titulos`, las tres escenas se sustituyen por una,
+> «proyección»** (entrada 2026-10-03, variante B «Títulos»). Se mantiene que el fondo
+> vive en directo con WebGL2 en toda la página.
+>
 > ⚠️ **Composición SUPERADA el mismo día** por la entrada «Cabecera «Escenario»…»
 > (arriba): el fondo ya no va en el contenedor de las fotos, sino en toda la
 > cabecera, y los fundidos los hace el shader. Las escenas, el motivo de hacerlo

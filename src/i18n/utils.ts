@@ -19,12 +19,6 @@ export const LANG_NAMES: Record<Lang, string> = {
   it: 'Italiano',
 };
 
-export const LANG_FLAGS: Record<Lang, string> = {
-  es: '/icons/flag-es.svg',
-  en: '/icons/flag-uk.svg',
-  it: '/icons/flag-it.svg',
-};
-
 /**
  * Devuelve la función t() para el idioma indicado.
  * Si una clave no existe en el idioma solicitado, hace fallback al español.

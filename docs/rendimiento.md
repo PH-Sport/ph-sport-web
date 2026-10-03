@@ -66,6 +66,11 @@ Home en carga fría 224 → 118 ms (−47 %).
 - **Listeners de `scroll` en el documento** tras tres vueltas home → talentos → home: **4 → 5 → 6 → 7** antes, **4 → 4 → 4 → 4** después (la fuga de `initHeroScrollCue`, arreglada).
 - **JS, comprimido con gzip**: GSAP + infraestructura 46,9 → 49,8 KB en las páginas animadas (las curvas a medida, CustomEase); `/talentos` +9,7 KB por GSAP Flip; el núcleo `ph-motion` (2,0 KB) va ahora también en las páginas legales.
 
+**Octubre · variante B «Títulos»** (rama `feat/variante-b-titulos`, `DECISIONS.md` 2026-10-03). Medido con Playwright sobre el build de esta rama y sobre el de `e0c6360` (el «Marcador»), con el mismo método en los dos:
+- **JS de cada página, comprimido con gzip** (todo lo que carga, no solo GSAP): portada 72,1 → 73,2 KB, `/talentos` 85,1 → 83,0, `/servicios` 74,7 → 73,2, `/sobre-nosotros` 74,2 → 72,6, `/aviso-legal` 21,2 → 20,1. Sin coste: el vocabulario nuevo pesa lo que las paletas que sustituye.
+- **Fluidez al bajar la página** (12 px por fotograma, 390 px, CPU ×4, Chromium sin cabeza, mediana de 3 pasadas): 16,7 ms de mediana y 18,5 de p95 en las cuatro páginas, ningún fotograma de más de 33 ms; igual que `e0c6360`. No sustituye a un móvil real.
+- **Largo de las páginas** (lo que se tarda en llegar al final a ese ritmo): la portada pasa de ~7.000 a ~10.700 px por las escenas fijadas; Servicios (~16.800 → ~10.400) y Sobre nosotros (~16.800 → ~13.000) quedan más cortas.
+
 ## Abierto
 
 - **Coste del snapshot del `ClientRouter`** en páginas pesadas, sobre todo `/talentos` con sus 116 tarjetas. Habría que aligerar o acotar la View Transition. **Alto riesgo y sin hacer a propósito**: no tocar sin supervisión de Mario.
@@ -77,12 +82,12 @@ Home en carga fría 224 → 118 ms (−47 %).
 que sigue está verificado, no estimado):
 
 - **`Header.astro` importa los diccionarios `i18n` enteros** (`es` + `en`) para usar **ocho cadenas** de navegación. El 66 % de ese chunk son literales de texto que viajan en **todas** las páginas. Extraer solo las etiquetas: 36,8 → 21,2 KB. El tree-shaking no puede hacerlo porque el acceso es dinámico.
-- **ScrollTrigger (45 KB) se carga en las cuatro páginas y `ScrollTrigger.create()` se usa UNA vez en todo el sitio** (el parallax del claim del hero; dos desde el 2026-10-02, con el acercamiento al neón). El resto son entradas con `{ start: 'top 85%', once: true }` (entonces `revealOnView`; hoy `rollIn` y `riseIn`) — exactamente lo que hace un `IntersectionObserver`. Cambiarlo lo saca de Talentos, Servicios y About.
+- *(No aplica en la rama `feat/variante-b-titulos`, donde las escenas van ligadas al scroll en todas las páginas.)* **ScrollTrigger (45 KB) se carga en las cuatro páginas y `ScrollTrigger.create()` se usa UNA vez en todo el sitio** (el parallax del claim del hero; dos desde el 2026-10-02, con el acercamiento al neón). El resto son entradas con `{ start: 'top 85%', once: true }` (entonces `revealOnView`; en el «Marcador», `rollIn` y `riseIn`) — exactamente lo que hace un `IntersectionObserver`. Cambiarlo lo saca de Talentos, Servicios y About.
 - **Tirón de 217-359 ms al entrar en `/sobre-nosotros`** — *resuelto el 2026-10-02* (arriba, «Octubre»). Perfilado: 292 ms de self-time en GSAP. Causa: `splitWords` partía tres párrafos del hero y tres del manifiesto en **135 spans** y los animaba con `filter: blur(6px)`. Animar un desenfoque obliga a rasterizar cada span en cada fotograma. Los párrafos entran ahora enteros con `opacity` + `y`, y `splitWords` ya no existe.
 - **Fuga de listeners en la home** — *arreglada el 2026-10-02*: los de `scroll` sobre `document` iban de 3 → 4 → 6 tras tres visitas. `initHeroScrollCue` registraba una función nueva en cada `astro:page-load` sin quitar la anterior, y las viejas apuntaban a nodos desconectados. Ahora es un solo listener para toda la sesión.
 - **Tres imágenes con margen, recomprimidas de verdad**: `contact-image.webp` 76 → 16 KB a 800w (no tiene variante móvil y se sirve la de 1600), `logo-ph-3d.webp` 427 → 199 KB en AVIF, `talents-hero.webp` 142 → 94 KB a q72 sin cambiar dimensiones. (El póster del hero también estaba en esta lista, 142 → 53 KB; quedó sin objeto el 2026-09-25, cuando el hero pasó a una foto fija servida por `astro:assets` en cuatro anchos.)
 - ~~**Vídeo del hero a CRF 30**~~ — superado el 2026-09-22 por un vídeo nuevo; del 2026-09-25 al 2026-10-01 el hero fue una foto fija, y hoy es un vídeo renderizado con sus propios ajustes. Cifras de cada cosa en `DECISIONS.md`.
-- **Código muerto**: `src/scripts/dropdown.ts` (4,3 KB, no lo importa nadie), y `clipPathReveal` + `magneticHover` en `ph-text-animations.ts` (cero usos).
+- **Código muerto**: `src/scripts/dropdown.ts` (4,3 KB, no lo importa nadie). `clipPathReveal` y `magneticHover` (cero usos) se retiraron en la rama `feat/variante-b-titulos`.
 
 ## Método (esto es lo reutilizable)
 

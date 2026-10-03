@@ -6,7 +6,6 @@ import {
   getHomePath,
   supportedLangs,
   LANG_NAMES,
-  LANG_FLAGS,
 } from '@/i18n/utils';
 import { NAV_ITEMS } from '@/lib/navigation';
 
@@ -15,7 +14,6 @@ const t = useTranslations(lang);
 const langOptions = supportedLangs.map((code) => ({
   code,
   name: LANG_NAMES[code],
-  flag: LANG_FLAGS[code],
   href: getLangSwitchUrl(Astro.url.pathname, code),
   current: code === lang,
 }));
@@ -30,8 +28,17 @@ const isActive = (href: string): boolean => {
   const normalizedHref = href === '/' ? '/' : href.replace(/\/$/, '');
   return normalizedHref === currentPath;
 };
+
+/** Las letras de un enlace, una a una, para su cascada de 10 ms al señalarlo. */
+const letters = (text: string) => [...text].map((ch) => (ch === ' ' ? ' ' : ch));
 ---
 
+{/* Cabecera «casi invisible, como los créditos»: el logo a la izquierda y, en
+    escritorio, las cuatro páginas en Söhne 600 con un hilo dorado bajo la
+    actual (el indicador que se desliza al cambiar de página). Persiste entre
+    navegaciones (`transition:persist`): su HTML es el de la primera página
+    cargada y el script de abajo reescribe enlaces, idioma y activo en cada
+    navegación. */}
 <header data-header transition:persist>
   <div class="header-shell">
     <div class="header-inner">
@@ -40,9 +47,6 @@ const isActive = (href: string): boolean => {
           <polygon points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" />
           <polygon points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" />
         </svg>
-        {/* Destello al señalar el logo: una luz recortada con la forma del logo
-            (máscara con /logo.svg) que lo cruza en su diagonal. */}
-        <span class="header-logo__glint" aria-hidden="true"></span>
       </a>
 
       <nav class="header-nav hidden md:block" aria-label={t('nav.aria.main')}>
@@ -54,20 +58,21 @@ const isActive = (href: string): boolean => {
                 <a
                   href={item.href}
                   data-astro-prefetch="load"
+                  aria-label={item.label}
+                  aria-current={isActive(item.href) ? 'page' : undefined}
                   class:list={['nav-link', isActive(item.href) && 'is-active']}
                 >
-                  {/* La palabra va dos veces para rodar al señalarla; la copia no
-                      la leen los lectores de pantalla. */}
-                  <span class="nav-link__roll">
-                    <span class="nav-link__text">{item.label}</span>
-                    <span class="nav-link__text" aria-hidden="true">{item.label}</span>
+                  {/* Letra a letra para la cascada; el nombre accesible va en
+                      `aria-label`. */}
+                  <span class="nav-link__text" aria-hidden="true">
+                    {letters(item.label).map((ch, i) => <span class="ph-ltr" style={`--i:${i}`}>{ch}</span>)}
                   </span>
                 </a>
               </li>
             ))}
             <li class="lang-menu" data-lang-menu>
-              {/* Desplegable de idioma: el botón muestra el idioma actual y abre los
-                  tres. Es un botón que despliega enlaces normales (patrón
+              {/* Desplegable de idioma: el botón muestra el idioma actual («ES») y
+                  abre los tres. Es un botón que despliega enlaces normales (patrón
                   "disclosure"), no un role="menu": cada opción es navegación. */}
               <button
                 type="button"
@@ -77,22 +82,11 @@ const isActive = (href: string): boolean => {
                 aria-controls="lang-panel"
                 aria-label={`${t('nav.lang.menu')}: ${LANG_NAMES[lang]}`}
               >
-                <img
-                  src={LANG_FLAGS[lang]}
-                  alt=""
-                  width="20"
-                  height="15"
-                  class="lang-flag"
-                  data-lang-current-flag
-                />
                 <span class="lang-label" data-lang-current-label>{lang.toUpperCase()}</span>
-                <svg class="lang-chevron" viewBox="0 0 10 6" width="10" height="6" aria-hidden="true">
-                  <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
               </button>
               <ul id="lang-panel" class="lang-panel" data-lang-panel>
-                {langOptions.map((option) => (
-                  <li>
+                {langOptions.map((option, i) => (
+                  <li style={`--i:${i}`}>
                     {/* hreflang = idioma del destino, no el de esta página: declara la
                         frontera entre versiones a buscadores y lectores de pantalla. */}
                     <a
@@ -103,8 +97,7 @@ const isActive = (href: string): boolean => {
                       data-lang-option={option.code}
                       aria-current={option.current ? 'true' : undefined}
                     >
-                      <img src={option.flag} alt="" width="20" height="15" class="lang-flag" />
-                      <span>{option.name}</span>
+                      <span class="lang-option__text">{option.name}</span>
                     </a>
                   </li>
                 ))}
@@ -116,7 +109,7 @@ const isActive = (href: string): boolean => {
 
       <button
         type="button"
-        class="menu-toggle menu-toggle--hamburger md:hidden"
+        class="menu-toggle md:hidden"
         data-menu-toggle
         data-label-open={t('a11y.menu.open')}
         data-label-close={t('a11y.menu.close')}
@@ -127,45 +120,39 @@ const isActive = (href: string): boolean => {
         <span class="menu-toggle__inner" aria-hidden="true">
           <span class="menu-toggle__bar"></span>
           <span class="menu-toggle__bar"></span>
-          <span class="menu-toggle__bar"></span>
         </span>
       </button>
     </div>
   </div>
 </header>
 
-<!-- Overlay fuera de [data-header]: evita que backdrop-filter del header ancle position:fixed al rectángulo de la barra. -->
+{/* Menú móvil: negro a pantalla completa, las cuatro páginas como palabras
+    gigantes que suben de su máscara en cascada (la actual en oro) y los tres
+    idiomas en una línea pequeña abajo. Va fuera de [data-header] y se reemplaza
+    en cada navegación. */}
 <div id="mobile-menu" class="mobile-menu" data-mobile-menu aria-hidden="true">
-  <div
-    class="mobile-menu-backdrop"
-    data-mobile-menu-dismiss
-    aria-hidden="true"
-  ></div>
+  <div class="mobile-menu-backdrop" data-mobile-menu-dismiss aria-hidden="true"></div>
   <div class="mobile-menu-inner">
     <nav aria-label={t('nav.aria.mobile')}>
       <ul class="mobile-nav-list">
         {nav.map((item, i) => (
-          <li>
+          <li style={`--i:${i}`}>
             <a
               href={item.href}
               data-mobile-link
               data-astro-prefetch="load"
-              class:list={[
-                'mobile-link',
-                isActive(item.href) && 'mobile-link--active',
-              ]}
+              class:list={['mobile-link', isActive(item.href) && 'mobile-link--active']}
+              aria-current={isActive(item.href) ? 'page' : undefined}
             >
-              <span class="mobile-link__label">{item.label}</span>
+              <span class="mobile-link__mask"><span class="mobile-link__label">{item.label}</span></span>
             </a>
           </li>
         ))}
       </ul>
     </nav>
 
-    <div class="ph-divider"></div>
-
     {/* En móvil no hay desplegable dentro del menú: el menú ya es el panel que se
-        abre, así que los tres idiomas van en lista, con el actual marcado. */}
+        abre, así que los tres idiomas van en una línea, con el actual marcado. */}
     <ul class="lang-list--mobile" aria-label={t('nav.lang.menu')}>
       {langOptions.map((option) => (
         <li>
@@ -176,10 +163,9 @@ const isActive = (href: string): boolean => {
             data-mobile-link
             data-lang-option={option.code}
             aria-current={option.current ? 'true' : undefined}
-            class="lang-switch lang-switch--mobile"
+            class="lang-mobile"
           >
-            <img src={option.flag} alt="" width="24" height="18" class="lang-flag" />
-            <span class="lang-label">{option.name}</span>
+            {option.name}
           </a>
         </li>
       ))}
@@ -188,102 +174,59 @@ const isActive = (href: string): boolean => {
 </div>
 
 <style>
-  /* ── Cápsula flotante (glass / sólido / hide-on-scroll en BaseLayout global) ── */
-  /* Margen exterior y relleno interior a medias (½ del margen de sección cada uno):
-     así el logo y la última opción del menú caen en la misma vertical que los
-     textos de las páginas (que van a 1 margen del borde), y la cápsula sobresale
-     un poco a cada lado. Antes eran un margen completo cada uno y el logo quedaba
-     el doble de metido que el texto. */
+  /* ── La franja de la cabecera ──
+     Sin cápsula ni cristal: los elementos van sobre la escena, en la retícula
+     (el logo cae en el margen, como los textos). Al bajar aparece detrás una
+     franja negra con un hilo debajo, para que se lean sobre lo que pasa; al
+     seguir bajando se esconde y vuelve al subir (BaseLayout). */
   .header-shell {
-    width: calc(100% - var(--ph-section-px));
-    margin-inline: auto;
-    /* Con `viewport-fit=cover` el `top: 0` del header queda debajo de la barra de
-       estado: se le suma la zona segura para que la cápsula siga cayendo por debajo.
-       Sin notch —escritorio, vertical sin isla— el inset es 0 y queda igual que antes. */
-    margin-top: calc(0.875rem + env(safe-area-inset-top));
-    border-radius: var(--radius-md);
-    /* Nombre propio de View Transition: saca la cápsula del snapshot `root` para
-       que no se funda (sale/entra) en cada navegación SPA. Ver bloque is:global. */
+    padding-top: env(safe-area-inset-top);
+    /* Nombre propio de View Transition: la cabecera no se funde al navegar. */
     view-transition-name: ph-header;
-    transition:
-      transform var(--ph-duration) var(--ease-ph),
-      background-color var(--ph-duration) var(--ease-ph),
-      border-color var(--ph-duration) var(--ease-ph),
-      backdrop-filter var(--ph-duration) var(--ease-ph),
-      -webkit-backdrop-filter var(--ph-duration) var(--ease-ph),
-      box-shadow var(--ph-duration) var(--ease-ph);
-  }
-
-  @media (max-width: 767px) {
-    .header-shell {
-      margin-top: calc(0.5rem + env(safe-area-inset-top));
-    }
   }
 
   .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-inline: calc(var(--ph-section-px) / 2);
-    padding-block: 1.25rem;
+    gap: 24px;
+    padding: 8px var(--ph-section-px);
   }
 
-  @media (max-width: 767px) {
+  @media (min-width: 768px) {
     .header-inner {
-      padding-block: 0.625rem;
+      padding-block: 18px;
     }
   }
 
   /* ── Logo ── */
   .header-logo {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     color: var(--color-ph-gold);
-    transition: color var(--ph-duration) var(--ease-ph);
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
   }
 
   .header-logo svg {
-    height: 1.75rem;
+    height: 1.375rem;
     width: auto;
   }
 
-  @media (max-width: 767px) {
+  @media (min-width: 768px) {
     .header-logo svg {
-      height: 1.5rem;
+      height: 1.625rem;
     }
-  }
-
-  .header-logo {
-    position: relative;
-    display: inline-flex;
-  }
-
-  .header-logo__glint {
-    position: absolute;
-    inset: 0;
-    -webkit-mask: url('/logo.svg') center / contain no-repeat;
-    mask: url('/logo.svg') center / contain no-repeat;
-    background: linear-gradient(45deg, transparent 38%, rgba(255, 246, 222, 0.95) 50%, transparent 62%) no-repeat;
-    background-size: 320% 100%;
-    background-position: 100% 0;
-    opacity: 0;
-    pointer-events: none;
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .header-logo:hover .header-logo__glint {
-      animation: ph-logo-glint 900ms var(--ph-ease-std) both;
+    .header-logo:hover {
+      color: var(--color-ph-white);
     }
   }
 
-  @keyframes ph-logo-glint {
-    from { opacity: 1; background-position: 100% 0; }
-    to { opacity: 1; background-position: 0 0; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .header-logo:hover .header-logo__glint { animation: none; }
-  }
-
-  /* ── Desktop nav ── */
+  /* ── Navegación de escritorio ── */
   .header-nav {
     display: none;
   }
@@ -294,80 +237,84 @@ const isActive = (href: string): boolean => {
     }
   }
 
-  .header-nav-list {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    list-style: none;
-  }
-
-  .nav-link {
-    display: inline-flex;
-    font-family: var(--font-display);
-    font-size: 0.875rem;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    color: var(--color-ph-white-60);
-    position: relative;
-    padding-block: 0.25rem;
-    transition: color var(--ph-dur-state) var(--ph-ease-std);
-  }
-
-  .nav-link:hover,
-  .nav-link.is-active {
-    color: var(--color-ph-white);
-  }
-
-  /* Al señalar un enlace, la palabra rueda en su ranura: sale por arriba y la
-     misma vuelve a entrar por abajo. Respuesta en 320 ms, sin mover nada más. */
-  .nav-link__roll {
-    display: grid;
-    overflow: hidden;
-  }
-  .nav-link__text {
-    grid-area: 1 / 1;
-    transition: transform var(--ph-dur-move) var(--ph-ease-out);
-  }
-  .nav-link__text + .nav-link__text {
-    transform: translateY(110%);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .nav-link:hover .nav-link__text:first-child { transform: translateY(-110%); }
-    .nav-link:hover .nav-link__text + .nav-link__text { transform: none; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .nav-link__text { transition: none; }
-  }
-
   .header-nav-list-wrap {
     position: relative;
   }
 
+  .header-nav-list {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.25rem, 2.2vw, 2.25rem);
+    list-style: none;
+  }
+
+  /* Cada página: Söhne 600, al 62 % y en blanco la actual. Al señalarla, las
+     letras suben 2 px en cascada de 10 ms y un hilo se dibuja debajo. */
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    color: rgba(255, 255, 255, 0.62);
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.55rem;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.4);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform var(--ph-dur-state) var(--ph-ease-out);
+  }
+
+  .nav-link.is-active {
+    color: var(--color-ph-white);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nav-link:hover {
+      color: var(--color-ph-white);
+    }
+    .nav-link:hover :global(.ph-ltr) {
+      transform: translateY(-2px);
+    }
+    .nav-link:not(.is-active):hover::after {
+      transform: scaleX(1);
+    }
+  }
+
+  .nav-link:focus-visible :global(.ph-ltr) {
+    transform: translateY(-2px);
+  }
+
+  /* El hilo de la página actual: dorado, de 1 px. Se coloca con transform
+     (translateX + scaleX) en JS, en el compositor, y se desliza al cambiar de
+     página porque tiene su propio nombre de View Transition. */
   .nav-indicator {
     position: absolute;
-    bottom: -0.375rem;
+    bottom: 0.55rem;
     left: 0;
-    /* Ancho base fijo de referencia: el posicionamiento real se hace con
-       transform (translateX + scaleX) en JS → corre en compositor/GPU, ajeno al
-       hilo principal, evitando el microcorte que daba animar left/width. */
     width: 100px;
-    height: 1.5px;
+    height: 1px;
     background: var(--color-ph-gold);
-    border-radius: 1px;
     pointer-events: none;
     transform-origin: left center;
     transform: scaleX(0);
-    /* Nombre propio de View Transition: el navegador morfea su geometría de la
-       página vieja a la nueva → ESE morph es el deslizamiento, por encima del
-       telón. La geometría nueva se fija en astro:after-swap, antes del snapshot. */
     view-transition-name: ph-nav-indicator;
   }
 
-  /* Misma curva de llegada que el resto del movimiento (`--ph-ease-out`), sin
-     rebote: la marca no rebota. Escrita aquí y abajo en literal porque el grupo de
-     View Transition no hereda `var()`. */
+  /* Literal: el grupo de View Transition no hereda `var()`. */
   .nav-indicator.is-animated {
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -376,228 +323,150 @@ const isActive = (href: string): boolean => {
     }
   }
 
-  /* ── Language switch ── */
-  .lang-switch {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.3rem 0.625rem;
-    border: 1px solid var(--color-ph-white-10);
-    border-radius: var(--radius-sm);
-    background-color: transparent;
-    cursor: pointer;
-    transition:
-      border-color var(--ph-duration) var(--ease-ph),
-      background-color var(--ph-duration) var(--ease-ph);
-  }
-
-  .lang-switch:hover,
-  .lang-switch[aria-expanded='true'] {
-    border-color: var(--color-ph-white-20);
-    background-color: var(--color-ph-white-10);
-  }
-
-  /* ── Desplegable de idioma (escritorio) ──
-     El estado lo lleva `aria-expanded` del botón: el CSS abre el panel a partir
-     de él, así no hay dos fuentes de verdad. Misma animación que el desplegable
-     de src/scripts/dropdown.ts (entra 220 ms, sale 160 ms), en CSS para no
-     cargar GSAP en todas las páginas por la cabecera. */
+  /* ── Selector de idioma (escritorio) ──
+     «ES» con su hilo; el panel cae como una lista de títulos. El estado lo lleva
+     `aria-expanded` del botón y el CSS abre el panel a partir de él. */
   .lang-menu {
     position: relative;
   }
 
-  .lang-chevron {
-    display: block;
-    color: var(--color-ph-white-60);
-    transition: transform var(--ph-duration) var(--ease-ph);
+  .lang-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 0.25rem;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
   }
 
-  .lang-switch[aria-expanded='true'] .lang-chevron {
-    transform: rotate(180deg);
+  .lang-switch::after {
+    content: '';
+    position: absolute;
+    left: 0.25rem;
+    right: 0.25rem;
+    bottom: 0.55rem;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.4);
+    transition: background-color var(--ph-dur-state) var(--ph-ease-std);
+  }
+
+  .lang-label {
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--color-ph-white);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .lang-switch:hover::after {
+      background: var(--color-ph-white);
+    }
+  }
+
+  .lang-switch[aria-expanded='true']::after {
+    background: var(--color-ph-gold);
   }
 
   .lang-panel {
     position: absolute;
-    top: calc(100% + 0.625rem);
+    top: calc(100% + 0.5rem);
     right: 0;
     z-index: 1;
-    min-width: 10rem;
-    padding: 0.375rem;
+    min-width: 11rem;
+    margin: 0;
+    padding: 0.75rem 1.125rem 0.875rem;
     list-style: none;
-    background-color: rgba(13, 15, 18, 0.94);
-    border: 1px solid var(--ph-glass-border);
-    border-radius: var(--radius-sm);
-    backdrop-filter: var(--ph-glass-backdrop);
-    -webkit-backdrop-filter: var(--ph-glass-backdrop);
-    box-shadow: var(--ph-glass-highlight), 0 16px 40px rgba(0, 0, 0, 0.45);
-    transform-origin: top right;
-    opacity: 0;
+    background-color: var(--color-ph-black);
+    border-top: 1px solid var(--ph-hair-strong);
     visibility: hidden;
-    transform: translateY(-6px);
     pointer-events: none;
-    transition:
-      opacity 0.16s ease-in,
-      transform 0.16s ease-in,
-      visibility 0s linear 0.16s;
+    transition: visibility 0s linear 0.16s;
   }
 
   .lang-switch[aria-expanded='true'] + .lang-panel {
-    opacity: 1;
     visibility: visible;
-    transform: none;
     pointer-events: auto;
+    transition: visibility 0s linear 0s;
+  }
+
+  .lang-panel li {
+    overflow: hidden; /* Safari < 16 no conoce `clip` */
+    overflow: clip;
+  }
+
+  .lang-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: rgba(255, 255, 255, 0.62);
+    transform: translateY(110%);
     transition:
-      opacity 0.22s ease-out,
-      transform 0.22s ease-out,
-      visibility 0s linear 0s;
+      transform 0.14s var(--ph-ease-in),
+      color var(--ph-dur-state) var(--ph-ease-std);
+  }
+
+  .lang-switch[aria-expanded='true'] + .lang-panel .lang-option {
+    transform: none;
+    transition:
+      transform 0.32s var(--ph-ease-emph) calc(var(--i, 0) * 40ms),
+      color var(--ph-dur-state) var(--ph-ease-std);
+  }
+
+  .lang-panel li:nth-child(2) { --i: 1; }
+  .lang-panel li:nth-child(3) { --i: 2; }
+
+  .lang-option:hover,
+  .lang-option:focus-visible {
+    color: var(--color-ph-white);
+  }
+
+  /* El idioma en que se está leyendo: en oro. */
+  .lang-option[aria-current='true'] {
+    color: var(--color-ph-gold);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .lang-panel,
-    .lang-switch[aria-expanded='true'] + .lang-panel,
-    .lang-chevron {
+    .lang-option,
+    .lang-switch[aria-expanded='true'] + .lang-panel .lang-option {
+      transform: none;
       transition: none;
     }
   }
 
   /* Al navegar se cierra en seco. La View Transition fotografía la cabecera antes
      del cambio de página y mantiene esa foto toda la transición: con el panel a
-     medio fundir, se vería encima ~0,4 s. Lo comprueba el smoke. */
-  .lang-menu.is-closing-instantly .lang-switch,
+     medio cerrar, se vería encima. Lo comprueba el smoke. */
   .lang-menu.is-closing-instantly .lang-panel,
-  .lang-menu.is-closing-instantly .lang-chevron {
+  .lang-menu.is-closing-instantly .lang-option {
     transition: none;
   }
 
-  .lang-option {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-    padding: 0.5rem 0.625rem;
-    border-radius: calc(var(--radius-sm) - 2px);
-    font-family: var(--font-display);
-    font-size: 0.8125rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    color: var(--color-ph-white-60);
-    transition:
-      color var(--ph-duration) var(--ease-ph),
-      background-color var(--ph-duration) var(--ease-ph);
-  }
-
-  .lang-option:hover,
-  .lang-option:focus-visible {
-    color: var(--color-ph-white);
-    background-color: var(--color-ph-white-10);
-  }
-
-  /* El idioma en que se está leyendo: texto pleno y el punto dorado del indicador
-     de la navegación. */
-  .lang-option[aria-current='true'] {
-    color: var(--color-ph-white);
-  }
-
-  .lang-option[aria-current='true']::after {
-    content: '';
-    width: 0.3125rem;
-    height: 0.3125rem;
-    margin-left: auto;
-    border-radius: 50%;
-    background: var(--color-ph-gold);
-  }
-
-  .lang-flag {
-    display: block;
-    height: 0.875rem;
-    width: auto;
-    border-radius: 1px;
-  }
-
-  .lang-label {
-    font-family: var(--font-display);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    color: var(--color-ph-white-60);
-  }
-
-  .lang-list--mobile {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    width: fit-content;
-    list-style: none;
-  }
-
-  .lang-switch--mobile {
-    width: 100%;
-    padding: 0.5rem 0.875rem;
-  }
-
-  .lang-switch--mobile[aria-current='true'] {
-    border-color: var(--color-ph-white-20);
-  }
-
-  .lang-switch--mobile[aria-current='true'] .lang-label {
-    color: var(--color-ph-white);
-  }
-
-  .lang-switch--mobile .lang-flag {
-    height: 1.125rem;
-  }
-
-  .lang-switch--mobile .lang-label {
-    font-size: 0.875rem;
-  }
-
-  /* ── Mobile toggle: hamburguesa asimétrica → X (sin caja en móvil) ── */
+  /* ── Botón del menú móvil: dos hilos que se cruzan en una X ── */
   .menu-toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 2.75rem;
-    min-height: 2.75rem;
     width: 2.75rem;
     height: 2.75rem;
-    border: 1px solid var(--color-ph-white-10);
-    border-radius: var(--radius-sm);
+    margin-right: -0.625rem;
+    padding: 0;
+    border: 0;
     color: var(--color-ph-white);
     background: transparent;
     cursor: pointer;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-    transition:
-      border-color var(--ph-duration) var(--ease-ph),
-      color var(--ph-duration) var(--ease-ph),
-      background-color var(--ph-duration) var(--ease-ph);
-  }
-
-  @media (max-width: 767px) {
-    .menu-toggle--hamburger {
-      width: auto;
-      height: auto;
-      min-width: 2.75rem;
-      min-height: 2.75rem;
-      padding: 0.5rem;
-      border: none;
-      border-radius: 0;
-      background: transparent;
-    }
-
-    .menu-toggle--hamburger:hover,
-    .menu-toggle--hamburger:active {
-      background: transparent;
-    }
-
-    .menu-toggle--hamburger:focus {
-      outline: none;
-    }
-
-    .menu-toggle--hamburger:focus-visible {
-      outline: 2px solid var(--color-ph-gold-muted);
-      outline-offset: 4px;
-      border-radius: var(--radius-sm);
-    }
   }
 
   @media (min-width: 768px) {
@@ -606,82 +475,35 @@ const isActive = (href: string): boolean => {
     }
   }
 
-  @media (hover: hover) and (min-width: 768px) {
-    .menu-toggle:hover {
-      border-color: var(--color-ph-gold);
-      color: var(--color-ph-gold);
-      background-color: rgba(214, 178, 94, 0.05);
-    }
-  }
-
-  @media (hover: hover) {
-    .menu-toggle--hamburger:hover {
-      color: var(--color-ph-gold);
-    }
-  }
-
-  .menu-toggle:active {
-    border-color: var(--color-ph-gold-muted);
-    color: var(--color-ph-gold-muted);
-    background-color: rgba(214, 178, 94, 0.08);
-    transition-duration: 120ms;
-  }
-
-  @media (max-width: 767px) {
-    .menu-toggle--hamburger:active {
-      color: var(--color-ph-gold-muted);
-      background: transparent;
-    }
-  }
-
   .menu-toggle__inner {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 1.375rem;
-    height: 0.875rem;
-    flex-shrink: 0;
+    position: relative;
+    display: block;
+    width: 1.5rem;
+    height: 0.5rem;
   }
 
   .menu-toggle__bar {
-    display: block;
-    height: 2px;
-    border-radius: 1px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1.5px;
     background: currentColor;
-    align-self: flex-start;
-    transform-origin: center;
-    transition:
-      transform 0.32s var(--ease-ph),
-      opacity 0.22s var(--ease-ph),
-      width 0.22s var(--ease-ph);
+    transition: transform var(--ph-dur-move) var(--ph-ease-out);
   }
 
-  .menu-toggle__bar:nth-child(1) {
-    width: 100%;
+  .menu-toggle__bar:first-child { top: 0; }
+  .menu-toggle__bar:last-child { bottom: 0; }
+
+  .menu-toggle[aria-expanded='true'] .menu-toggle__bar:first-child {
+    transform: translateY(0.1875rem) rotate(45deg);
   }
 
-  /* Barra central: sobresale a la izquierda y un poco más larga hacia la derecha que antes */
-  .menu-toggle__bar:nth-child(2) {
-    width: 78%;
-    margin-left: -0.1875rem;
+  .menu-toggle[aria-expanded='true'] .menu-toggle__bar:last-child {
+    transform: translateY(-0.1875rem) rotate(-45deg);
   }
 
-  .menu-toggle__bar:nth-child(3) {
-    width: 85%;
-  }
-
-  .menu-toggle--hamburger[aria-expanded='true'] .menu-toggle__bar:nth-child(1) {
-    width: 100%;
-    transform: translateY(6px) rotate(45deg);
-  }
-
-  .menu-toggle--hamburger[aria-expanded='true'] .menu-toggle__bar:nth-child(2) {
-    opacity: 0;
-  }
-
-  .menu-toggle--hamburger[aria-expanded='true'] .menu-toggle__bar:nth-child(3) {
-    width: 100%;
-    transform: translateY(-6px) rotate(-45deg);
+  .menu-toggle:active {
+    color: var(--color-ph-gold);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -690,56 +512,39 @@ const isActive = (href: string): boolean => {
     }
   }
 
-  /* ── Menú móvil: una paleta del marcador ──
-     El panel cae desde la bisagra de arriba (gira hasta quedar vertical, como una
-     paleta) y los enlaces entran detrás, cada uno con su línea dibujándose, en el
-     orden en que se leen. Sin números delante: repetían el orden del menú y no
-     decían nada más. Al cerrar, todo se va más rápido de lo que llegó: el panel
-     empieza a plegarse mientras salen las palabras. El JS solo pone y quita clases
-     (`is-open`, `mobile-menu--closing`). */
+  /* ── Menú móvil ──
+     El negro entra en seco (120 ms) y las palabras suben de su máscara en
+     cascada de 50 ms. Al cerrar, bajan todas a la vez en 160 ms y el negro se va
+     detrás. El JS solo pone y quita clases (`is-open`, `mobile-menu--closing`). */
   .mobile-menu {
-    --menu-in: 420ms;
-    --menu-out: 240ms;
     position: fixed;
     inset: 0;
     z-index: 100;
     isolation: isolate;
-    min-height: 100vh;
-    min-height: 100dvh;
     background: var(--color-ph-black);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transform-origin: 50% 0;
-    transform: perspective(1400px) rotateX(48deg);
     transition:
-      opacity var(--menu-out) var(--ph-ease-in),
-      transform var(--menu-out) var(--ph-ease-in),
-      visibility 0s linear var(--menu-out);
+      opacity 100ms linear 150ms,
+      visibility 0s linear 250ms;
   }
 
   .mobile-menu.is-open {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
-    transform: perspective(1400px) rotateX(0deg);
     transition:
-      opacity 180ms var(--ph-ease-std),
-      transform var(--menu-in) var(--ph-ease-out),
+      opacity 120ms linear,
       visibility 0s linear 0s;
   }
 
-  /* Cerrando: el panel se pliega ya, sin esperar a que el JS quite `is-open`. */
   .mobile-menu.is-open.mobile-menu--closing {
     opacity: 0;
-    transform: perspective(1400px) rotateX(48deg);
-    transition:
-      opacity var(--menu-out) var(--ph-ease-in) 90ms,
-      transform var(--menu-out) var(--ph-ease-in) 90ms,
-      visibility 0s linear 0s;
+    transition: opacity 100ms linear 150ms;
   }
 
-  /* Capa detrás del contenido: recibe toques en el “vacío” (.mobile-menu-inner tiene pointer-events: none). */
+  /* Capa detrás del contenido: recibe los toques en el «vacío». */
   .mobile-menu-backdrop {
     position: absolute;
     inset: 0;
@@ -751,191 +556,133 @@ const isActive = (href: string): boolean => {
     position: relative;
     z-index: 1;
     pointer-events: none;
-    max-width: none;
-    width: 100%;
-    min-height: 100vh;
-    min-height: 100dvh;
-    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100%;
     /* El overlay es `fixed`: no hereda las zonas seguras del body y las pide aparte.
-       El hueco de arriba ya lo da `--mobile-menu-chrome-offset`, que se mide del
-       header real y por tanto ya lleva el inset dentro. */
+       El hueco de arriba lo da `--mobile-menu-chrome-offset`, medido del header. */
     padding-inline:
       calc(var(--ph-section-px) + env(safe-area-inset-left))
       calc(var(--ph-section-px) + env(safe-area-inset-right));
-    padding-top: calc(var(--mobile-menu-chrome-offset, 64px) + 1.25rem);
-    padding-bottom: calc(3rem + env(safe-area-inset-bottom));
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+    padding-top: calc(var(--mobile-menu-chrome-offset, 64px) + 1.5rem);
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom));
   }
 
-  .mobile-menu-inner nav,
-  .mobile-menu-inner .lang-list--mobile {
+  .mobile-menu-inner nav a,
+  .mobile-menu-inner .lang-list--mobile a {
     pointer-events: auto;
   }
 
   .mobile-nav-list {
     display: flex;
     flex-direction: column;
+    gap: 0.35rem;
     list-style: none;
   }
 
-  /* Cada enlace es una fila del tablero, con su línea arriba que se dibuja al
-     abrir, en cascada (`--row`). */
-  .mobile-nav-list li {
-    --row: 0;
-    position: relative;
-  }
-  .mobile-nav-list li:nth-child(2) { --row: 1; }
-  .mobile-nav-list li:nth-child(3) { --row: 2; }
-  .mobile-nav-list li:nth-child(4) { --row: 3; }
-  .mobile-nav-list li:nth-child(5) { --row: 4; }
-
-  .mobile-nav-list li::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.14);
-    transform: scaleX(0);
-    transform-origin: 0 50%;
-    transition: transform 160ms var(--ph-ease-in);
+  .mobile-link {
+    display: block;
+    font-family: var(--font-display);
+    font-size: clamp(44px, 13vw, 72px);
+    font-weight: 700;
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    color: var(--color-ph-white);
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .mobile-menu.is-open .mobile-nav-list li::before {
-    transform: scaleX(1);
-    transition: transform 560ms var(--ph-ease-out) calc(120ms + var(--row) * 60ms);
+  .mobile-link--active {
+    color: var(--color-ph-gold);
+  }
+
+  .mobile-link__mask {
+    display: block;
+    overflow: hidden; /* Safari < 16 no conoce `clip` */
+    overflow: clip;
+    padding-block: 0.06em 0.12em;
   }
 
   .mobile-link__label {
     display: inline-block;
-    opacity: 0;
-    transform: translateY(0.45em);
-    transition:
-      opacity 140ms var(--ph-ease-in),
-      transform 140ms var(--ph-ease-in);
+    transform: translateY(115%);
+    transition: transform 160ms var(--ph-ease-in);
   }
 
   .mobile-menu.is-open .mobile-link__label {
-    opacity: 1;
     transform: none;
-    transition:
-      opacity 420ms var(--ph-ease-out) calc(160ms + var(--row) * 60ms),
-      transform 520ms var(--ph-ease-out) calc(160ms + var(--row) * 60ms);
+    transition: transform 560ms var(--ph-ease-emph) calc(60ms + var(--i, 0) * 50ms);
   }
 
   .mobile-menu.is-open.mobile-menu--closing .mobile-link__label {
+    transform: translateY(115%);
+    transition: transform 160ms var(--ph-ease-in) 0ms;
+  }
+
+  .mobile-link:active .mobile-link__label {
+    color: var(--color-ph-gold);
+  }
+
+  /* Los tres idiomas, en una línea pequeña. */
+  .lang-list--mobile {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 1.5rem;
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--ph-hair);
+    list-style: none;
     opacity: 0;
-    transform: translateY(-0.3em);
-    transition:
-      opacity 140ms var(--ph-ease-in),
-      transform 140ms var(--ph-ease-in);
-  }
-
-  .mobile-menu.is-open.mobile-menu--closing .mobile-nav-list li::before {
-    transform: scaleX(0);
-    transition: transform 200ms var(--ph-ease-in);
-  }
-
-  .mobile-menu .ph-divider {
-    opacity: 0;
-    transform: scaleX(0);
-    transform-origin: 0 50%;
-    transition:
-      opacity 140ms var(--ph-ease-in),
-      transform 140ms var(--ph-ease-in);
-  }
-
-  .mobile-menu.is-open .ph-divider {
-    opacity: 1;
-    transform: none;
-    transition:
-      opacity 300ms var(--ph-ease-out) 380ms,
-      transform 560ms var(--ph-ease-out) 380ms;
-  }
-
-  .mobile-menu .lang-list--mobile {
-    opacity: 0;
-    transform: translateY(0.35rem);
-    transition:
-      opacity 140ms var(--ph-ease-in),
-      transform 140ms var(--ph-ease-in);
+    transition: opacity 120ms linear;
   }
 
   .mobile-menu.is-open .lang-list--mobile {
     opacity: 1;
-    transform: translateY(0);
-    transition:
-      opacity 360ms var(--ph-ease-out) 420ms,
-      transform 460ms var(--ph-ease-out) 420ms;
+    transition: opacity 300ms var(--ph-ease-out) 260ms;
   }
 
-  .mobile-menu.is-open.mobile-menu--closing .ph-divider,
   .mobile-menu.is-open.mobile-menu--closing .lang-list--mobile {
     opacity: 0;
-    transition-delay: 0s;
-    transition-duration: 140ms;
+    transition: opacity 120ms linear;
   }
 
-  .mobile-menu.mobile-menu--closing .mobile-menu-backdrop {
-    pointer-events: none;
+  .lang-mobile {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.62);
   }
 
-  .mobile-menu.mobile-menu--closing .mobile-menu-inner nav,
-  .mobile-menu.mobile-menu--closing .mobile-menu-inner .lang-list--mobile {
+  .lang-mobile[aria-current='true'] {
+    color: var(--color-ph-white);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.35em;
+    text-decoration-color: var(--color-ph-gold);
+  }
+
+  .mobile-menu.mobile-menu--closing .mobile-menu-backdrop,
+  .mobile-menu.mobile-menu--closing .mobile-menu-inner a {
     pointer-events: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
     .mobile-menu,
     .mobile-menu.is-open,
-    .mobile-menu.is-open.mobile-menu--closing {
-      transform: none;
-      transition: none;
+    .mobile-menu.is-open.mobile-menu--closing,
+    .mobile-menu .lang-list--mobile {
+      transition: opacity 120ms linear, visibility 0s;
     }
 
     .mobile-menu .mobile-link__label,
-    .mobile-menu .mobile-nav-list li::before,
-    .mobile-menu .ph-divider,
-    .mobile-menu .lang-list--mobile {
-      opacity: 1;
+    .mobile-menu.is-open .mobile-link__label,
+    .mobile-menu.is-open.mobile-menu--closing .mobile-link__label {
       transform: none;
-      transition: none !important;
+      transition: none;
     }
-  }
-
-  /* ── Mobile nav links ── */
-  .mobile-link {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding-block: 1.05rem;
-    font-family: var(--font-display);
-    font-size: clamp(2rem, 9vw, 2.5rem);
-    font-weight: 500;
-    letter-spacing: -0.035em;
-    line-height: 1;
-    color: var(--color-ph-white-60);
-    transition: color var(--ph-dur-state) var(--ph-ease-std);
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .mobile-link:hover,
-  .mobile-link--active {
-    color: var(--color-ph-white);
-  }
-
-  .mobile-link:active {
-    color: var(--color-ph-gold);
-    transition-duration: var(--ph-dur-tap);
-  }
-
-  .lang-switch--mobile:active {
-    border-color: var(--color-ph-white-20);
-    background-color: var(--color-ph-white-10);
-    transition-duration: 120ms;
   }
 
   @media (min-width: 768px) {
@@ -945,27 +692,71 @@ const isActive = (href: string): boolean => {
   }
 </style>
 
-<!-- View Transitions: estos pseudo-elementos cuelgan del documento (no del DOM
-     scopeado del componente), por eso necesitan is:global. -->
+<!-- Estado de la cabecera al hacer scroll (clases que pone BaseLayout) y sus
+     grupos de View Transition: van sin scope porque cuelgan del documento. -->
 <style is:global>
-  /* Header: matamos su animación de VT para que la cápsula quede estable (no se
-     funde) durante la navegación. Su contenido es idéntico entre páginas, así que
-     no hay nada que animar; el indicador es un grupo aparte (ph-nav-indicator). */
+  [data-header] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* Por encima del menú móvil (100) y del cartón entre páginas (105): la
+       cabecera persiste y se ve mientras el cartón tapa la página. */
+    z-index: 110;
+    pointer-events: none;
+  }
+
+  [data-header] .header-shell {
+    pointer-events: auto;
+    background-color: transparent;
+    box-shadow: none;
+    transition:
+      transform var(--ph-dur-move) var(--ph-ease-out),
+      background-color var(--ph-dur-state) var(--ph-ease-std),
+      box-shadow var(--ph-dur-state) var(--ph-ease-std);
+  }
+
+  [data-header].header--solid .header-shell {
+    background-color: rgba(13, 15, 18, 0.94);
+    box-shadow: inset 0 -1px 0 var(--ph-hair);
+  }
+
+  [data-header].header--scroll-hidden,
+  [data-header].header--scroll-hidden .header-shell {
+    pointer-events: none;
+  }
+
+  [data-header].header--scroll-hidden .header-shell {
+    transform: translateY(-100%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-header].header--scroll-hidden .header-shell {
+      transform: none;
+      pointer-events: auto;
+    }
+  }
+
+  /* Menú móvil abierto: la franja se funde con el negro del menú. */
+  html:has(#mobile-menu.is-open) [data-header] .header-shell {
+    background-color: transparent;
+    box-shadow: none;
+    transform: none;
+  }
+
+  /* La cabecera no se funde al navegar: su contenido es el mismo entre páginas.
+     El indicador es un grupo aparte (ph-nav-indicator) que se desliza. */
   ::view-transition-group(ph-header),
   ::view-transition-old(ph-header),
   ::view-transition-new(ph-header) {
     animation: none;
   }
 
-  /* Indicador: dejamos el morph por defecto (anima geometría vieja→nueva = el
-     deslizamiento) y solo ajustamos duración/curva para igualar el feel previo
-     de .nav-indicator.is-animated. */
   ::view-transition-group(ph-nav-indicator) {
-    animation-duration: 0.4s;
+    animation-duration: 0.32s;
     animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* Sin movimiento: la barrita aparece directamente en su sitio, sin slide. */
   @media (prefers-reduced-motion: reduce) {
     ::view-transition-group(ph-nav-indicator),
     ::view-transition-old(ph-nav-indicator),
@@ -993,9 +784,9 @@ const isActive = (href: string): boolean => {
   function setIndicatorToLink(link: HTMLElement) {
     if (!wrap || !indicator || !link) return;
     const wrapRect = wrap.getBoundingClientRect();
-    const linkRect = link.getBoundingClientRect();
-    const x = linkRect.left - wrapRect.left;
-    const scaleX = linkRect.width / INDICATOR_BASE_WIDTH;
+    const textRect = (link.querySelector('.nav-link__text') ?? link).getBoundingClientRect();
+    const x = textRect.left - wrapRect.left;
+    const scaleX = textRect.width / INDICATOR_BASE_WIDTH;
     indicator.style.transform = `translateX(${x}px) scaleX(${scaleX})`;
   }
 
@@ -1009,16 +800,15 @@ const isActive = (href: string): boolean => {
   // de la página se reescribe aquí en cada navegación.
   import { NAV_ITEMS } from '@/lib/navigation';
   // El núcleo de movimiento (sin GSAP) se carga con la cabecera, que está en
-  // todas las páginas: vigila lo que entra en pantalla y arranca la luz entre
+  // todas las páginas: vigila lo que entra en pantalla y mueve el cartón entre
   // páginas (src/scripts/ph-motion.ts).
-  import '@/scripts/ph-motion';
+  import { setLetters } from '@/scripts/ph-motion';
   import {
     useTranslations,
     getLangFromUrl,
     getLangSwitchUrl,
     getHomePath,
     LANG_NAMES,
-    LANG_FLAGS,
     type Lang,
   } from '@/i18n/utils';
 
@@ -1034,24 +824,34 @@ const isActive = (href: string): boolean => {
     const navHrefs = NAV_ITEMS.map((i) => i.href[lang]);
     const navLabels = NAV_ITEMS.map((i) => t(i.labelKey));
 
-    // Actualizar hrefs, labels e is-active de los enlaces de escritorio
+    // Enlaces de escritorio: destino, nombre (letra a letra) y página actual.
     desktopLinks.forEach((link, i) => {
       const href = navHrefs[i] ?? link.href;
       link.href = href;
       const label = navLabels[i];
-      // La palabra va dos veces (la segunda, para rodar al señalarla).
-      if (label) link.querySelectorAll('.nav-link__text').forEach((el) => { el.textContent = label; });
-      link.classList.toggle('is-active', norm(href) === currentPath);
+      if (label && link.getAttribute('aria-label') !== label) {
+        link.setAttribute('aria-label', label);
+        const text = link.querySelector<HTMLElement>('.nav-link__text');
+        if (text) setLetters(text, label);
+      }
+      const active = norm(href) === currentPath;
+      link.classList.toggle('is-active', active);
+      if (active) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
     });
 
-    // Actualizar hrefs, labels e is-active del menú móvil
+    // Menú móvil (se reemplaza en cada navegación, pero puede venir de otro idioma
+    // si la página nueva es la misma en HTML: se reescribe igual).
     document
       .querySelectorAll<HTMLAnchorElement>('.mobile-nav-list .mobile-link')
       .forEach((link, i) => {
         const href = navHrefs[i];
         const label = navLabels[i];
         if (href) link.href = href;
-        link.classList.toggle('mobile-link--active', norm(href ?? '') === currentPath);
+        const active = norm(href ?? '') === currentPath;
+        link.classList.toggle('mobile-link--active', active);
+        if (active) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
         if (label) {
           const labelEl = link.querySelector('.mobile-link__label');
           if (labelEl) labelEl.textContent = label;
@@ -1060,15 +860,16 @@ const isActive = (href: string): boolean => {
 
     // Logo
     const logo = document.querySelector<HTMLAnchorElement>('a.header-logo');
-    if (logo) logo.href = getHomePath(lang);
+    if (logo) {
+      logo.href = getHomePath(lang);
+      logo.setAttribute('aria-label', t('a11y.logo'));
+    }
 
     // Selector de idioma: el botón muestra el idioma actual…
     setLangMenuOpen(false);
     const trigger = getLangTrigger();
     if (trigger) {
       trigger.setAttribute('aria-label', `${t('nav.lang.menu')}: ${LANG_NAMES[lang]}`);
-      const flag = trigger.querySelector<HTMLImageElement>('[data-lang-current-flag]');
-      if (flag) flag.src = LANG_FLAGS[lang];
       const label = trigger.querySelector<HTMLElement>('[data-lang-current-label]');
       if (label) label.textContent = lang.toUpperCase();
     }
@@ -1086,63 +887,49 @@ const isActive = (href: string): boolean => {
   if (wrap && indicator && desktopLinks.length > 0) {
     document.addEventListener('astro:page-load', () => {
       syncHeaderToCurrentPage();
-      const activeLink = desktopLinks.find((link) =>
-        link.classList.contains('is-active'),
-      );
+      const activeLink = desktopLinks.find((link) => link.classList.contains('is-active'));
 
       if (!indicatorReady) {
-        // Primera carga: posicionar sin animación, luego activarla
-        if (activeLink) setIndicatorToLink(activeLink);
+        // Primera carga: posicionar sin animación (con la fuente ya puesta, que
+        // cambia el ancho de las palabras), luego activarla.
+        const place = () => { if (activeLink) setIndicatorToLink(activeLink); };
+        place();
+        document.fonts?.ready.then(place);
         requestAnimationFrame(() => {
           indicator.classList.add('is-animated');
           indicatorReady = true;
         });
-      } else {
-        // Navegaciones posteriores: el header persiste, la barra ya está en la
-        // posición anterior → animamos hasta el nuevo enlace activo
-        if (activeLink) {
-          setIndicatorToLink(activeLink);
-        } else {
-          hideIndicator();
-        }
-      }
-    });
-
-    // Navegación SPA: corre ANTES de que la View Transition capture el snapshot
-    // nuevo, así la geometría nueva del indicador entra en ese snapshot y el
-    // navegador la morfea desde la vieja → ese morph ES el deslizamiento. En la
-    // carga inicial este evento no se dispara; de eso se encarga astro:page-load.
-    document.addEventListener('astro:after-swap', () => {
-      syncHeaderToCurrentPage();
-      const activeLink = desktopLinks.find((link) =>
-        link.classList.contains('is-active'),
-      );
-      if (activeLink) {
+      } else if (activeLink) {
         setIndicatorToLink(activeLink);
       } else {
         hideIndicator();
       }
     });
 
-    // Sólo cuando cambia el ancho: en móvil, un resize de sólo altura es la barra
-    // del navegador entrando y saliendo durante el scroll, y la posición del
-    // indicador —horizontal, dentro del header— no depende de la altura. Mismo
-    // criterio que el `ignoreMobileResize` de ScrollTrigger.
+    // Navegación SPA: corre ANTES de que la View Transition capture el snapshot
+    // nuevo, así la geometría nueva del indicador entra en ese snapshot y el
+    // navegador la morfea desde la vieja → ese morph ES el deslizamiento.
+    document.addEventListener('astro:after-swap', () => {
+      syncHeaderToCurrentPage();
+      const activeLink = desktopLinks.find((link) => link.classList.contains('is-active'));
+      if (activeLink) setIndicatorToLink(activeLink);
+      else hideIndicator();
+    });
+
+    // Sólo cuando cambia el ancho: un resize de sólo altura es la barra del
+    // navegador del móvil, y el indicador no depende de la altura.
     let lastViewportWidth = window.innerWidth;
     window.addEventListener('resize', () => {
       if (window.innerWidth === lastViewportWidth) return;
       lastViewportWidth = window.innerWidth;
-      const activeLink = desktopLinks.find((link) =>
-        link.classList.contains('is-active'),
-      );
+      const activeLink = desktopLinks.find((link) => link.classList.contains('is-active'));
       if (activeLink) setIndicatorToLink(activeLink);
     });
   }
 
   // ── Desplegable de idioma (escritorio) ───────────────────────────────────
   // El estado vive en `aria-expanded` del botón y el CSS abre el panel a partir
-  // de él. El botón está en la cabecera persistente: se reconsulta cada vez en
-  // lugar de cachear el nodo, igual que el menú móvil.
+  // de él. El botón está en la cabecera persistente: se reconsulta cada vez.
   function getLangTrigger() {
     return document.querySelector<HTMLButtonElement>('[data-header] [data-lang-trigger]');
   }
@@ -1156,10 +943,10 @@ const isActive = (href: string): boolean => {
   }
 
   /**
-   * Mismo esquema que src/scripts/dropdown.ts: abre en `pointerup`, que iOS
-   * Safari despacha de forma fiable al primer toque incluso cuando ignora el
-   * `click` (iPad usa esta cabecera de escritorio). `click` queda para teclado y
-   * lectores de pantalla, y se descarta si el puntero ya lo gestionó.
+   * Abre en `pointerup`, que iOS Safari despacha de forma fiable al primer toque
+   * incluso cuando ignora el `click` (iPad usa esta cabecera de escritorio).
+   * `click` queda para teclado y lectores de pantalla, y se descarta si el
+   * puntero ya lo gestionó.
    */
   let langToggledByPointer = false;
 
@@ -1181,7 +968,7 @@ const isActive = (href: string): boolean => {
   });
 
   // Se cierra al tocar fuera, al sacar el foco con el tabulador y al hacer
-  // scroll (la cápsula se esconde al bajar y se llevaría el panel abierto).
+  // scroll (la cabecera se esconde al bajar y se llevaría el panel abierto).
   document.addEventListener('pointerdown', (e) => {
     if (!isLangMenuOpen()) return;
     const target = e.target as Element | null;
@@ -1226,6 +1013,10 @@ const isActive = (href: string): boolean => {
     return document.querySelector<HTMLElement>('[data-mobile-menu]');
   }
 
+  function getMenuToggle() {
+    return document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  }
+
   function syncMobileMenuChromeOffset() {
     const header = document.querySelector<HTMLElement>('[data-header]');
     if (!header) return;
@@ -1238,7 +1029,7 @@ const isActive = (href: string): boolean => {
   }
 
   function updateMenuToggleA11y(open: boolean) {
-    const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+    const toggle = getMenuToggle();
     if (!toggle) return;
     const openLbl = toggle.getAttribute('data-label-open');
     const closeLbl = toggle.getAttribute('data-label-close');
@@ -1247,9 +1038,16 @@ const isActive = (href: string): boolean => {
     }
   }
 
-  /** Lo que tarda en irse: las palabras (140 ms) y el panel, que empieza a
-   *  plegarse a los 90 ms y tarda 240 ms. */
-  const MENU_CLOSE_TOTAL_MS = 340;
+  /** Mientras el menú está abierto, la página de detrás no se lee ni recibe el
+   *  foco: `inert` en <main> y en el pie. */
+  function setPageInert(inert: boolean) {
+    document.querySelectorAll<HTMLElement>('#main-content, body > footer').forEach((el) => {
+      el.inert = inert;
+    });
+  }
+
+  /** Lo que tarda en irse: las palabras bajan en 160 ms y el negro se va detrás. */
+  const MENU_CLOSE_TOTAL_MS = 260;
 
   let mobileMenuCloseTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -1266,15 +1064,14 @@ const isActive = (href: string): boolean => {
     if (!mobileMenu) return;
     mobileMenu.classList.remove('is-open', 'mobile-menu--closing');
     mobileMenu.setAttribute('aria-hidden', 'true');
-    document.querySelectorAll<HTMLElement>('[data-menu-toggle]').forEach((toggle) => {
-      toggle.setAttribute('aria-expanded', 'false');
-    });
+    getMenuToggle()?.setAttribute('aria-expanded', 'false');
     updateMenuToggleA11y(false);
     document.documentElement.style.removeProperty('--mobile-menu-chrome-offset');
     document.body.style.overflow = '';
+    setPageInert(false);
   }
 
-  function setMobileMenuOpen(open: boolean) {
+  function setMobileMenuOpen(open: boolean, { restoreFocus = true } = {}) {
     const mobileMenu = getMobileMenu();
     if (!mobileMenu) return;
 
@@ -1288,22 +1085,20 @@ const isActive = (href: string): boolean => {
       requestAnimationFrame(() => syncMobileMenuChromeOffset());
       mobileMenu.classList.add('is-open');
       mobileMenu.setAttribute('aria-hidden', 'false');
-      document.querySelectorAll<HTMLElement>('[data-menu-toggle]').forEach((toggle) => {
-        toggle.setAttribute('aria-expanded', 'true');
-      });
+      getMenuToggle()?.setAttribute('aria-expanded', 'true');
       updateMenuToggleA11y(true);
       document.body.style.overflow = 'hidden';
+      setPageInert(true);
       return;
     }
 
     if (!mobileMenu.classList.contains('is-open')) return;
 
-    if (mobileMenu.classList.contains('mobile-menu--closing')) {
-      finalizeMobileMenuClose();
-      return;
-    }
+    // El foco vuelve al botón si estaba dentro del menú (cerrar con Escape, con
+    // el botón o tocando el fondo).
+    if (restoreFocus && mobileMenu.contains(document.activeElement)) getMenuToggle()?.focus();
 
-    if (prefersReducedMotionMenu()) {
+    if (mobileMenu.classList.contains('mobile-menu--closing') || prefersReducedMotionMenu()) {
       finalizeMobileMenuClose();
       return;
     }
@@ -1332,19 +1127,17 @@ const isActive = (href: string): boolean => {
       mobileMenu.classList.remove('mobile-menu--closing');
       return;
     }
-    if (mobileMenu.classList.contains('is-open')) {
-      setMobileMenuOpen(false);
-    } else {
-      setMobileMenuOpen(true);
-    }
+    setMobileMenuOpen(!mobileMenu.classList.contains('is-open'));
   }
 
   /**
-   * Handler principal: `pointerup` se dispara de forma fiable en
-   * TODOS los dispositivos (touch + mouse) y NO requiere dos toques
-   * en iOS Safari como `click` puede requerir con elementos con
-   * :hover CSS o post-animación.
+   * Handler principal: `pointerup` se dispara de forma fiable en TODOS los
+   * dispositivos (touch + mouse) y no requiere dos toques en iOS Safari como
+   * `click` puede requerir. Con teclado, Enter o Espacio sobre el botón llegan
+   * como `click` sin `pointerup`: se atienden abajo.
    */
+  let menuToggledByPointer = false;
+
   function onMobileMenuPointerUp(e: PointerEvent) {
     const target = e.target as Element | null;
     if (!target) return;
@@ -1352,30 +1145,79 @@ const isActive = (href: string): boolean => {
     if (target.closest('[data-menu-toggle]')) {
       e.preventDefault();
       toggleMobileMenu();
+      menuToggledByPointer = true;
+      requestAnimationFrame(() => {
+        menuToggledByPointer = false;
+      });
       return;
     }
     if (target.closest('[data-mobile-menu-dismiss]')) {
       setMobileMenuOpen(false);
-      return;
     }
   }
 
-  /**
-   * `click` se mantiene para:
-   * - Accesibilidad (teclado/screen reader)
-   * - Enlaces de navegación del menú (.mobile-link)
-   */
   function onMobileMenuClick(e: MouseEvent) {
     const target = e.target as Element | null;
     if (!target) return;
 
+    if (target.closest('[data-menu-toggle]')) {
+      if (!menuToggledByPointer) toggleMobileMenu();
+      return;
+    }
+    // Un enlace del menú: el menú se cierra detrás del cartón, sin devolver el
+    // foco (la página cambia).
     if (target.closest('[data-mobile-link]')) {
-      setMobileMenuOpen(false);
+      setMobileMenuOpen(false, { restoreFocus: false });
     }
   }
 
   document.addEventListener('pointerup', onMobileMenuPointerUp);
   document.addEventListener('click', onMobileMenuClick);
+
+  // Al abrir con el teclado, el foco entra en el menú (la primera palabra).
+  getMenuToggle()?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    requestAnimationFrame(() => {
+      if (getMobileMenu()?.classList.contains('is-open')) {
+        getMobileMenu()?.querySelector<HTMLElement>('.mobile-link')?.focus();
+      }
+    });
+  });
+
+  // Con el menú abierto, el tabulador da la vuelta entre el botón y los enlaces
+  // del menú: no se escapa a la página de detrás. El ciclo se hace a mano porque
+  // Safari, por defecto, no lleva el tabulador a los enlaces.
+  document.addEventListener('keydown', (event) => {
+    const mobileMenu = getMobileMenu();
+    if (event.key !== 'Tab' || !mobileMenu?.classList.contains('is-open')) return;
+    const toggle = getMenuToggle();
+    const items = [toggle, ...mobileMenu.querySelectorAll<HTMLElement>('a[href]')].filter(Boolean) as HTMLElement[];
+    if (!items.length) return;
+    event.preventDefault();
+    const i = items.indexOf(document.activeElement as HTMLElement);
+    const next = event.shiftKey
+      ? (i <= 0 ? items.length - 1 : i - 1)
+      : (i < 0 || i === items.length - 1 ? 0 : i + 1);
+    items[next].focus();
+  });
+
+  // Selector de idioma con las flechas: abre el panel y recorre las opciones
+  // (también en Safari, que no lleva el tabulador a los enlaces).
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+    const target = event.target as Element | null;
+    if (!target?.closest('[data-header] [data-lang-menu]')) return;
+    const options = Array.from(document.querySelectorAll<HTMLElement>('[data-header] [data-lang-panel] [data-lang-option]'));
+    if (!options.length) return;
+    event.preventDefault();
+    if (!isLangMenuOpen()) setLangMenuOpen(true);
+    const i = options.indexOf(document.activeElement as HTMLElement);
+    const next = event.key === 'ArrowDown'
+      ? (i + 1) % options.length
+      : (i <= 0 ? options.length - 1 : i - 1);
+    // El panel pasa a visible en el mismo fotograma: el foco, en el siguiente.
+    requestAnimationFrame(() => options[next].focus());
+  });
 
   document.addEventListener('click', (e) => {
     const target = e.target as Element | null;
@@ -1396,7 +1238,7 @@ const isActive = (href: string): boolean => {
   });
 
   window.addEventListener('resize', () => {
-    if (window.innerWidth >= 768) setMobileMenuOpen(false);
+    if (window.innerWidth >= 768) setMobileMenuOpen(false, { restoreFocus: false });
     else onMobileMenuLayoutResize();
   });
 

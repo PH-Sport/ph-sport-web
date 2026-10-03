@@ -1,0 +1,45 @@
+---
+/**
+ * Rótulo de escena: el antetítulo del contenido («02 · Talentos», «Filosofía»,
+ * «EL EQUIPO») leído como el número de escena de un guion. Va siempre arriba a la
+ * izquierda de su escena, en la columna 1, con un hilo corto que lo une al borde
+ * de la pantalla; a la derecha, un dato opcional («05 disciplinas · 01 equipo»).
+ * Estilos `.ph-scene` en global.css: al entrar en pantalla, el hilo se dibuja
+ * desde el borde y el texto sube de su línea base.
+ *
+ * El texto llega tal cual de las traducciones. Si empieza por un número seguido
+ * de « · », el número va en monoespaciada (es un índice) y el resto es la
+ * etiqueta; si no, el texto entero es la etiqueta.
+ */
+interface Props {
+  text: string;
+  meta?: string;
+  as?: 'p' | 'div';
+  id?: string;
+  class?: string;
+  [key: string]: unknown;
+}
+
+// `attrs` lleva el atributo de ámbito del componente que lo usa: así sus estilos
+// con ámbito (la clase que pasa en `class`) se aplican a este elemento.
+const { text, meta, as: Tag = 'p', id, class: className, ...attrs } = Astro.props as Props;
+const [first, ...others] = text.split(' · ');
+const hasNumber = others.length > 0 && /^\d+$/.test(first.trim());
+const num = hasNumber ? first.trim() : null;
+const label = hasNumber ? others.join(' · ') : text;
+---
+
+<Tag class:list={['ph-scene', className]} id={id} data-inview {...attrs}>
+  <span class="ph-scene__m">
+    <span class="ph-scene__in">
+      {num && <span class="ph-scene__num ph-index">{num}</span>}
+      {num && <span class="ph-scene__sep" aria-hidden="true">·</span>}
+      <span class="ph-scene__label">{label}</span>
+    </span>
+  </span>
+  {meta && (
+    <span class="ph-scene__m">
+      <span class="ph-scene__in ph-scene__meta">{meta}</span>
+    </span>
+  )}
+</Tag>

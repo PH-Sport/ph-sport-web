@@ -1,8 +1,7 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
-import Slate from '@/components/ui/Slate.astro';
-import Flap from '@/components/ui/Flap.astro';
-import Key from '@/components/ui/Key.astro';
+import SceneLabel from '@/components/ui/SceneLabel.astro';
+import TitleLink from '@/components/ui/TitleLink.astro';
 
 interface Props {
   lang: Lang;
@@ -12,433 +11,367 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const areas = [
-  {
-    title: t('home.services.area.management.title'),
-    body: t('home.services.area.management.body'),
-  },
-  {
-    title: t('home.services.area.career.title'),
-    body: t('home.services.area.career.body'),
-  },
-  {
-    title: t('home.services.area.international.title'),
-    body: t('home.services.area.international.body'),
-  },
-  {
-    title: t('home.services.area.comms.title'),
-    body: t('home.services.area.comms.body'),
-  },
-  {
-    title: t('home.services.area.legal.title'),
-    body: t('home.services.area.legal.body'),
-  },
+  { key: 'management', title: t('home.services.area.management.title'), body: t('home.services.area.management.body') },
+  { key: 'career', title: t('home.services.area.career.title'), body: t('home.services.area.career.body') },
+  { key: 'international', title: t('home.services.area.international.title'), body: t('home.services.area.international.body') },
+  { key: 'comms', title: t('home.services.area.comms.title'), body: t('home.services.area.comms.body') },
+  { key: 'legal', title: t('home.services.area.legal.title'), body: t('home.services.area.legal.body') },
 ];
 
 const actionPlanSub = [
   {
     title: t('home.services.actionPlan.press.title'),
-    bullets: [
-      t('home.services.actionPlan.press.b1'),
-      t('home.services.actionPlan.press.b2'),
-      t('home.services.actionPlan.press.b3'),
-    ],
+    bullets: [t('home.services.actionPlan.press.b1'), t('home.services.actionPlan.press.b2'), t('home.services.actionPlan.press.b3')],
   },
   {
     title: t('home.services.actionPlan.media.title'),
-    bullets: [
-      t('home.services.actionPlan.media.b1'),
-      t('home.services.actionPlan.media.b2'),
-      t('home.services.actionPlan.media.b3'),
-    ],
+    bullets: [t('home.services.actionPlan.media.b1'), t('home.services.actionPlan.media.b2'), t('home.services.actionPlan.media.b3')],
   },
   {
     title: t('home.services.actionPlan.psych.title'),
-    bullets: [
-      t('home.services.actionPlan.psych.b1'),
-      t('home.services.actionPlan.psych.b2'),
-      t('home.services.actionPlan.psych.b3'),
-    ],
+    bullets: [t('home.services.actionPlan.psych.b1'), t('home.services.actionPlan.psych.b2'), t('home.services.actionPlan.psych.b3')],
   },
   {
     title: t('home.services.actionPlan.performance.title'),
-    bullets: [
-      t('home.services.actionPlan.performance.b1'),
-      t('home.services.actionPlan.performance.b2'),
-      t('home.services.actionPlan.performance.b3'),
-    ],
+    bullets: [t('home.services.actionPlan.performance.b1'), t('home.services.actionPlan.performance.b2'), t('home.services.actionPlan.performance.b3')],
   },
   {
     title: t('home.services.actionPlan.familyOffice.title'),
-    bullets: [
-      t('home.services.actionPlan.familyOffice.b1'),
-      t('home.services.actionPlan.familyOffice.b2'),
-      t('home.services.actionPlan.familyOffice.b3'),
-    ],
+    bullets: [t('home.services.actionPlan.familyOffice.b1'), t('home.services.actionPlan.familyOffice.b2'), t('home.services.actionPlan.familyOffice.b3')],
   },
 ];
 
 const servicesHref = localizePath('/servicios/', lang);
 ---
 
-{/* El tablero de servicios: cada área es una fila del marcador, con su número
-    en paletas y la línea que la separa dibujándose al entrar, en cascada. */}
-<section class="home-services" id="servicios" aria-labelledby="home-services-title">
-  <Slate text={t('home.services.eyebrow')} />
-  <header class="home-services__head">
-    <h2 class="home-services__title" id="home-services-title" data-m="title" data-reveal>
-      {t('home.services.title')}
-    </h2>
-    <p class="home-services__lead" data-m="lead" data-reveal>{t('home.services.lead')}</p>
-  </header>
+{/* Tercera escena de la portada: «Representamos con propósito.» se enciende
+    palabra a palabra mientras se lee (lectura cinética) y las cinco áreas son un
+    índice tipográfico: índice pequeño en la columna 1, título grande, «+» que
+    gira a «−». El Plan de Acción, con «Además de» como rótulo, abre sus cinco
+    sub-áreas en columnas que entran desde la izquierda. */}
+<section class="hs" id="servicios" aria-labelledby="home-services-title">
+  <SceneLabel text={t('home.services.eyebrow')} />
+  <div class="hs__head ph-grid">
+    <h2 class="hs__title ph-giant" id="home-services-title" data-kinetic>{t('home.services.title')}</h2>
+    <p class="hs__lead ph-lead" data-reveal>{t('home.services.lead')}</p>
+  </div>
 
-  <ol class="home-services__list" role="list" data-board>
+  <ol class="hs-index" role="list" data-accordion>
     {areas.map((item, idx) => (
-      <li class="home-services__item ph-seam" data-inview>
-        <details class="home-services__row" name="home-services">
-          <summary class="home-services__summary">
-            <Flap value={String(idx + 1).padStart(2, '0')} size="md" class="home-services__num" />
-            <span class="home-services__name">{item.title}</span>
-            <span class="home-services__plus" aria-hidden="true">
-              <span></span><span></span>
-            </span>
-          </summary>
-          <div class="home-services__body">
-            <div class="home-services__body-inner">
-              <p>{item.body}</p>
-            </div>
+      <li class="hs-row ph-rule" data-acc-row data-inview>
+        <h3 class="hs-row__h">
+          <button
+            type="button"
+            class="hs-row__btn"
+            id={`hs-btn-${item.key}`}
+            aria-expanded="false"
+            aria-controls={`hs-panel-${item.key}`}
+            data-acc-toggle
+          >
+            <span class="hs-row__idx ph-index">{String(idx + 1).padStart(2, '0')}</span>
+            <span class="hs-row__title">{item.title}</span>
+            <span class="hs-row__sign" aria-hidden="true"><span></span><span></span></span>
+          </button>
+        </h3>
+        <div class="hs-row__panel" id={`hs-panel-${item.key}`} role="region" aria-labelledby={`hs-btn-${item.key}`} hidden data-acc-panel>
+          <div class="hs-row__body">
+            <p class="ph-body">{item.body}</p>
           </div>
-        </details>
+        </div>
       </li>
     ))}
 
-    <li class="home-services__item home-services__item--featured" data-inview>
-      <details class="home-services__row home-services__row--plan" name="home-services">
-        <summary class="home-services__summary">
-          <span class="home-services__num home-services__num--rombo" aria-hidden="true"></span>
-          <span class="home-services__plan-stack">
-            <span class="home-services__plan-eyebrow">{t('home.services.actionPlan.eyebrow')}</span>
-            <span class="home-services__name">{t('home.services.actionPlan.title')}</span>
+    <li class="hs-row hs-row--plan ph-rule" data-acc-row data-inview>
+      <h3 class="hs-row__h">
+        <button
+          type="button"
+          class="hs-row__btn"
+          id="hs-btn-plan"
+          aria-expanded="false"
+          aria-controls="hs-panel-plan"
+          data-acc-toggle
+        >
+          <span class="hs-row__idx" aria-hidden="true"></span>
+          <span class="hs-row__stack">
+            <span class="hs-row__over">{t('home.services.actionPlan.eyebrow')}</span>
+            <span class="hs-row__title">{t('home.services.actionPlan.title')}</span>
           </span>
-          <span class="home-services__plus" aria-hidden="true">
-            <span></span><span></span>
-          </span>
-        </summary>
-        <div class="home-services__body">
-          <div class="home-services__body-inner home-services__body-inner--plan">
-            <ul class="home-services__plan-grid" role="list">
-              {actionPlanSub.map((card) => (
-                <li class="home-services__plan-card">
-                  <h3 class="home-services__plan-card-title">{card.title}</h3>
-                  <ul class="home-services__plan-card-bullets" role="list">
-                    {card.bullets.map((b) => (
-                      <li>{b}</li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <span class="hs-row__sign" aria-hidden="true"><span></span><span></span></span>
+        </button>
+      </h3>
+      <div class="hs-row__panel" id="hs-panel-plan" role="region" aria-labelledby="hs-btn-plan" hidden data-acc-panel>
+        <div class="hs-row__body hs-row__body--plan">
+          <ul class="hs-plan" role="list">
+            {actionPlanSub.map((card) => (
+              <li class="hs-plan__col" data-acc-col>
+                <h4 class="hs-plan__title">{card.title}</h4>
+                <ul class="hs-plan__list" role="list">
+                  {card.bullets.map((b) => <li>{b}</li>)}
+                </ul>
+              </li>
+            ))}
+          </ul>
         </div>
-      </details>
+      </div>
     </li>
   </ol>
 
-  <div class="home-services__cta-wrap">
-    <Key href={servicesHref} label={t('home.services.cta')} tone="gold" />
+  <div class="hs__cta">
+    <TitleLink href={servicesHref} label={t('home.services.cta')} />
   </div>
+
+  {/* Sin JavaScript nadie abriría los paneles: se ven todos abiertos. El
+      preflight de Tailwind oculta `[hidden]` con `!important` dentro de
+      `@layer base`, y un `!important` de capa gana a uno sin capa: la regla va en
+      la misma capa, donde decide la especificidad. */}
+  <noscript><style>@layer base { .hs-row__panel[hidden] { display: block !important; } }</style></noscript>
 </section>
 
 <style>
-  .home-services {
-    padding: clamp(56px, 8vw, 120px) var(--ph-section-px, clamp(20px, 4vw, 48px));
-    background: var(--color-ph-bg-2, #15171b);
-    color: var(--color-ph-white, #ffffff);
-  }
-
-  .home-services__head { max-width: 860px; margin: clamp(28px, 4vw, 48px) 0 clamp(32px, 5vw, 56px); }
-
-  .home-services__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(40px, 10.5vw, 80px);
-    letter-spacing: -0.04em;
-    line-height: 0.95;
-    margin: 0;
-    text-wrap: balance;
-  }
-
-  .home-services__lead {
-    margin: clamp(18px, 2vw, 24px) 0 0;
-    color: var(--ph-ink-lead);
-    font-family: var(--font-display);
-    font-size: var(--ph-head-lead-size);
-    line-height: 1.45;
-    max-width: 38ch;
-    text-wrap: balance;
-  }
-
-  .home-services__list {
-    list-style: none;
-    padding: 0;
-    margin: clamp(32px, 5vw, 56px) 0 0;
-  }
-
-  /* Cada fila entra detrás de su línea: primero se dibuja la costura (retardo en
-     `--ph-seam-delay`, en cascada desde el script) y la fila sube por debajo. */
-  .home-services__item > .home-services__row {
-    transition:
-      opacity 520ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 120ms),
-      transform 640ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 120ms);
-  }
-  :global(html.ph-anim) .home-services__item:not(.is-inview) > .home-services__row {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  /* La última área cierra el tablero con su propia línea, que se dibuja detrás
-     de la de arriba. El plan de acción va aparte, como anexo, sin línea. */
-  .home-services__list > .home-services__item:nth-last-child(2)::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.14);
-    transform-origin: 0 50%;
-    transition: transform var(--ph-dur-draw) var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 90ms);
-  }
-  :global(html.ph-anim) .home-services__list > .home-services__item:nth-last-child(2):not(.is-inview)::after {
-    transform: scaleX(0);
-  }
-  :global(html.ph-anim:not(.ph-motion)) .home-services__list > .home-services__item:nth-last-child(2)::after {
-    animation: ph-motion-failsafe 0s linear 2.5s forwards;
-  }
-
-  /* Plan de Acción como anexo: alineado con los 01-05 pero sin número de
-     secuencia. Un rombo dorado y la micro-eyebrow ("Además de") le dan
-     carácter sin convertirlo en el sexto ítem de la lista. */
-  .home-services__item--featured {
-    margin-top: clamp(12px, 2vw, 24px);
-  }
-  /* Rombo hueco dorado como marcador del anexo. La columna del grid en
-     .home-services__summary es fija (52px) para todas las filas, así que el
-     slot tiene el mismo ancho que las paletas «01..05» y los títulos alinean. */
-  .home-services__num--rombo {
+  .hs {
     position: relative;
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    margin-left: 4px;
-    font-size: 0;
-  }
-  .home-services__num--rombo::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border: 1px solid var(--color-ph-gold, #d6b25e);
-    box-sizing: border-box;
-    transform: rotate(45deg);
-  }
-  .home-services__plan-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    min-width: 0;
-  }
-  .home-services__plan-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-body);
-    font-size: 13px;
-    letter-spacing: 0.01em;
-    color: var(--color-ph-gold, #d6b25e);
-    white-space: nowrap;
-  }
-  .home-services__plan-eyebrow::before {
-    content: "";
-    width: 20px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-    flex-shrink: 0;
+    z-index: 2;
+    background: var(--color-ph-black);
+    padding: clamp(72px, 10vw, 144px) var(--ph-section-px) clamp(96px, 12vw, 168px);
   }
 
-  .home-services__row { width: 100%; }
-  .home-services__row > summary { list-style: none; cursor: pointer; }
-  .home-services__row > summary::-webkit-details-marker { display: none; }
+  .hs__head {
+    row-gap: clamp(20px, 2.4vw, 32px);
+    margin-top: clamp(32px, 5vw, 64px);
+  }
 
-  .home-services__summary {
+  .hs__title {
+    grid-column: 1 / -1;
+    font-size: clamp(32px, 9vw, 140px);
+    line-height: 0.92;
+    text-wrap: balance;
+  }
+
+  .hs__lead {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 1024px) {
+    .hs__title {
+      grid-column: 1 / 12;
+      font-size: 5.5vw;
+    }
+
+    .hs__lead {
+      grid-column: 2 / 7;
+    }
+  }
+
+  /* ── El índice tipográfico ── */
+  .hs-index {
+    margin: clamp(48px, 7vw, 96px) 0 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid var(--ph-hair);
+  }
+
+  .hs-row {
+    --ph-rule-color: var(--ph-hair-strong);
+  }
+
+  .hs-row__h {
+    margin: 0;
+    font: inherit;
+    letter-spacing: normal;
+  }
+
+  /* La primera columna (el índice) mide lo que una columna de la retícula, para
+     que los títulos caigan en la columna 2. */
+  .hs-row__btn {
+    --col1: 2.75rem;
     display: grid;
-    grid-template-columns: 52px 1fr auto;
-    align-items: center;
-    gap: clamp(12px, 2.5vw, 32px);
-    padding: clamp(20px, 3vw, 30px) 0;
-    transition: color var(--ph-dur-state) var(--ph-ease-std);
-    color: var(--color-ph-white, #ffffff);
+    grid-template-columns: var(--col1) minmax(0, 1fr) 1.5rem;
+    align-items: baseline;
+    column-gap: 0;
+    width: 100%;
+    padding: clamp(18px, 2.2vw, 30px) 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-ph-white);
+    text-align: left;
+    cursor: pointer;
     -webkit-tap-highlight-color: transparent;
   }
-  .home-services__row[open] .home-services__summary { color: var(--color-ph-gold, #d6b25e); }
-  /* El nombre se adelanta un paso al señalar la fila: la fila responde, no solo
-     cambia de color. */
-  .home-services__name {
-    transition: transform var(--ph-dur-move) var(--ph-ease-out);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .home-services__row:hover .home-services__summary { color: var(--color-ph-gold, #d6b25e); }
-    .home-services__row:hover .home-services__name { transform: translateX(8px); }
-  }
-  .home-services__summary:active .home-services__name {
-    transform: translateX(4px);
-    transition-duration: var(--ph-dur-tap);
+
+  @media (min-width: 1024px) {
+    .hs-row__btn {
+      --col1: calc((100% - 11 * var(--ph-gutter)) / 12 + var(--ph-gutter));
+    }
   }
 
-  .home-services__row > summary:focus-visible {
-    outline: 2px solid var(--color-ph-gold, #d6b25e);
-    outline-offset: 4px;
+  .hs-row__idx {
+    align-self: baseline;
   }
 
-
-  .home-services__name {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(22px, 3vw, 36px);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+  .hs-row__title {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(28px, 7.2vw, 40px);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+    transition: opacity var(--ph-dur-state) var(--ph-ease-std), transform var(--ph-dur-state) var(--ph-ease-out);
   }
 
-  .home-services__plus {
+  @media (min-width: 1024px) {
+    .hs-row__title {
+      font-size: clamp(48px, 4.2vw, 64px);
+    }
+  }
+
+  .hs-row__stack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .hs-row__over {
+    font-family: var(--font-body);
+    font-size: var(--ph-small);
+    letter-spacing: 0.02em;
+    color: var(--ph-ink-meta);
+  }
+
+  /* «+» que gira a «−»: dos hilos; el vertical gira hasta tumbarse. */
+  .hs-row__sign {
     position: relative;
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
+    align-self: center;
+    justify-self: end;
+    width: 1.25rem;
+    height: 1.25rem;
   }
-  .home-services__plus span {
+
+  .hs-row__sign span {
     position: absolute;
     top: 50%;
     left: 0;
-    width: 20px;
-    height: 1px;
+    width: 100%;
+    height: 1.5px;
+    margin-top: -0.75px;
     background: currentColor;
-    transform: translateY(-50%);
-    transition: transform var(--ph-dur-move) var(--ph-ease-out);
-  }
-  .home-services__plus span:last-child {
-    transform: translateY(-50%) rotate(90deg);
-  }
-  .home-services__row[open] .home-services__plus span:last-child {
-    transform: translateY(-50%) rotate(0deg);
+    transition: transform var(--ph-dur-move) var(--ph-ease-out), background-color var(--ph-dur-state) var(--ph-ease-std);
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .home-services__summary,
-    .home-services__name,
-    .home-services__plus span { transition: none; }
+  .hs-row__sign span:last-child {
+    transform: rotate(90deg);
   }
 
-  .home-services__body {
-    overflow: hidden;
-    height: 0;
-    opacity: 0;
-  }
-  .home-services__row[open] .home-services__body {
-    height: auto;
-    opacity: 1;
-  }
-  .home-services__body-inner {
-    padding: 0 0 clamp(20px, 3vw, 32px);
-    max-width: 640px;
-  }
-  .home-services__body-inner {
-    padding-left: calc(52px + clamp(12px, 2.5vw, 32px));
-  }
-  .home-services__body-inner p {
-    margin: 0;
-    color: var(--ph-ink-body);
-    font-size: 16px;
-    line-height: 1.6;
+  .hs-row.is-open .hs-row__sign span {
+    background: var(--color-ph-gold);
   }
 
-  /* Plan de Acción: el body se extiende a todo el ancho para albergar el grid. */
-  .home-services__body-inner--plan {
-    max-width: none;
+  .hs-row.is-open .hs-row__sign span:last-child {
+    transform: rotate(0deg);
+  }
+
+  /* Foco de escena: con una fila abierta, las demás bajan de tono. */
+  .hs-index:has(.is-open) .hs-row:not(.is-open) .hs-row__title {
+    opacity: 0.45;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hs-row__btn:hover .hs-row__title {
+      opacity: 1;
+      transform: translateX(6px);
+    }
+  }
+
+  .hs-row__btn:focus-visible {
+    outline-offset: 4px;
+  }
+
+  .hs-row__btn:active .hs-row__title {
+    color: var(--color-ph-gold);
+  }
+
+  /* El texto del área, debajo del título y en su columna (la misma medida que
+     la primera columna del botón). */
+  .hs-row__body {
+    padding: 0 0 clamp(24px, 3vw, 40px) 2.75rem;
+  }
+
+  .hs-row__body .ph-body {
+    max-width: 52ch;
+  }
+
+  @media (min-width: 1024px) {
+    .hs-row__body {
+      padding-left: calc((100% - 11 * var(--ph-gutter)) / 12 + var(--ph-gutter));
+    }
+  }
+
+  /* Plan de Acción: sus cinco sub-áreas en columnas tipográficas. */
+  .hs-row__body--plan {
     padding-left: 0;
   }
 
-  .home-services__plan-grid {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .hs-plan {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  @media (min-width: 640px) {
-    .home-services__plan-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-  }
-  @media (min-width: 960px) {
-    .home-services__plan-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px var(--ph-gutter);
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
-  /* Las sub-áreas del plan como paneles del tablero: la cara de arriba un punto
-     más clara, como las paletas. */
-  .home-services__plan-card {
-    padding: 18px 18px 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 70%);
+  @media (min-width: 600px) {
+    .hs-plan { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 
-  .home-services__plan-card-title {
+  @media (min-width: 900px) {
+    .hs-plan { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  @media (min-width: 1200px) {
+    .hs-plan { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  }
+
+  .hs-plan__col {
+    padding-top: 14px;
+    border-top: 1px solid var(--ph-hair-strong);
+  }
+
+  .hs-plan__title {
     margin: 0 0 12px;
     font-family: var(--font-display);
-    font-size: 17px;
-    font-weight: 500;
-    letter-spacing: -0.005em;
-    color: var(--color-ph-gold, #d6b25e);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    color: var(--color-ph-white);
   }
 
-  .home-services__plan-card-bullets {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .hs-plan__list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
-  .home-services__plan-card-bullets li {
-    position: relative;
-    padding-left: 14px;
+
+  .hs-plan__list li {
+    font-size: 15px;
+    line-height: 1.45;
     color: var(--ph-ink-body);
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  .home-services__plan-card-bullets li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0.65em;
-    width: 6px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
   }
 
-  .home-services__cta-wrap {
-    margin-top: clamp(36px, 5vw, 56px);
-    display: flex;
+  .hs__cta {
+    margin-top: clamp(40px, 5vw, 64px);
   }
 
-  @media (max-width: 720px) {
-    .home-services__summary { gap: 14px; grid-template-columns: 46px 1fr auto; }
-    .home-services__name { font-size: 20px; }
-    .home-services__body-inner { padding-left: 0; }
-    .home-services__plan-card { padding: 16px 16px 14px; }
-    .home-services__plan-card-bullets li { font-size: 14px; }
+  @media (prefers-reduced-motion: reduce) {
+    .hs-row__title,
+    .hs-row__sign span {
+      transition: none;
+    }
   }
 </style>
 
@@ -446,109 +379,30 @@ const servicesHref = localizePath('/servicios/', lang);
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import {
-    reducedMotion, stage, mountSection, afterTransitionPaint, EASE,
+    reducedMotion, kinetic, fadeUp, mountSection, afterTransitionPaint,
   } from '@/scripts/ph-text-animations';
+  import { initAccordion } from '@/scripts/ph-accordion';
   import { cascade } from '@/scripts/ph-motion';
 
   gsap.registerPlugin(ScrollTrigger);
 
-  function initHomeServicesAnimations(): void {
-    const section = document.querySelector<HTMLElement>('.home-services');
+  function initHomeServices(): void {
+    const section = document.querySelector<HTMLElement>('.hs');
     if (!section) return;
+    const index = section.querySelector<HTMLElement>('[data-accordion]');
+    if (index) initAccordion(index);
     if (!reducedMotion()) {
-      stage(section);
-      // Las filas del tablero, en cascada: cada línea se dibuja 70 ms después de
-      // la anterior y su fila sube detrás.
-      cascade(section.querySelectorAll<HTMLElement>('.home-services__item'), 70);
+      const title = section.querySelector<HTMLElement>('[data-kinetic]');
+      if (title) kinetic(title);
+      fadeUp(section.querySelectorAll<HTMLElement>('.hs__lead'));
+      // Los hilos del índice se dibujan en cascada.
+      cascade(section.querySelectorAll<HTMLElement>('.hs-row'), 70);
+      section.querySelectorAll<HTMLElement>('.hs-row').forEach((row) => {
+        row.style.setProperty('--ph-rule-delay', row.style.getPropertyValue('--d'));
+      });
     }
     mountSection(section);
   }
 
-  function initHomeServicesAccordion(): void {
-    if (reducedMotion()) return;
-    const details = document.querySelectorAll<HTMLDetailsElement>('.home-services__row');
-    if (!details.length) return;
-
-    // Abrir tarda más que cerrar: lo que llega se presenta, lo que se va no se
-    // hace esperar.
-    const OPEN_S = 0.5;
-    const CLOSE_S = 0.32;
-    const active = new WeakMap<HTMLElement, gsap.core.Tween>();
-
-    const animateClose = (d: HTMLDetailsElement): void => {
-      const body = d.querySelector<HTMLElement>('.home-services__body');
-      if (!body) { d.removeAttribute('open'); return; }
-      active.get(body)?.kill();
-      const current = body.offsetHeight;
-      body.style.height = current + 'px';
-      body.style.opacity = '1';
-      const tween = gsap.to(body, {
-        height: 0,
-        opacity: 0,
-        duration: CLOSE_S,
-        ease: EASE.std,
-        onComplete: () => {
-          d.removeAttribute('open');
-          body.style.height = '';
-          body.style.opacity = '';
-          active.delete(body);
-        },
-      });
-      active.set(body, tween);
-    };
-
-    const animateOpen = (d: HTMLDetailsElement): void => {
-      const body = d.querySelector<HTMLElement>('.home-services__body');
-      const inner = body?.querySelector<HTMLElement>('.home-services__body-inner');
-      if (!body || !inner) { d.setAttribute('open', ''); return; }
-      active.get(body)?.kill();
-      d.setAttribute('open', '');
-      body.style.height = '0px';
-      body.style.opacity = '0';
-      const target = inner.offsetHeight;
-      const tween = gsap.to(body, {
-        height: target,
-        opacity: 1,
-        duration: OPEN_S,
-        ease: EASE.out,
-        onComplete: () => {
-          body.style.height = '';
-          body.style.opacity = '';
-          active.delete(body);
-        },
-      });
-      active.set(body, tween);
-      // El plan se despliega como un tablero: sus paneles entran uno tras otro.
-      const cards = inner.querySelectorAll<HTMLElement>('.home-services__plan-card');
-      if (cards.length) {
-        gsap.from(cards, { opacity: 0, y: 12, duration: 0.5, ease: EASE.out, stagger: 0.05, delay: 0.08, clearProps: 'opacity,transform' });
-      }
-    };
-
-    details.forEach((d) => {
-      const summary = d.querySelector<HTMLElement>('summary');
-      if (!summary) return;
-      summary.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (d.hasAttribute('open')) {
-          animateClose(d);
-          return;
-        }
-        const name = d.getAttribute('name');
-        if (name) {
-          document.querySelectorAll<HTMLDetailsElement>(
-            `details[name="${name}"][open]`,
-          ).forEach((other) => {
-            if (other !== d) animateClose(other);
-          });
-        }
-        animateOpen(d);
-      });
-    });
-  }
-
-  document.addEventListener('astro:page-load', () => {
-    afterTransitionPaint(initHomeServicesAnimations);
-    initHomeServicesAccordion();
-  });
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeServices));
 </script>

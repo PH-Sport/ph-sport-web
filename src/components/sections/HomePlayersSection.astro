@@ -1,7 +1,8 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
-import Slate from '@/components/ui/Slate.astro';
-import Key from '@/components/ui/Key.astro';
+import Bug from '@/components/ui/Bug.astro';
+import Plate from '@/components/ui/Plate.astro';
+import KeyPlate from '@/components/ui/KeyPlate.astro';
 
 interface Props {
   lang: Lang;
@@ -13,69 +14,60 @@ const t = useTranslations(lang);
 const listHref = localizePath('/talentos/', lang);
 ---
 
-{/* Bloque de paso hacia /talentos: la pizarra abre el segmento y el titular
-    ocupa la pantalla del móvil. Sin fotos a propósito: el grid destacado de la
+{/* «A continuación»: el paso hacia /talentos, como el rótulo que anuncia el
+    siguiente programa. «El roster.» a escala de rótulo en su placa, la
+    entradilla y la placa llave. Sin fotos a propósito: el grid destacado de la
     portada se quitó en abril para llevar a la lista completa (commit 453e928). */}
 <section class="home-players" id="talentos" aria-labelledby="home-players-title">
-  <Slate text={t('home.players.eyebrow')} />
-  <div class="home-players__row">
-    <header class="home-players__head">
-      <h2 class="home-players__title" id="home-players-title" data-m="title" data-reveal>
-        {t('talents.title')}<em>{t('home.players.titleAccent')}</em>.
-      </h2>
-      <p class="home-players__lead" data-m="lead" data-reveal>{t('home.players.lead')}</p>
-    </header>
-
-    <div class="home-players__cta-wrap" data-m="item" data-reveal>
-      <Key href={listHref} label={t('home.players.cta')} tone="gold" />
+  <Bug text={t('home.players.eyebrow')} />
+  <div class="home-players__row" data-inview>
+    <h2 class="home-players__title" id="home-players-title">
+      <Plate tab>{t('talents.title')}<em>{t('home.players.titleAccent')}</em>.</Plate>
+    </h2>
+    <div class="home-players__side">
+      <p class="home-players__lead ph-in-rise" style="--d: 300ms">{t('home.players.lead')}</p>
+      <div class="home-players__cta ph-in-rise" style="--d: 380ms">
+        <KeyPlate href={listHref} label={t('home.players.cta')} size="wide" />
+      </div>
     </div>
   </div>
 </section>
 
 <style>
   .home-players {
-    padding: clamp(64px, 9vw, 128px) var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(72px, 10vw, 136px);
-    background: var(--color-ph-black, #0d0f12);
-    color: var(--color-ph-white, #ffffff);
+    position: relative;
+    padding: clamp(72px, 9vw, 120px) var(--ph-section-px) clamp(64px, 7vw, 104px);
+    background: var(--color-ph-black);
   }
 
   .home-players__row {
     display: flex;
     flex-direction: column;
-    gap: clamp(32px, 4vw, 48px);
-    align-items: flex-start;
-    margin-top: clamp(28px, 4vw, 48px);
+    gap: clamp(24px, 3vw, 40px);
+    margin-top: clamp(30px, 4vw, 52px);
   }
 
-  .home-players__head { max-width: 980px; }
-
-  /* El titular a escala de rótulo: «El roster.» llena el ancho del móvil. */
+  /* El titular a escala de rótulo: «The roster.» (la palabra más larga de los tres
+     idiomas) tiene que caber en una placa a 360 px. */
   .home-players__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(72px, 24vw, 144px);
-    letter-spacing: -0.045em;
-    line-height: 0.86;
-    margin: 0 0 0 -0.04em;
+    margin: 0;
+    font-size: clamp(54px, 15.5vw, 144px);
   }
-  .home-players__title em {
-    color: var(--color-ph-gold, #d6b25e);
-    font-style: italic;
-    font-weight: 400;
+
+  .home-players__side {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 
   .home-players__lead {
-    margin: clamp(20px, 2.5vw, 28px) 0 0;
-    color: var(--ph-ink-lead);
+    margin: 0;
+    max-width: 30ch;
     font-family: var(--font-display);
     font-size: var(--ph-head-lead-size);
     line-height: 1.45;
-    max-width: 30ch;
-    text-wrap: balance;
-  }
-
-  .home-players__cta-wrap {
-    display: flex;
+    color: var(--ph-ink-lead);
+    text-wrap: pretty;
   }
 
   @media (min-width: 900px) {
@@ -85,31 +77,22 @@ const listHref = localizePath('/talentos/', lang);
       justify-content: space-between;
       gap: clamp(32px, 5vw, 72px);
     }
-    .home-players__title {
-      font-size: clamp(96px, 10vw, 144px);
-    }
-    .home-players__cta-wrap {
-      flex-shrink: 0;
-      padding-bottom: 8px;
+    .home-players__title { font-size: clamp(96px, 10vw, 144px); }
+    .home-players__side {
+      flex: 0 0 auto;
+      width: min(380px, 34vw);
+      padding-bottom: 4px;
     }
   }
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, stage, mountSection, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
+  import { mountSection, afterTransitionPaint } from '@/scripts/ph-text-animations';
 
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initHomePlayersAnimations(): void {
+  function initHomePlayers(): void {
     const section = document.querySelector<HTMLElement>('.home-players');
-    if (!section) return;
-    if (!reducedMotion()) stage(section, { glint: true });
-    mountSection(section);
+    if (section) mountSection(section);
   }
 
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomePlayersAnimations));
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomePlayers));
 </script>

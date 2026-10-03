@@ -1,9 +1,9 @@
 ---
 import { getServicesItems } from '@/lib/servicesItems';
-import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
-import Slate from '@/components/ui/Slate.astro';
-import Flap from '@/components/ui/Flap.astro';
-import FlapText from '@/components/ui/FlapText.astro';
+import { useTranslations, type Lang } from '@/i18n/utils';
+import Bug from '@/components/ui/Bug.astro';
+import Plate from '@/components/ui/Plate.astro';
+import Ticker from '@/components/ui/Ticker.astro';
 
 interface Props {
   lang: Lang;
@@ -14,65 +14,23 @@ const t = useTranslations(lang);
 
 const items = getServicesItems(lang);
 
-const areas = [
-  {
-    key: 'management',
-    title: t('services.areas.items.management.title'),
-    lead: t('services.areas.items.management.lead'),
-    bullets: [
-      t('services.areas.items.management.bullet1'),
-      t('services.areas.items.management.bullet2'),
-      t('services.areas.items.management.bullet3'),
-      t('services.areas.items.management.bullet4'),
-    ],
-  },
-  {
-    key: 'career',
-    title: t('services.areas.items.career.title'),
-    lead: t('services.areas.items.career.lead'),
-    bullets: [
-      t('services.areas.items.career.bullet1'),
-      t('services.areas.items.career.bullet2'),
-      t('services.areas.items.career.bullet3'),
-      t('services.areas.items.career.bullet4'),
-    ],
-  },
-  {
-    key: 'international',
-    title: t('services.areas.items.international.title'),
-    lead: t('services.areas.items.international.lead'),
-    bullets: [
-      t('services.areas.items.international.bullet1'),
-      t('services.areas.items.international.bullet2'),
-      t('services.areas.items.international.bullet3'),
-      t('services.areas.items.international.bullet4'),
-    ],
-  },
-  {
-    key: 'comms',
-    title: t('services.areas.items.comms.title'),
-    lead: t('services.areas.items.comms.lead'),
-    bullets: [
-      t('services.areas.items.comms.bullet1'),
-      t('services.areas.items.comms.bullet2'),
-      t('services.areas.items.comms.bullet3'),
-      t('services.areas.items.comms.bullet4'),
-    ],
-  },
-  {
-    key: 'legal',
-    title: t('services.areas.items.legal.title'),
-    lead: t('services.areas.items.legal.lead'),
-    bullets: [
-      t('services.areas.items.legal.bullet1'),
-      t('services.areas.items.legal.bullet2'),
-      t('services.areas.items.legal.bullet3'),
-      t('services.areas.items.legal.bullet4'),
-    ],
-  },
-];
+const areaKeys = ['management', 'career', 'international', 'comms', 'legal'] as const;
+const areas = areaKeys.map((key) => ({
+  key,
+  title: t(`services.areas.items.${key}.title`),
+  lead: t(`services.areas.items.${key}.lead`),
+  bullets: [
+    t(`services.areas.items.${key}.bullet1`),
+    t(`services.areas.items.${key}.bullet2`),
+    t(`services.areas.items.${key}.bullet3`),
+    t(`services.areas.items.${key}.bullet4`),
+  ],
+}));
 
-const contactHref = localizePath('/#contacto', lang);
+const romans = ['I', 'II', 'III', 'IV', 'V'];
+const pillarKeys = ['press', 'performance', 'media', 'familyOffice', 'psychology'];
+const foot = t('services.areas.foot').split(' · ');
+const manifestTicker = t('services.manifest.eyebrow').split(' · ');
 ---
 
 <section class="srv" aria-labelledby="srv-hero-title">
@@ -80,792 +38,574 @@ const contactHref = localizePath('/#contacto', lang);
     <canvas class="ph-ambient" data-ambient="estructura"></canvas>
   </div>
 
-  {/* 01 — Hero: misma cabecera que Talentos y Sobre nosotros (global.css). */}
-  <div class="srv-hero">
-    <Slate text={t('services.hero.eyebrow')} class="srv-hero__index" />
-    <h1 class="srv-hero__title ph-head-title" id="srv-hero-title" data-m="title" data-reveal>
-      {t('services.hero.titleLead')}<br />
-      {t('services.hero.titleRest')}<em>{t('services.hero.titleAccent')}</em>.
+  {/* 01 — Cabecera: «Un equipo» / «fuera del campo.» en dos placas en escalera.
+      En la primera pantalla ya asoma el bloque de áreas. */}
+  <header class="ph-head srv-head" data-inview>
+    <Bug text={t('services.hero.eyebrow')} inview={false} />
+    <h1 class="ph-head__title srv-head__title ph-lt" id="srv-hero-title">
+      <Plate tab d={60}>{t('services.hero.titleLead')}</Plate>{' '}
+      <Plate d={140} step={1}>{t('services.hero.titleRest')}<em>{t('services.hero.titleAccent')}</em>.</Plate>
     </h1>
-    <p class="srv-hero__lead ph-head-lead" data-m="lead" data-reveal>{t('services.hero.lead')}</p>
-  </div>
+    <p class="ph-head-lead srv-head__lead ph-in-rise" style="--d: 320ms">{t('services.hero.lead')}</p>
+  </header>
 
-  {/* 02 — Áreas de gestión (accordion) */}
+  {/* 02 — Áreas de gestión: la alineación. Acordeón con botón y región
+      (`aria-expanded`/`aria-controls`); se anima sin animar alturas
+      (src/scripts/ph-disclosure.ts). */}
   <div class="srv-areas">
-    <header class="srv-areas__head">
-      <Slate as="div" text={t('services.areas.eyebrow')} meta={t('services.areas.kicker')} class="srv-areas__index" />
-      <h2 class="srv-areas__title" data-m="title" data-reveal>
+    <header class="srv-areas__head" data-inview>
+      <div class="srv-areas__bugs">
+        <Bug as="div" text={t('services.areas.eyebrow')} inview={false} />
+        <Bug as="div" text={t('services.areas.kicker')} inview={false} d={80} />
+      </div>
+      <h2 class="srv-areas__title ph-in-wipe" style="--d: 140ms">
         {t('services.areas.titleLead')}<em>{t('services.areas.titleAccent1')}</em>{t('services.areas.titleMid')}<em>{t('services.areas.titleAccent2')}</em>{t('services.areas.titleTrail')}
       </h2>
     </header>
 
-    <ol class="srv-areas__list" role="list">
+    {/* Sin JavaScript nadie abriría los paneles: se ven desplegados. */}
+    <noscript set:html={'<style>.srv-panel[hidden]{display:block}</style>'} />
+    <ol class="lineup" role="list">
       {areas.map((area, idx) => {
         const panelId = `srv-area-panel-${area.key}`;
         const buttonId = `srv-area-button-${area.key}`;
         return (
-          <li class="srv-area-row ph-seam" data-inview>
+          <li class="lineup__item" data-inview data-cascade="60">
             <button
               type="button"
-              class="srv-area-row__summary"
+              class="lineup__summary"
               id={buttonId}
               aria-expanded="false"
               aria-controls={panelId}
               data-srv-area-toggle
             >
-              <Flap value={String(idx + 1).padStart(2, '0')} size="md" class="srv-area-row__num" />
-              <span class="srv-area-row__title">{area.title}</span>
-              <span class="srv-area-row__toggle" aria-hidden="true">
-                <span></span><span></span>
-              </span>
+              <span class="lineup__tab" aria-hidden="true"></span>
+              <span class="lineup__num">{String(idx + 1).padStart(2, '0')}</span>
+              <span class="lineup__name">{area.title}</span>
+              <span class="lineup__plus" aria-hidden="true"><span></span><span></span></span>
             </button>
-            <div
-              class="srv-area-row__panel"
-              id={panelId}
-              role="region"
-              aria-labelledby={buttonId}
-            >
-              <div class="srv-area-row__body">
-                <div class="srv-area-row__lead">
-                  <span class="srv-label srv-area-row__leadLabel">{t('services.areas.leadLabel')}</span>
+            <div class="srv-panel" id={panelId} role="region" aria-labelledby={buttonId} hidden>
+              <div class="srv-panel__body">
+                <div class="srv-panel__desc">
+                  <Bug as="div" text={t('services.areas.leadLabel')} inview={false} />
                   <p>{area.lead}</p>
                 </div>
-                <ul class="srv-area-row__bullets" role="list">
-                  {area.bullets.map((b) => (
-                    <li><span class="srv-bullet-dash" aria-hidden="true"></span>{b}</li>
-                  ))}
-                </ul>
+                <ol class="srv-panel__bullets" role="list">
+                  {area.bullets.map((b, i) => <li style={`--d: ${120 + i * 60}ms`}>{b}</li>)}
+                </ol>
               </div>
             </div>
           </li>
         );
       })}
     </ol>
-
-    <div class="srv-areas__foot srv-label" data-inview><FlapText text={t('services.areas.foot')} /></div>
   </div>
 
-  {/* 03 — Model intro */}
-  <div class="srv-model ph-seam" data-inview>
-    {/* El tallo baja como un trazo que se dibuja: une el tablero de áreas con los
-        pilares. */}
-    <div class="srv-model__stem" aria-hidden="true"></div>
+  <Ticker items={foot} class="srv-ticker" />
+
+  {/* 03 — Modelo operativo: el corte de segmento. Una banda diagonal cruza el
+      bloque al ritmo del scroll y aparecen la placa, el titular y la entradilla. */}
+  <div class="srv-model" data-inview>
+    <div class="srv-model__band" aria-hidden="true" data-srv-band><span></span><span></span></div>
     <div class="srv-model__inner">
-      <div class="srv-model__eyebrow" data-m="item" data-reveal>
-        <span class="srv-label">{t('services.model.eyebrow')}</span>
-      </div>
-      <h2 class="srv-model__title" data-m="title" data-reveal>
+      <Plate as="p" variant="label" tab>{t('services.model.eyebrow')}</Plate>
+      <h2 class="srv-model__title ph-in-wipe" style="--d: 160ms">
         {t('services.model.titleLead')}<em>{t('services.model.titleAccent')}</em>{t('services.model.titleTrail')}
       </h2>
-      <p class="srv-model__lead" data-m="lead" data-reveal>{t('services.model.lead')}</p>
+      <p class="srv-model__lead ph-in-rise" style="--d: 300ms">{t('services.model.lead')}</p>
     </div>
   </div>
 
-  {/* 04 — Six pillar blocks */}
+  {/* 04 — Los pilares, como segmentos: la imagen a sangre se descubre en diagonal
+      y empuja despacio con el scroll; encima, solapado, su rótulo inferior (el
+      romano, la placa con el título, el texto en placa y las etiquetas). En
+      escritorio el rótulo alterna de lado. */}
   <div class="srv-pillars">
-    {items.map((item, idx) => {
-      const romans = ['I', 'II', 'III', 'IV', 'V'];
-      const roman = romans[idx];
-      const pillarKey = ['press', 'performance', 'media', 'familyOffice', 'psychology'][idx];
-      const even = idx % 2 === 1;
-      return (
-        <article class:list={['srv-block', 'ph-seam', `srv-block--${pillarKey}`, { 'srv-block--even': even }]} data-inview>
-          <div class="srv-block__text">
-            <div class="srv-block__roman"><Flap value={roman} size="xl" sequence={romans.slice(0, idx + 1)} /></div>
-            <h3 class="srv-block__title" data-m="title" data-reveal>{item.title}</h3>
-            <p class="srv-block__body" data-m="lead" data-reveal>{item.body}</p>
-            <div class="srv-block__tags">
-              {item.tags.map((tag, i) => (
-                <span class="srv-tag srv-label" style={`--i: ${i}`}>{tag}</span>
-              ))}
-            </div>
+    {items.map((item, idx) => (
+      <article class:list={['pillar', `pillar--${pillarKeys[idx]}`, idx % 2 === 1 && 'pillar--right']} data-inview>
+        <div class="pillar__frame ph-reveal" aria-hidden="true">
+          <div class="pillar__push" data-pillar-push>
+            <div class="pillar__img ph-reveal__img"></div>
           </div>
-          <div class="srv-block__img ph-develop" aria-hidden="true">
-            <div class="srv-block__media ph-develop__media"></div>
-            <span class="srv-block__imgTag srv-label">{roman} / V</span>
-          </div>
-        </article>
-      );
-    })}
+        </div>
+        <div class="pillar__lt">
+          <p class="pillar__roman"><span class="ph-num">{romans[idx]} / V</span></p>
+          <h3 class="pillar__title"><Plate tab d={120}>{item.title}</Plate></h3>
+          <Plate as="p" variant="text" d={200} class="pillar__body">{item.body}</Plate>
+          <ul class="pillar__tags" role="list">
+            {item.tags.map((tag, i) => (
+              <li><Plate variant="label" d={300 + i * 60}>{tag}</Plate></li>
+            ))}
+          </ul>
+        </div>
+      </article>
+    ))}
   </div>
 
-  {/* 05 — Manifest */}
-  <div class="srv-manifest ph-seam" data-inview>
-    <div class="srv-manifest__eyebrow">
-      <span class="srv-label"><FlapText text={t('services.manifest.eyebrow')} /></span>
+  {/* 05 — Manifiesto: la cinta y la frase final en dos placas. */}
+  <div class="srv-manifest">
+    <Ticker items={manifestTicker} class="srv-ticker srv-ticker--manifest" />
+    <div class="srv-manifest__inner" data-inview>
+      <p class="srv-manifest__body ph-lt">
+        <Plate tab lines>{t('services.manifest.bodyLead')}</Plate>{' '}
+        <Plate d={110} step={1} lines><em>{t('services.manifest.bodyAccent')}</em>{t('services.manifest.bodyTrail')}</Plate>
+      </p>
     </div>
-    <p class="srv-manifest__body" data-m="title" data-reveal>
-      {t('services.manifest.bodyLead')}<br />
-      <em>{t('services.manifest.bodyAccent')}</em>{t('services.manifest.bodyTrail')}
-    </p>
   </div>
-
 </section>
 
 <style>
   .srv {
-    --srv-bg: var(--color-ph-black, #0d0f12);
-    --srv-bg-2: var(--color-ph-bg-2, #15171b);
-    --srv-bg-3: var(--color-ph-bg-3, #1d2025);
-    --srv-ink: var(--color-ph-white, #ffffff);
-    --srv-ink-soft: var(--color-ph-ink-soft, #b5b7bb);
-    --srv-ink-faint: var(--color-ph-ink-faint, #6f7278);
-    --srv-line: var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    --srv-line-strong: var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    --srv-gold: var(--color-ph-gold, #d6b25e);
-    --srv-gold-soft: var(--color-ph-gold-soft, #e6c682);
-    --srv-on-gold: var(--color-ph-black, #0d0f12);
-    --srv-edge: var(--ph-section-px, clamp(20px, 4vw, 48px));
-    --srv-display: var(--font-display, 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif);
-    --srv-mono: var(--font-mono, 'JetBrains Mono', ui-monospace, monospace);
-    --srv-sans: var(--font-body, 'Helvetica Neue', Helvetica, Arial, sans-serif);
-
     position: relative;
     /* Transparente: el fondo es la luz animada de toda la página (`.ph-page-bg`). */
     background: transparent;
-    color: var(--srv-ink);
-    font-family: var(--srv-sans);
   }
 
-  .srv-hero,
-  .srv-areas,
-  .srv-model,
-  .srv-pillars,
-  .srv-manifest,
-  .srv-cta { position: relative; z-index: 1; }
+  /* «fuera del campo.» (la más larga, en español) más su escalera cabe a 360 px. */
+  .srv-head__title { font-size: clamp(36px, 10.2vw, 106px); }
+  .srv-head__lead { max-width: 52ch; }
 
-  /* Etiquetas y datos: letra normal a 13 px, una sola escala para todas. La
-     monoespaciada queda para las cifras, que van en paletas (`Flap`). */
-  .srv-label {
-    font-family: var(--srv-sans);
-    font-size: 13px;
-    letter-spacing: 0.01em;
-    color: var(--ph-ink-meta);
-  }
-
-  /* ── 01 Hero ──────────────────────────────────────────── */
-  /* Misma cabecera que Talentos y Sobre nosotros (estilos y cifras en global.css:
-     `.ph-rowline`, `.ph-head-*`): fila índice, titular y entradilla debajo. Aquí
-     solo queda lo propio: el titular y la entradilla arrancan ocultos hasta que
-     GSAP los anima. */
-  .srv-hero {
-    padding: var(--ph-head-top) var(--srv-edge) 0;
-  }
-  .srv-hero__title em {
-    font-style: italic;
-    color: var(--srv-gold);
-    font-weight: 400;
-  }
-
-  /* ── 02 Áreas accordion ──────────────────────────────── */
-  /* Arranca nada más acabar la entradilla, para que se vea ya en la primera
-     pantalla. Su fila índice («Áreas de gestión · 05 disciplinas · 01 equipo») hace
-     de separador, así que la sección no lleva borde propio. */
+  /* ── 02 Áreas ─────────────────────────────────────────────────────────── */
   .srv-areas {
-    padding: calc(var(--ph-head-after) + 8px) var(--srv-edge) clamp(56px, 8vw, 120px);
+    position: relative;
+    z-index: 1;
+    padding: var(--ph-head-after) var(--ph-section-px) clamp(48px, 6vw, 80px);
   }
-  .srv-areas__head {
-    margin-bottom: clamp(28px, calc(1.15vw + 23.5px), 40px);
+  .srv-areas__bugs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
   }
   .srv-areas__title {
-    font-family: var(--srv-display);
-    font-weight: 500;
-    font-size: clamp(30px, calc(2.1vw + 22px), 52px);
+    margin: clamp(20px, 2.4vw, 30px) 0 clamp(24px, 3vw, 36px);
+    max-width: 22ch;
+    font-family: var(--font-display);
+    font-size: clamp(26px, calc(2vw + 18px), 48px);
+    font-weight: 600;
     letter-spacing: -0.025em;
-    line-height: 1.06;
-    margin: clamp(22px, calc(0.95vw + 18.3px), 32px) 0 0;
-    max-width: 17em;
-    color: var(--srv-ink);
+    line-height: 1.08;
+    color: var(--color-ph-white);
     text-wrap: balance;
   }
-  .srv-areas__title em { font-style: italic; color: var(--srv-gold); font-weight: 400; }
-
-  /* El tablero de áreas: cada fila con su línea arriba, dibujándose en cascada al
-     entrar (retardo en `--ph-seam-delay`), y la fila subiendo detrás. La última
-     cierra con su propia línea. */
-  .srv-areas__list {
-    list-style: none; margin: 0; padding: 0;
-  }
-  .srv-area-row > .srv-area-row__summary {
-    transition:
-      color 0.3s,
-      opacity 520ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 120ms),
-      transform 640ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 120ms);
-  }
-  :global(html.ph-anim) .srv-area-row:not(.is-inview) > .srv-area-row__summary {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  .srv-area-row:last-child::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.14);
-    transform-origin: 0 50%;
-    transition: transform var(--ph-dur-draw) var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 90ms);
-  }
-  :global(html.ph-anim) .srv-area-row:last-child:not(.is-inview)::after {
-    transform: scaleX(0);
-  }
-  :global(html.ph-anim:not(.ph-motion)) .srv-area-row:last-child::after {
-    animation: ph-motion-failsafe 0s linear 2.5s forwards;
+  .srv-areas__title em,
+  .srv-model__title em {
+    font-style: normal;
+    color: var(--color-ph-gold);
   }
 
-  .srv-area-row__summary {
-    all: unset;
-    box-sizing: border-box;
-    display: grid; grid-template-columns: auto 1fr auto;
+  /* La alineación: las mismas filas que en la portada. */
+  .lineup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .lineup__item {
+    transition: clip-path var(--ph-dur-wipe) var(--ph-ease-out) var(--cd, 0ms);
+    clip-path: inset(-8px -8px -8px -8px);
+  }
+  :global(html.ph-anim) .lineup__item:not(.is-inview) { clip-path: inset(-8px 100% -8px -8px); }
+  :global(html.ph-anim:not(.ph-motion)) .lineup__item { animation: ph-failsafe-unclip 0s linear 2.5s forwards; }
+
+  .lineup__summary {
+    --cut: 60px;
+    position: relative;
+    z-index: 0;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: clamp(14px, calc(1.33vw + 8.8px), 28px);
+    gap: clamp(12px, 2vw, 22px);
     width: 100%;
-    padding: clamp(20px, calc(0.76vw + 17px), 28px) 0;
+    min-height: 60px;
+    margin: 0;
+    padding: 10px calc(var(--cut) * 0.75) 10px 10px;
+    border: 0;
+    background: none;
+    text-align: left;
+    color: var(--color-ph-white);
     cursor: pointer;
-    color: var(--srv-ink);
     -webkit-tap-highlight-color: transparent;
   }
-  .srv-area-row.is-open .srv-area-row__summary { color: var(--srv-gold); }
-  .srv-area-row__title {
-    transition: transform var(--ph-dur-move) var(--ph-ease-out);
+  .lineup__summary::before,
+  .lineup__summary::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
   }
-  @media (hover: hover) and (pointer: fine) {
-    .srv-area-row__summary:hover { color: var(--srv-gold); }
-    .srv-area-row__summary:hover .srv-area-row__title { transform: translateX(8px); }
+  .lineup__summary::before {
+    inset: 0;
+    background: var(--ph-plate-edge);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
   }
-  .srv-area-row__summary:active .srv-area-row__title {
-    transform: translateX(4px);
-    transition-duration: var(--ph-dur-tap);
+  .lineup__summary::after {
+    inset: 1px;
+    background: var(--ph-plate);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) + 0.59px), calc(100% - var(--cut) + 0.59px) 100%, 0 100%);
+    transition: background-color var(--ph-dur-state) var(--ph-ease-std);
   }
-  .srv-area-row__summary:focus-visible {
-    outline: 2px solid var(--srv-gold);
-    outline-offset: 4px;
+  .lineup__summary:focus-visible { outline: 2px solid var(--color-ph-gold); outline-offset: 3px; }
+  .lineup__tab {
+    position: absolute;
+    left: 0;
+    bottom: 100%;
+    width: var(--ph-tab-w);
+    height: var(--ph-tab-h);
+    background: var(--color-ph-gold);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 150ms var(--ph-ease-in);
   }
-
-
-  .srv-area-row__title {
-    font-family: var(--srv-display);
+  .lineup__num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    font-family: var(--font-mono);
+    font-size: 14px;
     font-weight: 500;
-    font-size: clamp(22px, calc(1.15vw + 17.5px), 34px);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ph-gold);
+    box-shadow: inset 0 0 0 1px rgba(214, 178, 94, 0.75);
+  }
+  .lineup__name {
+    font-family: var(--font-display);
+    font-size: clamp(17px, calc(0.9vw + 14px), 26px);
+    font-weight: 600;
     letter-spacing: -0.015em;
-    line-height: 1.15;
+    line-height: 1.2;
+    transition: transform var(--ph-dur-state) var(--ph-ease-out), color var(--ph-dur-state) var(--ph-ease-std);
   }
-  /* Toggle: mismo lenguaje que Home (+ → —, sin caja). 24px en Servicios (20%
-     mayor que los 20px del hint de Home) marca la jerarquía de sección dedicada
-     sin competir con el peso tipográfico del título. El tap-target real es todo
-     el <button> de la fila, así que el contenedor solo aporta peso visual. */
-  .srv-area-row__toggle {
+  .lineup__plus {
     position: relative;
-    width: 24px; height: 24px;
-    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    color: rgba(255, 255, 255, 0.7);
   }
-  .srv-area-row__toggle span {
+  .lineup__plus span {
     position: absolute;
     top: 50%;
     left: 0;
-    width: 24px;
-    height: 1px;
+    width: 18px;
+    height: 2px;
+    margin-top: -1px;
     background: currentColor;
-    transform: translateY(-50%);
-    transition: transform var(--ph-dur-move) var(--ph-ease-out);
+    transition: transform var(--ph-dur-state) var(--ph-ease-out);
   }
-  .srv-area-row__toggle span:last-child {
-    transform: translateY(-50%) rotate(90deg);
+  .lineup__plus span:last-child { transform: rotate(90deg); }
+  @media (hover: hover) and (pointer: fine) {
+    .lineup__summary:hover::after { background: #15171b; }
+    .lineup__summary:hover .lineup__name { transform: translateX(4px); }
   }
-  .srv-area-row.is-open .srv-area-row__toggle span:last-child {
-    transform: translateY(-50%) rotate(0deg);
+  .lineup__summary:active::after { background: #1a1d22; }
+  .lineup__summary[aria-expanded='true'] .lineup__tab {
+    transform: scaleX(1);
+    transition: transform var(--ph-dur-tab) var(--ph-ease-out);
   }
+  .lineup__summary[aria-expanded='true'] .lineup__name,
+  .lineup__summary[aria-expanded='true'] .lineup__plus { color: var(--color-ph-gold); }
+  .lineup__summary[aria-expanded='true'] .lineup__plus span:last-child { transform: rotate(0deg); }
 
-  /* Panel visibility is driven by JS: inline `height` controls the expand/
-     collapse tween, and these CSS rules handle the final resting state once
-     the tween clears the inline style (closed → height: 0, open → auto). */
-  .srv-area-row__panel {
-    overflow: hidden;
-    height: 0;
-    opacity: 0;
-  }
-  .srv-area-row.is-open .srv-area-row__panel {
-    height: auto;
-    opacity: 1;
-  }
-  .srv-area-row__body {
-    display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 64px);
-    padding: 0 0 clamp(28px, 4vw, 40px);
-  }
-  @media (max-width: 900px) {
-    .srv-area-row__body { grid-template-columns: 1fr; gap: 24px; }
-  }
-  .srv-area-row__leadLabel {
-    display: block; color: var(--srv-gold);
-    margin-bottom: 10px;
-  }
-  .srv-area-row__lead p {
-    margin: 0;
-    color: var(--ph-ink-body);
-    font-size: 16px;
-    line-height: 1.7;
-    max-width: 520px;
-  }
-  .srv-area-row__bullets {
-    list-style: none; margin: 0; padding: 0;
-    display: flex; flex-direction: column; gap: 14px;
-  }
-  .srv-area-row__bullets li {
-    display: flex; align-items: baseline; gap: 14px;
-    color: var(--ph-ink-body);
-    font-size: 16px;
-    line-height: 1.5;
-  }
-  .srv-bullet-dash {
-    display: inline-block; width: 10px; height: 1px;
-    background: var(--srv-gold);
-    flex-shrink: 0;
-    transform: translateY(-4px);
-  }
-
-  /* Alineado a la derecha y partiéndose en dos líneas si no cabe: en italiano, a
-     360 px, una sola línea se salía por la izquierda. */
-  .srv-areas__foot {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 0.4em;
-    margin-top: clamp(32px, 4vw, 48px);
-    color: var(--ph-ink-meta);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .srv-area-row__summary,
-    .srv-area-row__title,
-    .srv-area-row__toggle,
-    .srv-area-row__toggle span,
-    .srv-area-row__panel { transition: none !important; }
-  }
-
-  /* ── 03 Model intro ──────────────────────────────────── */
-  .srv-model {
-    padding: clamp(48px, 7vw, 96px) var(--srv-edge) clamp(56px, 8vw, 96px);
-    text-align: center;
+  /* El panel que se despliega: dos columnas en escritorio, «Descripción» con su
+     texto y las cuatro viñetas con su número. */
+  .srv-panel {
+    --cut: 28px;
     position: relative;
+    z-index: 0;
+    margin-top: 3px;
   }
-  .srv-model__stem {
-    width: 1px;
-    height: clamp(40px, 6vw, 72px);
-    background: var(--srv-gold);
-    margin: 0 auto clamp(24px, 3vw, 40px);
-    transform-origin: 50% 0;
-    transition: transform 720ms var(--ph-ease-out) 200ms;
+  .srv-panel[hidden] { display: none; }
+  .srv-panel::before,
+  .srv-panel::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
   }
-  :global(html.ph-anim) .srv-model:not(.is-inview) .srv-model__stem {
-    transform: scaleY(0);
+  .srv-panel::before {
+    inset: 0;
+    background: var(--ph-plate-edge);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
   }
-  .srv-model__inner { max-width: 900px; margin: 0 auto; }
-  .srv-model__eyebrow {
-    display: inline-flex; align-items: center; gap: 10px;
-    margin-bottom: clamp(16px, 2vw, 24px);
+  .srv-panel::after {
+    inset: 1px;
+    background: var(--ph-plate);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) + 0.59px), calc(100% - var(--cut) + 0.59px) 100%, 0 100%);
   }
-  .srv-model__eyebrow::before,
-  .srv-model__eyebrow::after {
-    content: ""; width: 28px; height: 1px; background: var(--srv-gold);
+  .srv-panel__body {
+    display: grid;
+    gap: 24px;
+    padding: clamp(18px, 2.4vw, 30px) clamp(16px, 2.4vw, 32px) clamp(24px, 3vw, 36px);
   }
-  .srv-model__eyebrow .srv-label { color: var(--srv-gold); }
-  .srv-model__title {
-    font-family: var(--srv-display);
-    font-weight: 500;
-    font-size: clamp(28px, 4vw, 52px);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    margin: 0 0 clamp(18px, 2.5vw, 28px);
-    color: var(--srv-ink);
+  @media (min-width: 900px) {
+    .srv-panel__body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 64px); }
   }
-  .srv-model__title em { font-style: italic; color: var(--srv-gold); font-weight: 400; }
-  .srv-model__lead {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--srv-ink-soft);
-    max-width: 680px;
-    margin: 0 auto;
-  }
-
-  /* ── 04 Pillar blocks ────────────────────────────────── */
-  .srv-pillars { display: flex; flex-direction: column; }
-
-  .srv-block {
-    display: grid; grid-template-columns: 1fr 1fr;
-    min-height: clamp(420px, 58vw, 640px);
-    overflow: clip;
-  }
-  .srv-block::before { z-index: 2; }
-  .srv-block--even { background: var(--srv-bg-2); }
-
-  .srv-block__text {
-    padding: clamp(48px, 7vw, 96px) var(--srv-edge);
-    display: flex; flex-direction: column; justify-content: center;
-    gap: clamp(16px, 2vw, 24px);
-  }
-  /* El número del pilar, en romanos, va en paletas del marcador. */
-  .srv-block__roman {
+  .srv-panel__desc {
     display: flex;
-    line-height: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
   }
-  .srv-block__title {
-    font-family: var(--srv-display);
-    font-weight: 500;
-    font-size: clamp(36px, 5.5vw, 72px);
-    letter-spacing: -0.03em;
-    line-height: 1;
+  .srv-panel__desc p {
     margin: 0;
-    color: var(--srv-ink);
-  }
-  .srv-block__body {
+    max-width: 54ch;
     font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
     line-height: 1.65;
     color: var(--ph-ink-body);
-    max-width: 480px;
+  }
+  .srv-panel__bullets {
+    counter-reset: srv-bullet;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
     margin: 0;
+    padding: 0;
+    list-style: none;
   }
-  .srv-block__tags {
-    display: flex; flex-wrap: wrap; gap: 8px;
-    margin-top: 4px;
-  }
-  /* Las etiquetas del pilar entran una tras otra, detrás del texto. */
-  .srv-tag {
-    display: inline-flex; align-items: center;
-    padding: 7px 12px;
-    border: 1px solid var(--srv-line-strong);
-    border-radius: var(--radius-sm);
-    color: var(--ph-ink-lead);
-    background: transparent;
+  .srv-panel__bullets li {
+    counter-increment: srv-bullet;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    align-items: baseline;
+    gap: 12px;
+    padding: 11px 0;
+    font-size: 16px;
+    line-height: 1.45;
+    color: var(--ph-ink-body);
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
     transition:
-      opacity 420ms var(--ph-ease-out) calc(520ms + var(--i, 0) * 60ms),
-      transform 520ms var(--ph-ease-out) calc(520ms + var(--i, 0) * 60ms);
+      opacity 320ms var(--ph-ease-out) var(--d, 0ms),
+      transform 420ms var(--ph-ease-out) var(--d, 0ms);
   }
-  :global(html.ph-anim) .srv-block:not(.is-inview) .srv-tag {
-    opacity: 0;
-    transform: translateY(8px);
+  .srv-panel__bullets li::before {
+    content: counter(srv-bullet, decimal-leading-zero);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ph-gold);
   }
-  /* Sin el JS de movimiento, a los 2,5 s en su sitio (global.css, «Red de
-     seguridad»). */
-  :global(html.ph-anim:not(.ph-motion)) .srv-tag {
-    animation: ph-motion-failsafe 0s linear 2.5s forwards;
-  }
+  :global(html.ph-anim) .srv-panel[data-inview]:not(.is-inview) .srv-panel__bullets li { opacity: 0; transform: translateX(-10px); }
 
-  .srv-block__img {
+  /* ── Cintas ───────────────────────────────────────────────────────────── */
+  .srv-ticker { position: relative; z-index: 1; }
+
+  /* ── 03 Modelo: el corte de segmento ─────────────────────────────────── */
+  .srv-model {
     position: relative;
-    background: var(--srv-bg-2);
-    border-left: 1px solid var(--srv-line);
-    min-height: clamp(240px, 50vw, 520px);
+    z-index: 1;
+    overflow: hidden;
+    padding: clamp(72px, 10vw, 140px) var(--ph-section-px);
   }
-  .srv-block--even .srv-block__img {
-    order: -1;
-    border-left: 0;
-    border-right: 1px solid var(--srv-line);
-    background: var(--srv-bg-3);
-  }
-  /* La foto va en su propia capa para poder revelarla (sale del negro y se
-     asienta) sin mover el marco. */
-  .srv-block__media {
+  /* La banda diagonal: dorada con una blanca fina delante, como la cortinilla.
+     Cruza el bloque al ritmo del scroll (script). */
+  .srv-model__band {
     position: absolute;
-    inset: 0;
+    top: -100%;
+    bottom: -100%;
+    left: 0;
+    display: flex;
+    gap: 8px;
+    pointer-events: none;
+    opacity: 0.85;
+    /* Solo existe cuando hay movimiento: la enciende el script. */
+    visibility: hidden;
   }
-  .srv-block--even .srv-block__text { order: 0; }
-
-  /* Imágenes por pilar (desktop) */
-  .srv-block--press .srv-block__media {
-    background:
-      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-      url('/pillar-press.webp') center / cover no-repeat,
-      var(--srv-bg-2);
+  .srv-model__band span:first-child { width: 10px; background: var(--color-ph-gold); }
+  .srv-model__band span:last-child { width: 2px; background: var(--color-ph-white); }
+  .srv-model__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 980px;
+    margin-inline: auto;
   }
-  .srv-block--performance .srv-block__media {
-    background:
-      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-      url('/pillar-performance.webp') center / cover no-repeat,
-      var(--srv-bg-2);
-  }
-  .srv-block--media .srv-block__media {
-    background:
-      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-      url('/pillar-media.webp') center / cover no-repeat,
-      var(--srv-bg-2);
-  }
-  .srv-block--familyOffice .srv-block__media {
-    background:
-      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-      url('/pillar-family-office.webp') center / cover no-repeat,
-      var(--srv-bg-2);
-  }
-  .srv-block--psychology .srv-block__media {
-    background:
-      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-      url('/pillar-psychology.webp') center / cover no-repeat,
-      var(--srv-bg-2);
-  }
-
-  .srv-block__imgTag {
-    position: absolute; top: 16px; left: 16px; z-index: 2;
-    background: rgba(14, 14, 14, 0.6);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    color: var(--srv-ink);
-    padding: 6px 10px;
-    border: 1px solid var(--srv-line);
-    border-radius: var(--radius-sm);
-  }
-
-  @media (max-width: 900px) {
-    .srv-block { grid-template-columns: 1fr; min-height: 0; }
-    .srv-block__img,
-    .srv-block--even .srv-block__img {
-      order: -1;
-      aspect-ratio: 16 / 10;
-      border: 0; border-bottom: 1px solid var(--srv-line);
-      min-height: 0;
-    }
-    .srv-block--even .srv-block__text { order: 0; }
-    .srv-block__text { padding: clamp(40px, 8vw, 64px) var(--srv-edge); }
-
-    .srv-block--press .srv-block__media {
-      background:
-        linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-        url('/pillar-press-sm.webp') center / cover no-repeat,
-        var(--srv-bg-2);
-    }
-    .srv-block--performance .srv-block__media {
-      background:
-        linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-        url('/pillar-performance-sm.webp') center / cover no-repeat,
-        var(--srv-bg-2);
-    }
-    .srv-block--media .srv-block__media {
-      background:
-        linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-        url('/pillar-media-sm.webp') center / cover no-repeat,
-        var(--srv-bg-2);
-    }
-    .srv-block--familyOffice .srv-block__media {
-      background:
-        linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-        url('/pillar-family-office-sm.webp') center / cover no-repeat,
-        var(--srv-bg-2);
-    }
-    .srv-block--psychology .srv-block__media {
-      background:
-        linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-        url('/pillar-psychology-sm.webp') center / cover no-repeat,
-        var(--srv-bg-2);
-    }
-  }
-
-  /* ── 05 Manifest ─────────────────────────────────────── */
-  .srv-manifest {
-    border-top: 1px solid var(--srv-line);
-    padding: clamp(72px, 11vw, 144px) var(--srv-edge);
-    text-align: center;
-  }
-  .srv-manifest__eyebrow {
-    display: inline-flex; align-items: center; gap: 10px;
-    margin-bottom: clamp(24px, 4vw, 40px);
-    color: var(--srv-gold);
-  }
-  .srv-manifest__eyebrow .srv-label {
-    display: inline-flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 0.35em;
-  }
-  @media (max-width: 560px) {
-    .srv-manifest__eyebrow::before,
-    .srv-manifest__eyebrow::after { display: none; }
-  }
-  .srv-manifest__eyebrow::before,
-  .srv-manifest__eyebrow::after {
-    content: ""; width: 28px; height: 1px; background: var(--srv-gold);
-  }
-  .srv-manifest__eyebrow .srv-label { color: var(--srv-gold); }
-  .srv-manifest__body {
-    font-family: var(--srv-display);
-    font-weight: 500;
-    font-style: italic;
-    font-size: clamp(28px, 4.5vw, 56px);
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-    color: var(--srv-ink);
-    max-width: 900px;
-    margin: 0 auto;
-    text-wrap: balance;
-  }
-  .srv-manifest__body em {
-    font-style: italic;
-    color: var(--srv-gold);
-    font-weight: 400;
-  }
-
-  /* ── 06 Final CTA ────────────────────────────────────── */
-  .srv-cta {
-    background: var(--srv-bg-3);
-    border-top: 1px solid var(--srv-line);
-    padding: clamp(72px, 11vw, 144px) var(--srv-edge);
-    text-align: center;
-  }
-  .srv-cta__eyebrow {
-    display: inline-flex; align-items: center; gap: 10px;
-    margin-bottom: clamp(16px, 2vw, 24px);
-  }
-  .srv-cta__eyebrow::before,
-  .srv-cta__eyebrow::after {
-    content: ""; width: 28px; height: 1px; background: var(--srv-gold);
-  }
-  .srv-cta__eyebrow .srv-mono { color: var(--srv-gold); }
-  .srv-cta__title {
-    font-family: var(--srv-display);
-    font-weight: 500;
-    font-size: clamp(32px, 5vw, 64px);
+  .srv-model__title {
+    margin: clamp(22px, 2.6vw, 32px) 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(28px, calc(2.6vw + 18px), 60px);
+    font-weight: 600;
     letter-spacing: -0.03em;
     line-height: 1.05;
-    margin: 0 0 clamp(18px, 2.5vw, 28px);
-    color: var(--srv-ink);
+    color: var(--color-ph-white);
+    text-wrap: balance;
   }
-  .srv-cta__title em { font-style: italic; color: var(--srv-gold); font-weight: 400; }
-  .srv-cta__lead {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--srv-ink-soft);
-    max-width: 560px;
-    margin: 0 auto clamp(28px, 4vw, 44px);
+  .srv-model__lead {
+    margin: clamp(18px, 2vw, 26px) 0 0;
+    max-width: 46ch;
+    font-family: var(--font-display);
+    font-size: var(--ph-head-lead-size);
+    line-height: 1.45;
+    color: var(--ph-ink-lead);
   }
-  .srv-cta__btn {
-    display: inline-flex; align-items: center; gap: 10px;
-    padding: 9px 20px;
-    background: var(--srv-gold);
-    color: var(--srv-on-gold);
-    border-radius: var(--radius-sm);
-    font-family: var(--srv-sans);
+
+  /* ── 04 Pilares ──────────────────────────────────────────────────────── */
+  .srv-pillars {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(64px, 9vw, 128px);
+    padding-bottom: clamp(72px, 9vw, 128px);
+  }
+  .pillar { position: relative; }
+  .pillar__frame {
+    --arh: 62.5%;
+    aspect-ratio: 16 / 10;
+    background: #15171b;
+  }
+  .pillar__push {
+    position: absolute;
+    inset: 0;
+    transform-origin: 50% 60%;
+  }
+  .pillar__img {
+    position: absolute;
+    inset: 0;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+  .pillar--press .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-press-sm.webp'); }
+  .pillar--performance .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-performance-sm.webp'); }
+  .pillar--media .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-media-sm.webp'); }
+  .pillar--familyOffice .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-family-office-sm.webp'); }
+  .pillar--psychology .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-psychology-sm.webp'); }
+  @media (min-width: 901px) {
+    .pillar--press .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-press.webp'); }
+    .pillar--performance .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-performance.webp'); }
+    .pillar--media .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-media.webp'); }
+    .pillar--familyOffice .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-family-office.webp'); }
+    .pillar--psychology .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-psychology.webp'); }
+  }
+
+  /* El rótulo inferior, solapado sobre el borde de abajo de la imagen. */
+  .pillar__lt {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin: -56px var(--ph-section-px) 0;
+  }
+  .pillar__roman {
+    margin: 0 0 4px;
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 10px;
     font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    text-decoration: none;
-    border: 1px solid var(--srv-gold);
-    transition: background 0.2s, border-color 0.2s;
+    color: var(--color-ph-gold);
+    background: var(--ph-plate);
+    box-shadow: inset 0 0 0 1px var(--color-ph-gold);
   }
-  .srv-cta__btn:hover {
-    background: var(--srv-gold-soft);
-    border-color: var(--srv-gold-soft);
+  .pillar__title {
+    margin: 0;
+    font-size: clamp(34px, calc(2.6vw + 26px), 72px);
   }
-  .srv-cta__btn:hover .srv-cta__arrow { transform: translateX(4px); }
-  .srv-cta__arrow { transition: transform 0.2s; }
-  .srv-cta__btn:focus-visible {
-    outline: 2px solid var(--srv-gold);
-    outline-offset: 4px;
+  .pillar__body { max-width: min(100%, 34rem); }
+  .pillar__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 2px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 1024px) {
+    .pillar {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: end;
+      padding: 0 var(--ph-section-px);
+    }
+    .pillar__frame { grid-column: 1 / 9; grid-row: 1; }
+    .pillar__lt {
+      grid-column: 7 / 13;
+      grid-row: 1;
+      margin: 0 0 clamp(-48px, -3vw, -24px);
+      align-self: end;
+    }
+    .pillar--right .pillar__frame { grid-column: 5 / 13; }
+    .pillar--right .pillar__lt { grid-column: 1 / 7; }
+  }
+
+  /* ── 05 Manifiesto ───────────────────────────────────────────────────── */
+  .srv-manifest { position: relative; z-index: 1; }
+  .srv-manifest__inner {
+    padding: clamp(56px, 8vw, 112px) var(--ph-section-px) clamp(72px, 10vw, 140px);
+  }
+  .srv-manifest__body {
+    max-width: none;
+    margin: 0;
+    font-size: clamp(26px, calc(3vw + 16px), 64px);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .srv-cta__btn,
-    .srv-cta__arrow { transition: none !important; }
+    .lineup__item,
+    .lineup__tab,
+    .lineup__name,
+    .lineup__plus span,
+    .lineup__summary::after,
+    .srv-panel__bullets li { transition: none; }
   }
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { EASE } from '@/scripts/ph-text-animations';
-
-  // Abrir tarda más que cerrar: lo que llega se presenta, lo que se va no se hace
-  // esperar.
-  const SRV_OPEN_S = 0.5;
-  const SRV_CLOSE_S = 0.32;
-  const srvActive = new WeakMap<HTMLElement, gsap.core.Tween>();
-
-  function srvReducedMotion(): boolean {
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  }
-
-  function srvClosePanel(row: Element): void {
-    const panel = row.querySelector<HTMLElement>('.srv-area-row__panel');
-    const btn = row.querySelector<HTMLButtonElement>('[data-srv-area-toggle]');
-    if (!panel || !btn) return;
-    srvActive.get(panel)?.kill();
-    const current = panel.offsetHeight;
-    row.classList.remove('is-open');
-    btn.setAttribute('aria-expanded', 'false');
-    if (srvReducedMotion()) {
-      panel.style.height = '';
-      panel.style.opacity = '';
-      return;
-    }
-    panel.style.height = current + 'px';
-    panel.style.opacity = '1';
-    const tween = gsap.to(panel, {
-      height: 0,
-      opacity: 0,
-      duration: SRV_CLOSE_S,
-      ease: EASE.std,
-      onComplete: () => {
-        panel.style.height = '';
-        panel.style.opacity = '';
-        srvActive.delete(panel);
-      },
-    });
-    srvActive.set(panel, tween);
-  }
-
-  function srvOpenPanel(row: Element): void {
-    const panel = row.querySelector<HTMLElement>('.srv-area-row__panel');
-    const btn = row.querySelector<HTMLButtonElement>('[data-srv-area-toggle]');
-    if (!panel || !btn) return;
-    srvActive.get(panel)?.kill();
-    row.classList.add('is-open');
-    btn.setAttribute('aria-expanded', 'true');
-    if (srvReducedMotion()) {
-      panel.style.height = '';
-      panel.style.opacity = '';
-      return;
-    }
-    panel.style.height = '0px';
-    panel.style.opacity = '0';
-    const target = panel.scrollHeight;
-    const tween = gsap.to(panel, {
-      height: target,
-      opacity: 1,
-      duration: SRV_OPEN_S,
-      ease: EASE.out,
-      onComplete: () => {
-        panel.style.height = '';
-        panel.style.opacity = '';
-        srvActive.delete(panel);
-      },
-    });
-    srvActive.set(panel, tween);
-    // Los puntos entran uno tras otro, con su guion dibujándose.
-    const bullets = panel.querySelectorAll<HTMLElement>('.srv-area-row__bullets li');
-    if (bullets.length) {
-      gsap.from(bullets, { opacity: 0, x: -10, duration: 0.45, ease: EASE.out, stagger: 0.05, delay: 0.12, clearProps: 'opacity,transform' });
-    }
-  }
+  import { animateDisclosures, type DisclosureChange } from '@/scripts/ph-disclosure';
 
   function initSrvAccordion(): void {
-    const buttons = document.querySelectorAll<HTMLButtonElement>('[data-srv-area-toggle]');
-    if (!buttons.length) return;
+    const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-srv-area-toggle]'));
+    if (!buttons.length || buttons[0].dataset.srvOn) return;
+
+    const panelOf = (btn: HTMLButtonElement) => document.getElementById(btn.getAttribute('aria-controls') ?? '');
+    // Las viñetas entran en cascada cada vez que se abre; las destapa este script.
+    buttons.forEach((btn) => {
+      btn.dataset.srvOn = '1';
+      const panel = panelOf(btn);
+      panel?.setAttribute('data-inview', '');
+      panel?.setAttribute('data-inview-manual', '');
+    });
+
+    const change = (btn: HTMLButtonElement, open: boolean): DisclosureChange | null => {
+      const panel = panelOf(btn);
+      if (!panel) return null;
+      btn.setAttribute('aria-expanded', String(open));
+      return {
+        panel,
+        open,
+        setOpen: (v) => {
+          panel.hidden = !v;
+        },
+        // Las viñetas entran en cascada cada vez que se abre.
+        onOpen: () => {
+          panel.classList.remove('is-inview');
+          void panel.offsetWidth;
+          panel.classList.add('is-inview');
+        },
+      };
+    };
 
     buttons.forEach((btn) => {
       btn.addEventListener('click', () => {
-        const row = btn.closest('.srv-area-row');
-        if (!row) return;
-        const scope = btn.closest('.srv-areas');
-        if (!scope) return;
-        const wasOpen = row.classList.contains('is-open');
-
-        scope.querySelectorAll('.srv-area-row.is-open').forEach((r) => {
-          if (r !== row) srvClosePanel(r);
-        });
-
-        if (wasOpen) {
-          srvClosePanel(row);
-        } else {
-          srvOpenPanel(row);
+        const opening = btn.getAttribute('aria-expanded') !== 'true';
+        const changes: DisclosureChange[] = [];
+        if (opening) {
+          buttons
+            .filter((o) => o !== btn && o.getAttribute('aria-expanded') === 'true')
+            .forEach((o) => {
+              const c = change(o, false);
+              if (c) changes.push(c);
+            });
         }
+        const c = change(btn, opening);
+        if (c) changes.push(c);
+        animateDisclosures(changes);
       });
     });
   }
@@ -876,10 +616,7 @@ const contactHref = localizePath('/#contacto', lang);
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, stage, rollIn, riseIn, mountSection, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
-  import { cascade, glint } from '@/scripts/ph-motion';
+  import { reducedMotion, mountSection, afterTransitionPaint } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
 
@@ -887,37 +624,38 @@ const contactHref = localizePath('/#contacto', lang);
     const section = document.querySelector<HTMLElement>('.srv');
     if (!section) return;
     if (!reducedMotion()) {
-      // La cabecera, en la primera pantalla: pizarra, titular con su luz y entradilla.
-      const hero = section.querySelector<HTMLElement>('.srv-hero');
-      if (hero) stage(hero, { glint: true });
-
-      // El tablero de áreas: titular y filas en cascada.
-      const areas = section.querySelector<HTMLElement>('.srv-areas');
-      if (areas) {
-        stage(areas, { delay: 0.1 });
-        cascade(areas.querySelectorAll<HTMLElement>('.srv-area-row'), 70);
-      }
-
+      // El corte de segmento: la banda cruza el bloque del modelo de abajo a la
+      // izquierda a arriba a la derecha, al ritmo del dedo. Termina de cruzar
+      // mientras el bloque entra (antes de que su texto llegue a la zona de
+      // lectura): si siguiera cruzando con el bloque en pantalla, se quedaría
+      // encima del titular y la entradilla al parar de hacer scroll.
       const model = section.querySelector<HTMLElement>('.srv-model');
-      if (model) stage(model, { glint: true });
-
-      // Cada pilar: el número cae en paletas (lo arranca el núcleo al entrar), la
-      // foto sale del negro, el título rueda y el texto sube detrás.
-      section.querySelectorAll<HTMLElement>('.srv-block').forEach((block) => {
-        const title = block.querySelector<HTMLElement>('[data-m="title"]');
-        const body = block.querySelector<HTMLElement>('[data-m="lead"]');
-        if (title) rollIn(title, { trigger: block, delay: 0.1 });
-        if (body) riseIn(body, { trigger: block, delay: 0.3 });
-      });
-
-      // El manifiesto rueda línea a línea y su parte dorada recibe la luz.
-      const manifest = section.querySelector<HTMLElement>('.srv-manifest');
-      const manifestBody = manifest?.querySelector<HTMLElement>('[data-m="title"]');
-      if (manifest && manifestBody) {
-        const tween = rollIn(manifestBody, { trigger: manifest, stagger: 0.04 });
-        const accent = manifestBody.querySelector<HTMLElement>('em');
-        if (accent) tween.eventCallback('onComplete', () => glint(accent));
+      const band = section.querySelector<HTMLElement>('[data-srv-band]');
+      if (model && band) {
+        gsap.set(band, { visibility: 'visible' });
+        gsap.fromTo(
+          band,
+          { x: () => -model.offsetWidth * 0.35, rotate: -45 },
+          {
+            x: () => model.offsetWidth * 1.25,
+            rotate: -45,
+            ease: 'none',
+            scrollTrigger: { trigger: model, start: 'top bottom', end: 'top 30%', scrub: 0.4, invalidateOnRefresh: true },
+          },
+        );
       }
+      // Cada pilar empuja despacio mientras cruza la pantalla.
+      section.querySelectorAll<HTMLElement>('[data-pillar-push]').forEach((push) => {
+        gsap.fromTo(
+          push,
+          { scale: 1 },
+          {
+            scale: 1.08,
+            ease: 'none',
+            scrollTrigger: { trigger: push.parentElement, start: 'top bottom', end: 'bottom top', scrub: 0.6 },
+          },
+        );
+      });
     }
     mountSection(section);
   }
@@ -926,6 +664,6 @@ const contactHref = localizePath('/#contacto', lang);
 </script>
 
 <script>
-  // Fondo animado de la cabecera (se inicia solo en cada astro:page-load).
+  // Fondo animado de la página (se inicia solo en cada astro:page-load).
   import '@/scripts/ph-ambient';
 </script>

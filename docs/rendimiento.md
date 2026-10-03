@@ -61,6 +61,8 @@ Home en carga fría 224 → 118 ms (−47 %).
 - Vídeo: `autoplay` fuera y `preload="none"`. **Quitar `autoplay` a secas no sirve de nada** — medido, Chrome se salta el `preload="metadata"` y descarga el vídeo igual desde el ms 217.
 - Red de seguridad en CSS para el titular del hero, que estaba atado a `window.load` a través de GSAP.
 
+**Octubre · la variante A «Retransmisión»** (rama `feat/variante-a-retransmision`, `DECISIONS.md` 2026-10-03). JS comprimido con gzip, medido en el build: GSAP + infraestructura 49,2 KB, núcleo `ph-motion` 1,7 KB, `ph-disclosure` 1,0 KB, Flip 11,0 KB en `/talentos`. Por página: portada 71,9 KB, `/talentos` 83,3 KB, `/servicios` 74,6 KB, `/sobre-nosotros` 72,8 KB, legales 20,9 KB. Sin medir aún con CPU ×4 ni en un móvil real.
+
 **Octubre · el lenguaje de movimiento «Marcador»** (rama `feat/rediseno-motion`, `DECISIONS.md` 2026-10-02). Medido con Playwright sobre el build, Chromium sin cabeza en esta máquina, con el mismo método antes (el build de `preview`) y después:
 - **Entrar en `/sobre-nosotros` desde `/servicios`** por navegación SPA, CPU ×4, 3 pasadas: tarea larga más larga **80-85 ms → 0-54 ms**. Los párrafos ya no entran palabra a palabra con `filter: blur()`. La cifra de 217-359 ms del 2026-08-18 se midió con otro método y no es comparable.
 - **Listeners de `scroll` en el documento** tras tres vueltas home → talentos → home: **4 → 5 → 6 → 7** antes, **4 → 4 → 4 → 4** después (la fuga de `initHeroScrollCue`, arreglada).
@@ -82,7 +84,7 @@ que sigue está verificado, no estimado):
 - **Fuga de listeners en la home** — *arreglada el 2026-10-02*: los de `scroll` sobre `document` iban de 3 → 4 → 6 tras tres visitas. `initHeroScrollCue` registraba una función nueva en cada `astro:page-load` sin quitar la anterior, y las viejas apuntaban a nodos desconectados. Ahora es un solo listener para toda la sesión.
 - **Tres imágenes con margen, recomprimidas de verdad**: `contact-image.webp` 76 → 16 KB a 800w (no tiene variante móvil y se sirve la de 1600), `logo-ph-3d.webp` 427 → 199 KB en AVIF, `talents-hero.webp` 142 → 94 KB a q72 sin cambiar dimensiones. (El póster del hero también estaba en esta lista, 142 → 53 KB; quedó sin objeto el 2026-09-25, cuando el hero pasó a una foto fija servida por `astro:assets` en cuatro anchos.)
 - ~~**Vídeo del hero a CRF 30**~~ — superado el 2026-09-22 por un vídeo nuevo; del 2026-09-25 al 2026-10-01 el hero fue una foto fija, y hoy es un vídeo renderizado con sus propios ajustes. Cifras de cada cosa en `DECISIONS.md`.
-- **Código muerto**: `src/scripts/dropdown.ts` (4,3 KB, no lo importa nadie), y `clipPathReveal` + `magneticHover` en `ph-text-animations.ts` (cero usos).
+- **Código muerto**: `src/scripts/dropdown.ts` (4,3 KB, no lo importa nadie). `clipPathReveal` + `magneticHover` (cero usos) se borraron en la variante A (2026-10-03).
 
 ## Método (esto es lo reutilizable)
 

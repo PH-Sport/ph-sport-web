@@ -13,7 +13,151 @@ leído el resto.
 
 ---
 
+## 2026-10-03 · Variante A «Retransmisión»: la web como la realización de un partido en televisión
+
+> **Estado: propuesta en la rama `feat/variante-a-retransmision`, sin fusionar.** Sale
+> de `feat/rediseno-motion` (commit `e0c6360`, el «Marcador») y es una de tres
+> variantes completas que Mario pidió para elegir (las otras dos, en sus ramas). Si
+> no se elige, esta entrada se queda en esta rama y no existe en `preview` ni en
+> `main`.
+
+**Qué pidió Mario.** El rediseño «Marcador» (entrada siguiente) solo cambió el
+movimiento y dejó la maquetación casi igual. Mario lo aclaró el 2026-10-03:
+«secciones» significaba no tocar las cuatro rutas (con sus idiomas), pero **sí** la
+distribución del contenido dentro de ellas; los textos son los mismos y era en el
+diseño donde pedía innovar. Pidió tres variantes completas, con todas las
+secciones, funcionalidades y clics, en el lenguaje de los motion graphics, móvil
+primero, con sus cuatro principios de Motion UI (propósito, curvas naturales,
+100-350 ms, coreografía) y con las decisiones de diseño delegadas.
+
+**La idea.** Cada bloque es un grafismo de retransmisión deportiva —placas,
+rótulos inferiores, el marcador de la esquina, la tabla de estadísticas, la cinta
+inferior— que entra barriendo en la diagonal de 45° del logo PH, con la precisión
+de un paquete gráfico de Champions o Premier. Lo que se recuerda: «el marcador
+arriba diciéndome dónde estaba, los rótulos entrando en diagonal y una cortinilla
+dorada entre páginas». Cómo está hecho, en `ARCHITECTURE.md` («Sistema de
+animaciones», «Cabecera de sección», «Hero»).
+
+**El sistema** (global.css, «Retransmisión»; componentes en `src/components/ui/`):
+
+- **Placa** (`Plate.astro`): negro casi opaco, filo blanco al 12 % y el borde
+  derecho cortado a 45°; encima, la **pestaña dorada** que marca lo activo. Entra
+  creciendo desde su borde izquierdo con el corte delante (320 ms) y su texto sube
+  dentro (240 ms, +80 ms). Si un rótulo no cabe en una línea, **cada línea pasa a
+  ser su placa** (`data-plate-lines`, partido en `ph-motion.ts`).
+- **Rótulo inferior** (placas apiladas en escalera), **bug** (`Bug.astro`: celda
+  con el número en monoespaciada y filo dorado + etiqueta en placa), **placa llave**
+  (`KeyPlate.astro`: el botón, la única placa blanca, que barre en oro al
+  señalarla), **cinta** (`Ticker.astro`: texto ligado al scroll), **tabla de
+  estadísticas** (fila con barra segmentada), **revelado en diagonal** de fotos y
+  vídeo desde la esquina de abajo a la izquierda (520 ms + escala 1,06 → 1).
+- **Cortinilla** entre páginas: dos bandas a 45° (blanca fina y dorada) y una placa
+  negra que tapa la pantalla en el centro del barrido, se para un instante y sale;
+  380 ms, al revés al volver atrás. Reaprovecha `.ph-stinger` con su nombre de View
+  Transition (no se toca `page-main`).
+- **Cabecera = marcador de esquina** (logo + placa con el nombre de la página, que
+  rueda al navegar), **barra de canales** en escritorio y **menú móvil** con una
+  banda dorada que lo cruza. **Pie = tablero de cierre.** **Intro = cortinilla de
+  canal**: el logo se dibuja en el sitio del neón y una banda dorada barre el negro
+  y lo descubre (sigue siendo CSS en línea en el `<head>`, con las reglas de
+  `docs/trampas-conocidas.md`; la salida se sigue llamando `ph-intro-salir`).
+
+**Qué cambia en cada página** (mismas rutas, mismos textos, mismo orden de bloques):
+
+- **Portada.** El lema como rótulo inferior sobre la señal del neón; al bajar, las
+  placas salen hacia la izquierda y el bug «Scroll» llena su línea, todo ligado al
+  scroll. Talentos: «El roster.» en placa de hasta 144 px y la placa llave.
+  Servicios: «la alineación» —las cinco áreas como filas numeradas— y en
+  escritorio, al lado del titular; el Plan de Acción va aparte, a todo lo ancho, con
+  sus cinco sub-áreas en cinco columnas. Sobre: la frase en dos placas, la tabla de
+  cifras (7 con siete segmentos, 360° con barra continua) y los valores en la cinta.
+  Contacto: «Hablemos.», el correo como placa llave grande y la imagen en una
+  ventana de repetición con marco de placa.
+- **Talentos.** Barra de filtros de realización: buscador en placa (plegable en el
+  móvil) y rol y orden como **controles segmentados** (grupos de radios nativos;
+  caben a 360 px en italiano). Ficha = rótulo inferior sobre la foto (nombre y club
+  en placas, escudos en placas cuadradas). Filtrar y ordenar con FLIP; las que
+  salen se apagan en 150 ms, las que entran se descubren en diagonal.
+- **Servicios.** «Un equipo / fuera del campo.» en escalera; las áreas como
+  alineación con panel de dos columnas (descripción y viñetas numeradas); la cinta;
+  el modelo como **corte de segmento** (una banda cruza el bloque con el scroll); los
+  pilares como segmentos (imagen a sangre que se descubre y empuja despacio, rótulo
+  solapado que alterna de lado); el manifiesto en placas.
+- **Sobre nosotros.** Hero en placas con los valores y el pie como dos bugs; los
+  párrafos en paneles; Filosofía en tres **cartones de título**; el equipo como
+  **hoja de alineación**; la presencia como **lista de señales** con el código ISO en
+  su celda.
+
+**Alternativas descartadas** (al construirlo):
+
+- *Placas «inline» con `box-decoration-break: clone`* (cada línea de un texto
+  partido, con su fondo): el corte a 45° habría que pintarlo con degradados (sin
+  filo en la diagonal y dentado a 1×) y `transform` no se aplica a cajas en línea.
+  Se parten las líneas con JS y, sin JS, se ve la placa de varias líneas.
+- *Crecer la placa con `scaleX`*, como decía la dirección: deforma el corte y el
+  texto. Se recorta con `clip-path` y el frente avanza con la misma diagonal.
+- *Entradas con GSAP*: las legales no cargan GSAP y la red de seguridad sería
+  doble. Las entradas son CSS (`is-inview` + retardos); GSAP queda para lo ligado al
+  scroll, el FLIP y el acordeón.
+- *Acordeones animando `height`* (el Marcador lo hacía): recalcula el layout en cada
+  fotograma. El panel cambia de alto de una vez y lo de debajo se desliza con
+  `transform`, midiendo qué se mueve (`ph-disclosure.ts`).
+- *Desplegables (listbox) para rol y orden*: la dirección los dejaba como
+  alternativa si los segmentos no cabían. Caben a 360 px en italiano.
+- *Mantener las paletas del Marcador para las cifras*: dos mundos en una página.
+  Las cifras van en celdas de bug o en monoespaciada, sin animarse por su cuenta.
+
+**Qué deja obsoleto de la entrada «Marcador»** (que queda abajo como registro):
+las paletas (`Flap`, `FlapText`), la fila índice (`Slate`, `.ph-rowline`), la tecla
+(`Key`), las costuras (`.ph-seam`), el revelado por tonos (`.ph-develop`), el
+destello (`glint`), las letras de tablero (`cycleText`), los titulares que ruedan
+(`rollIn`, `riseIn`, `stage`, `wrapWords`) y la intro en paleta. Se borraron
+también `clipPathReveal` y `magneticHover`, exportados sin uso, y el guardián
+`data-reveal`. Se conservan `ph-ambient.ts`, `.ph-stinger`, la red de seguridad y la
+infraestructura de scroll de `ph-text-animations.ts`.
+
+**Preferencias anotadas de Mario (2026-10-01):**
+
+- **Se mantienen**: el contenido empieza en la primera pantalla (en Talentos asoma
+  la primera fila de fichas a 390×844 y a 1440×900); entradillas de 18-21 px casi
+  blancas; nada por debajo de 13 px; el **fondo vivo** (el shader de
+  `ph-ambient.ts` tal cual, que con las placas encima brilla alrededor de ellas); el
+  grid de 2/3/5 columnas; titulares de cabecera de 106 px como máximo y rótulos de
+  hasta 144 px.
+- **Cambia**: los bugs y las etiquetas de placa van en **mayúsculas** a 13-14 px con
+  0,05 em de espaciado (la dirección lo pide así; no son las mayúsculas diminutas de
+  10-11 px y 0,25 em que Mario rechazó). El margen lateral baja a
+  `clamp(16px, 5vw, 96px)` (antes 24 px de mínimo): sin eso, los rótulos en placa no
+  caben en una línea a 360 px en italiano. Afecta también a las legales.
+- **Movimiento reducido**: la dirección pedía que placas y fotos aparecieran con un
+  fundido de 150 ms. Se dejan **en su sitio desde el principio, sin fundido**: un
+  estado oculto a la espera de entrar en pantalla, también con movimiento reducido,
+  arriesga contenido que no aparece. Los cambios de estado (menú, paneles, la placa
+  llave) sí usan fundidos de 150 ms, y la cortinilla pasa a un fundido corto.
+
+**Costes y riesgos** (medido en el build):
+
+- JS comprimido: GSAP + infraestructura 49,2 KB (el Marcador, 49,8 KB), núcleo
+  `ph-motion` 1,7 KB (2,0 KB), `ph-disclosure` 1,0 KB (nuevo), Flip en `/talentos`
+  11,0 KB (9,7 KB). Por página: portada 71,9 KB, `/talentos` 83,3 KB, `/servicios`
+  74,6 KB, `/sobre-nosotros` 72,8 KB, legales 20,9 KB.
+- ScrollTrigger pasa a usarse de verdad (cintas, salida del rótulo del hero, banda
+  del modelo, empuje de los pilares): el punto 2 del backlog de rendimiento
+  (sustituirlo por un `IntersectionObserver`) deja de aplicar en esta rama.
+- `clip-path` animado no va por la tarjeta gráfica en todos los navegadores: en
+  `/talentos` entran hasta ~10 fichas a la vez (foto + dos placas cada una). En
+  Chromium y WebKit sin cabeza va fluido; **no se ha probado en un móvil real**
+  (`docs/hallazgos-abiertos.md`).
+- Partir las placas por líneas mide el texto al cargar y al cambiar el ancho
+  (~110 placas en `/talentos`, la mayoría de una línea, que no se tocan).
+
+---
+
 ## 2026-10-02 · Lenguaje de movimiento «Marcador»: la web se mueve como el marcador de un estadio
+
+> ⚠️ **En la rama `feat/variante-a-retransmision`, sustituido por la «Variante A ·
+> Retransmisión»** (entrada de arriba). Lo que se conserva y lo que no, ahí. El resto
+> de esta entrada describe el Marcador tal como se hizo.
 
 > **Estado: propuesta en la rama `feat/rediseno-motion`, sin fusionar.** Se hizo en
 > una rama paralela a `preview` a petición de Mario, para verla sin mezclarla con el

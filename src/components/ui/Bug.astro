@@ -1,0 +1,51 @@
+---
+/**
+ * Bug: el rótulo pequeño que abre un bloque, como el de la esquina de una
+ * retransmisión. «02 · Talentos» se pinta como una celda con el número en
+ * monoespaciada dentro de un cuadro de filo dorado y la etiqueta en una placa
+ * pequeña; las cifras que haya dentro de la etiqueta («21 INTEGRANTES · 7
+ * PAÍSES») van en su propia celda. Estilos `.ph-bug` en global.css.
+ *
+ * El texto llega tal cual de las traducciones. El « · » que separa el número de
+ * la etiqueta lo hace la celda; se conserva para los lectores de pantalla, que
+ * leen el rótulo entero.
+ */
+interface Props {
+  text: string;
+  as?: 'p' | 'div' | 'span';
+  /** Retardo de entrada en ms. */
+  d?: number;
+  /** Un código al final («SEDE CENTRAL · ES») va en su celda, como las cifras. */
+  code?: boolean;
+  /** Vigila su propia entrada en pantalla (por defecto). Con `false`, entra con
+   *  su bloque. */
+  inview?: boolean;
+  id?: string;
+  class?: string;
+}
+
+const { text, as: Tag = 'p', d, code = false, inview = true, id, class: className } = Astro.props as Props;
+
+const [first, ...rest] = text.split(' · ');
+const num = rest.length > 0 && /^\d+$/.test(first.trim()) ? first.trim() : null;
+let label = num ? rest.join(' · ') : text;
+
+// Código final en mayúsculas de dos o tres letras (ISO): a su celda.
+let tail: string | null = null;
+if (code) {
+  const m = label.match(/^(.*) · ([A-Z]{2,3})$/);
+  if (m) {
+    label = m[1];
+    tail = m[2];
+  }
+}
+
+const parts = label.split(/(\d+)/).filter((p) => p.length > 0);
+---
+
+<Tag
+  class:list={['ph-bug', className]}
+  style={d !== undefined ? `--bug-d: ${d}ms` : undefined}
+  data-inview={inview ? '' : undefined}
+  id={id}
+>{num && <span class="ph-bug__num">{num}</span>}{num && <span class="ph-sr"> · </span>}<span class="ph-plate ph-plate--label ph-bug__plate"><span class="ph-plate__t"><span class="ph-plate__in">{parts.map((p) => (/^\d+$/.test(p) ? <span class="ph-bug__n">{p}</span> : p))}{tail && <> · <span class="ph-bug__n">{tail}</span></>}</span></span></span></Tag>

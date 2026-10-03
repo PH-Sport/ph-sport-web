@@ -1,0 +1,69 @@
+---
+/**
+ * Cinta inferior (ticker): barra negra a todo lo ancho con un bloque dorado a la
+ * izquierda, como la de una retransmisión. El texto se desplaza con el scroll y
+ * solo con él (`mountTickers` en ph-text-animations.ts): nada se mueve solo
+ * (WCAG 2.2.2). Sin JS o con movimiento reducido se queda quieta.
+ *
+ * La primera pasada del texto es la que leen los lectores de pantalla; las
+ * copias que rellenan la cinta están ocultas para ellos. Las cifras («360º»,
+ * «365») van en monoespaciada.
+ */
+interface Props {
+  /** Los elementos de la cinta: los valores, o las partes de un rótulo separado
+   *  por « · ». */
+  items: string[];
+  /** `ul` para una lista con nombre (los valores); `p` para un rótulo. */
+  as?: 'ul' | 'p';
+  /** Nombre de la lista, si es `ul`. */
+  label?: string;
+  class?: string;
+}
+
+const { items, as = 'p', label, class: className } = Astro.props as Props;
+
+/** Copias que rellenan la cinta: con cinco, cubre dos anchos de pantalla. */
+const COPIES = 5;
+const pieces = (text: string) => text.split(/(\d+[º°]?)/).filter((p) => p.length > 0);
+const isNum = (p: string) => /^\d+[º°]?$/.test(p);
+---
+
+<div class:list={['ph-ticker', className]} data-ticker>
+  <span class="ph-ticker__block" aria-hidden="true">
+    <svg viewBox="0 0 259.8 206.1" fill="currentColor"><polygon points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" /><polygon points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" /></svg>
+  </span>
+  <div class="ph-ticker__view">
+    <div class="ph-ticker__track" data-ticker-track>
+      {as === 'ul' ? (
+        <ul class="ph-ticker__run" aria-label={label} role="list">
+          {items.map((item) => (
+            <>
+              <li class="ph-ticker__item">{pieces(item).map((p) => (isNum(p) ? <span class="ph-num">{p}</span> : p))}</li>
+              <li class="ph-ticker__sep" aria-hidden="true"></li>
+            </>
+          ))}
+        </ul>
+      ) : (
+        <p class="ph-ticker__run">
+          {items.map((item, i) => (
+            <>
+              <span class="ph-ticker__item">{pieces(item).map((p) => (isNum(p) ? <span class="ph-num">{p}</span> : p))}</span>
+              {i < items.length - 1 && <span class="ph-sr"> · </span>}
+              <span class="ph-ticker__sep" aria-hidden="true"></span>
+            </>
+          ))}
+        </p>
+      )}
+      {Array.from({ length: COPIES }, () => (
+        <div class="ph-ticker__run" aria-hidden="true">
+          {items.map((item) => (
+            <>
+              <span class="ph-ticker__item">{pieces(item).map((p) => (isNum(p) ? <span class="ph-num">{p}</span> : p))}</span>
+              <span class="ph-ticker__sep"></span>
+            </>
+          ))}
+        </div>
+      ))}
+    </div>
+  </div>
+</div>

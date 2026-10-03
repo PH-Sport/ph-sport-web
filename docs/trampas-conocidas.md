@@ -77,8 +77,9 @@ puede funcionar.**
 - **Medir timing con la extensión de Chrome no es fiable**: al operar, la pestaña
   pasa a segundo plano, `rAF` se pausa y `setTimeout` se throttlea a ~1s.
 - **Lo mismo con el navegador integrado de Claude cuando su panel está oculto**: las
-  animaciones se quedan congeladas a medias y las capturas enseñan paletas
-  paradas en un número intermedio o titulares cortados que no existen. Para ver
+  animaciones se quedan congeladas a medias y las capturas enseñan piezas
+  paradas a mitad de camino (paletas del Marcador en un número intermedio,
+  placas a medio barrer) o titulares cortados que no existen. Para ver
   el movimiento de verdad: Playwright sin cabeza (Chromium y WebKit) grabando
   vídeo (`recordVideo`) y sacando fotogramas con `ffmpeg`. Las grabaciones
   tampoco incluyen la capa de las View Transitions.

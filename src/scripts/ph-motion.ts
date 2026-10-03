@@ -1,26 +1,22 @@
 /**
- * Lenguaje de movimiento «Marcador» — el núcleo ligero, sin GSAP.
+ * Lenguaje de movimiento «Retransmisión» — el núcleo ligero, sin GSAP.
  *
- * La web se mueve como el marcador de un estadio de noche: los datos caen en
- * paletas hasta su valor, los titulares entran rodando en su ranura, las líneas
- * del tablero se dibujan y una sola luz dorada viaja en la diagonal del logo
- * (hacia arriba a la derecha). Por qué así y qué se descartó: DECISIONS.md
- * (2026-10-02). Cómo encaja con el resto: ARCHITECTURE.md, «Sistema de
+ * La web se mueve como el paquete gráfico de una retransmisión: las placas
+ * crecen desde su borde izquierdo y su texto sube dentro de ellas, las fotos se
+ * descubren en la diagonal del logo y una cortinilla barre la pantalla al
+ * cambiar de página. Por qué así y qué se descartó: DECISIONS.md (variante A,
+ * 2026-10-03). Cómo encaja con el resto: ARCHITECTURE.md, «Sistema de
  * animaciones».
  *
- * Este módulo no importa GSAP a propósito: lo cargan también la cabecera y el
- * pie, que están en todas las páginas, incluidas las legales, que no cargan
- * GSAP. Lo que rueda con GSAP (titulares, cascadas de cabecera) vive en
- * `ph-text-animations.ts`.
+ * Este módulo no importa GSAP a propósito: lo cargan la cabecera y el pie, que
+ * están en todas las páginas, incluidas las legales, que no cargan GSAP. Las
+ * entradas son CSS (global.css); aquí solo se decide CUÁNDO entra cada bloque.
  *
  * Reglas:
  * - El estado de reposo es el visible. Lo que espera a entrar en pantalla solo se
  *   esconde con `html.ph-anim`, y `global.css` lo destapa a los 2,5 s si este
  *   módulo no llega a correr (`html.ph-motion`).
- * - Con `prefers-reduced-motion` no cae ni se dibuja nada: todo aparece en su
- *   sitio. Se mantienen los cambios de color que confirman un gesto.
- * - Solo `transform` y `opacity` en lo que se mueve; el destello (el fondo de un
- *   texto corto, un segundo) es la única excepción.
+ * - Con `prefers-reduced-motion` todo está en su sitio desde el principio.
  */
 
 const prefersReducedMotion = (): boolean =>
@@ -34,273 +30,197 @@ document.documentElement.classList.add('ph-motion');
 
 // ── En pantalla ───────────────────────────────────────────────────────────────
 // Un solo IntersectionObserver para toda la página. Lo que entra recibe
-// `is-inview` (el CSS hace el resto) y, si lleva paletas o letras que cambian,
-// se arrancan aquí.
+// `is-inview` y el CSS hace el resto.
 let inViewObserver: IntersectionObserver | null = null;
 
-function onEnter(el: HTMLElement): void {
-  el.classList.add('is-inview');
-  // Las fotos que se revelan dentro de una pieza (la ficha de un talento, un
-  // pilar) entran con ella.
-  el.querySelectorAll<HTMLElement>('.ph-develop').forEach((d) => d.classList.add('is-inview'));
-  if (el.hasAttribute('data-flap')) runFlap(el);
-  el.querySelectorAll<HTMLElement>('[data-flap]').forEach((f) => runFlap(f));
-  if (el.hasAttribute('data-cycle')) cycleText(el);
-  el.querySelectorAll<HTMLElement>('[data-cycle]').forEach((c) => cycleText(c));
+/** Tope de una cascada: el último de un grupo no espera más que esto. */
+const CASCADE_MAX_MS = 360;
+
+/**
+ * Lo que entra a la vez entra en cascada. Las piezas con `data-cascade="<ms>"`
+ * que llegan en el mismo aviso del observador (las filas de una tabla, las
+ * fichas de una fila del grid) reciben su retardo por orden de lectura, en
+ * `--cd`, que el CSS suma al retardo propio de cada pieza. Una pieza que entra
+ * sola no espera.
+ */
+function enterBatch(els: HTMLElement[]): void {
+  // Por filas y, dentro de cada fila, por columnas: en una lista es una cascada
+  // de arriba abajo; en el grid de talentos, una ola en la diagonal del logo
+  // (fila + columna).
+  const placed = els
+    .filter((el) => el.dataset.cascade)
+    .map((el) => ({ el, r: el.getBoundingClientRect() }))
+    .sort((a, b) => (Math.abs(a.r.top - b.r.top) > 4 ? a.r.top - b.r.top : a.r.left - b.r.left));
+  let row = -1;
+  let col = 0;
+  let rowTop = Number.NEGATIVE_INFINITY;
+  placed.forEach(({ el, r }) => {
+    if (Math.abs(r.top - rowTop) > 4) {
+      row++;
+      col = 0;
+      rowTop = r.top;
+    } else {
+      col++;
+    }
+    const step = Number(el.dataset.cascade) || 0;
+    el.style.setProperty('--cd', `${Math.min((row + col) * step, CASCADE_MAX_MS)}ms`);
+  });
+  els.forEach((el) => el.classList.add('is-inview'));
 }
 
 /**
- * Vigila lo que espera a entrar en pantalla dentro de `root`: todo `[data-inview]`
- * y las paletas y letras que cambian que vayan sueltas. Idempotente: se puede
- * llamar en cada `astro:page-load` y desde varias secciones.
+ * Vigila lo que espera a entrar en pantalla dentro de `root`: todo
+ * `[data-inview]`. Idempotente: se puede llamar en cada `astro:page-load` y
+ * desde varias secciones.
  */
 export function watchInView(root: ParentNode = document): void {
-  const targets = new Set<HTMLElement>();
-  root.querySelectorAll<HTMLElement>('[data-inview]:not(.is-inview)').forEach((el) => targets.add(el));
-  root.querySelectorAll<HTMLElement>('[data-flap], [data-cycle]').forEach((el) => {
-    if (!el.closest('[data-inview]')) targets.add(el);
-  });
-
+  const targets = Array.from(root.querySelectorAll<HTMLElement>('[data-inview]:not(.is-inview)'));
   if (prefersReducedMotion()) {
-    targets.forEach((el) => {
-      el.classList.add('is-inview');
-      el.querySelectorAll<HTMLElement>('.ph-develop').forEach((d) => d.classList.add('is-inview'));
-      if (el.matches('.ph-flap')) el.classList.add('is-flapped');
-      el.querySelectorAll<HTMLElement>('.ph-flap').forEach((f) => f.classList.add('is-flapped'));
-    });
+    targets.forEach((el) => el.classList.add('is-inview'));
     return;
   }
 
   inViewObserver ??= new IntersectionObserver(
     (entries) => {
+      const entering: HTMLElement[] = [];
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
         inViewObserver?.unobserve(entry.target);
-        onEnter(entry.target as HTMLElement);
+        entering.push(entry.target as HTMLElement);
       }
+      if (entering.length) enterBatch(entering);
     },
-    // Un poco antes del borde de abajo: la pieza ya se está leyendo cuando arranca.
+    // Un poco antes del borde de abajo: la pieza ya se está leyendo cuando entra.
     { rootMargin: '0px 0px -8% 0px' },
   );
-  targets.forEach((el) => inViewObserver!.observe(el));
-}
-
-/**
- * Escalona una lista para las cascadas de CSS: `--i` (posición) y
- * `--ph-seam-delay` (retardo de su línea). La regla de CSS decide qué hace con
- * ellos.
- */
-export function cascade(items: Iterable<HTMLElement>, stepMs = 60, startMs = 0): void {
-  let i = 0;
-  for (const el of items) {
-    el.style.setProperty('--i', String(i));
-    el.style.setProperty('--ph-seam-delay', `${startMs + i * stepMs}ms`);
-    i++;
-  }
-}
-
-// ── Paletas ───────────────────────────────────────────────────────────────────
-const DIGITS = '0123456789';
-const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-/** Cada caída dura esto: media para la cara de arriba, media para la de abajo. */
-const FLAP_STEP_MS = 72;
-/** Una paleta nunca pasa por más caras que estas, para que no se haga larga. */
-const FLAP_MAX_FACES = 6;
-/** Retardo entre una paleta y la siguiente del mismo número. */
-const FLAP_STAGGER_MS = 64;
-
-/** Las caras por las que pasa una paleta hasta su carácter: en blanco y después,
- *  en orden, los anteriores al destino, como un marcador de verdad. */
-function flapSequence(target: string): string[] {
-  const upper = target.toUpperCase();
-  const set = DIGITS.includes(upper) ? DIGITS : LETTERS.includes(upper) ? LETTERS : '';
-  const idx = set ? set.indexOf(upper) : -1;
-  if (idx < 0) return [' ', target];
-  const before = Math.min(idx, FLAP_MAX_FACES - 2);
-  return [' ', ...set.slice(idx - before, idx).split(''), target];
-}
-
-function half(position: 'top' | 'bottom', leaf: boolean, ch: string): HTMLSpanElement {
-  const el = document.createElement('span');
-  el.className = `ph-flap__half ph-flap__half--${position}${leaf ? ' ph-flap__leaf' : ''}`;
-  const inner = document.createElement('span');
-  inner.textContent = ch;
-  el.append(inner);
-  return el;
-}
-
-function setFace(el: HTMLElement, ch: string): void {
-  (el.firstChild as HTMLElement).textContent = ch;
-}
-
-/** Hace caer una paleta por su secuencia. Resuelve al terminar. */
-function flipCell(cell: HTMLElement, seq: string[]): Promise<void> {
-  return new Promise((resolve) => {
-    const finish = (layers: HTMLElement[]) => {
-      // Primero se destapa el carácter de verdad y en el mismo paso se quitan las
-      // capas: sin fotograma en blanco entre una cosa y otra.
-      cell.classList.add('is-set');
-      layers.forEach((l) => l.remove());
-      resolve();
-    };
-    if (seq.length < 2) { finish([]); return; }
-
-    const top = half('top', false, seq[0]);
-    const bottom = half('bottom', false, seq[0]);
-    const leafTop = half('top', true, seq[0]);
-    const leafBottom = half('bottom', true, seq[0]);
-    const layers = [top, bottom, leafTop, leafBottom];
-    cell.append(...layers);
-
-    const halfMs = FLAP_STEP_MS / 2;
-    let i = 0;
-    const step = (): void => {
-      if (i >= seq.length - 1 || !cell.isConnected) { finish(layers); return; }
-      const cur = seq[i];
-      const next = seq[i + 1];
-      setFace(top, next);
-      setFace(bottom, cur);
-      setFace(leafTop, cur);
-      setFace(leafBottom, next);
-      // La cara de arriba cae con gravedad (acelera) y se oscurece al girar; la de
-      // abajo llega y frena contra el tope.
-      const fall = leafTop.animate(
-        [
-          { transform: 'rotateX(0deg)', backgroundColor: '#1d2025' },
-          { transform: 'rotateX(-90deg)', backgroundColor: '#0f1114' },
-        ],
-        { duration: halfMs, easing: 'cubic-bezier(0.55, 0, 1, 0.45)', fill: 'forwards' },
-      );
-      fall.onfinish = () => {
-        const land = leafBottom.animate(
-          [
-            { transform: 'rotateX(90deg)', backgroundColor: '#262a31' },
-            { transform: 'rotateX(0deg)', backgroundColor: '#15171b' },
-          ],
-          { duration: halfMs, easing: 'cubic-bezier(0, 0.55, 0.45, 1)', fill: 'forwards' },
-        );
-        land.onfinish = () => {
-          setFace(bottom, next);
-          setFace(leafTop, next);
-          fall.cancel();
-          land.cancel();
-          i++;
-          step();
-        };
-      };
-    };
-    step();
+  targets.forEach((el) => {
+    // Lo que se maneja a mano (el rótulo del hero, que espera a la intro) no se
+    // vigila.
+    if (el.hasAttribute('data-inview-manual')) return;
+    inViewObserver!.observe(el);
   });
 }
 
-/**
- * Hace caer las paletas de un `.ph-flap` hasta su valor, de izquierda a derecha.
- * El valor es el que trae el HTML. Una vez por elemento.
- */
-export function runFlap(group: HTMLElement): void {
-  if (group.dataset.flapRun) return;
-  group.dataset.flapRun = '1';
-  const cells = Array.from(group.querySelectorAll<HTMLElement>('.ph-flap__cell'));
-  if (prefersReducedMotion() || cells.length === 0) {
-    group.classList.add('is-flapped');
-    return;
-  }
-  const delay = Number(group.dataset.flapDelay ?? 0);
-  // Una paleta con su propia secuencia (`data-flap-seq`, caras separadas por
-  // «|»): los números romanos cuentan I, II, III… en una sola ficha.
-  const customSeq = group.dataset.flapSeq?.split('|');
-  const jobs = cells.map((cell, idx) => {
-    const target = cell.querySelector('.ph-flap__char')?.textContent ?? '';
-    const seq = customSeq ? [' ', ...customSeq.filter(Boolean)] : flapSequence(target);
-    return new Promise<void>((resolve) => {
-      window.setTimeout(() => {
-        void flipCell(cell, seq).then(resolve);
-      }, delay + idx * FLAP_STAGGER_MS);
-    });
-  });
-  void Promise.all(jobs).then(() => group.classList.add('is-flapped'));
+// ── Placas partidas por líneas ────────────────────────────────────────────────
+// Un rótulo de televisión no tiene placas de dos líneas: cada línea es su placa.
+// Las placas con `data-plate-lines` que no caben en una línea se parten aquí:
+// la original se queda para los lectores de pantalla (`is-split`, global.css) y
+// cada línea pasa a ser una copia visual con su propio corte a 45°. Se rehace al
+// cambiar el ancho. Sin JS se ve la placa de varias líneas.
+const generated = new WeakMap<HTMLElement, HTMLElement[]>();
+
+function unsplitPlate(plate: HTMLElement): void {
+  generated.get(plate)?.forEach((el) => el.remove());
+  generated.delete(plate);
+  plate.classList.remove('is-split');
 }
 
-// ── Letras que cambian (tablero de salidas) ───────────────────────────────────
-const CYCLE_SET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-const CYCLE_STEP_MS = 42;
-const CYCLE_TURNS = 4;
+interface Token {
+  text: string;
+  chain: Element[];
+  spaceBefore: boolean;
+  top: number;
+}
 
-/**
- * Las letras de un texto corto en mayúsculas pasan, de izquierda a derecha, por
- * las anteriores del abecedario hasta la suya, a saltos, como un tablero de
- * salidas. Mientras cambian, la caja se queda con el ancho del texto final: la
- * letra es proporcional y, si no, empujaría lo que tiene al lado. Una vez.
- */
-export function cycleText(el: HTMLElement): void {
-  if (el.dataset.cycleRun) return;
-  el.dataset.cycleRun = '1';
-  const final = el.textContent ?? '';
-  if (prefersReducedMotion() || !final.trim()) return;
-  const width = el.getBoundingClientRect().width;
-  el.style.display = 'inline-block';
-  el.style.width = `${width}px`;
-  el.style.whiteSpace = 'nowrap';
-  const release = () => {
-    el.style.removeProperty('display');
-    el.style.removeProperty('width');
-    el.style.removeProperty('white-space');
-  };
-  const chars = [...final];
-  let frame = 0;
-  const timer = window.setInterval(() => {
-    frame++;
-    let out = '';
-    let done = true;
-    chars.forEach((c, i) => {
-      const idx = CYCLE_SET.indexOf(c.toUpperCase());
-      const landAt = i + CYCLE_TURNS;
-      if (idx < 0 || frame >= landAt) {
-        out += c;
-      } else if (frame <= i) {
-        out += ' ';
-        done = false;
-      } else {
-        const back = landAt - frame;
-        out += CYCLE_SET[(idx - back + CYCLE_SET.length) % CYCLE_SET.length];
-        done = false;
-      }
-    });
-    el.textContent = out;
-    if (done || !el.isConnected) {
-      window.clearInterval(timer);
-      el.textContent = final;
-      release();
+/** Las palabras de la placa, con los elementos que las envuelven (un `<em>`) y
+ *  la altura de línea a la que caen. */
+function readTokens(inner: HTMLElement): Token[] {
+  const tokens: Token[] = [];
+  const walker = document.createTreeWalker(inner, NodeFilter.SHOW_TEXT);
+  let pendingSpace = false;
+  for (let node = walker.nextNode() as Text | null; node; node = walker.nextNode() as Text | null) {
+    const text = node.data;
+    const chain: Element[] = [];
+    for (let p = node.parentElement; p && p !== inner; p = p.parentElement) chain.unshift(p);
+    const re = /\S+/g;
+    let m: RegExpExecArray | null;
+    let last = 0;
+    while ((m = re.exec(text))) {
+      const range = document.createRange();
+      range.setStart(node, m.index);
+      range.setEnd(node, m.index + m[0].length);
+      const rect = range.getClientRects()[0] ?? range.getBoundingClientRect();
+      tokens.push({
+        text: m[0],
+        chain,
+        spaceBefore: tokens.length > 0 && (pendingSpace || m.index > last),
+        top: rect.top,
+      });
+      pendingSpace = false;
+      last = m.index + m[0].length;
     }
-  }, CYCLE_STEP_MS);
+    if (/\s$/.test(text)) pendingSpace = true;
+  }
+  return tokens;
 }
 
-// ── Destello ──────────────────────────────────────────────────────────────────
-/**
- * Una luz cruza el texto una vez, en la diagonal del logo (`.ph-glint` en
- * global.css). Si el texto ya está partido en palabras (`wrapWords`), cada palabra
- * recibe la luz cuando le llega, según su posición: se lee como una sola pasada.
- */
-export function glint(el: HTMLElement, delayMs = 0): void {
-  if (prefersReducedMotion()) return;
-  const words = Array.from(el.querySelectorAll<HTMLElement>('.ph-clip-inner'));
-  const targets = words.length ? words : [el];
-  const left0 = el.getBoundingClientRect().left;
-  targets.forEach((w) => {
-    const dx = w.getBoundingClientRect().left - left0;
-    w.style.setProperty('--ph-glint-delay', `${Math.round(delayMs + dx * 0.7)}ms`);
-    w.classList.remove('ph-glint');
-    void w.offsetWidth;
-    w.classList.add('ph-glint');
-    const end = (e: AnimationEvent) => {
-      // `animationend` burbujea: solo cuenta el de este elemento.
-      if (e.target !== w || e.animationName !== 'ph-glint') return;
-      w.classList.remove('ph-glint');
-      w.removeEventListener('animationend', end);
-    };
-    w.addEventListener('animationend', end);
+function splitPlate(plate: HTMLElement): void {
+  unsplitPlate(plate);
+  const inner = plate.querySelector<HTMLElement>('.ph-plate__in');
+  if (!inner) return;
+  const tokens = readTokens(inner);
+  // Agrupar por línea: una palabra pegada a la anterior (la «.» de «roster.»)
+  // va siempre con ella.
+  const lines: Token[][] = [];
+  tokens.forEach((tk) => {
+    const cur = lines[lines.length - 1];
+    if (cur && (!tk.spaceBefore || Math.abs(tk.top - cur[0].top) < 4)) cur.push(tk);
+    else lines.push([tk]);
   });
+  if (lines.length < 2) return;
+
+  const baseDelay = Number.parseFloat(getComputedStyle(plate).getPropertyValue('--d')) || 0;
+  const made: HTMLElement[] = [];
+  let anchor: Element = plate;
+  lines.forEach((line, i) => {
+    const copy = plate.cloneNode(false) as HTMLElement;
+    copy.removeAttribute('id');
+    copy.removeAttribute('data-plate-lines');
+    copy.removeAttribute('data-inview');
+    copy.classList.add('ph-plate-line');
+    if (i > 0) copy.classList.remove('ph-plate--tab');
+    copy.setAttribute('aria-hidden', 'true');
+    copy.style.setProperty('--d', `${baseDelay + i * 70}ms`);
+    if (i === 0) {
+      const tab = plate.querySelector('.ph-plate__tab');
+      if (tab) copy.append(tab.cloneNode(true));
+    }
+    const t = document.createElement('span');
+    t.className = 'ph-plate__t';
+    const inn = document.createElement('span');
+    inn.className = inner.className;
+    line.forEach((tk, j) => {
+      if (j > 0 && tk.spaceBefore) inn.append(' ');
+      let node: Node = document.createTextNode(tk.text);
+      for (let k = tk.chain.length - 1; k >= 0; k--) {
+        const wrap = tk.chain[k].cloneNode(false);
+        wrap.appendChild(node);
+        node = wrap;
+      }
+      inn.append(node);
+    });
+    t.append(inn);
+    copy.append(t);
+    anchor.after(copy);
+    anchor = copy;
+    made.push(copy);
+  });
+  plate.classList.add('is-split');
+  generated.set(plate, made);
 }
+
+function splitPlates(): void {
+  document.querySelectorAll<HTMLElement>('[data-plate-lines]').forEach(splitPlate);
+}
+
+let splitWidth = window.innerWidth;
+let splitTimer = 0;
+window.addEventListener('resize', () => {
+  if (window.innerWidth === splitWidth) return;
+  splitWidth = window.innerWidth;
+  window.clearTimeout(splitTimer);
+  splitTimer = window.setTimeout(splitPlates, 150);
+});
 
 // ── Navegación ────────────────────────────────────────────────────────────────
 document.addEventListener('astro:before-swap', (e) => {
@@ -309,9 +229,10 @@ document.addEventListener('astro:before-swap', (e) => {
   const newDoc = (e as { newDocument?: Document }).newDocument;
   if (!newDoc) return;
   newDoc.documentElement.classList.add('ph-motion');
-  // La luz que cruza al cambiar de página (`.ph-stinger` en global.css). Se
-  // arranca en el documento entrante para que ya esté corriendo cuando la View
-  // Transition lo fotografía en vivo.
+  // La cortinilla (`.ph-stinger` en global.css). Se arranca en el documento
+  // entrante para que ya esté corriendo cuando la View Transition lo fotografía
+  // en vivo. El sentido se apunta en la propia pieza: Astro quita el
+  // `data-astro-transition` de <html> a mitad de la pasada.
   if (!prefersReducedMotion()) {
     const back = document.documentElement.getAttribute('data-astro-transition') === 'back';
     const stinger = newDoc.querySelector<HTMLElement>('[data-stinger]');
@@ -322,14 +243,20 @@ document.addEventListener('astro:before-swap', (e) => {
 
 document.addEventListener('astro:page-load', () => {
   const stinger = document.querySelector<HTMLElement>('[data-stinger]');
-  if (stinger?.classList.contains('is-running')) {
+  const sweep = stinger?.querySelector<HTMLElement>('.ph-stinger__sweep');
+  if (stinger && sweep && stinger.classList.contains('is-running')) {
+    // `animationend` burbujea: solo cuenta el de la propia banda.
     const done = (e: AnimationEvent) => {
-      if (e.target !== stinger) return;
+      if (e.target !== sweep) return;
       stinger.classList.remove('is-running', 'is-back');
-      stinger.removeEventListener('animationend', done);
+      sweep.removeEventListener('animationend', done);
     };
-    stinger.addEventListener('animationend', done);
+    sweep.addEventListener('animationend', done);
   }
+  // Las placas que no caben en una línea, partidas antes de que entren. Si
+  // Söhne aún no ha llegado, se vuelven a partir con ella.
+  splitPlates();
+  if (document.fonts && document.fonts.status !== 'loaded') document.fonts.ready.then(splitPlates);
   // Cabecera y pie (en todas las páginas) y lo que no monte su propia sección.
   watchInView(document);
 });

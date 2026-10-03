@@ -1,8 +1,9 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
-import Slate from '@/components/ui/Slate.astro';
-import Flap from '@/components/ui/Flap.astro';
-import Key from '@/components/ui/Key.astro';
+import Bug from '@/components/ui/Bug.astro';
+import Plate from '@/components/ui/Plate.astro';
+import KeyPlate from '@/components/ui/KeyPlate.astro';
+import Ticker from '@/components/ui/Ticker.astro';
 
 interface Props {
   lang: Lang;
@@ -13,181 +14,207 @@ const t = useTranslations(lang);
 
 const aboutHref = localizePath('/sobre-nosotros/', lang);
 // Países donde opera PHSPORT: sale del texto traducido, la misma fuente que el
-// resto de menciones (ver la nota de `about.team.meta` en es.ts).
+// resto de menciones (ver la nota de `about.team.meta` en es.ts). La barra lleva
+// un segmento por país.
 const countriesValue = t('home.about.stats.countries.value');
+const countrySegments = Math.max(1, Number.parseInt(countriesValue, 10) || 1);
 ---
 
-{/* La declaración de la agencia y sus cifras, que caen en el marcador al entrar:
-    los países y el 360. En pantallas anchas, la declaración a la izquierda y el
-    marcador a la derecha; en el resto, uno debajo del otro. */}
+{/* «Rótulo de cita» y «estadísticas del partido»: la frase de la agencia a toda
+    pantalla en dos placas, el texto con su placa llave, la tabla de cifras como
+    la de un partido (cada fila con su barra) y los valores en la cinta de abajo,
+    que corre con el scroll. */}
 <section class="home-about" id="sobre-nosotros" aria-labelledby="home-about-title">
-  <Slate text={t('home.about.eyebrow')} />
   <div class="home-about__inner">
-    <div class="home-about__head">
-      <h2 class="home-about__title" id="home-about-title" data-m="title" data-reveal>
-        <span>{t('home.about.title')}</span>
-        <em data-glint>{t('home.about.titleAccent')}</em>
+    <Bug text={t('home.about.eyebrow')} />
+    <div class="home-about__quote" data-inview>
+      <h2 class="home-about__title ph-lt" id="home-about-title">
+        <Plate tab lines>{t('home.about.title')}</Plate>{' '}
+        <Plate gold d={110} step={1} lines>{t('home.about.titleAccent')}</Plate>
       </h2>
-      <p class="home-about__body" data-m="lead" data-reveal>{t('home.about.body')}</p>
-      <div class="home-about__cta" data-m="item" data-reveal>
-        <Key href={aboutHref} label={t('home.about.cta')} />
-      </div>
     </div>
 
-    <div class="home-about__board">
-      <dl class="home-about__stats" aria-label={t('home.about.stats.aria')}>
-        <div class="home-about__stat ph-seam" data-inview>
-          <dt class="home-about__stat-value">
-            <Flap value={countriesValue} size="xl" />
-          </dt>
-          <dd class="home-about__stat-label">{t('home.about.stats.countries.label')}</dd>
+    <div class="home-about__grid">
+      <div class="home-about__text" data-inview>
+        <p class="home-about__body ph-in-rise">{t('home.about.body')}</p>
+        <div class="home-about__cta ph-in-rise" style="--d: 100ms">
+          <KeyPlate href={aboutHref} label={t('home.about.cta')} />
         </div>
-        <div class="home-about__stat ph-seam" data-inview>
-          <dt class="home-about__stat-value">
-            <Flap value="360" size="xl" /><span class="home-about__stat-unit" aria-hidden="true">°</span>
-          </dt>
-          <dd class="home-about__stat-label">{t('home.about.stats.service.label')}</dd>
+      </div>
+
+      {/* La tabla de estadísticas de un partido: etiqueta a la izquierda, cifra a
+          la derecha y su barra debajo, que se enciende al entrar. */}
+      <dl class="stats" aria-label={t('home.about.stats.aria')} data-inview>
+        <div class="stats__row">
+          <dt class="stats__label">{t('home.about.stats.countries.label')}</dt>
+          <dd class="stats__value">
+            <span class="stats__num">{countriesValue}</span>
+            <span class="stats__bar stats__bar--seg" aria-hidden="true">
+              {Array.from({ length: countrySegments }, (_, i) => <i style={`--i: ${i}`}></i>)}
+            </span>
+          </dd>
+        </div>
+        <div class="stats__row" style="--row: 1">
+          <dt class="stats__label">{t('home.about.stats.service.label')}</dt>
+          <dd class="stats__value">
+            <span class="stats__num">{t('home.about.stats.service.value')}</span>
+            <span class="stats__bar stats__bar--full" aria-hidden="true"><i></i></span>
+          </dd>
         </div>
       </dl>
-
-      <ul class="home-about__values ph-seam" aria-label={t('home.about.values.aria')} role="list" data-inview>
-        <li data-cycle>{t('home.about.values.v1')}</li>
-        <li aria-hidden="true" class="home-about__values-sep">·</li>
-        <li data-cycle>{t('home.about.values.v2')}</li>
-        <li aria-hidden="true" class="home-about__values-sep">·</li>
-        <li data-cycle>{t('home.about.values.v3')}</li>
-      </ul>
     </div>
   </div>
+
+  <Ticker
+    as="ul"
+    label={t('home.about.values.aria')}
+    items={[t('home.about.values.v1'), t('home.about.values.v2'), t('home.about.values.v3')]}
+    class="home-about__ticker"
+  />
 </section>
 
 <style>
   .home-about {
-    padding: clamp(64px, 9vw, 128px) var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(80px, 11vw, 150px);
-    background: var(--color-ph-black, #0d0f12);
-    color: var(--color-ph-white, #ffffff);
+    position: relative;
+    padding: clamp(64px, 7vw, 104px) 0 0;
+    background: var(--color-ph-black);
   }
-
   .home-about__inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: clamp(48px, 7vw, 96px);
-    margin-top: clamp(28px, 4vw, 48px);
+    padding: 0 var(--ph-section-px) clamp(64px, 8vw, 112px);
   }
 
-  /* A dos columnas solo cuando el marcador cabe entero a la derecha: con 1024 px
-     el «360°» y su etiqueta se salían de la pantalla. */
-  @media (min-width: 1200px) {
-    .home-about__inner {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  .home-about__quote { margin-top: clamp(30px, 4vw, 52px); }
+  /* La cita a toda pantalla: cada mitad de la frase en su placa. La segunda se
+     parte en dos líneas en el móvil (el italiano es el más largo). */
+  .home-about__title {
+    margin: 0;
+    font-size: clamp(30px, 8.6vw, 92px);
+  }
+
+  .home-about__grid {
+    display: grid;
+    gap: clamp(40px, 5vw, 64px);
+    margin-top: clamp(36px, 5vw, 64px);
+  }
+  @media (min-width: 1024px) {
+    .home-about__grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
       align-items: end;
     }
   }
 
-  .home-about__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(40px, 10.5vw, 84px);
-    letter-spacing: -0.04em;
-    line-height: 0.98;
-    margin: 0;
-    text-wrap: balance;
-  }
-  .home-about__title span { display: block; }
-  .home-about__title em {
-    display: block;
-    color: var(--color-ph-gold, #d6b25e);
-    font-style: italic;
-    font-weight: 400;
-  }
-
   .home-about__body {
-    margin: clamp(22px, 2.5vw, 30px) 0 0;
-    max-width: 52ch;
-    color: var(--ph-ink-body);
+    margin: 0;
+    max-width: 50ch;
     font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
     line-height: 1.65;
+    color: var(--ph-ink-body);
   }
+  .home-about__cta { margin-top: clamp(24px, 3vw, 36px); }
 
-  .home-about__cta {
-    margin-top: clamp(28px, 4vw, 40px);
-  }
-
-  /* El marcador: cada cifra en su fila, con la línea encima. */
-  .home-about__stats {
-    margin: 0;
-    padding: 0;
-  }
-
-  /* La cifra y su etiqueta, juntas: se leen como un par, no como dos cosas en
-     los extremos de la fila. */
-  .home-about__stat {
+  /* ── La tabla de estadísticas ─────────────────────────────────────────── */
+  .stats {
     display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: clamp(16px, 2vw, 24px);
+    flex-direction: column;
+    gap: 4px;
     margin: 0;
-    padding: clamp(18px, 2.4vw, 28px) 0;
   }
-
-  .home-about__stat-value {
-    display: inline-flex;
-    align-items: flex-start;
-    margin: 0;
-    color: var(--color-ph-gold, #d6b25e);
+  .stats__row {
+    --cut: 34px;
+    position: relative;
+    z-index: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px calc(var(--cut) + 6px) 42px 18px;
   }
-  .home-about__stat-unit {
-    margin-left: 0.12em;
+  .stats__row::before,
+  .stats__row::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+  }
+  .stats__row::before {
+    inset: 0;
+    background: var(--ph-plate-edge);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+  }
+  .stats__row::after {
+    inset: 1px;
+    background: var(--ph-plate);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) + 0.59px), calc(100% - var(--cut) + 0.59px) 100%, 0 100%);
+  }
+  .stats__label {
     font-family: var(--font-display);
-    font-size: clamp(28px, calc(2.4vw + 18px), 52px);
+    font-size: clamp(17px, calc(0.6vw + 15px), 22px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--color-ph-white);
+  }
+  .stats__value { margin: 0; }
+  .stats__num {
+    font-family: var(--font-mono);
+    font-size: clamp(30px, calc(1.6vw + 24px), 46px);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
     line-height: 1;
-    color: var(--color-ph-gold, #d6b25e);
+    color: var(--color-ph-white);
+    transition:
+      opacity 320ms var(--ph-ease-out) calc(var(--row, 0) * 120ms + 80ms),
+      transform 420ms var(--ph-ease-out) calc(var(--row, 0) * 120ms + 80ms);
   }
-  .home-about__stat-label {
-    margin: 0;
-    font-size: clamp(14px, calc(0.1vw + 13.6px), 15px);
-    color: var(--ph-ink-lead);
-  }
-
-  /* Valores: letras de tablero de salidas, que pasan por el abecedario hasta la
-     suya al entrar (el ancho se queda quieto mientras cambian). Letra normal: la
-     monoespaciada es solo para cifras. */
-  .home-about__values {
-    list-style: none;
+  /* La barra, debajo, de lado a lado. */
+  .stats__bar {
+    position: absolute;
+    left: 18px;
+    right: calc(var(--cut) + 6px);
+    bottom: 18px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px 14px;
-    margin: 0;
-    padding: clamp(18px, 2.4vw, 24px) 0 0;
-    font-family: var(--font-body);
-    font-size: 13px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ph-ink-lead);
+    gap: 4px;
+    height: 8px;
   }
-  .home-about__values li { margin: 0; }
-  .home-about__values-sep { color: var(--color-ph-gold, #d6b25e); }
+  .stats__bar i {
+    position: relative;
+    flex: 1 1 0;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+  }
+  .stats__bar i::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-ph-gold);
+    transform-origin: 0 50%;
+  }
+  /* Los países: un segmento por país, que se encienden en cascada de 60 ms. */
+  .stats__bar--seg i::after {
+    transition: transform 180ms var(--ph-ease-out) calc(var(--i, 0) * 60ms + 160ms);
+  }
+  /* El acompañamiento: una barra continua que se llena entera. */
+  .stats__bar--full i::after {
+    transition: transform 640ms var(--ph-ease-out) 300ms;
+  }
+  :global(html.ph-anim) .stats:not(.is-inview) .stats__bar i::after { transform: scaleX(0); }
+  :global(html.ph-anim) .stats:not(.is-inview) .stats__num { opacity: 0; transform: translateY(0.4em); }
+  :global(html.ph-anim:not(.ph-motion)) .stats__bar i::after,
+  :global(html.ph-anim:not(.ph-motion)) .stats__num { animation: ph-motion-failsafe 0s linear 2.5s forwards; }
+
+  .home-about__ticker { margin-top: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stats__num,
+    .stats__bar i::after { transition: none; }
+  }
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, stage, mountSection, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
-  import { cascade } from '@/scripts/ph-motion';
+  import { mountSection, afterTransitionPaint } from '@/scripts/ph-text-animations';
 
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initHomeAboutAnimations(): void {
+  function initHomeAbout(): void {
     const section = document.querySelector<HTMLElement>('.home-about');
-    if (!section) return;
-    if (!reducedMotion()) {
-      stage(section, { glint: true });
-      cascade(section.querySelectorAll<HTMLElement>('.home-about__board .ph-seam'), 110);
-    }
-    mountSection(section);
+    if (section) mountSection(section);
   }
 
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeAboutAnimations));
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeAbout));
 </script>

@@ -137,10 +137,11 @@ Por rentabilidad, de mayor a menor:
 
 1. Los diccionarios `i18n` completos viajan en el JS del header para usar **ocho
    cadenas**.
-2. ScrollTrigger se carga en las cuatro páginas cuando `ScrollTrigger.create()` se
-   usa **dos veces, las dos en el hero** (el desplazamiento del titular y el
-   acercamiento al neón, desde el 2026-10-02); el resto son entradas con
-   `{ start: 'top 85%', once: true }`, lo que ya hace un `IntersectionObserver`.
+2. ~~ScrollTrigger se carga en las cuatro páginas para dos usos en el hero~~ — en la
+   rama de la variante A ya no aplica: las entradas son CSS con un
+   `IntersectionObserver` y ScrollTrigger se usa para lo ligado al scroll de
+   verdad (las cintas, la salida del rótulo del hero, la banda del modelo y el
+   empuje de los pilares de Servicios).
 3. Cuatro imágenes con margen de compresión real.
 
 El tirón al entrar en `/sobre-nosotros` (135 spans con `filter: blur()`) se
@@ -154,24 +155,37 @@ resolvió el 2026-10-02: los párrafos ya no entran palabra a palabra. Cifras en
 - Una página `/faq` con preguntas y respuestas literales.
 - Auditar los `alt=""` de Header, Footer y Hero para confirmar que son decorativos.
 
-### Lenguaje de movimiento «Marcador»: sin probar en un móvil real (2026-10-02)
+### Variante A «Retransmisión»: sin probar en un móvil real (2026-10-03)
 
-En la rama `feat/rediseno-motion` (`DECISIONS.md`, 2026-10-02). Comprobado con
-Playwright en Chromium y WebKit, en escritorio y a 390 px con toque: la intro y su
-corte sobre el neón, las paletas, el menú móvil, la luz entre páginas en los dos
-sentidos, el reordenado del grid, movimiento reducido y JS bloqueado. **Falta un
-iPhone y un Android de verdad**: que la intro se pliegue fluida en 3D, que las
-paletas no tiren con muchas en pantalla (la tabla del equipo, 21 a la vez) y que
-el revelado por `filter` de las fotos aguante en un móvil modesto con el fondo
-animado de Talentos detrás. Si algo tira, la primera palanca es el revelado:
-quitar `contrast` y `saturate` y dejar solo `brightness`.
+En la rama `feat/variante-a-retransmision` (`DECISIONS.md`, 2026-10-03; sustituye
+en esa rama al «Marcador» del 2026-10-02, que tampoco se llegó a probar en un
+móvil). Comprobado con Playwright sobre el build, en Chromium y WebKit, a 360, 390,
+768, 1024 y 1440 px en los tres idiomas: desbordes, la diagonal de las placas
+contra su texto, movimiento reducido, JS bloqueado, consola en las 16 páginas,
+las interacciones una a una y la cortinilla en los dos sentidos (por eventos de
+animación: no sale en capturas). **Falta un iPhone y un Android de verdad**:
+
+- Que las entradas por `clip-path` aguanten fluidas en `/talentos` en un móvil
+  modesto, con el fondo animado detrás: entran hasta ~10 fichas a la vez (foto y
+  dos placas cada una). Si tira, la primera palanca es quitar el recorte de las
+  placas de las fichas y dejar solo el de la foto.
+- Que la cortinilla (una placa del tamaño de la diagonal de la pantalla) y el menú
+  móvil vayan a 60 fps.
+- **Lo que Playwright no puede comprobar**: en WebKit el tabulador no lleva el foco
+  a los enlaces (es el ajuste por defecto de macOS), así que el foco atrapado del
+  menú móvil y el paso por las opciones de idioma se han comprobado solo en
+  Chromium. Y el `<noscript>` que despliega los paneles de Servicios sin JS no se
+  aplica en el modo «sin JavaScript» de Playwright (el analizador sigue tratando
+  `<noscript>` como texto): se comprobó que la regla está en el HTML servido.
 
 ### Sin control para pausar el movimiento continuo (WCAG 2.2.2)
 
 Visto al investigar el rediseño, el 2026-10-02; **ya pasaba antes**. El vídeo del
 hero va en bucle y los fondos de Talentos, Servicios y Sobre nosotros se mueven
 mientras la página está abierta, más de 5 s y junto a otro contenido, sin un botón
-para pararlos. Con `prefers-reduced-motion` se paran todos, pero WCAG 2.2.2 (nivel
+para pararlos. (En la variante A ya no hay más bucles que esos dos: la línea del
+bug «Scroll» se llena con el scroll en vez de correr sola, y las cintas solo se
+mueven con el scroll.) Con `prefers-reduced-motion` se paran todos, pero WCAG 2.2.2 (nivel
 A) pide además un control en la página. Arreglarlo es añadir un botón, y su texto
 no existe en las traducciones: es decisión de Mario.
 

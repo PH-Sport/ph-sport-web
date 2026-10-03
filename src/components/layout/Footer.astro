@@ -3,6 +3,8 @@ import { useTranslations, getLangFromUrl, localizePath } from '@/i18n/utils';
 import { NAV_ITEMS } from '@/lib/navigation';
 import { SOCIAL_LINKS, isSocialPlaceholder, type SocialId } from '@/lib/social';
 import FooterSocialIcon from '@/components/ui/FooterSocialIcon.astro';
+import Plate from '@/components/ui/Plate.astro';
+import Bug from '@/components/ui/Bug.astro';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -28,24 +30,20 @@ const socialLabel = (id: SocialId) => {
   const key = id === 'instagram' ? 'footer.social.instagram' : 'footer.social.linkedin';
   return t(key);
 };
-
-/** El lema, palabra a palabra, para que ruede en CSS al entrar en pantalla (el pie
- *  está también en las páginas legales, que no cargan GSAP). */
-const words = (text: string) => text.split(' ').filter(Boolean);
-const leadWords = words(t('hero.claim.lead'));
-const accentWords = words(t('hero.claim.accent'));
 ---
 
-{/* El cierre de la retransmisión: la línea dorada se dibuja, el lema entra
-    rodando y el logo se vuelve a dibujar como en la intro de la portada. */}
-<footer class="footer">
-  <div class="footer-gold-rule ph-seam" aria-hidden="true" data-inview></div>
+{/* El tablero de cierre de la retransmisión: la pestaña dorada a lo ancho, el
+    lema como rótulo inferior y las columnas en placas. Está en todas las páginas,
+    también en las legales, que no cargan GSAP: todo lo que se mueve aquí es CSS
+    (lo arranca el núcleo de movimiento al entrar en pantalla). */}
+<footer class="ftr">
+  <div class="ftr__rule" data-inview aria-hidden="true"></div>
 
-  <div class="footer-logo-bg" aria-hidden="true">
+  <div class="ftr__logo-bg" aria-hidden="true">
     <img
       src="/logo-ph-3d.webp"
       srcset="/logo-ph-3d-sm.webp 820w, /logo-ph-3d.webp 1640w"
-      sizes="min(92vw, 620px)"
+      sizes="min(80vw, 560px)"
       alt=""
       width="1640"
       height="1321"
@@ -55,105 +53,63 @@ const accentWords = words(t('hero.claim.accent'));
     />
   </div>
 
-  <div class="ph-section">
-    <!-- 02 · Sello editorial -->
-    <p class="footer-sello" data-inview data-footer-sello>
-      {leadWords.map((w, i) => (
-        <><span class="footer-sello__slot"><span class="footer-sello__word" style={`--w: ${i}`}>{w}</span></span>{' '}</>
-      ))}
-      <span class="footer-sello__accent">
-        {accentWords.map((w, i) => (
-          <><span class="footer-sello__slot"><span class="footer-sello__word" style={`--w: ${i + leadWords.length}`}>{w}</span></span>{i < accentWords.length - 1 ? ' ' : ''}</>
-        ))}
-      </span>
+  <div class="ftr__inner">
+    <p class="ftr__claim ph-lt" data-inview>
+      <Plate tab d={0}>{t('hero.claim.lead')}</Plate>{' '}
+      <Plate gold d={90} step={1}>{t('hero.claim.accent')}</Plate>
     </p>
 
-    <!-- 03 · 3-col funcional -->
-    <div class="footer-grid">
-      <!-- Col 1: brand -->
-      <div class="footer-brand">
-        {/* Se dibuja al entrar en pantalla: trazo y después relleno, como la
-            intro. Los perímetros (753 y 637) son los de LogoReveal.astro. */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 259.8 206.1"
-          fill="currentColor"
-          stroke="currentColor"
-          stroke-width="4"
-          stroke-linejoin="bevel"
-          aria-hidden="true"
-          class="footer-logo"
-          data-inview
-        >
-          <polygon class="footer-logo__line" points="0 206.1 58.2 206.1 57.9 145.5 158.1 45.4 112.7 0 0 0 0 52.6 76.9 52.6 0 128.7" stroke-dasharray="753" />
-          <polygon class="footer-logo__line footer-logo__line--2" points="122.6 206.1 200.1 206.1 152.2 157.8 173 137.1 182.4 146.4 259.8 146.4 169.6 55.6 130.5 94.2 131.8 95.6 141.1 105.4 120.3 125.8 109.8 115.4 70.8 153.9" stroke-dasharray="637" />
-        </svg>
-      </div>
-
-      <!-- Col 2: páginas -->
-      <nav class="footer-col" aria-label={t('footer.nav.label')}>
-        <span class="footer-col-label">{t('footer.pages')}</span>
-        <ul class="footer-nav">
-          {nav.map((item) => (
-            <li>
-              <a href={item.href} class="footer-link">
-                <span>{item.label}</span>
+    <div class="ftr__grid">
+      <nav class="ftr__col" aria-label={t('footer.nav.label')} data-inview>
+        <Bug text={t('footer.pages')} inview={false} />
+        <ul class="ftr__rows">
+          {nav.map((item, i) => (
+            <li style={`--d: ${80 + i * 50}ms`}>
+              <a href={item.href} class="ftr__row">
+                <span class="ftr__row-tab" aria-hidden="true"></span>
+                <span class="ftr__row-text">{item.label}</span>
+                <svg class="ftr__row-arrow" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.6 0.6 9.2 5 1.6 9.4Z" fill="currentColor" /></svg>
               </a>
             </li>
           ))}
         </ul>
       </nav>
 
-      <!-- Col 3: contacto + social -->
-      <div class="footer-col">
-        <span class="footer-col-label">{t('footer.contact')}</span>
-        <div class="footer-contact">
-          <a href={`mailto:${t('footer.email')}`} class="footer-email">
-            {t('footer.email')}
-          </a>
-        </div>
+      <div class="ftr__col" data-inview>
+        <Bug text={t('footer.contact')} inview={false} d={60} />
+        <a href={`mailto:${t('footer.email')}`} class="ftr__mail">
+          <span>{t('footer.email')}</span>
+        </a>
+      </div>
 
-        <span class="footer-col-label footer-col-label--social">{t('footer.social.heading')}</span>
-        <ul class="footer-social-list" role="list" aria-label={t('footer.social.label')}>
-          {
-            SOCIAL_LINKS.map((s) => (
-              <li>
-                {isSocialPlaceholder(s.href) ? (
-                  <span
-                    class="footer-social-link footer-social-link--disabled"
-                    aria-disabled="true"
-                    title={socialLabel(s.id)}
-                  >
-                    <FooterSocialIcon id={s.id} />
-                  </span>
-                ) : (
-                  <a
-                    href={s.href}
-                    class="footer-social-link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={socialLabel(s.id)}
-                  >
-                    <FooterSocialIcon id={s.id} />
-                  </a>
-                )}
-              </li>
-            ))
-          }
+      <div class="ftr__col" data-inview>
+        <Bug text={t('footer.social.heading')} inview={false} d={120} />
+        <ul class="ftr__social" role="list" aria-label={t('footer.social.label')}>
+          {SOCIAL_LINKS.map((s) => (
+            <li>
+              {isSocialPlaceholder(s.href) ? (
+                <span class="ftr__social-link ftr__social-link--disabled" aria-disabled="true" title={socialLabel(s.id)}>
+                  <FooterSocialIcon id={s.id} />
+                </span>
+              ) : (
+                <a href={s.href} class="ftr__social-link" target="_blank" rel="noopener noreferrer" aria-label={socialLabel(s.id)}>
+                  <FooterSocialIcon id={s.id} />
+                </a>
+              )}
+            </li>
+          ))}
         </ul>
       </div>
     </div>
 
-    <!-- 04 · Copyright + legal -->
-    <div class="footer-bottom">
+    {/* La barra fina de abajo: derechos y textos legales. */}
+    <div class="ftr__bar">
       <p>&copy; {year} {t('site.name')}. {t('footer.rights')}</p>
-      <nav class="footer-legal" aria-label={t('footer.legal.label')}>
+      <nav class="ftr__legal" aria-label={t('footer.legal.label')}>
         {legalLinks.map((link, i) => (
           <>
-            {i > 0 && <span class="footer-legal-sep" aria-hidden="true">·</span>}
-            <a href={link.href} hreflang={link.hreflang} class="footer-legal-link">
-              {link.label}
-            </a>
+            {i > 0 && <span class="ftr__legal-sep" aria-hidden="true">·</span>}
+            <a href={link.href} hreflang={link.hreflang} class="ftr__legal-link">{link.label}</a>
           </>
         ))}
       </nav>
@@ -162,357 +118,264 @@ const accentWords = words(t('hero.claim.accent'));
 </footer>
 
 <style>
-  .footer {
+  .ftr {
     position: relative;
     z-index: 1;
     overflow: hidden;
+    background: var(--color-ph-black);
   }
 
-  .footer-logo-bg {
+  /* La pestaña dorada a lo ancho: abre el tablero. Se traza al llegar. */
+  .ftr__rule {
+    height: 4px;
+    background: var(--color-ph-gold);
+    transform-origin: 0 50%;
+    transition: transform 640ms var(--ph-ease-out);
+  }
+  :global(html.ph-anim) .ftr__rule:not(.is-inview) { transform: scaleX(0); }
+  :global(html.ph-anim:not(.ph-motion)) .ftr__rule { animation: ph-motion-failsafe 0s linear 2.5s forwards; }
+
+  .ftr__logo-bg {
     position: absolute;
-    inset: 0;
+    right: -4%;
+    bottom: -6%;
     pointer-events: none;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 6%;
-    opacity: 0.18;
+    opacity: 0.1;
   }
-
-  .footer-logo-bg img {
-    width: min(70vw, 620px);
+  .ftr__logo-bg img {
+    display: block;
+    width: min(80vw, 560px);
     height: auto;
     user-select: none;
   }
 
-  .footer > *:not(.footer-logo-bg) {
+  .ftr__inner {
     position: relative;
     z-index: 1;
+    padding: clamp(48px, 7vw, 88px) var(--ph-section-px) 0;
   }
 
-  @media (max-width: 767px) {
-    .footer-logo-bg {
-      padding-right: 0;
-      justify-content: center;
-      opacity: 0.12;
-    }
-    .footer-logo-bg img {
-      width: min(90vw, 480px);
-    }
-  }
-
-  /* 01 · La línea dorada de arriba, que se dibuja al llegar al pie. */
-  .footer-gold-rule {
-    --ph-seam-color: rgba(214, 178, 94, 0.5);
-    height: 1px;
-  }
-
-  /* 02 · Sello: el lema, a escala de rótulo, entra palabra a palabra. */
-  .footer-sello {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(2.25rem, 8.6vw, 5.5rem);
-    line-height: 1.02;
-    letter-spacing: -0.01em;
-    text-transform: uppercase;
-    color: var(--color-ph-white);
+  /* El lema, como rótulo inferior: más pequeño que el de la portada. */
+  .ftr__claim {
     max-width: none;
     margin: 0;
-    padding-block: clamp(3rem, 7vw, 5rem) clamp(2.25rem, 5vw, 3.5rem);
+    font-size: clamp(26px, 7.2vw, 64px);
   }
 
-  .footer-sello__accent {
-    color: var(--color-ph-gold);
-  }
-
-  .footer-sello__slot {
-    display: inline-block;
-    overflow: hidden;
-    vertical-align: bottom;
-    padding-right: 0.06em;
-    margin-right: -0.06em;
-  }
-
-  .footer-sello__word {
-    display: inline-block;
-    transition: transform var(--ph-dur-roll) var(--ph-ease-out) calc(var(--w, 0) * 70ms);
-  }
-
-  :global(html.ph-anim) .footer-sello:not(.is-inview) .footer-sello__word {
-    transform: translateY(110%);
-  }
-
-  :global(html.ph-anim:not(.ph-motion)) .footer-sello__word {
-    animation: ph-motion-failsafe 0s linear 2.5s forwards;
-  }
-
-  /* 03 · 3-col funcional */
-  .footer-grid {
+  .ftr__grid {
     display: grid;
-    gap: 2.5rem;
-    padding-block: clamp(2rem, 4vw, 3rem);
-    border-top: 1px solid var(--color-ph-white-10);
+    gap: 36px;
+    margin-top: clamp(44px, 6vw, 72px);
   }
-
   @media (min-width: 768px) {
-    .footer-grid {
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: clamp(2rem, 4vw, 3rem);
-      align-items: start;
+    .ftr__grid {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 0.8fr);
+      gap: clamp(24px, 4vw, 56px);
     }
   }
 
-  .footer-brand {
+  .ftr__col {
     display: flex;
+    flex-direction: column;
     align-items: flex-start;
+    gap: 14px;
+    min-width: 0;
   }
 
-  .footer-logo {
-    height: 2.25rem;
-    width: auto;
-    overflow: visible;
-    color: var(--color-ph-white);
-  }
-
-  .footer-logo__line {
-    stroke-dashoffset: 0;
-    fill-opacity: 1;
-    stroke-opacity: 0;
-    transition:
-      stroke-dashoffset 900ms cubic-bezier(0.77, 0, 0.175, 1),
-      fill-opacity 300ms var(--ph-ease-std) 820ms,
-      stroke-opacity 200ms linear 1100ms;
-  }
-
-  .footer-logo__line--2 {
-    transition-delay: 180ms, 820ms, 1100ms;
-  }
-
-  :global(html.ph-anim) .footer-logo:not(.is-inview) .footer-logo__line {
-    stroke-dashoffset: 753;
-    fill-opacity: 0;
-    stroke-opacity: 1;
-  }
-
-  :global(html.ph-anim) .footer-logo:not(.is-inview) .footer-logo__line--2 {
-    stroke-dashoffset: 637;
-  }
-
-  :global(html.ph-anim:not(.ph-motion)) .footer-logo__line {
-    animation: ph-footer-logo-failsafe 0s linear 2.5s forwards;
-  }
-
-  @keyframes ph-footer-logo-failsafe {
-    to { stroke-dashoffset: 0; fill-opacity: 1; stroke-opacity: 0; }
-  }
-
-  .footer-col {
+  /* Páginas: filas de placa, como las de una alineación. */
+  .ftr__rows {
     display: flex;
     flex-direction: column;
-  }
-
-  .footer-col-label {
-    font-family: var(--font-body);
-    font-size: 0.8125rem;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    color: var(--color-ph-gold);
-  }
-
-  .footer-col-label--social {
-    margin-top: 1.5rem;
-  }
-
-  .footer-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-    margin: 0.875rem 0 0;
+    gap: 3px;
+    width: 100%;
+    max-width: 360px;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
-
-  /* Enlaces del pie: al señalarlos, una línea se dibuja debajo, de izquierda a
-     derecha, como las del tablero. */
-  .footer-link {
+  .ftr__row {
+    --cut: 44px;
     position: relative;
-    display: inline-block;
-    padding-block: 0.125rem;
-    font-family: var(--font-display);
-    font-size: 1rem;
-    font-weight: 400;
-    color: var(--color-ph-white-60);
-    transition: color var(--ph-dur-state) var(--ph-ease-std);
-  }
-
-  .footer-link::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 1px;
-    background: currentColor;
-    transform: scaleX(0);
-    transform-origin: 0 50%;
-    transition: transform var(--ph-dur-move) var(--ph-ease-out);
-  }
-
-  @media (hover: hover) {
-    .footer-link:hover {
-      color: var(--color-ph-white);
-    }
-    .footer-link:hover::after {
-      transform: scaleX(1);
-    }
-  }
-
-  .footer-link:active {
-    color: var(--color-ph-gold);
-  }
-
-  .footer-contact {
-    margin-top: 0.875rem;
-  }
-
-  .footer-email {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    color: var(--color-ph-white-60);
-    transition: color var(--ph-dur-state) var(--ph-ease-std);
-  }
-
-  @media (hover: hover) {
-    .footer-email:hover {
-      color: var(--color-ph-gold);
-    }
-  }
-
-  .footer-social-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin: 0.875rem 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .footer-social-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: var(--radius-sm);
-    color: var(--color-ph-white-60);
-    border: 1px solid var(--color-ph-white-10);
-    transition:
-      color var(--ph-dur-state) var(--ph-ease-std),
-      border-color var(--ph-dur-state) var(--ph-ease-std),
-      background var(--ph-dur-state) var(--ph-ease-std),
-      transform var(--ph-dur-tap) var(--ph-ease-std);
-  }
-
-  .footer-social-link:active {
-    transform: scale(0.94);
-  }
-
-  @media (hover: hover) {
-    .footer-social-link:hover {
-      color: var(--color-ph-gold);
-      border-color: var(--color-ph-gold-muted);
-      background: rgba(214, 178, 94, 0.06);
-    }
-  }
-
-  .footer-social-link--disabled {
-    opacity: 0.45;
-    pointer-events: none;
-  }
-
-  .footer-social-link svg {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
-
-  /* 04 · Copyright */
-  .footer-bottom {
-    margin-top: clamp(2rem, 4vw, 2.5rem);
-    padding-top: 1.25rem;
-    padding-bottom: 1rem;
-    border-top: 1px solid var(--color-ph-white-10);
-  }
-
-  .footer-bottom {
+    z-index: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
-  }
-
-  .footer-bottom p {
-    font-family: var(--font-body);
-    font-size: 0.8125rem;
-    color: var(--color-ph-white-60);
-    margin: 0;
-  }
-
-  .footer-legal {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .footer-legal-link {
-    font-family: var(--font-body);
-    font-size: 0.8125rem;
-    color: var(--color-ph-white-60);
+    gap: 12px;
+    height: 44px;
+    padding: 0 calc(var(--cut) * 0.62) 0 14px;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
     transition: color var(--ph-dur-state) var(--ph-ease-std);
   }
-
-  @media (hover: hover) {
-    .footer-legal-link:hover {
-      color: var(--color-ph-white);
-    }
+  .ftr__row::before,
+  .ftr__row::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
   }
+  .ftr__row::before {
+    inset: 0;
+    background: var(--ph-plate-edge);
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
+  }
+  .ftr__row::after {
+    inset: 1px;
+    background: var(--ph-plate);
+    clip-path: polygon(0 0, calc(100% - 0.41px) 0, calc(100% - var(--cut) + 1.59px) 100%, 0 100%);
+  }
+  /* Al señalar la fila, la pestaña dorada asoma arriba a la izquierda. */
+  .ftr__row-tab {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 40px;
+    height: 4px;
+    background: var(--color-ph-gold);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 140ms var(--ph-ease-in);
+  }
+  .ftr__row-arrow {
+    width: 9px;
+    height: 9px;
+    color: var(--color-ph-gold);
+    opacity: 0.6;
+    transition: transform var(--ph-dur-state) var(--ph-ease-out), opacity var(--ph-dur-state) var(--ph-ease-std);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .ftr__row:hover { color: var(--color-ph-white); }
+    .ftr__row:hover .ftr__row-tab { transform: scaleX(1); transition: transform var(--ph-dur-state) var(--ph-ease-out); }
+    .ftr__row:hover .ftr__row-arrow { opacity: 1; transform: translateX(3px); }
+  }
+  .ftr__row:active { color: var(--color-ph-gold); }
+  .ftr__row:focus-visible { outline: 2px solid var(--color-ph-gold); outline-offset: 2px; }
 
-  .footer-legal-sep {
-    font-size: 0.8125rem;
-    color: var(--color-ph-white-20);
+  /* Las filas entran en cascada detrás de su bug. */
+  .ftr__rows li {
+    transition: clip-path var(--ph-dur-wipe) var(--ph-ease-out) var(--d, 0ms);
+    clip-path: inset(-4px -4px -4px -4px);
+  }
+  :global(html.ph-anim) .ftr__col:not(.is-inview) .ftr__rows li { clip-path: inset(-4px 100% -4px -4px); }
+  :global(html.ph-anim:not(.ph-motion)) .ftr__rows li { animation: ph-failsafe-unclip 0s linear 2.5s forwards; }
+
+  /* El correo, en su placa. */
+  .ftr__mail {
+    --cut: 48px;
+    position: relative;
+    z-index: 0;
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    height: 48px;
+    padding: 0 calc(var(--cut) * 0.7) 0 16px;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--color-ph-white);
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
+  }
+  .ftr__mail span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ftr__mail::before,
+  .ftr__mail::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+  }
+  .ftr__mail::before {
+    inset: 0;
+    background: var(--ph-plate-edge);
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
+  }
+  .ftr__mail::after {
+    inset: 1px;
+    background: var(--ph-plate);
+    clip-path: polygon(0 0, calc(100% - 0.41px) 0, calc(100% - var(--cut) + 1.59px) 100%, 0 100%);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .ftr__mail:hover { color: var(--color-ph-gold); }
+  }
+  .ftr__mail:active { color: var(--color-ph-gold); }
+  .ftr__mail:focus-visible { outline: 2px solid var(--color-ph-gold); outline-offset: 2px; }
+
+  /* Síguenos: iconos en placas cuadradas. */
+  .ftr__social {
+    display: flex;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .ftr__social-link {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    color: rgba(255, 255, 255, 0.8);
+    background: var(--ph-plate);
+    box-shadow: inset 0 0 0 1px var(--ph-plate-edge);
+    transition: color var(--ph-dur-state) var(--ph-ease-std), box-shadow var(--ph-dur-state) var(--ph-ease-std);
+  }
+  .ftr__social-link :global(svg) { width: 18px; height: 18px; }
+  @media (hover: hover) and (pointer: fine) {
+    .ftr__social-link:hover { color: var(--color-ph-gold); box-shadow: inset 0 0 0 1px var(--color-ph-gold); }
+  }
+  .ftr__social-link:active { color: var(--color-ph-gold); }
+  .ftr__social-link:focus-visible { outline: 2px solid var(--color-ph-gold); outline-offset: 2px; }
+  .ftr__social-link--disabled { opacity: 0.45; pointer-events: none; }
+
+  /* La barra fina de abajo. */
+  .ftr__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 24px;
+    margin-top: clamp(48px, 6vw, 72px);
+    padding: 16px 0 calc(18px + env(safe-area-inset-bottom));
+    box-shadow: inset 0 1px 0 var(--ph-plate-line);
+  }
+  .ftr__bar p {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ph-ink-meta);
+  }
+  .ftr__legal {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ftr__legal-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ph-ink-meta);
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .ftr__legal-link:hover { color: var(--color-ph-white); }
+  }
+  .ftr__legal-link:focus-visible { outline: 2px solid var(--color-ph-gold); outline-offset: 2px; }
+  .ftr__legal-sep {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.3);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .footer-sello__word,
-    .footer-logo__line,
-    .footer-link,
-    .footer-link::after,
-    .footer-social-link {
+    .ftr__rule,
+    .ftr__row,
+    .ftr__row-tab,
+    .ftr__row-arrow,
+    .ftr__rows li,
+    .ftr__mail,
+    .ftr__social-link,
+    .ftr__legal-link {
       transition: none;
     }
   }
 </style>
-
-<script>
-  /* El pie está en todas las páginas: el núcleo de movimiento (sin GSAP) vigila lo
-     que entra en pantalla. Al terminar de rodar el lema, la luz cruza la parte
-     dorada, una vez. */
-  import { glint } from '@/scripts/ph-motion';
-
-  function initFooter(): void {
-    const sello = document.querySelector<HTMLElement>('[data-footer-sello]');
-    const accent = sello?.querySelector<HTMLElement>('.footer-sello__accent');
-    if (!sello || !accent) return;
-    const io = new IntersectionObserver((entries) => {
-      if (!entries.some((e) => e.isIntersecting)) return;
-      io.disconnect();
-      window.setTimeout(() => {
-        accent.querySelectorAll<HTMLElement>('.footer-sello__word').forEach((word, i) => glint(word, i * 140));
-      }, 760);
-    }, { rootMargin: '0px 0px -8% 0px' });
-    io.observe(sello);
-    document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
-  }
-
-  document.addEventListener('astro:page-load', initFooter);
-</script>

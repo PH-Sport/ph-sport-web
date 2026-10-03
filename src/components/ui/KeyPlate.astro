@@ -1,0 +1,28 @@
+---
+/**
+ * Placa llave: el botón-enlace de la web. La única placa blanca de cada bloque,
+ * con el texto en negro y su flecha. Al señalarla, una barra dorada la barre de
+ * izquierda a derecha y la palabra rueda. Estilos `.ph-key` en global.css.
+ *
+ * La palabra va dos veces para poder rodar; la segunda copia está oculta a los
+ * lectores de pantalla, que leen el enlace una sola vez.
+ */
+interface Props {
+  href: string;
+  label: string;
+  /** `wide`: a todo lo ancho. `xl`: grande (el correo de Contacto). */
+  size?: 'default' | 'wide' | 'xl';
+  hreflang?: string;
+  class?: string;
+}
+
+const { href, label, size = 'default', hreflang, class: className } = Astro.props;
+---
+
+<a href={href} hreflang={hreflang} class:list={['ph-key', size !== 'default' && `ph-key--${size}`, className]}>
+  <span class="ph-key__label">
+    <span class="ph-key__text">{label}</span>
+    <span class="ph-key__text" aria-hidden="true">{label}</span>
+  </span>
+  <svg class="ph-key__arrow" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.6 0.6 9.2 5 1.6 9.4Z" fill="currentColor" /></svg>
+</a>

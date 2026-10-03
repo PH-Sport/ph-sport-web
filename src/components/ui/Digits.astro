@@ -1,0 +1,15 @@
+---
+/**
+ * Un texto con sus cifras en monoespaciada: «21 INTEGRANTES · 7 PAÍSES» pinta 21
+ * y 7 en `.ph-num` y el resto como texto. El texto no cambia; solo cómo se
+ * dibujan los números (las cifras son lo único que va en monoespaciada).
+ */
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+const parts = text.split(/(\d+)/).filter((p) => p.length > 0);
+---
+
+{parts.map((part) => (/^\d+$/.test(part) ? <span class="ph-num">{part}</span> : <>{part}</>))}

@@ -1,8 +1,7 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
-import Slate from '@/components/ui/Slate.astro';
-import Flap from '@/components/ui/Flap.astro';
-import Key from '@/components/ui/Key.astro';
+import Zone from '@/components/ui/Zone.astro';
+import NodeLink from '@/components/ui/NodeLink.astro';
 
 interface Props {
   lang: Lang;
@@ -12,543 +11,837 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const areas = [
-  {
-    title: t('home.services.area.management.title'),
-    body: t('home.services.area.management.body'),
-  },
-  {
-    title: t('home.services.area.career.title'),
-    body: t('home.services.area.career.body'),
-  },
-  {
-    title: t('home.services.area.international.title'),
-    body: t('home.services.area.international.body'),
-  },
-  {
-    title: t('home.services.area.comms.title'),
-    body: t('home.services.area.comms.body'),
-  },
-  {
-    title: t('home.services.area.legal.title'),
-    body: t('home.services.area.legal.body'),
-  },
+  { key: 'management', title: t('home.services.area.management.title'), body: t('home.services.area.management.body') },
+  { key: 'career', title: t('home.services.area.career.title'), body: t('home.services.area.career.body') },
+  { key: 'international', title: t('home.services.area.international.title'), body: t('home.services.area.international.body') },
+  { key: 'comms', title: t('home.services.area.comms.title'), body: t('home.services.area.comms.body') },
+  { key: 'legal', title: t('home.services.area.legal.title'), body: t('home.services.area.legal.body') },
 ];
 
 const actionPlanSub = [
-  {
-    title: t('home.services.actionPlan.press.title'),
-    bullets: [
-      t('home.services.actionPlan.press.b1'),
-      t('home.services.actionPlan.press.b2'),
-      t('home.services.actionPlan.press.b3'),
-    ],
-  },
-  {
-    title: t('home.services.actionPlan.media.title'),
-    bullets: [
-      t('home.services.actionPlan.media.b1'),
-      t('home.services.actionPlan.media.b2'),
-      t('home.services.actionPlan.media.b3'),
-    ],
-  },
-  {
-    title: t('home.services.actionPlan.psych.title'),
-    bullets: [
-      t('home.services.actionPlan.psych.b1'),
-      t('home.services.actionPlan.psych.b2'),
-      t('home.services.actionPlan.psych.b3'),
-    ],
-  },
-  {
-    title: t('home.services.actionPlan.performance.title'),
-    bullets: [
-      t('home.services.actionPlan.performance.b1'),
-      t('home.services.actionPlan.performance.b2'),
-      t('home.services.actionPlan.performance.b3'),
-    ],
-  },
-  {
-    title: t('home.services.actionPlan.familyOffice.title'),
-    bullets: [
-      t('home.services.actionPlan.familyOffice.b1'),
-      t('home.services.actionPlan.familyOffice.b2'),
-      t('home.services.actionPlan.familyOffice.b3'),
-    ],
-  },
+  { title: t('home.services.actionPlan.press.title'), bullets: [t('home.services.actionPlan.press.b1'), t('home.services.actionPlan.press.b2'), t('home.services.actionPlan.press.b3')] },
+  { title: t('home.services.actionPlan.media.title'), bullets: [t('home.services.actionPlan.media.b1'), t('home.services.actionPlan.media.b2'), t('home.services.actionPlan.media.b3')] },
+  { title: t('home.services.actionPlan.psych.title'), bullets: [t('home.services.actionPlan.psych.b1'), t('home.services.actionPlan.psych.b2'), t('home.services.actionPlan.psych.b3')] },
+  { title: t('home.services.actionPlan.performance.title'), bullets: [t('home.services.actionPlan.performance.b1'), t('home.services.actionPlan.performance.b2'), t('home.services.actionPlan.performance.b3')] },
+  { title: t('home.services.actionPlan.familyOffice.title'), bullets: [t('home.services.actionPlan.familyOffice.b1'), t('home.services.actionPlan.familyOffice.b2'), t('home.services.actionPlan.familyOffice.b3')] },
 ];
+
+// Geometría del dial (unidades del dibujo, 400 × 400): anillo exterior de radio
+// 150 con las cinco áreas a 72° entre sí empezando arriba; el Plan de Acción en
+// el centro, dentro de un anillo de radio 64. Las marcas de regla, sin números.
+const C = 200;
+const R = 150;
+const CORE = 64;
+const round = (v: number) => Math.round(v * 100) / 100;
+const nodes = areas.map((area, i) => {
+  const a = ((-90 + i * 72) * Math.PI) / 180;
+  const cos = Math.cos(a);
+  const sin = Math.sin(a);
+  const side = cos > 0.3 ? 'right' : cos < -0.3 ? 'left' : sin < 0 ? 'top' : 'bottom';
+  return {
+    ...area,
+    idx: String(i + 1).padStart(2, '0'),
+    left: round(50 + 37.5 * cos),
+    top: round(50 + 37.5 * sin),
+    cos: round(cos),
+    sin: round(sin),
+    side,
+    spoke: { x1: round(C + CORE * cos), y1: round(C + CORE * sin), x2: round(C + R * cos), y2: round(C + R * sin) },
+  };
+});
+const ticks = Array.from({ length: 72 }, (_, k) => {
+  const a = (k * 5 * Math.PI) / 180;
+  const long = k % 6 === 0;
+  const r1 = 159;
+  const r2 = long ? 168 : 164;
+  return `M${round(C + r1 * Math.cos(a))} ${round(C + r1 * Math.sin(a))}L${round(C + r2 * Math.cos(a))} ${round(C + r2 * Math.sin(a))}`;
+}).join('');
 
 const servicesHref = localizePath('/servicios/', lang);
 ---
 
-{/* El tablero de servicios: cada área es una fila del marcador, con su número
-    en paletas y la línea que la separa dibujándose al entrar, en cascada. */}
-<section class="home-services" id="servicios" aria-labelledby="home-services-title">
-  <Slate text={t('home.services.eyebrow')} />
-  <header class="home-services__head">
-    <h2 class="home-services__title" id="home-services-title" data-m="title" data-reveal>
-      {t('home.services.title')}
-    </h2>
-    <p class="home-services__lead" data-m="lead" data-reveal>{t('home.services.lead')}</p>
+{/* Servicios: el diagrama de 360°, la pieza de autor de la portada. Las cinco
+    áreas son nodos de un dial y el Plan de Acción va en el centro. El dial y la
+    lista comparten estado: abrir en uno abre en el otro. En el móvil (y hasta
+    1280 px) el dial va arriba con los índices y debajo la lista, que es el
+    control principal; en escritorio los títulos rodean el dial, la lista se
+    convierte en un panel de anotación a la derecha y una línea guía va del nodo
+    elegido al panel, rodeando el dial. */}
+<section class="home-services ph-pass-host" id="servicios" aria-labelledby="home-services-title" data-pass-section>
+  <svg class="ph-pass" aria-hidden="true" data-pass-seg><path /></svg>
+  <Zone text={t('home.services.eyebrow')} />
+  <header class="hs-head" data-inview>
+    <h2 class="hs-title ph-enter" id="home-services-title">{t('home.services.title')}</h2>
+    <p class="hs-lead ph-enter">{t('home.services.lead')}</p>
   </header>
 
-  <ol class="home-services__list" role="list" data-board>
-    {areas.map((item, idx) => (
-      <li class="home-services__item ph-seam" data-inview>
-        <details class="home-services__row" name="home-services">
-          <summary class="home-services__summary">
-            <Flap value={String(idx + 1).padStart(2, '0')} size="md" class="home-services__num" />
-            <span class="home-services__name">{item.title}</span>
-            <span class="home-services__plus" aria-hidden="true">
-              <span></span><span></span>
-            </span>
-          </summary>
-          <div class="home-services__body">
-            <div class="home-services__body-inner">
-              <p>{item.body}</p>
-            </div>
-          </div>
-        </details>
-      </li>
-    ))}
+  <div class="hs-board" data-hs-board>
+    <div class="hs-dial" data-inview>
+      <svg class="hs-dial__svg" viewBox="0 0 400 400" aria-hidden="true" data-hairline>
+        <path class="hs-ticks" d={ticks} />
+        <circle class="hs-ring ph-draw" cx={C} cy={C} r={R} transform={`rotate(-90 ${C} ${C})`} />
+        <circle class="hs-core ph-draw" cx={C} cy={C} r={CORE} transform={`rotate(-90 ${C} ${C})`} />
+        {nodes.map((n, i) => (
+          <line
+            class="hs-spoke ph-draw"
+            data-hs-spoke={n.key}
+            x1={n.spoke.x1}
+            y1={n.spoke.y1}
+            x2={n.spoke.x2}
+            y2={n.spoke.y2}
+            style={`--draw-delay: ${340 + i * 60}ms; --draw-dur: 300ms`}
+          />
+        ))}
+      </svg>
+      {nodes.map((n, i) => (
+        <button
+          type="button"
+          class={`hs-node hs-node--${n.side}`}
+          style={`left: ${n.left}%; top: ${n.top}%; --cx: ${n.cos}; --sy: ${n.sin}; --i: ${i}`}
+          data-hs-node={n.key}
+          aria-controls={`hs-panel-${n.key}`}
+          aria-expanded="false"
+        >
+          <span class="ph-node hs-node__ring" aria-hidden="true"></span>
+          <span class="hs-node__label"><span class="hs-node__idx ph-num">{n.idx}</span><span class="hs-node__title">{n.title}</span></span>
+        </button>
+      ))}
+      <button
+        type="button"
+        class="hs-center"
+        data-hs-node="plan"
+        aria-controls="hs-panel-plan"
+        aria-expanded="false"
+      >
+        <span class="hs-center__eyebrow">{t('home.services.actionPlan.eyebrow')}</span>
+        <span class="hs-center__title">{t('home.services.actionPlan.title')}</span>
+      </button>
+    </div>
 
-    <li class="home-services__item home-services__item--featured" data-inview>
-      <details class="home-services__row home-services__row--plan" name="home-services">
-        <summary class="home-services__summary">
-          <span class="home-services__num home-services__num--rombo" aria-hidden="true"></span>
-          <span class="home-services__plan-stack">
-            <span class="home-services__plan-eyebrow">{t('home.services.actionPlan.eyebrow')}</span>
-            <span class="home-services__name">{t('home.services.actionPlan.title')}</span>
-          </span>
-          <span class="home-services__plus" aria-hidden="true">
-            <span></span><span></span>
-          </span>
-        </summary>
-        <div class="home-services__body">
-          <div class="home-services__body-inner home-services__body-inner--plan">
-            <ul class="home-services__plan-grid" role="list">
+    <ol class="hs-list" role="list">
+      {nodes.map((n) => (
+        <li class="hs-item">
+          <details class="hs-row" name="home-services" data-hs-row={n.key}>
+            <summary class="hs-summary">
+              <span class="ph-node ph-node--sm hs-summary__node" aria-hidden="true"></span>
+              <span class="hs-summary__idx ph-num">{n.idx}</span>
+              <span class="hs-summary__title">{n.title}</span>
+              <span class="hs-summary__toggle" aria-hidden="true"><span></span><span></span></span>
+            </summary>
+            <div class="hs-panel" id={`hs-panel-${n.key}`}>
+              <p class="hs-panel__head" aria-hidden="true"><span class="ph-num">{n.idx}</span>{n.title}</p>
+              <p class="hs-panel__body">{n.body}</p>
+            </div>
+          </details>
+        </li>
+      ))}
+      <li class="hs-item hs-item--plan">
+        <details class="hs-row" name="home-services" data-hs-row="plan">
+          <summary class="hs-summary hs-summary--plan">
+            <span class="ph-node ph-node--sm hs-summary__node" aria-hidden="true"></span>
+            <span class="hs-summary__stack">
+              <span class="hs-summary__eyebrow">{t('home.services.actionPlan.eyebrow')}</span>
+              <span class="hs-summary__title">{t('home.services.actionPlan.title')}</span>
+            </span>
+            <span class="hs-summary__toggle" aria-hidden="true"><span></span><span></span></span>
+          </summary>
+          <div class="hs-panel hs-panel--plan" id="hs-panel-plan">
+            <p class="hs-panel__head" aria-hidden="true">{t('home.services.actionPlan.title')}</p>
+            <ul class="hs-plan" role="list">
               {actionPlanSub.map((card) => (
-                <li class="home-services__plan-card">
-                  <h3 class="home-services__plan-card-title">{card.title}</h3>
-                  <ul class="home-services__plan-card-bullets" role="list">
+                <li class="hs-plan__card">
+                  <h3 class="hs-plan__title">{card.title}</h3>
+                  <ul class="hs-plan__bullets" role="list">
                     {card.bullets.map((b) => (
-                      <li>{b}</li>
+                      <li><span class="ph-node ph-node--sm ph-node--muted" aria-hidden="true"></span>{b}</li>
                     ))}
                   </ul>
                 </li>
               ))}
             </ul>
           </div>
-        </div>
-      </details>
-    </li>
-  </ol>
+        </details>
+      </li>
+    </ol>
 
-  <div class="home-services__cta-wrap">
-    <Key href={servicesHref} label={t('home.services.cta')} tone="gold" />
+    <svg class="hs-annot" aria-hidden="true" data-hs-annot><path /></svg>
+  </div>
+
+  <div class="hs-cta" data-inview>
+    <NodeLink href={servicesHref} label={t('home.services.cta')} passNode />
   </div>
 </section>
 
 <style>
   .home-services {
-    padding: clamp(56px, 8vw, 120px) var(--ph-section-px, clamp(20px, 4vw, 48px));
-    background: var(--color-ph-bg-2, #15171b);
-    color: var(--color-ph-white, #ffffff);
+    padding: clamp(72px, 9vw, 128px) var(--ph-section-px) clamp(88px, 10vw, 140px);
+    color: var(--color-ph-white);
   }
 
-  .home-services__head { max-width: 860px; margin: clamp(28px, 4vw, 48px) 0 clamp(32px, 5vw, 56px); }
+  .hs-head {
+    max-width: 860px;
+    margin-top: clamp(40px, 5vw, 64px);
+  }
 
-  .home-services__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(40px, 10.5vw, 80px);
-    letter-spacing: -0.04em;
-    line-height: 0.95;
+  .hs-title {
     margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(38px, 9.4vw, 76px);
+    letter-spacing: -0.04em;
+    line-height: 0.98;
     text-wrap: balance;
   }
 
-  .home-services__lead {
+  .hs-lead {
+    --enter-delay: 90ms;
     margin: clamp(18px, 2vw, 24px) 0 0;
-    color: var(--ph-ink-lead);
+    max-width: 40ch;
     font-family: var(--font-display);
     font-size: var(--ph-head-lead-size);
     line-height: 1.45;
-    max-width: 38ch;
+    color: var(--ph-ink-lead);
     text-wrap: balance;
   }
 
-  .home-services__list {
-    list-style: none;
-    padding: 0;
-    margin: clamp(32px, 5vw, 56px) 0 0;
-  }
-
-  /* Cada fila entra detrás de su línea: primero se dibuja la costura (retardo en
-     `--ph-seam-delay`, en cascada desde el script) y la fila sube por debajo. */
-  .home-services__item > .home-services__row {
-    transition:
-      opacity 520ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 120ms),
-      transform 640ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 120ms);
-  }
-  :global(html.ph-anim) .home-services__item:not(.is-inview) > .home-services__row {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  /* La última área cierra el tablero con su propia línea, que se dibuja detrás
-     de la de arriba. El plan de acción va aparte, como anexo, sin línea. */
-  .home-services__list > .home-services__item:nth-last-child(2)::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.14);
-    transform-origin: 0 50%;
-    transition: transform var(--ph-dur-draw) var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 90ms);
-  }
-  :global(html.ph-anim) .home-services__list > .home-services__item:nth-last-child(2):not(.is-inview)::after {
-    transform: scaleX(0);
-  }
-  :global(html.ph-anim:not(.ph-motion)) .home-services__list > .home-services__item:nth-last-child(2)::after {
-    animation: ph-motion-failsafe 0s linear 2.5s forwards;
-  }
-
-  /* Plan de Acción como anexo: alineado con los 01-05 pero sin número de
-     secuencia. Un rombo dorado y la micro-eyebrow ("Además de") le dan
-     carácter sin convertirlo en el sexto ítem de la lista. */
-  .home-services__item--featured {
-    margin-top: clamp(12px, 2vw, 24px);
-  }
-  /* Rombo hueco dorado como marcador del anexo. La columna del grid en
-     .home-services__summary es fija (52px) para todas las filas, así que el
-     slot tiene el mismo ancho que las paletas «01..05» y los títulos alinean. */
-  .home-services__num--rombo {
+  .hs-board {
     position: relative;
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    margin-left: 4px;
-    font-size: 0;
+    margin-top: clamp(40px, 6vw, 72px);
   }
-  .home-services__num--rombo::before {
-    content: "";
+
+  /* ── El dial ── */
+  .hs-dial {
+    position: relative;
+    width: min(100%, 340px);
+    aspect-ratio: 1;
+    margin: 0 auto clamp(28px, 5vw, 48px);
+  }
+
+  .hs-dial__svg {
     position: absolute;
     inset: 0;
-    border: 1px solid var(--color-ph-gold, #d6b25e);
-    box-sizing: border-box;
-    transform: rotate(45deg);
+    width: 100%;
+    height: 100%;
+    overflow: visible;
   }
-  .home-services__plan-stack {
+
+  .hs-ring,
+  .hs-core,
+  .hs-spoke,
+  .hs-ticks {
+    fill: none;
+    stroke-width: calc(1.5 * var(--k, 1));
+  }
+
+  .hs-ring { stroke: var(--ph-struct); --draw-dur: 700ms; }
+  .hs-core { stroke: var(--color-ph-gold); --draw-dur: 520ms; --draw-delay: 200ms; }
+  .hs-spoke {
+    stroke: var(--ph-struct-soft);
+    transition:
+      stroke-dashoffset var(--draw-dur, 300ms) var(--ph-ease-out) var(--draw-delay, 0ms),
+      stroke var(--ph-dur-state) var(--ph-ease-std);
+  }
+  .hs-spoke.is-selected { stroke: var(--color-ph-gold); }
+
+  .hs-ticks {
+    stroke: var(--ph-struct-soft);
+    stroke-width: calc(1 * var(--k, 1));
+    transition: opacity 600ms var(--ph-ease-out) 300ms;
+  }
+  :global(html.ph-anim) .hs-dial:not(.is-inview) .hs-ticks { opacity: 0; }
+
+  /* Cada área, un botón de 44 px centrado en su nodo. */
+  .hs-node {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    margin: -22px 0 0 -22px;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: var(--color-ph-white);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .hs-node__ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    --node: 18px;
+    margin: -9px 0 0 -9px;
+    background-color: var(--color-ph-black);
+    transition:
+      opacity 180ms var(--ph-ease-out) calc(400ms + var(--i, 0) * 60ms),
+      transform 180ms var(--ph-ease-out) calc(400ms + var(--i, 0) * 60ms),
+      background-color var(--ph-dur-state) var(--ph-ease-std);
+  }
+
+  :global(html.ph-anim) .hs-dial:not(.is-inview) .hs-node__ring {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  .hs-node.is-selected .hs-node__ring,
+  .hs-node:active .hs-node__ring {
+    background-color: var(--color-ph-gold);
+  }
+
+  .hs-node.is-selected .hs-node__ring::after,
+  .hs-node:active .hs-node__ring::after {
+    background-color: var(--color-ph-black);
+  }
+
+  /* En el móvil, junto a cada nodo solo su índice, hacia fuera del dial. El
+     título queda para los lectores de pantalla. */
+  .hs-node__label {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(calc(-50% + var(--cx) * 30px), calc(-50% + var(--sy) * 30px));
+    font-family: var(--font-display);
+    pointer-events: none;
+    transition: opacity 260ms var(--ph-ease-out) calc(520ms + var(--i, 0) * 60ms);
+  }
+
+  :global(html.ph-anim) .hs-dial:not(.is-inview) .hs-node__label { opacity: 0; }
+
+  /* Red de seguridad (sin el JS de movimiento, a los 2,5 s): las etiquetas solo
+     recuperan la opacidad, porque su `transform` es su sitio junto al nodo. */
+  :global(html.ph-anim:not(.ph-motion)) .hs-node__label,
+  :global(html.ph-anim:not(.ph-motion)) .hs-ticks {
+    animation: hs-failsafe-opacity 0s linear 2.5s forwards;
+  }
+  :global(html.ph-anim:not(.ph-motion)) .hs-node__ring {
+    animation: ph-motion-failsafe 0s linear 2.5s forwards;
+  }
+  @keyframes hs-failsafe-opacity {
+    to { opacity: 1; }
+  }
+
+  .hs-node__idx {
+    font-size: 13px;
+    color: var(--color-ph-gold);
+  }
+
+  .hs-node__title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .hs-node.is-selected .hs-node__idx { color: var(--color-ph-white); }
+
+  /* El Plan de Acción, en el centro del dial. */
+  .hs-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 30%;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: var(--color-ph-white);
+    text-align: center;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .hs-center__eyebrow {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.2;
+    color: var(--ph-ink-meta);
+  }
+
+  .hs-center__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(14px, 4.4cqw, 19px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+  }
+
+  .hs-dial { container-type: inline-size; }
+
+  .hs-center.is-selected .hs-center__title,
+  .hs-center:active .hs-center__title { color: var(--color-ph-gold); }
+
+  /* ── La lista (móvil): el control principal ── */
+  .hs-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--ph-struct-soft);
+  }
+
+  .hs-item {
+    position: relative;
+    border-bottom: 1px solid var(--ph-struct-soft);
+  }
+
+  .hs-row > summary {
+    list-style: none;
+  }
+
+  .hs-row > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .hs-summary {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 12px;
+    min-height: 60px;
+    padding: 14px 0;
+    cursor: pointer;
+    color: var(--color-ph-white);
+    -webkit-tap-highlight-color: transparent;
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
+  }
+
+  .hs-summary--plan {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .hs-summary__node { background-color: var(--color-ph-black); }
+
+  .hs-summary__idx {
+    font-size: 13px;
+    color: var(--color-ph-gold);
+  }
+
+  .hs-summary__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(18px, calc(0.6vw + 15.6px), 22px);
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+  }
+
+  .hs-summary__stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .hs-summary__eyebrow {
+    font-size: 13px;
+    color: var(--ph-ink-meta);
+  }
+
+  .hs-summary__toggle {
+    position: relative;
+    width: 16px;
+    height: 16px;
+  }
+
+  .hs-summary__toggle span {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 16px;
+    height: 1.5px;
+    margin-top: -0.75px;
+    background: currentColor;
+    transition: transform var(--ph-dur-state) var(--ph-ease-out);
+  }
+
+  .hs-summary__toggle span:last-child { transform: rotate(90deg); }
+  .hs-row[open] .hs-summary__toggle span:last-child { transform: none; }
+
+  .hs-row[open] > .hs-summary { color: var(--color-ph-gold); }
+  .hs-row[open] .hs-summary__node { background-color: var(--color-ph-gold); }
+  .hs-row[open] .hs-summary__node::after { background-color: var(--color-ph-black); }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hs-summary:hover { color: var(--color-ph-gold); }
+  }
+
+  .hs-panel {
+    padding: 0 0 22px;
+  }
+
+  .hs-panel__head {
+    display: none;
+  }
+
+  .hs-panel__body {
+    max-width: 52ch;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ph-ink-body);
+  }
+
+  .hs-plan {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px 28px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 640px) {
+    .hs-plan { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  .hs-plan__title {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: -0.005em;
+    color: var(--color-ph-gold);
+  }
+
+  .hs-plan__bullets {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
-  .home-services__plan-eyebrow {
-    display: inline-flex;
-    align-items: center;
+
+  .hs-plan__bullets li {
+    display: flex;
+    align-items: baseline;
     gap: 10px;
-    font-family: var(--font-body);
-    font-size: 13px;
-    letter-spacing: 0.01em;
-    color: var(--color-ph-gold, #d6b25e);
-    white-space: nowrap;
-  }
-  .home-services__plan-eyebrow::before {
-    content: "";
-    width: 20px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-    flex-shrink: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ph-ink-body);
   }
 
-  .home-services__row { width: 100%; }
-  .home-services__row > summary { list-style: none; cursor: pointer; }
-  .home-services__row > summary::-webkit-details-marker { display: none; }
+  .hs-plan__bullets .ph-node { transform: translateY(1px); }
 
-  .home-services__summary {
-    display: grid;
-    grid-template-columns: 52px 1fr auto;
-    align-items: center;
-    gap: clamp(12px, 2.5vw, 32px);
-    padding: clamp(20px, 3vw, 30px) 0;
-    transition: color var(--ph-dur-state) var(--ph-ease-std);
-    color: var(--color-ph-white, #ffffff);
-    -webkit-tap-highlight-color: transparent;
-  }
-  .home-services__row[open] .home-services__summary { color: var(--color-ph-gold, #d6b25e); }
-  /* El nombre se adelanta un paso al señalar la fila: la fila responde, no solo
-     cambia de color. */
-  .home-services__name {
-    transition: transform var(--ph-dur-move) var(--ph-ease-out);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .home-services__row:hover .home-services__summary { color: var(--color-ph-gold, #d6b25e); }
-    .home-services__row:hover .home-services__name { transform: translateX(8px); }
-  }
-  .home-services__summary:active .home-services__name {
-    transform: translateX(4px);
-    transition-duration: var(--ph-dur-tap);
-  }
-
-  .home-services__row > summary:focus-visible {
-    outline: 2px solid var(--color-ph-gold, #d6b25e);
-    outline-offset: 4px;
-  }
-
-
-  .home-services__name {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(22px, 3vw, 36px);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-  }
-
-  .home-services__plus {
-    position: relative;
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-  }
-  .home-services__plus span {
+  .hs-annot {
     position: absolute;
-    top: 50%;
-    left: 0;
-    width: 20px;
-    height: 1px;
-    background: currentColor;
-    transform: translateY(-50%);
-    transition: transform var(--ph-dur-move) var(--ph-ease-out);
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
   }
-  .home-services__plus span:last-child {
-    transform: translateY(-50%) rotate(90deg);
+
+  .hs-annot path {
+    fill: none;
+    stroke: var(--color-ph-gold);
+    stroke-width: 1.5;
   }
-  .home-services__row[open] .home-services__plus span:last-child {
-    transform: translateY(-50%) rotate(0deg);
+
+  .hs-cta {
+    margin-top: clamp(36px, 5vw, 56px);
+  }
+
+  /* ── Escritorio: los títulos rodean el dial y la lista es el panel ──
+     Solo con el script en marcha (`is-enhanced`): sin él, la lista sigue siendo
+     una lista que se abre. */
+  @media (min-width: 1280px) {
+    .hs-board.is-enhanced {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+      column-gap: clamp(48px, 5vw, 96px);
+      align-items: center;
+    }
+
+    .hs-board.is-enhanced .hs-dial {
+      width: min(100% - 340px, 460px);
+      margin: 0 auto;
+    }
+
+    /* Aquí el título se ve junto a su nodo y se lee como parte del botón: tiene
+       que responder al clic igual que el anillo (en móvil solo lleva el índice y
+       sigue sin capturar el toque). */
+    .hs-board.is-enhanced .hs-node__label {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      width: max-content;
+      max-width: 168px;
+      transform: none;
+      left: auto;
+      top: auto;
+      pointer-events: auto;
+    }
+
+    .hs-board.is-enhanced .hs-node--right .hs-node__label {
+      left: calc(100% + 6px);
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .hs-board.is-enhanced .hs-node--left .hs-node__label {
+      right: calc(100% + 6px);
+      top: 50%;
+      flex-direction: row-reverse;
+      text-align: right;
+      transform: translateY(-50%);
+    }
+
+    .hs-board.is-enhanced .hs-node--top .hs-node__label {
+      bottom: calc(100% + 8px);
+      left: 50%;
+      max-width: 240px;
+      transform: translateX(-50%);
+    }
+
+    .hs-board.is-enhanced .hs-node__title {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip: auto;
+      white-space: normal;
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 1.25;
+      letter-spacing: -0.005em;
+      color: rgba(255, 255, 255, 0.8);
+      transition: color var(--ph-dur-state) var(--ph-ease-std);
+    }
+
+    .hs-board.is-enhanced .hs-node.is-selected .hs-node__title,
+    .hs-board.is-enhanced .hs-node:hover .hs-node__title {
+      color: var(--color-ph-gold);
+    }
+
+    .hs-board.is-enhanced .hs-list {
+      display: grid;
+      border: 0;
+    }
+
+    .hs-board.is-enhanced .hs-item {
+      grid-area: 1 / 1;
+      border: 0;
+    }
+
+    .hs-board.is-enhanced .hs-summary {
+      display: none;
+    }
+
+    .hs-board.is-enhanced .hs-panel {
+      padding: 0;
+    }
+
+    .hs-board.is-enhanced .hs-row[open] .hs-panel {
+      animation: hs-annot-in 300ms var(--ph-ease-out) 120ms both;
+    }
+
+    .hs-board.is-enhanced .hs-panel__head {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      max-width: none;
+      margin: 0 0 12px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 22px;
+      letter-spacing: -0.015em;
+      line-height: 1.15;
+      color: var(--color-ph-white);
+    }
+
+    .hs-board.is-enhanced .hs-panel__head .ph-num {
+      font-size: 13px;
+      color: var(--color-ph-gold);
+    }
+
+    .hs-board.is-enhanced .hs-panel__body {
+      font-size: 17px;
+    }
+
+    .hs-board.is-enhanced .hs-plan {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px 24px;
+    }
+  }
+
+  @keyframes hs-annot-in {
+    from { opacity: 0; transform: translateX(-6px); }
+    to { opacity: 1; transform: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .home-services__summary,
-    .home-services__name,
-    .home-services__plus span { transition: none; }
-  }
-
-  .home-services__body {
-    overflow: hidden;
-    height: 0;
-    opacity: 0;
-  }
-  .home-services__row[open] .home-services__body {
-    height: auto;
-    opacity: 1;
-  }
-  .home-services__body-inner {
-    padding: 0 0 clamp(20px, 3vw, 32px);
-    max-width: 640px;
-  }
-  .home-services__body-inner {
-    padding-left: calc(52px + clamp(12px, 2.5vw, 32px));
-  }
-  .home-services__body-inner p {
-    margin: 0;
-    color: var(--ph-ink-body);
-    font-size: 16px;
-    line-height: 1.6;
-  }
-
-  /* Plan de Acción: el body se extiende a todo el ancho para albergar el grid. */
-  .home-services__body-inner--plan {
-    max-width: none;
-    padding-left: 0;
-  }
-
-  .home-services__plan-grid {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  @media (min-width: 640px) {
-    .home-services__plan-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-  }
-  @media (min-width: 960px) {
-    .home-services__plan-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-  }
-
-  /* Las sub-áreas del plan como paneles del tablero: la cara de arriba un punto
-     más clara, como las paletas. */
-  .home-services__plan-card {
-    padding: 18px 18px 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 70%);
-  }
-
-  .home-services__plan-card-title {
-    margin: 0 0 12px;
-    font-family: var(--font-display);
-    font-size: 17px;
-    font-weight: 500;
-    letter-spacing: -0.005em;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-
-  .home-services__plan-card-bullets {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .home-services__plan-card-bullets li {
-    position: relative;
-    padding-left: 14px;
-    color: var(--ph-ink-body);
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  .home-services__plan-card-bullets li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0.65em;
-    width: 6px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-  }
-
-  .home-services__cta-wrap {
-    margin-top: clamp(36px, 5vw, 56px);
-    display: flex;
-  }
-
-  @media (max-width: 720px) {
-    .home-services__summary { gap: 14px; grid-template-columns: 46px 1fr auto; }
-    .home-services__name { font-size: 20px; }
-    .home-services__body-inner { padding-left: 0; }
-    .home-services__plan-card { padding: 16px 16px 14px; }
-    .home-services__plan-card-bullets li { font-size: 14px; }
+    .hs-node__ring,
+    .hs-node__label,
+    .hs-summary,
+    .hs-summary__toggle span,
+    .hs-spoke { transition: none; }
+    .hs-board.is-enhanced .hs-row[open] .hs-panel { animation: none; }
   }
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, stage, mountSection, afterTransitionPaint, EASE,
-  } from '@/scripts/ph-text-animations';
-  import { cascade } from '@/scripts/ph-motion';
+  import { mountSection, afterTransitionPaint } from '@/scripts/ph-text-animations';
+  import { ping, prefersReducedMotion } from '@/scripts/ph-motion';
+  import { toggleDisclosure, type Disclosure } from '@/scripts/ph-disclosure';
 
-  gsap.registerPlugin(ScrollTrigger);
+  /** Desde aquí, los títulos rodean el dial y la lista es el panel de anotación. */
+  const DESKTOP = '(min-width: 1280px)';
+  const AREA_KEYS = ['management', 'career', 'international', 'comms', 'legal'];
 
-  function initHomeServicesAnimations(): void {
+  let boardObserver: ResizeObserver | null = null;
+  let stopMode: (() => void) | null = null;
+
+  function initHomeServices(): void {
     const section = document.querySelector<HTMLElement>('.home-services');
     if (!section) return;
-    if (!reducedMotion()) {
-      stage(section);
-      // Las filas del tablero, en cascada: cada línea se dibuja 70 ms después de
-      // la anterior y su fila sube detrás.
-      cascade(section.querySelectorAll<HTMLElement>('.home-services__item'), 70);
-    }
     mountSection(section);
-  }
 
-  function initHomeServicesAccordion(): void {
-    if (reducedMotion()) return;
-    const details = document.querySelectorAll<HTMLDetailsElement>('.home-services__row');
-    if (!details.length) return;
+    const board = section.querySelector<HTMLElement>('[data-hs-board]');
+    const dialSvg = section.querySelector<SVGSVGElement>('.hs-dial__svg');
+    const annot = section.querySelector<SVGPathElement>('[data-hs-annot] path');
+    if (!board || !dialSvg || !annot || board.dataset.ready) return;
+    board.dataset.ready = '1';
 
-    // Abrir tarda más que cerrar: lo que llega se presenta, lo que se va no se
-    // hace esperar.
-    const OPEN_S = 0.5;
-    const CLOSE_S = 0.32;
-    const active = new WeakMap<HTMLElement, gsap.core.Tween>();
+    const rows = Array.from(section.querySelectorAll<HTMLDetailsElement>('details[data-hs-row]'));
+    const buttons = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-hs-node]'));
+    const spokes = Array.from(section.querySelectorAll<SVGLineElement>('[data-hs-spoke]'));
+    const mq = window.matchMedia(DESKTOP);
+    const rowFor = (key: string | undefined) => rows.find((r) => r.dataset.hsRow === key) ?? null;
 
-    const animateClose = (d: HTMLDetailsElement): void => {
-      const body = d.querySelector<HTMLElement>('.home-services__body');
-      if (!body) { d.removeAttribute('open'); return; }
-      active.get(body)?.kill();
-      const current = body.offsetHeight;
-      body.style.height = current + 'px';
-      body.style.opacity = '1';
-      const tween = gsap.to(body, {
-        height: 0,
-        opacity: 0,
-        duration: CLOSE_S,
-        ease: EASE.std,
-        onComplete: () => {
-          d.removeAttribute('open');
-          body.style.height = '';
-          body.style.opacity = '';
-          active.delete(body);
-        },
-      });
-      active.set(body, tween);
-    };
+    const group: Disclosure[] = rows.map((row) => ({
+      item: row.closest<HTMLElement>('.hs-item') ?? row,
+      panel: row.querySelector<HTMLElement>('.hs-panel') ?? row,
+      isOpen: () => row.open,
+      set: (open: boolean) => {
+        if (open) rows.forEach((r) => { if (r !== row) r.open = false; });
+        row.open = open;
+      },
+    }));
+    const disclosureFor = (row: HTMLDetailsElement) => group[rows.indexOf(row)];
 
-    const animateOpen = (d: HTMLDetailsElement): void => {
-      const body = d.querySelector<HTMLElement>('.home-services__body');
-      const inner = body?.querySelector<HTMLElement>('.home-services__body-inner');
-      if (!body || !inner) { d.setAttribute('open', ''); return; }
-      active.get(body)?.kill();
-      d.setAttribute('open', '');
-      body.style.height = '0px';
-      body.style.opacity = '0';
-      const target = inner.offsetHeight;
-      const tween = gsap.to(body, {
-        height: target,
-        opacity: 1,
-        duration: OPEN_S,
-        ease: EASE.out,
-        onComplete: () => {
-          body.style.height = '';
-          body.style.opacity = '';
-          active.delete(body);
-        },
-      });
-      active.set(body, tween);
-      // El plan se despliega como un tablero: sus paneles entran uno tras otro.
-      const cards = inner.querySelectorAll<HTMLElement>('.home-services__plan-card');
-      if (cards.length) {
-        gsap.from(cards, { opacity: 0, y: 12, duration: 0.5, ease: EASE.out, stagger: 0.05, delay: 0.08, clearProps: 'opacity,transform' });
+    board.classList.add('is-enhanced');
+
+    // ── Línea guía del panel (escritorio): del nodo elegido, rodeando el dial
+    // por fuera, hasta el borde del panel. Nunca cruza un título. ──
+    let lastKey: string | null = null;
+    const drawAnnot = (animate: boolean): void => {
+      const open = rows.find((r) => r.open);
+      if (!mq.matches || !open) {
+        annot.setAttribute('d', '');
+        lastKey = null;
+        return;
       }
+      const key = open.dataset.hsRow ?? '';
+      const b = board.getBoundingClientRect();
+      const s = dialSvg.getBoundingClientRect();
+      const panel = open.querySelector<HTMLElement>('.hs-panel')?.getBoundingClientRect();
+      if (!panel || panel.width === 0) return;
+      const cx = s.left + s.width / 2 - b.left;
+      const cy = s.top + s.height / 2 - b.top;
+      const R = s.width * 0.375;
+      const rr = R + 18;
+      const ex = panel.left - b.left - 14;
+      const r1 = (v: number) => Math.round(v * 10) / 10;
+      let d: string;
+      if (key === 'plan') {
+        d = `M${r1(cx + s.width * 0.16 + 4)} ${r1(cy)}L${r1(ex)} ${r1(cy)}`;
+      } else {
+        const i = AREA_KEYS.indexOf(key);
+        const a = ((-90 + i * 72) * Math.PI) / 180;
+        const start = R + 12;
+        const qx = cx + start * Math.cos(a);
+        const qy = cy + start * Math.sin(a);
+        const ax = cx + rr * Math.cos(a);
+        const ay = cy + rr * Math.sin(a);
+        const sweep = Math.sin(a) < 0 ? 1 : 0;
+        d = `M${r1(qx)} ${r1(qy)}L${r1(ax)} ${r1(ay)}A${r1(rr)} ${r1(rr)} 0 0 ${sweep} ${r1(cx + rr)} ${r1(cy)}L${r1(ex)} ${r1(cy)}`;
+      }
+      annot.setAttribute('d', d);
+      if (animate && key !== lastKey && !prefersReducedMotion()) {
+        const len = Math.ceil(annot.getTotalLength()) + 2;
+        annot.animate(
+          [
+            { strokeDasharray: `${len} ${len}`, strokeDashoffset: `${len}` },
+            { strokeDasharray: `${len} ${len}`, strokeDashoffset: '0' },
+          ],
+          { duration: Math.min(620, 220 + len * 0.7), easing: 'cubic-bezier(0.05, 0.7, 0.1, 1)', fill: 'backwards' },
+        );
+      }
+      lastKey = key;
     };
 
-    details.forEach((d) => {
-      const summary = d.querySelector<HTMLElement>('summary');
-      if (!summary) return;
-      summary.addEventListener('click', (e) => {
+    // ── Estado compartido: lo que dice la lista, lo repite el dial ──
+    let lastOpen: string | null = null;
+    const sync = (animate: boolean): void => {
+      const openKey = rows.find((r) => r.open)?.dataset.hsRow ?? null;
+      buttons.forEach((btn) => {
+        const on = btn.dataset.hsNode === openKey;
+        btn.setAttribute('aria-expanded', String(on));
+        btn.classList.toggle('is-selected', on);
+      });
+      spokes.forEach((sp) => sp.classList.toggle('is-selected', sp.dataset.hsSpoke === openKey));
+      if (animate && openKey && openKey !== lastOpen) {
+        const btn = buttons.find((x) => x.dataset.hsNode === openKey);
+        ping(btn?.querySelector('.ph-node') ?? null);
+      }
+      lastOpen = openKey;
+      drawAnnot(animate);
+    };
+
+    const choose = (row: HTMLDetailsElement, open: boolean): void => {
+      if (mq.matches) {
+        // En escritorio siempre hay un área en el panel: elegir la abierta no la
+        // cierra.
+        if (!open) return;
+        disclosureFor(row).set(true);
+      } else {
+        toggleDisclosure(group, disclosureFor(row), open);
+      }
+      sync(true);
+    };
+
+    rows.forEach((row) => {
+      row.querySelector('summary')?.addEventListener('click', (e) => {
         e.preventDefault();
-        if (d.hasAttribute('open')) {
-          animateClose(d);
-          return;
-        }
-        const name = d.getAttribute('name');
-        if (name) {
-          document.querySelectorAll<HTMLDetailsElement>(
-            `details[name="${name}"][open]`,
-          ).forEach((other) => {
-            if (other !== d) animateClose(other);
-          });
-        }
-        animateOpen(d);
+        choose(row, !row.open);
+      });
+      row.addEventListener('toggle', () => sync(false));
+    });
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const row = rowFor(btn.dataset.hsNode);
+        if (row) choose(row, mq.matches ? true : !row.open);
       });
     });
+
+    // En el móvil la lista es el control de teclado y los nodos del dial son un
+    // atajo táctil (fuera del orden de tabulación); en escritorio, al revés.
+    const applyMode = (): void => {
+      buttons.forEach((btn) => btn.setAttribute('tabindex', mq.matches ? '0' : '-1'));
+      if (mq.matches && !rows.some((r) => r.open)) disclosureFor(rows[0]).set(true);
+      sync(false);
+    };
+    mq.addEventListener('change', applyMode);
+    stopMode = () => mq.removeEventListener('change', applyMode);
+    applyMode();
+
+    boardObserver?.disconnect();
+    boardObserver = new ResizeObserver(() => drawAnnot(false));
+    boardObserver.observe(board);
   }
 
-  document.addEventListener('astro:page-load', () => {
-    afterTransitionPaint(initHomeServicesAnimations);
-    initHomeServicesAccordion();
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeServices));
+  document.addEventListener('astro:before-swap', () => {
+    boardObserver?.disconnect();
+    boardObserver = null;
+    stopMode?.();
+    stopMode = null;
   });
 </script>

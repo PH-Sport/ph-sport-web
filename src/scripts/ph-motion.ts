@@ -1,29 +1,30 @@
 /**
- * Lenguaje de movimiento «Marcador» — el núcleo ligero, sin GSAP.
+ * Lenguaje de movimiento «Análisis» — el núcleo ligero, sin GSAP.
  *
- * La web se mueve como el marcador de un estadio de noche: los datos caen en
- * paletas hasta su valor, los titulares entran rodando en su ranura, las líneas
- * del tablero se dibujan y una sola luz dorada viaja en la diagonal del logo
- * (hacia arriba a la derecha). Por qué así y qué se descartó: DECISIONS.md
- * (2026-10-02). Cómo encaja con el resto: ARCHITECTURE.md, «Sistema de
- * animaciones».
+ * La web es la sala de análisis de PHSPORT: cada bloque es una capa de tracking.
+ * Las líneas guía se dibujan hasta lo que anotan, los visores fijan lo que se
+ * enfoca, los nodos marcan los puntos de interés y una línea dorada barre la
+ * pantalla al cambiar de página. Por qué así y qué se descartó: DECISIONS.md
+ * (2026-10-03, variante C). Cómo encaja con el resto: ARCHITECTURE.md, «Sistema
+ * de animaciones».
  *
  * Este módulo no importa GSAP a propósito: lo cargan también la cabecera y el
  * pie, que están en todas las páginas, incluidas las legales, que no cargan
- * GSAP. Lo que rueda con GSAP (titulares, cascadas de cabecera) vive en
- * `ph-text-animations.ts`.
+ * GSAP. Casi todo el movimiento es CSS que arranca con una clase (`is-inview`):
+ * aquí solo se decide cuándo.
  *
  * Reglas:
  * - El estado de reposo es el visible. Lo que espera a entrar en pantalla solo se
  *   esconde con `html.ph-anim`, y `global.css` lo destapa a los 2,5 s si este
  *   módulo no llega a correr (`html.ph-motion`).
- * - Con `prefers-reduced-motion` no cae ni se dibuja nada: todo aparece en su
- *   sitio. Se mantienen los cambios de color que confirman un gesto.
- * - Solo `transform` y `opacity` en lo que se mueve; el destello (el fondo de un
- *   texto corto, un segundo) es la única excepción.
+ * - Con `prefers-reduced-motion` no se dibuja ni se desplaza nada: todo aparece
+ *   en su sitio. Se mantienen los cambios de color y de opacidad que confirman un
+ *   gesto.
+ * - Solo `transform`, `opacity`, `clip-path` y el desfase de los trazos en lo que
+ *   se mueve.
  */
 
-const prefersReducedMotion = (): boolean =>
+export const prefersReducedMotion = (): boolean =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ── Arranque: el módulo está vivo ─────────────────────────────────────────────
@@ -34,43 +35,30 @@ document.documentElement.classList.add('ph-motion');
 
 // ── En pantalla ───────────────────────────────────────────────────────────────
 // Un solo IntersectionObserver para toda la página. Lo que entra recibe
-// `is-inview` (el CSS hace el resto) y, si lleva paletas o letras que cambian,
-// se arrancan aquí.
+// `is-inview` y el CSS hace el resto (trazos, visores, nodos, líneas guía).
 let inViewObserver: IntersectionObserver | null = null;
+const enterCallbacks = new WeakMap<Element, Array<() => void>>();
 
 function onEnter(el: HTMLElement): void {
   el.classList.add('is-inview');
-  // Las fotos que se revelan dentro de una pieza (la ficha de un talento, un
-  // pilar) entran con ella.
-  el.querySelectorAll<HTMLElement>('.ph-develop').forEach((d) => d.classList.add('is-inview'));
-  if (el.hasAttribute('data-flap')) runFlap(el);
-  el.querySelectorAll<HTMLElement>('[data-flap]').forEach((f) => runFlap(f));
-  if (el.hasAttribute('data-cycle')) cycleText(el);
-  el.querySelectorAll<HTMLElement>('[data-cycle]').forEach((c) => cycleText(c));
+  const callbacks = enterCallbacks.get(el);
+  if (callbacks) {
+    enterCallbacks.delete(el);
+    callbacks.forEach((cb) => cb());
+  }
 }
 
 /**
- * Vigila lo que espera a entrar en pantalla dentro de `root`: todo `[data-inview]`
- * y las paletas y letras que cambian que vayan sueltas. Idempotente: se puede
- * llamar en cada `astro:page-load` y desde varias secciones.
+ * Vigila lo que espera a entrar en pantalla dentro de `root`: todo
+ * `[data-inview]` que aún no lo haya hecho. Idempotente: se puede llamar en cada
+ * `astro:page-load` y desde varias secciones.
  */
 export function watchInView(root: ParentNode = document): void {
-  const targets = new Set<HTMLElement>();
-  root.querySelectorAll<HTMLElement>('[data-inview]:not(.is-inview)').forEach((el) => targets.add(el));
-  root.querySelectorAll<HTMLElement>('[data-flap], [data-cycle]').forEach((el) => {
-    if (!el.closest('[data-inview]')) targets.add(el);
-  });
-
+  const targets = root.querySelectorAll<HTMLElement>('[data-inview]:not(.is-inview)');
   if (prefersReducedMotion()) {
-    targets.forEach((el) => {
-      el.classList.add('is-inview');
-      el.querySelectorAll<HTMLElement>('.ph-develop').forEach((d) => d.classList.add('is-inview'));
-      if (el.matches('.ph-flap')) el.classList.add('is-flapped');
-      el.querySelectorAll<HTMLElement>('.ph-flap').forEach((f) => f.classList.add('is-flapped'));
-    });
+    targets.forEach((el) => onEnter(el));
     return;
   }
-
   inViewObserver ??= new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
@@ -86,232 +74,90 @@ export function watchInView(root: ParentNode = document): void {
 }
 
 /**
- * Escalona una lista para las cascadas de CSS: `--i` (posición) y
- * `--ph-seam-delay` (retardo de su línea). La regla de CSS decide qué hace con
- * ellos.
+ * Ejecuta `cb` una vez, cuando `el` (que debe llevar `data-inview`) entra en
+ * pantalla. Si ya está dentro, en el siguiente fotograma.
  */
-export function cascade(items: Iterable<HTMLElement>, stepMs = 60, startMs = 0): void {
-  let i = 0;
-  for (const el of items) {
-    el.style.setProperty('--i', String(i));
-    el.style.setProperty('--ph-seam-delay', `${startMs + i * stepMs}ms`);
-    i++;
-  }
-}
-
-// ── Paletas ───────────────────────────────────────────────────────────────────
-const DIGITS = '0123456789';
-const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-/** Cada caída dura esto: media para la cara de arriba, media para la de abajo. */
-const FLAP_STEP_MS = 72;
-/** Una paleta nunca pasa por más caras que estas, para que no se haga larga. */
-const FLAP_MAX_FACES = 6;
-/** Retardo entre una paleta y la siguiente del mismo número. */
-const FLAP_STAGGER_MS = 64;
-
-/** Las caras por las que pasa una paleta hasta su carácter: en blanco y después,
- *  en orden, los anteriores al destino, como un marcador de verdad. */
-function flapSequence(target: string): string[] {
-  const upper = target.toUpperCase();
-  const set = DIGITS.includes(upper) ? DIGITS : LETTERS.includes(upper) ? LETTERS : '';
-  const idx = set ? set.indexOf(upper) : -1;
-  if (idx < 0) return [' ', target];
-  const before = Math.min(idx, FLAP_MAX_FACES - 2);
-  return [' ', ...set.slice(idx - before, idx).split(''), target];
-}
-
-function half(position: 'top' | 'bottom', leaf: boolean, ch: string): HTMLSpanElement {
-  const el = document.createElement('span');
-  el.className = `ph-flap__half ph-flap__half--${position}${leaf ? ' ph-flap__leaf' : ''}`;
-  const inner = document.createElement('span');
-  inner.textContent = ch;
-  el.append(inner);
-  return el;
-}
-
-function setFace(el: HTMLElement, ch: string): void {
-  (el.firstChild as HTMLElement).textContent = ch;
-}
-
-/** Hace caer una paleta por su secuencia. Resuelve al terminar. */
-function flipCell(cell: HTMLElement, seq: string[]): Promise<void> {
-  return new Promise((resolve) => {
-    const finish = (layers: HTMLElement[]) => {
-      // Primero se destapa el carácter de verdad y en el mismo paso se quitan las
-      // capas: sin fotograma en blanco entre una cosa y otra.
-      cell.classList.add('is-set');
-      layers.forEach((l) => l.remove());
-      resolve();
-    };
-    if (seq.length < 2) { finish([]); return; }
-
-    const top = half('top', false, seq[0]);
-    const bottom = half('bottom', false, seq[0]);
-    const leafTop = half('top', true, seq[0]);
-    const leafBottom = half('bottom', true, seq[0]);
-    const layers = [top, bottom, leafTop, leafBottom];
-    cell.append(...layers);
-
-    const halfMs = FLAP_STEP_MS / 2;
-    let i = 0;
-    const step = (): void => {
-      if (i >= seq.length - 1 || !cell.isConnected) { finish(layers); return; }
-      const cur = seq[i];
-      const next = seq[i + 1];
-      setFace(top, next);
-      setFace(bottom, cur);
-      setFace(leafTop, cur);
-      setFace(leafBottom, next);
-      // La cara de arriba cae con gravedad (acelera) y se oscurece al girar; la de
-      // abajo llega y frena contra el tope.
-      const fall = leafTop.animate(
-        [
-          { transform: 'rotateX(0deg)', backgroundColor: '#1d2025' },
-          { transform: 'rotateX(-90deg)', backgroundColor: '#0f1114' },
-        ],
-        { duration: halfMs, easing: 'cubic-bezier(0.55, 0, 1, 0.45)', fill: 'forwards' },
-      );
-      fall.onfinish = () => {
-        const land = leafBottom.animate(
-          [
-            { transform: 'rotateX(90deg)', backgroundColor: '#262a31' },
-            { transform: 'rotateX(0deg)', backgroundColor: '#15171b' },
-          ],
-          { duration: halfMs, easing: 'cubic-bezier(0, 0.55, 0.45, 1)', fill: 'forwards' },
-        );
-        land.onfinish = () => {
-          setFace(bottom, next);
-          setFace(leafTop, next);
-          fall.cancel();
-          land.cancel();
-          i++;
-          step();
-        };
-      };
-    };
-    step();
-  });
-}
-
-/**
- * Hace caer las paletas de un `.ph-flap` hasta su valor, de izquierda a derecha.
- * El valor es el que trae el HTML. Una vez por elemento.
- */
-export function runFlap(group: HTMLElement): void {
-  if (group.dataset.flapRun) return;
-  group.dataset.flapRun = '1';
-  const cells = Array.from(group.querySelectorAll<HTMLElement>('.ph-flap__cell'));
-  if (prefersReducedMotion() || cells.length === 0) {
-    group.classList.add('is-flapped');
+export function whenInView(el: HTMLElement, cb: () => void): void {
+  if (el.classList.contains('is-inview')) {
+    requestAnimationFrame(cb);
     return;
   }
-  const delay = Number(group.dataset.flapDelay ?? 0);
-  // Una paleta con su propia secuencia (`data-flap-seq`, caras separadas por
-  // «|»): los números romanos cuentan I, II, III… en una sola ficha.
-  const customSeq = group.dataset.flapSeq?.split('|');
-  const jobs = cells.map((cell, idx) => {
-    const target = cell.querySelector('.ph-flap__char')?.textContent ?? '';
-    const seq = customSeq ? [' ', ...customSeq.filter(Boolean)] : flapSequence(target);
-    return new Promise<void>((resolve) => {
-      window.setTimeout(() => {
-        void flipCell(cell, seq).then(resolve);
-      }, delay + idx * FLAP_STAGGER_MS);
-    });
-  });
-  void Promise.all(jobs).then(() => group.classList.add('is-flapped'));
+  const list = enterCallbacks.get(el) ?? [];
+  list.push(cb);
+  enterCallbacks.set(el, list);
 }
 
-// ── Letras que cambian (tablero de salidas) ───────────────────────────────────
-const CYCLE_SET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-const CYCLE_STEP_MS = 42;
-const CYCLE_TURNS = 4;
-
+// ── Trazos medidos ────────────────────────────────────────────────────────────
 /**
- * Las letras de un texto corto en mayúsculas pasan, de izquierda a derecha, por
- * las anteriores del abecedario hasta la suya, a saltos, como un tablero de
- * salidas. Mientras cambian, la caja se queda con el ancho del texto final: la
- * letra es proporcional y, si no, empujaría lo que tiene al lado. Una vez.
+ * Deja en `--len` la longitud de cada trazo `.ph-draw` dentro de `root`, para
+ * que el CSS lo dibuje de principio a fin (global.css, «Trazos medidos»).
+ * Redondea hacia arriba: por debajo asomaría una esquirla al final.
  */
-export function cycleText(el: HTMLElement): void {
-  if (el.dataset.cycleRun) return;
-  el.dataset.cycleRun = '1';
-  const final = el.textContent ?? '';
-  if (prefersReducedMotion() || !final.trim()) return;
-  const width = el.getBoundingClientRect().width;
-  el.style.display = 'inline-block';
-  el.style.width = `${width}px`;
-  el.style.whiteSpace = 'nowrap';
-  const release = () => {
-    el.style.removeProperty('display');
-    el.style.removeProperty('width');
-    el.style.removeProperty('white-space');
-  };
-  const chars = [...final];
-  let frame = 0;
-  const timer = window.setInterval(() => {
-    frame++;
-    let out = '';
-    let done = true;
-    chars.forEach((c, i) => {
-      const idx = CYCLE_SET.indexOf(c.toUpperCase());
-      const landAt = i + CYCLE_TURNS;
-      if (idx < 0 || frame >= landAt) {
-        out += c;
-      } else if (frame <= i) {
-        out += ' ';
-        done = false;
-      } else {
-        const back = landAt - frame;
-        out += CYCLE_SET[(idx - back + CYCLE_SET.length) % CYCLE_SET.length];
-        done = false;
-      }
-    });
-    el.textContent = out;
-    if (done || !el.isConnected) {
-      window.clearInterval(timer);
-      el.textContent = final;
-      release();
+export function measureStrokes(root: ParentNode = document): void {
+  root.querySelectorAll<SVGGeometryElement>('.ph-draw').forEach((el) => {
+    if (typeof el.getTotalLength !== 'function') return;
+    try {
+      const len = Math.ceil(el.getTotalLength()) + 1;
+      if (len > 1) el.style.setProperty('--len', String(len));
+    } catch {
+      /* sin geometría todavía (display: none): se queda entero */
     }
-  }, CYCLE_STEP_MS);
+  });
 }
 
-// ── Destello ──────────────────────────────────────────────────────────────────
-/**
- * Una luz cruza el texto una vez, en la diagonal del logo (`.ph-glint` en
- * global.css). Si el texto ya está partido en palabras (`wrapWords`), cada palabra
- * recibe la luz cuando le llega, según su posición: se lee como una sola pasada.
- */
-export function glint(el: HTMLElement, delayMs = 0): void {
-  if (prefersReducedMotion()) return;
-  const words = Array.from(el.querySelectorAll<HTMLElement>('.ph-clip-inner'));
-  const targets = words.length ? words : [el];
-  const left0 = el.getBoundingClientRect().left;
-  targets.forEach((w) => {
-    const dx = w.getBoundingClientRect().left - left0;
-    w.style.setProperty('--ph-glint-delay', `${Math.round(delayMs + dx * 0.7)}ms`);
-    w.classList.remove('ph-glint');
-    void w.offsetWidth;
-    w.classList.add('ph-glint');
-    const end = (e: AnimationEvent) => {
-      // `animationend` burbujea: solo cuenta el de este elemento.
-      if (e.target !== w || e.animationName !== 'ph-glint') return;
-      w.classList.remove('ph-glint');
-      w.removeEventListener('animationend', end);
-    };
-    w.addEventListener('animationend', end);
+// ── Trazos finos en dibujos que escalan ───────────────────────────────────────
+// Un SVG con `viewBox` escala sus trazos con él: el diagrama de 360°, el campo
+// del menú, el mapa de sedes. Los que llevan `data-hairline` reciben `--k`
+// (unidades del dibujo por px de pantalla) y su CSS mantiene el trazo fino
+// (`stroke-width: calc(1.5 * var(--k, 1))`). Sin JS, `--k` vale 1 y el trazo
+// escala con el dibujo: más grueso o más fino, pero se ve.
+let hairlineObserver: ResizeObserver | null = null;
+
+function setHairline(svg: SVGSVGElement): void {
+  const vb = svg.viewBox?.baseVal;
+  const rect = svg.getBoundingClientRect();
+  if (!vb || !vb.width || !rect.width || !rect.height) return;
+  const k = Math.max(vb.width / rect.width, vb.height / rect.height);
+  svg.style.setProperty('--k', k.toFixed(4));
+}
+
+export function hairlines(root: ParentNode = document): void {
+  hairlineObserver ??= new ResizeObserver((entries) => {
+    for (const entry of entries) setHairline(entry.target as SVGSVGElement);
   });
+  root.querySelectorAll<SVGSVGElement>('svg[data-hairline]').forEach((svg) => {
+    setHairline(svg);
+    hairlineObserver!.observe(svg);
+  });
+}
+
+// ── Nodos ─────────────────────────────────────────────────────────────────────
+/** El anillo de activación de un nodo: se expande una vez y se apaga. */
+export function ping(node: Element | null): void {
+  if (!node || prefersReducedMotion()) return;
+  node.classList.remove('is-pinged');
+  void (node as HTMLElement).offsetWidth;
+  node.classList.add('is-pinged');
+  const done = (e: Event): void => {
+    // `animationend` burbujea: solo cuenta el del propio nodo.
+    if (e.target !== node) return;
+    node.classList.remove('is-pinged');
+    node.removeEventListener('animationend', done);
+  };
+  node.addEventListener('animationend', done);
 }
 
 // ── Navegación ────────────────────────────────────────────────────────────────
 document.addEventListener('astro:before-swap', (e) => {
   inViewObserver?.disconnect();
   inViewObserver = null;
+  hairlineObserver?.disconnect();
   const newDoc = (e as { newDocument?: Document }).newDocument;
   if (!newDoc) return;
   newDoc.documentElement.classList.add('ph-motion');
-  // La luz que cruza al cambiar de página (`.ph-stinger` en global.css). Se
-  // arranca en el documento entrante para que ya esté corriendo cuando la View
-  // Transition lo fotografía en vivo.
+  // El escaneo entre páginas (`.ph-stinger` en global.css). Se arranca en el
+  // documento entrante para que ya esté corriendo cuando la View Transition lo
+  // fotografía en vivo.
   if (!prefersReducedMotion()) {
     const back = document.documentElement.getAttribute('data-astro-transition') === 'back';
     const stinger = newDoc.querySelector<HTMLElement>('[data-stinger]');
@@ -329,7 +175,12 @@ document.addEventListener('astro:page-load', () => {
       stinger.removeEventListener('animationend', done);
     };
     stinger.addEventListener('animationend', done);
+    // Por si la animación ya terminó (pestaña en segundo plano): que no se quede
+    // la clase puesta para la siguiente navegación.
+    window.setTimeout(() => stinger.classList.remove('is-running', 'is-back'), 900);
   }
-  // Cabecera y pie (en todas las páginas) y lo que no monte su propia sección.
+  // Cabecera, pie y todo lo que espera a entrar en pantalla en la página.
+  hairlines(document);
+  measureStrokes(document);
   watchInView(document);
 });

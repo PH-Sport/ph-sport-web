@@ -107,10 +107,10 @@ const organizationJsonLd = {
         pausa del parser:
 
         1. FOUC guard: marca el documento si vamos a animar (no reduced-motion).
-           El CSS oculta [data-reveal] mientras esté la clase; el init de cada
-           sección los revela cuando GSAP toma el control, evitando el parpadeo
-           entre el pintado y el arranque. Sin JS o con reduced-motion la clase
-           no se añade → visible.
+           Con la clase, el CSS deja en su estado de partida lo que espera a
+           entrar en pantalla (trazos sin dibujar, visores sueltos…) desde el
+           primer pintado, así no se ve entero y luego desaparece. Sin JS o con
+           reduced-motion la clase no se añade → todo visible.
 
         2. Telón de intro: si ya se vio hace menos de 18 h y el usuario no lo ha
            pedido a propósito (clic en el logo), se marca el documento para que el
@@ -207,45 +207,45 @@ const organizationJsonLd = {
         atributo `style` del elemento, que ganan a cualquier regla y hacían
         imposible ocultarlo. Esto es una hoja normal, así que la regla de
         `ph-sin-intro` funciona. */}
-    {/* La intro es una paleta de marcador a pantalla completa (LogoReveal.astro):
-        el logo se dibuja con el tamaño y en el sitio del rótulo de neón del vídeo
-        —las dos fórmulas de ancho salen del encuadre del render, `scale` en
-        scripts/hero-neon/neon.html, con la cámara en la pose con la que arranca el
-        encendido (distancia 1,22): 0,48 del alto en apaisado y 0,70 del ancho en
-        vertical, entre 1,22, con `cover`— y a 0,9 s las dos mitades se pliegan
-        hacia la bisagra con gravedad y descubren el neón en el mismo sitio. La
-        bisagra se ve desde el principio (una raya oscura que parte el logo, como
-        en las paletas del marcador) y se enciende en dorado al plegarse. El fondo
-        negro del overlay tapa la raya de un píxel que podría quedar entre las
-        mitades hasta que empiezan a plegarse. */}
+    {/* La intro es una calibración (LogoReveal.astro): se dibuja la retícula de
+        la sala de análisis, cuatro escuadras se cierran en el centro y dentro se
+        traza el contorno del logo, en dorado, con el tamaño y en el sitio del
+        rótulo de neón del vídeo —las dos fórmulas de ancho salen del encuadre del
+        render, `scale` en scripts/hero-neon/neon.html, con la cámara en la pose
+        con la que arranca el encendido (distancia 1,22): 0,48 del alto en
+        apaisado y 0,70 del ancho en vertical, entre 1,22, con `cover`—. A 0,95 s
+        las escuadras se sueltan, el contorno se apaga encima del tubo de neón (un
+        corte a juego: el contorno es el tubo) y el negro se va. 1,3 s en total.
+        La retícula se descubre con una cortina negra que se retira en la
+        diagonal del logo: solo `transform`, que no depende del hilo principal,
+        ocupado en ese momento cargando la página. */}
     {intro && (
       <style is:inline set:html={`
-[data-logo-reveal-overlay]{--e-trazo:cubic-bezier(.77,0,.175,1);--e-color:cubic-bezier(.645,.045,.355,1);--e-caida:cubic-bezier(.3,0,.8,.15);position:fixed;inset:0;z-index:9999;background-color:#0d0f12;perspective:1400px;perspective-origin:50% 50%;view-transition-name:ph-intro;touch-action:none;animation:ph-intro-fondo 0s linear .9s forwards,ph-intro-salir .12s linear 1.18s forwards}
+[data-logo-reveal-overlay]{position:fixed;inset:0;z-index:9999;overflow:hidden;background-color:#0d0f12;view-transition-name:ph-intro;touch-action:none;animation:ph-intro-fondo .26s cubic-bezier(.2,0,0,1) .95s forwards,ph-intro-salir .12s linear 1.18s forwards}
 html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
 @media (prefers-reduced-motion:reduce){[data-logo-reveal-overlay]{display:none}}
-.intro-half{position:absolute;left:0;right:0;height:50%;overflow:hidden;background-color:#0d0f12}
-.intro-half--top{top:0;transform-origin:50% 100%;animation:ph-intro-pliegue-arriba .3s var(--e-caida) .9s both}
-.intro-half--bottom{bottom:0;transform-origin:50% 0;animation:ph-intro-pliegue-abajo .3s var(--e-caida) .9s both}
-[data-logo-reveal-overlay]::before,[data-logo-reveal-overlay]::after{content:'';position:absolute;z-index:1;left:0;right:0;top:50%;height:1px;margin-top:-.5px}
-[data-logo-reveal-overlay]::before{background:rgba(13,15,18,.9)}
-[data-logo-reveal-overlay]::after{background:#D6B25E;opacity:0;animation:ph-intro-bisagra .1s linear .9s forwards}
-[data-logo-reveal-overlay] .logo-reveal-container{position:absolute;left:50%;width:max(27.9vw,49.6vh);color:#fff;transform:translate(-50%,-50%);animation:ph-intro-color .18s var(--e-color) .55s forwards}
-@media (max-aspect-ratio:9/10){[data-logo-reveal-overlay] .logo-reveal-container{width:max(57.4vw,26.5vh)}}
-.intro-half--top .logo-reveal-container{top:100%}
-.intro-half--bottom .logo-reveal-container{top:0}
-[data-logo-reveal-overlay] svg{display:block;width:100%;height:auto;overflow:visible}
-[data-logo-line1],[data-logo-line2]{fill-opacity:0}
-[data-logo-line1]{animation:ph-intro-trazo-1 .52s var(--e-trazo) 0s both,ph-intro-relleno .18s var(--e-color) .62s forwards,ph-intro-sin-trazo .12s linear .78s forwards}
-[data-logo-line2]{animation:ph-intro-trazo-2 .45s var(--e-trazo) .2s both,ph-intro-relleno .18s var(--e-color) .62s forwards,ph-intro-sin-trazo .12s linear .78s forwards}
+.intro-grid{position:absolute;inset:0;background-image:linear-gradient(to right,rgba(255,255,255,.085) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.085) 1px,transparent 1px);background-size:48px 48px;background-position:clamp(1.5rem,5vw,6rem) 0;animation:ph-intro-apagar .24s cubic-bezier(.3,0,.8,.15) .95s forwards}
+@media (min-width:900px){.intro-grid{background-size:64px 64px}}
+.intro-shutter{position:absolute;left:50%;top:50%;width:400vmax;height:400vmax;margin:-200vmax 0 0 -200vmax;background:linear-gradient(to right,rgba(13,15,18,0) 0,#0d0f12 10%);transform:rotate(-45deg) translateX(85vmax);animation:ph-intro-barrido .34s cubic-bezier(.16,1,.3,1) .02s forwards}
+.intro-target{position:absolute;left:50%;top:50%;width:max(27.9vw,49.6vh);aspect-ratio:259.8/206.1;transform:translate(-50%,-50%)}
+@media (max-aspect-ratio:9/10){.intro-target{width:max(57.4vw,26.5vh)}}
+.intro-target svg{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible;animation:ph-intro-apagar .24s cubic-bezier(.3,0,.8,.15) .97s forwards}
+[data-logo-line1],[data-logo-line2]{fill:none;stroke:#D6B25E;stroke-width:1.7}
+[data-logo-line1]{animation:ph-intro-trazo-1 .52s cubic-bezier(.77,0,.175,1) .3s both}
+[data-logo-line2]{animation:ph-intro-trazo-2 .46s cubic-bezier(.77,0,.175,1) .44s both}
+.intro-visor{position:absolute;inset:calc(-1*clamp(14px,3.2vw,30px))}
+.intro-visor i{position:absolute;width:clamp(18px,2.4vw,26px);height:clamp(18px,2.4vw,26px);border:0 solid #D6B25E;opacity:0;animation:ph-intro-fija .32s cubic-bezier(.16,1,.3,1) .18s forwards,ph-intro-suelta .15s cubic-bezier(.3,0,.8,.15) .95s forwards}
+.intro-visor i:nth-child(1){--x:-1;--y:-1;top:0;left:0;border-top-width:1.5px;border-left-width:1.5px}
+.intro-visor i:nth-child(2){--x:1;--y:-1;top:0;right:0;border-top-width:1.5px;border-right-width:1.5px}
+.intro-visor i:nth-child(3){--x:-1;--y:1;bottom:0;left:0;border-bottom-width:1.5px;border-left-width:1.5px}
+.intro-visor i:nth-child(4){--x:1;--y:1;bottom:0;right:0;border-bottom-width:1.5px;border-right-width:1.5px}
+@keyframes ph-intro-barrido{to{transform:rotate(-45deg) translateX(275vmax)}}
+@keyframes ph-intro-fija{from{opacity:0;transform:translate(calc(var(--x)*56px),calc(var(--y)*56px))}to{opacity:1;transform:none}}
+@keyframes ph-intro-suelta{from{opacity:1;transform:none}to{opacity:0;transform:translate(calc(var(--x)*10px),calc(var(--y)*10px))}}
 @keyframes ph-intro-trazo-1{from{stroke-dashoffset:753}to{stroke-dashoffset:0}}
 @keyframes ph-intro-trazo-2{from{stroke-dashoffset:637}to{stroke-dashoffset:0}}
-@keyframes ph-intro-color{to{color:#D6B25E}}
-@keyframes ph-intro-relleno{from{fill-opacity:0}to{fill-opacity:1}}
-@keyframes ph-intro-sin-trazo{from{stroke-opacity:1}to{stroke-opacity:0}}
+@keyframes ph-intro-apagar{to{opacity:0}}
 @keyframes ph-intro-fondo{to{background-color:transparent}}
-@keyframes ph-intro-pliegue-arriba{to{transform:rotateX(-90deg)}}
-@keyframes ph-intro-pliegue-abajo{to{transform:rotateX(90deg)}}
-@keyframes ph-intro-bisagra{to{opacity:1}}
 @keyframes ph-intro-salir{from{opacity:1}99%{opacity:0;visibility:visible;pointer-events:auto}to{opacity:0;visibility:hidden;pointer-events:none}}
 `} />
     )}
@@ -276,8 +276,8 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
       <slot />
     </main>
     <Footer />
-    {/* La luz que cruza la pantalla al cambiar de página (`.ph-stinger` en
-        global.css; la arranca src/scripts/ph-motion.ts). Va fija a la pantalla y
+    {/* El escaneo que barre la pantalla al cambiar de página (`.ph-stinger` en
+        global.css; lo arranca src/scripts/ph-motion.ts). Va fijo a la pantalla y
         con su propio nombre de View Transition: así se pinta por encima de la
         página que cambia y por debajo de la cabecera. */}
     <div class="ph-stinger" data-stinger aria-hidden="true"></div>
@@ -395,14 +395,6 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
 </html>
 
 <style is:global>
-  /* FOUC guard: el contenido con animación de entrada arranca oculto hasta que
-     GSAP toma el control (ver revealReveals en ph-text-animations.ts). Gateado
-     por .ph-anim (la añade el script inline del head solo si el JS corre y no hay
-     reduced-motion), así sin JS o con reduced-motion el contenido es visible. */
-  html.ph-anim [data-reveal] {
-    visibility: hidden;
-  }
-
   .main--padded {
     /* 5rem reserva la zona del header; +0.875rem el margen superior de la cápsula flotante */
     padding-top: calc(5rem + 0.875rem);
@@ -410,11 +402,12 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
 
   /* ── Telón de transición entre páginas ──────────────────────────────────
      Fundido a oscuro: el contenido viejo (page-main) baja de opacidad hasta
-     dejar ver el fondo oscuro del body (~175ms); el nuevo aparece después
-     (~175ms, retardado), sin solape → en el punto medio solo se ve el fondo =
-     el telón. El header (ph-header) y la barra dorada (ph-nav-indicator) son
-     grupos de View Transition propios → quedan/se deslizan POR ENCIMA, ajenos
-     al telón. */
+     dejar ver el fondo oscuro (~175ms); el nuevo aparece después (~175ms,
+     retardado), sin solape. Encima corre el escaneo (`.ph-stinger`, global.css):
+     una línea dorada que barre la pantalla y descubre la página nueva. La
+     cabecera (ph-header) es un grupo propio y queda por encima, ajena al telón.
+     Este fundido no se toca: es la zona que docs/hallazgos-abiertos.md pide no
+     tocar sin Mario. */
   @keyframes ph-telon-out {
     from { opacity: 1; }
     to { opacity: 0; }
@@ -473,27 +466,21 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
     pointer-events: none;
   }
 
+  /* La barra de herramientas: transparente arriba del todo; al bajar, negra y
+     con su línea de 1 px debajo. Sin cristal ni desenfoque: es una barra de
+     trabajo, no un adorno. */
   [data-header] .header-shell {
-    background-color: transparent;
-    border: 1px solid transparent;
-    /* Sin backdrop-filter cuando el header es transparente: blur(0) seguía
-       asignando un render pass GPU innecesario. Solo se aplica cuando
-       header--solid lo necesita de verdad. */
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    box-shadow: none;
+    background-color: rgba(13, 15, 18, 0);
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0);
   }
 
   [data-header].header--solid .header-shell {
-    background-color: rgba(13, 15, 18, 0.88);
-    border-color: var(--ph-glass-border);
-    backdrop-filter: var(--ph-glass-backdrop);
-    -webkit-backdrop-filter: var(--ph-glass-backdrop);
-    box-shadow: var(--ph-glass-highlight);
+    background-color: rgba(13, 15, 18, 0.96);
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.1);
   }
 
   [data-header].header--scroll-hidden .header-shell {
-    transform: translateY(calc(-100% - 0.875rem));
+    transform: translateY(-101%);
     pointer-events: none;
   }
 
@@ -504,13 +491,10 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
     }
   }
 
-  /* Menú móvil abierto: la cápsula del header se funde con el overlay */
+  /* Menú móvil abierto: la barra se funde con el panel. */
   @media (max-width: 767px) {
     html:has(#mobile-menu.is-open) [data-header] .header-shell {
-      background-color: transparent;
-      border-color: transparent;
-      backdrop-filter: blur(0);
-      -webkit-backdrop-filter: blur(0);
+      background-color: rgba(13, 15, 18, 0);
       box-shadow: none;
     }
   }

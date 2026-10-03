@@ -1,0 +1,37 @@
+---
+/**
+ * Zona: el rótulo que abre cada bloque («02 · Talentos»), como la etiqueta de
+ * una zona en un gráfico de análisis. El índice en monoespaciada dorada, el
+ * nombre en letra normal y una regla de 1 px con marcas sin números que llega
+ * hasta el borde. A la derecha, un dato opcional («05 disciplinas · 01 equipo»),
+ * con sus cifras también en monoespaciada. Estilos en global.css (`.ph-zone`).
+ *
+ * El texto llega tal cual de las traducciones. Si empieza por un número seguido
+ * de « · », ese número va en el índice; si no, el texto entero es el nombre.
+ */
+import Digits from './Digits.astro';
+
+interface Props {
+  text: string;
+  meta?: string;
+  as?: 'p' | 'div';
+  id?: string;
+  class?: string;
+}
+
+const { text, meta, as: Tag = 'p', id, class: className } = Astro.props;
+const [first, ...rest] = text.split(' · ');
+const hasNumber = rest.length > 0 && /^\d+$/.test(first.trim());
+const num = hasNumber ? first.trim() : null;
+const label = hasNumber ? rest.join(' · ') : text;
+---
+
+<Tag class:list={['ph-zone', className]} id={id} data-inview>
+  <span class="ph-zone__tag">
+    {num && <span class="ph-num">{num}</span>}
+    {num && <span class="ph-zone__sep">·</span>}
+    <span class="ph-zone__label"><Digits text={label} /></span>
+  </span>
+  <span class="ph-zone__rule" aria-hidden="true"></span>
+  {meta && <span class="ph-zone__meta"><Digits text={meta} /></span>}
+</Tag>

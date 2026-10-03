@@ -10,13 +10,13 @@
 // pase lo que pase. El JS que queda no la controla, sólo anota que ya se ha
 // visto.
 //
-// Desde el 2026-10-02 (lenguaje «Marcador», DECISIONS.md) el telón es una
-// paleta de marcador a pantalla completa: dos mitades negras partidas por una
-// bisagra horizontal en el centro. El trazo del logo se dibuja justo donde está
-// el rótulo de neón del vídeo de la portada, con su mismo tamaño, y al terminar
-// las dos mitades se pliegan hacia la bisagra y descubren el neón en el mismo
-// sitio: un corte a juego, del logo dibujado al logo de verdad. Por eso el logo
-// va dos veces, una en cada mitad, recortada en la bisagra.
+// Desde el 2026-10-03 (variante C «Análisis», DECISIONS.md) el telón es una
+// calibración: se dibuja la retícula de la sala de análisis, cuatro escuadras se
+// cierran en el centro y dentro se traza el contorno del logo en dorado, justo
+// donde está el rótulo de neón del vídeo de la portada y con su mismo tamaño. Al
+// soltarse las escuadras, el contorno se apaga encima del tubo de neón y el negro
+// se va: un corte a juego, del contorno dibujado al tubo de verdad. El CSS está
+// en línea en el <head> de BaseLayout.
 //
 // El overlay se monta como hermano de <main> (ver BaseLayout), no dentro. Con
 // `transition:name` en <main> se forma un contexto de apilamiento propio y el
@@ -37,8 +37,6 @@ const POLYGON_2_POINTS =
  *  del segmento de cierre del polígono en el offset máximo. */
 const LEN_1 = 753; // real 752,4284
 const LEN_2 = 637; // real 636,0980
-
-const halves = ['top', 'bottom'] as const;
 ---
 
 {/*
@@ -48,24 +46,20 @@ const halves = ['top', 'bottom'] as const;
   más frecuente. Ver docs/trampas-conocidas.md.
 */}
 <div data-logo-reveal-overlay aria-hidden="true" inert>
-  {halves.map((half) => (
-    <div class={`intro-half intro-half--${half}`}>
-      <div class="logo-reveal-container">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox={LOGO_VIEWBOX}
-          fill="currentColor"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="butt"
-          stroke-linejoin="bevel"
-        >
-          <polygon data-logo-line1 points={POLYGON_1_POINTS} stroke-dasharray={LEN_1} stroke-dashoffset={LEN_1} />
-          <polygon data-logo-line2 points={POLYGON_2_POINTS} stroke-dasharray={LEN_2} stroke-dashoffset={LEN_2} />
-        </svg>
-      </div>
-    </div>
-  ))}
+  <div class="intro-grid"></div>
+  <div class="intro-shutter"></div>
+  <div class="intro-target">
+    <span class="intro-visor"><i></i><i></i><i></i><i></i></span>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox={LOGO_VIEWBOX}
+      stroke-linecap="butt"
+      stroke-linejoin="bevel"
+    >
+      <polygon data-logo-line1 points={POLYGON_1_POINTS} stroke-dasharray={LEN_1} stroke-dashoffset={LEN_1} />
+      <polygon data-logo-line2 points={POLYGON_2_POINTS} stroke-dasharray={LEN_2} stroke-dashoffset={LEN_2} />
+    </svg>
+  </div>
 </div>
 
 {/* El CSS del telón NO vive aquí sino en línea en el <head> de BaseLayout.
@@ -129,6 +123,8 @@ const halves = ['top', 'bottom'] as const;
     // script no controla cuándo se ejecuta: si arrancara tarde, el evento ya
     // habría pasado y la marca no se escribiría nunca (la intro reaparecía en
     // cada visita). Preguntando, el caso "ya ha terminado" también queda cubierto.
+    // Y `animationend` burbujea: un listener en el overlay se gastaría con la
+    // primera animación de un hijo.
     const salida = overlay
       .getAnimations()
       .find((a) => (a as CSSAnimation).animationName === 'ph-intro-salir');

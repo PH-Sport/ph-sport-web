@@ -137,11 +137,14 @@ Por rentabilidad, de mayor a menor:
 
 1. Los diccionarios `i18n` completos viajan en el JS del header para usar **ocho
    cadenas**.
-2. ScrollTrigger se carga en las cuatro páginas cuando `ScrollTrigger.create()` se
-   usa **dos veces, las dos en el hero** (el desplazamiento del titular y el
-   acercamiento al neón, desde el 2026-10-02); el resto son entradas con
-   `{ start: 'top 85%', once: true }`, lo que ya hace un `IntersectionObserver`.
-3. Cuatro imágenes con margen de compresión real.
+2. ScrollTrigger se carga en las cuatro páginas y, con la variante C (rama
+   `feat/variante-c-analisis`), **ningún bloque crea ya un trigger**: las entradas
+   son un `IntersectionObserver` y lo que va con el scroll, JS pasivo. Solo lo usa
+   la infraestructura de `ph-text-animations.ts` (el refresh y el scroll al
+   navegar). Quitarlo ahorra ~45 KB sin comprimir, pero toca esa infraestructura
+   y la trampa del scroll suave (`trampas-conocidas.md`): medir antes y después.
+3. Imágenes con margen de compresión real (`rendimiento.md`). El logo 3D del pie,
+   que era una de ellas, ya no se sirve en la variante C.
 
 El tirón al entrar en `/sobre-nosotros` (135 spans con `filter: blur()`) se
 resolvió el 2026-10-02: los párrafos ya no entran palabra a palabra. Cifras en
@@ -154,17 +157,23 @@ resolvió el 2026-10-02: los párrafos ya no entran palabra a palabra. Cifras en
 - Una página `/faq` con preguntas y respuestas literales.
 - Auditar los `alt=""` de Header, Footer y Hero para confirmar que son decorativos.
 
-### Lenguaje de movimiento «Marcador»: sin probar en un móvil real (2026-10-02)
+### Variante C «Análisis»: sin probar en un móvil real (2026-10-03)
 
-En la rama `feat/rediseno-motion` (`DECISIONS.md`, 2026-10-02). Comprobado con
-Playwright en Chromium y WebKit, en escritorio y a 390 px con toque: la intro y su
-corte sobre el neón, las paletas, el menú móvil, la luz entre páginas en los dos
-sentidos, el reordenado del grid, movimiento reducido y JS bloqueado. **Falta un
-iPhone y un Android de verdad**: que la intro se pliegue fluida en 3D, que las
-paletas no tiren con muchas en pantalla (la tabla del equipo, 21 a la vez) y que
-el revelado por `filter` de las fotos aguante en un móvil modesto con el fondo
-animado de Talentos detrás. Si algo tira, la primera palanca es el revelado:
-quitar `contrast` y `saturate` y dejar solo `brightness`.
+En la rama `feat/variante-c-analisis` (`DECISIONS.md`, 2026-10-03; sustituye en
+esa rama al lenguaje «Marcador», que tenía este mismo pendiente). Comprobado con
+Playwright sobre el build, en Chromium y WebKit, en escritorio y a 390 px con
+toque: la intro, el visor que sigue al neón, el menú móvil, el selector, el paso
+entre páginas en los dos sentidos, los acordeones (también con teclado), el
+buscador y los filtros de Talentos, movimiento reducido, JS bloqueado, consola y
+desbordes en las 14 rutas. **Falta un iPhone y un Android de verdad** para:
+
+- **El visor del hero**: que siga al rótulo sin retraso en un móvil modesto (un
+  `requestAnimationFrame` con el vídeo en marcha).
+- **La línea de pase y los trazos que van con el scroll** (Servicios, Sobre
+  nosotros): que acompañen al dedo sin tirones con el fondo animado detrás.
+- **Las capturas de página entera no sirven para esto**: lo que va con el scroll se
+  pinta según la posición del scroll, y en una captura entera sale sin dibujar. Se
+  comprobó con capturas por pasos.
 
 ### Sin control para pausar el movimiento continuo (WCAG 2.2.2)
 
@@ -173,7 +182,9 @@ hero va en bucle y los fondos de Talentos, Servicios y Sobre nosotros se mueven
 mientras la página está abierta, más de 5 s y junto a otro contenido, sin un botón
 para pararlos. Con `prefers-reduced-motion` se paran todos, pero WCAG 2.2.2 (nivel
 A) pide además un control en la página. Arreglarlo es añadir un botón, y su texto
-no existe en las traducciones: es decisión de Mario.
+no existe en las traducciones: es decisión de Mario. En la variante C, el visor
+del hero se mueve con el vídeo, pero no es un bucle aparte: lee su `currentTime`,
+así que el mismo control lo pararía.
 
 ### Fondos animados de sección: sin medir en un móvil real (2026-10-01)
 

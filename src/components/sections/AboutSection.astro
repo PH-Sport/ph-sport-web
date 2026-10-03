@@ -1,8 +1,8 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
 import { getTeamMembers } from '@/lib/teamMembers';
-import Slate from '@/components/ui/Slate.astro';
-import Flap from '@/components/ui/Flap.astro';
+import Zone from '@/components/ui/Zone.astro';
+import Visor from '@/components/ui/Visor.astro';
 
 interface Props {
   lang: Lang;
@@ -13,15 +13,40 @@ const t = useTranslations(lang);
 
 const teamMembers = getTeamMembers(lang);
 
-const internationalCountries = [
-  { key: 'portugal' as const, iso: 'PT' },
-  { key: 'uk' as const,       iso: 'UK' },
-  { key: 'alemania' as const, iso: 'DE' },
-  { key: 'italia' as const,   iso: 'IT' },
-  { key: 'arabia' as const,   iso: 'KSA' },
-  { key: 'uruguay' as const,  iso: 'UY' },
+const steps = [
+  { idx: t('about.manifesto.blocks.now.idx'), title: t('about.manifesto.blocks.now.title'), body: t('about.manifesto.blocks.now.body') },
+  { idx: t('about.manifesto.blocks.next.idx'), title: t('about.manifesto.blocks.next.title'), body: t('about.manifesto.blocks.next.body') },
+  { idx: t('about.manifesto.blocks.forever.idx'), title: t('about.manifesto.blocks.forever.title'), body: t('about.manifesto.blocks.forever.body') },
 ];
 
+// El mapa de sedes: un esquema, no un mapa. Madrid en el centro y cada sede en
+// su dirección aproximada, con un arco de trayectoria desde Madrid. Uruguay está
+// al otro lado del Atlántico: su arco sale por la izquierda del esquema.
+// Coordenadas del dibujo (400 × 400); `side` dice dónde va la etiqueta.
+const HUB = { x: 214, y: 196 };
+const offices = [
+  { key: 'portugal' as const, iso: 'PT', x: 152, y: 214, side: 'left' },
+  { key: 'uk' as const, iso: 'UK', x: 186, y: 104, side: 'top' },
+  { key: 'alemania' as const, iso: 'DE', x: 268, y: 116, side: 'right' },
+  { key: 'italia' as const, iso: 'IT', x: 288, y: 190, side: 'right' },
+  { key: 'arabia' as const, iso: 'KSA', x: 366, y: 300, side: 'left' },
+  { key: 'uruguay' as const, iso: 'UY', x: 52, y: 346, side: 'bottom' },
+];
+const r2 = (v: number) => Math.round(v * 10) / 10;
+/** Arco de Madrid a la sede: una curva que se levanta del suelo, como un vuelo. */
+function arc(o: { x: number; y: number; key: string }): string {
+  const dx = o.x - HUB.x;
+  const dy = o.y - HUB.y;
+  const len = Math.hypot(dx, dy);
+  // La normal hacia arriba (y negativa); Uruguay, más alta y por fuera.
+  let nx = -dy / len;
+  let ny = dx / len;
+  if (ny > 0) { nx = -nx; ny = -ny; }
+  const lift = o.key === 'uruguay' ? len * 0.62 : len * 0.32;
+  const cx = HUB.x + dx / 2 + nx * lift;
+  const cy = HUB.y + dy / 2 + ny * lift;
+  return `M${HUB.x} ${HUB.y}Q${r2(cx)} ${r2(cy)} ${o.x} ${o.y}`;
+}
 ---
 
 <section class="about-section" aria-labelledby="about-hero-title">
@@ -29,520 +54,752 @@ const internationalCountries = [
     <canvas class="ph-ambient" data-ambient="calidez"></canvas>
   </div>
 
-  <!-- 01 HERO: misma cabecera que Talentos y Servicios (global.css): fila índice,
-       titular y entradilla debajo. -->
+  <!-- 01 Cabecera: zona, titular fijado por un visor y entradilla. -->
   <div class="abt-hero">
-    <Slate text={t('about.hero.eyebrow')} class="abt-hero__index" />
-    <h1 id="about-hero-title" class="abt-hero__title ph-head-title" data-m="title" data-reveal>
-      {t('about.hero.titlePre')}<span class="abt-gold" data-glint>{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
+    <Zone text={t('about.hero.eyebrow')} />
+    <h1 id="about-hero-title" class="abt-hero__title ph-head-title" data-inview>
+      <span class="ph-enter">{t('about.hero.titlePre')}<span class="ph-accent abt-hero__line">{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}</span>
+      <Visor mode="view" arm={20} inset={-12} />
     </h1>
-    <p class="abt-hero__lead ph-head-lead" data-m="lead" data-reveal>{t('about.hero.body1')}</p>
+    <p class="abt-hero__lead ph-head-lead" data-inview><span class="ph-enter">{t('about.hero.body1')}</span></p>
   </div>
 
-  <!-- Valores y pie en una fila índice, y el resto de la presentación en dos
-       columnas. Mismo texto y mismo orden que antes. Los valores y el pie son
-       letras de tablero: pasan por el abecedario hasta la suya al entrar. -->
-  <div class="ph-rowline abt-hero__rail" data-inview>
-    <span class="ph-rowline__meta abt-hero__values" data-cycle>{t('about.hero.values')}</span>
-    <span class="ph-rowline__meta abt-hero__caption" data-cycle>{t('about.hero.caption')}</span>
+  <!-- Identidad: los valores y el pie, como etiquetas sobre una regla; los dos
+       párrafos, en dos columnas con un divisor que se dibuja. -->
+  <div class="abt-id" data-inview>
+    <span class="abt-id__rule" aria-hidden="true"></span>
+    <p class="abt-id__tag ph-enter"><span class="ph-node ph-node--sm" aria-hidden="true"></span>{t('about.hero.values')}</p>
+    <p class="abt-id__tag abt-id__tag--right ph-enter"><span class="ph-node ph-node--sm" aria-hidden="true"></span>{t('about.hero.caption')}</p>
   </div>
-  <div class="abt-intro">
-    <p class="abt-hero__body" data-m="body" data-reveal>{t('about.hero.body2')}</p>
-    <p class="abt-hero__body" data-m="body" data-reveal>{t('about.hero.body3')}</p>
+  <div class="abt-intro" data-inview>
+    <p class="abt-intro__body ph-enter">{t('about.hero.body2')}</p>
+    <span class="abt-intro__divider" aria-hidden="true"></span>
+    <p class="abt-intro__body ph-enter">{t('about.hero.body3')}</p>
   </div>
 
-  <!-- 02 MANIFESTO (Now. Next. Forever Football. — explicado por bloques) -->
-  <div class="abt-manifesto" id="historia">
-    <div class="abt-manifesto__head">
-      <Slate text={t('about.manifesto.eyebrow')} />
+  <!-- 02 Filosofía: Now → Next → Forever Football., una línea de tiempo que se
+       dibuja con el scroll; cada nodo descubre su título y su texto al pasar. -->
+  <div class="abt-line" id="historia" data-abt-line>
+    <Zone text={t('about.manifesto.eyebrow')} />
+    <div class="abt-line__track" data-abt-track>
+      <span class="abt-line__axis" aria-hidden="true"><span class="abt-line__axis-fill" data-abt-axis></span></span>
+      <ol class="abt-line__steps" role="list">
+        {steps.map((s, i) => (
+          <li class="abt-step" data-abt-step style={`--i: ${i}`}>
+            <span class="abt-step__node" aria-hidden="true"><span class="ph-node ph-node--lg"></span></span>
+            <span class="abt-step__idx ph-num">{s.idx}</span>
+            <h3 class="abt-step__title">{s.title}</h3>
+            <p class="abt-step__body">{s.body}</p>
+          </li>
+        ))}
+      </ol>
     </div>
-
-    <div class="abt-manifesto__rows">
-      {[
-        { idx: t('about.manifesto.blocks.now.idx'),     title: t('about.manifesto.blocks.now.title'),     body: t('about.manifesto.blocks.now.body') },
-        { idx: t('about.manifesto.blocks.next.idx'),    title: t('about.manifesto.blocks.next.title'),    body: t('about.manifesto.blocks.next.body') },
-        { idx: t('about.manifesto.blocks.forever.idx'), title: t('about.manifesto.blocks.forever.title'), body: t('about.manifesto.blocks.forever.body') },
-      ].map((row) => (
-        <article class="abt-manifesto__row ph-seam" data-inview>
-          <span class="abt-manifesto__idx"><Flap value={row.idx} size="md" /></span>
-          <h3 class="abt-manifesto__title" data-m="title" data-reveal>{row.title}</h3>
-          <p class="abt-manifesto__body" data-m="body" data-reveal>{row.body}</p>
-        </article>
-      ))}
-    </div>
   </div>
 
-  <!-- 03 EQUIPO -->
+  <!-- 03 Equipo: la hoja de plantilla. -->
   <div class="abt-team" id="equipo" aria-labelledby="about-team-title">
-    <div class="abt-team__head">
-      <Slate text={t('about.team.eyebrow')} meta={t('about.team.meta')} />
-      <h2 id="about-team-title" class="abt-team__title" data-m="title" data-reveal>
-        {t('about.team.titlePre')}<span class="abt-gold" data-glint>{t('about.team.titleAccent')}</span>{t('about.team.titlePost')}
+    <div class="abt-team__head" data-inview>
+      <Zone as="div" text={t('about.team.eyebrow')} meta={t('about.team.meta')} />
+      <h2 id="about-team-title" class="abt-team__title ph-enter">
+        {t('about.team.titlePre')}<span class="ph-accent">{t('about.team.titleAccent')}</span>{t('about.team.titlePost')}
       </h2>
     </div>
 
-    {/* Tablero de salidas: cada fila entra detrás de su línea, con el número en
-        paletas y el destino en letras de tablero. */}
-    <div class="abt-team-table" role="list">
-      {teamMembers.map((m) => (
-        <div class="abt-team-row ph-seam" role="listitem" data-id={m.id} data-inview>
-          <span class="abt-team-row__idx"><Flap value={m.index} /></span>
-          <div class="abt-team-row__name">
-            <span class="abt-team-row__slot"><span class="abt-team-row__name-text">{m.name}</span></span>
-            <span class="abt-team-row__mobile-extras">
-              {m.role} · {m.country ?? m.defaultLocation}
-            </span>
-          </div>
-          <span class="abt-team-row__role">{m.role}</span>
-          <span class="abt-team-row__flag">
-            <span data-cycle>{(m.country ?? m.defaultLocation).toUpperCase()}</span>
-          </span>
+    <div class="abt-sheet" role="list">
+      {teamMembers.map((m, i) => (
+        <div class="abt-row" role="listitem" data-id={m.id} data-inview style={`--r: ${i % 8}`}>
+          <span class="abt-row__idx ph-num">{m.index}</span>
+          <span class="abt-row__name">{m.name}</span>
+          <span class="abt-row__role">{m.role}</span>
+          <span class="abt-row__place">{(m.country ?? m.defaultLocation).toUpperCase()}</span>
+          <span class="abt-row__mobile">{m.role} · {(m.country ?? m.defaultLocation).toUpperCase()}</span>
+          <span class="ph-visor ph-visor--hover abt-row__visor" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         </div>
       ))}
     </div>
   </div>
 
-  <!-- 04 PRESENCIA -->
+  <!-- 04 Presencia: el esquema de sedes, la pieza de autor de la página. -->
   <div class="abt-presencia" id="presencia" aria-labelledby="about-presencia-title">
-    <div class="abt-presencia__eyebrow-row">
-      <Slate text={t('about.presencia.eyebrow')} />
-    </div>
-    <div class="abt-presencia__grid">
-      <div class="abt-presencia__left">
-        <h3 id="about-presencia-title" class="abt-presencia__madrid" data-m="title" data-reveal>
-          {t('about.presencia.madridTitle')}
-        </h3>
-        <div class="abt-presencia__madrid-label" data-m="item" data-reveal>{t('about.presencia.madridLabel')}</div>
-      </div>
-      <div class="abt-presencia__right">
-        <div class="abt-presencia__intl-label" data-m="item" data-reveal>{t('about.presencia.internationalLabel')}</div>
-        {/* Las sedes como un tablero: cada país con su código en paletas. */}
-        <div class="abt-presencia__countries">
-          {internationalCountries.map((c) => (
-            <div class="abt-presencia__country ph-seam" data-inview>
-              <span class="abt-presencia__country-name">{t(`about.presencia.country.${c.key}` as const)}</span>
-              <Flap value={c.iso} class="abt-presencia__iso" />
-            </div>
+    <Zone text={t('about.presencia.eyebrow')} />
+    <div class="abt-map" data-inview data-abt-map>
+      <h3 id="about-presencia-title" class="abt-map__title ph-enter">{t('about.presencia.madridTitle')}</h3>
+      <p class="abt-map__hq ph-enter"><span class="ph-node ph-node--sm ph-node--filled" aria-hidden="true"></span>{t('about.presencia.madridLabel')}</p>
+      <div class="abt-map__fig" aria-hidden="true">
+        <svg class="abt-map__svg" viewBox="0 0 400 400" data-hairline>
+          <circle class="abt-map__ring" cx={HUB.x} cy={HUB.y} r="128" />
+          <circle class="abt-map__ring abt-map__ring--far" cx={HUB.x} cy={HUB.y} r="196" />
+          {offices.map((o, i) => (
+            <path class="abt-map__arc ph-draw" d={arc(o)} style={`--draw-delay: ${200 + i * 110}ms`} data-arc={i} />
           ))}
-        </div>
+          {offices.map((o, i) => (
+            <g class="abt-map__node" style={`--i: ${i}`}>
+              <circle cx={o.x} cy={o.y} r="8" />
+              <circle class="abt-map__dot" cx={o.x} cy={o.y} r="2.4" />
+            </g>
+          ))}
+          <circle class="abt-map__hub" cx={HUB.x} cy={HUB.y} r="12" />
+          <circle class="abt-map__dot" cx={HUB.x} cy={HUB.y} r="3.6" />
+          {offices.map((_, i) => (
+            <circle class="abt-map__ball" r="3.4" cx={HUB.x} cy={HUB.y} data-ball={i} />
+          ))}
+        </svg>
       </div>
+      <p class="abt-map__intl ph-enter">{t('about.presencia.internationalLabel')}</p>
+      <ul class="abt-map__list" role="list">
+        {offices.map((o, i) => (
+          <li
+            class={`abt-map__place abt-map__place--${o.side}`}
+            style={`--x: ${(o.x / 400) * 100}%; --y: ${(o.y / 400) * 100}%; --i: ${i}`}
+          >
+            <span class="ph-node ph-node--sm abt-map__place-node" aria-hidden="true"></span>
+            <span class="abt-map__place-name">{t(`about.presencia.country.${o.key}`)}</span>
+            <span class="abt-map__place-iso ph-num">{o.iso}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   </div>
-
 </section>
 
 <style>
   .about-section {
-    --abt-gold: var(--color-ph-gold);
-    --abt-ink: var(--color-ph-white);
-    --abt-ink-soft: var(--color-ph-white-80);
-    --abt-ink-faint: var(--color-ph-white-60);
-    --abt-line: var(--color-ph-white-10);
-    --abt-line-strong: var(--color-ph-white-20);
-    --abt-bg: transparent;
-    --abt-bg-2: rgba(255, 255, 255, 0.02);
-    --edge: var(--ph-section-px);
-
     position: relative;
-    background: var(--abt-bg);
-    color: var(--abt-ink);
+    color: var(--color-ph-white);
   }
 
-  .about-section .abt-gold {
-    color: var(--abt-gold);
-    font-weight: 400;
-    font-style: italic;
-  }
+  .about-section > * { position: relative; z-index: 1; }
+  .about-section > .ph-page-bg { position: fixed; z-index: -1; }
 
-
-  /* ── 01 HERO: misma cabecera que Talentos y Servicios (estilos y cifras en
-     global.css: `.ph-rowline`, `.ph-head-*`) ── */
+  /* ── 01 Cabecera ── */
   .abt-hero {
+    padding: var(--ph-head-top) var(--ph-section-px) 0;
+  }
+
+  .abt-hero__title {
     position: relative;
-    padding: var(--ph-head-top) var(--edge) 0;
+    display: inline-block;
   }
 
-  /* Valores y pie en una fila índice, nada más acabar la entradilla. Son letras
-     de tablero: cambian al entrar. */
-  .abt-hero__rail {
-    margin: var(--ph-head-after) var(--edge) 0;
+  .abt-hero__title .ph-enter { display: block; }
+  /* «Representar» en su línea: así la caja del titular (y su visor) se ciñe a
+     las dos líneas en vez de al ancho máximo del bloque. */
+  .abt-hero__line { display: block; }
+  .abt-hero__lead .ph-enter { --enter-delay: 90ms; display: block; }
+
+  /* Identidad: dos etiquetas sobre una regla. */
+  .abt-id {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px 24px;
+    margin: var(--ph-head-after) var(--ph-section-px) 0;
+    padding-top: 14px;
   }
 
-  /* El resto de la presentación, en dos columnas de lectura cómoda. */
+  .abt-id__rule {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: var(--ph-struct);
+    transform-origin: 0 50%;
+    transition: transform var(--ph-dur-field) var(--ph-ease-out);
+  }
+
+  :global(html.ph-anim) .abt-id:not(.is-inview) .abt-id__rule { transform: scaleX(0); }
+  :global(html.ph-anim:not(.ph-motion)) .abt-id__rule { animation: ph-motion-failsafe 0s linear 2.5s forwards; }
+
+  .abt-id__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    max-width: none;
+    margin: 0;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    color: var(--ph-ink-meta);
+  }
+
+  .abt-id__tag--right { --enter-delay: 80ms; }
+
+  /* Los dos párrafos, a dos columnas con un divisor vertical que se dibuja. */
   .abt-intro {
     display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: clamp(16px, 2vw, 32px);
-    row-gap: 18px;
-    margin-top: clamp(24px, calc(1.14vw + 19.5px), 36px);
-    padding: 0 var(--edge) clamp(48px, 6vw, 88px);
-    border-bottom: 1px solid var(--abt-line);
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 22px;
+    padding: clamp(24px, calc(1.14vw + 19.5px), 36px) var(--ph-section-px) clamp(64px, 8vw, 112px);
   }
-  .abt-hero__body {
-    margin: 0;
+
+  .abt-intro__body {
     max-width: 62ch;
+    margin: 0;
     font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
     line-height: 1.65;
-    letter-spacing: 0.003em;
     color: var(--ph-ink-body);
     text-wrap: pretty;
   }
-  .abt-intro .abt-hero__body:nth-child(1) { grid-column: 1 / 7; }
-  .abt-intro .abt-hero__body:nth-child(2) { grid-column: 7 / 13; }
 
-  @media (max-width: 900px) {
-    .abt-intro { grid-template-columns: minmax(0, 1fr); }
-    .abt-intro .abt-hero__body:nth-child(1),
-    .abt-intro .abt-hero__body:nth-child(2) { grid-column: 1 / -1; }
-  }
+  .abt-intro__body + .abt-intro__divider + .abt-intro__body { --enter-delay: 120ms; }
 
-  /* ── 02 MANIFESTO (Now. Next. Forever Football.) ── */
-  .abt-manifesto {
-    padding: clamp(72px, 10vw, 140px) var(--edge);
-    border-bottom: 1px solid var(--abt-line);
-  }
-  .abt-manifesto__head {
-    margin-bottom: clamp(40px, 6vw, 72px);
+  .abt-intro__divider {
+    display: block;
+    width: 48px;
+    height: 1.5px;
+    background: rgba(214, 178, 94, 0.6);
+    transform-origin: 0 50%;
+    transition: transform var(--ph-dur-field) var(--ph-ease-out) 120ms;
   }
 
-  .abt-manifesto__rows {
-    border-bottom: 1px solid var(--abt-line);
+  :global(html.ph-anim) .abt-intro:not(.is-inview) .abt-intro__divider { transform: scaleX(0); }
+
+  @media (min-width: 900px) {
+    .abt-intro {
+      grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
+      column-gap: clamp(24px, 3.4vw, 56px);
+    }
+    .abt-intro__divider {
+      width: 1px;
+      height: auto;
+      align-self: stretch;
+      background: var(--ph-struct);
+      transform-origin: 50% 0;
+    }
+    :global(html.ph-anim) .abt-intro:not(.is-inview) .abt-intro__divider { transform: scaleY(0); }
   }
-  /* Tres filas del tablero: Now, Next, Forever Football. Cada una con su línea
-     arriba, que se dibuja al entrar, y su número en paletas. */
-  .abt-manifesto__row {
-    --ph-seam-color: var(--abt-line-strong);
+
+  :global(html.ph-anim:not(.ph-motion)) .abt-intro__divider { animation: ph-motion-failsafe 0s linear 2.5s forwards; }
+
+  /* ── 02 Filosofía: la línea de tiempo ── */
+  .abt-line {
+    padding: clamp(56px, 8vw, 104px) var(--ph-section-px) clamp(72px, 10vw, 128px);
+  }
+
+  .abt-line__track {
+    position: relative;
+    margin-top: clamp(36px, 5vw, 56px);
+  }
+
+  /* El eje: crece con el scroll (ph-scroll-draw.ts). En el móvil, vertical a la
+     izquierda; en escritorio, horizontal sobre los tres pasos. */
+  .abt-line__axis {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    bottom: 10px;
+    width: 1.5px;
+    background: var(--ph-struct-soft);
+  }
+
+  .abt-line__axis-fill {
+    position: absolute;
+    inset: 0;
+    background: var(--color-ph-gold);
+    transform-origin: 50% 0;
+  }
+
+  .abt-line__steps {
     display: grid;
-    grid-template-columns: 80px 1.3fr 1.7fr;
-    gap: clamp(20px, 3vw, 40px);
-    align-items: start;
-    padding-block: clamp(36px, 5vw, 64px);
-    transition: background var(--ph-dur-move) var(--ph-ease-std);
+    gap: clamp(40px, 6vw, 56px);
+    margin: 0;
+    padding: 0 0 0 52px;
+    list-style: none;
   }
-  .abt-manifesto__idx {
+
+  .abt-step {
+    position: relative;
+  }
+
+  .abt-step__node {
+    position: absolute;
+    left: -52px;
+    top: 0;
     display: flex;
-    /* Alinea las paletas con la altura de las mayúsculas del título. */
-    padding-top: 0.35em;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
   }
-  /* Estado base (desktop con puntero): blanco display 500, sin itálica.
-     El lockup de marca (oro + itálico, idéntico a .hero-claim__accent) se
-     "desbloquea" al hacer hover. En mobile / touch (sin hover disponible)
-     se aplica directamente como base — ver media queries más abajo. */
-  .abt-manifesto__title {
+
+  .abt-step__node .ph-node {
+    background-color: var(--color-ph-black);
+    transition: background-color var(--ph-dur-state) var(--ph-ease-std);
+  }
+
+  .abt-step__idx {
+    display: block;
+    font-size: 13px;
+    line-height: 22px;
+    color: var(--color-ph-gold);
+  }
+
+  .abt-step__title {
+    margin: 10px 0 0;
     font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(40px, 5.5vw, 72px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    margin: 0;
-    color: var(--abt-ink);
-    transition: color var(--ph-dur-move) var(--ph-ease-std);
-  }
-  .abt-manifesto__body {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--abt-ink-soft);
-    margin: 0;
-    max-width: 480px;
-    /* El body alinea ópticamente con el primer descender del título. */
-    padding-top: 0.4em;
-  }
-
-  @media (hover: hover) {
-    .abt-manifesto__row:hover {
-      background: rgba(214, 178, 94, 0.04);
-    }
-    /* Hover desbloquea el lockup de marca: gold + itálico + weight 400
-       (firma del eslogan, idéntica a .hero-claim__accent del home/footer). */
-    .abt-manifesto__row:hover .abt-manifesto__title {
-      color: var(--abt-gold);
-      font-style: italic;
-      font-weight: 400;
-    }
-  }
-  /* La fila que se está leyendo (la del centro de la pantalla) se enciende en
-     dorado: el tablero marca la línea en curso. La pone el script. */
-  .abt-manifesto__row.is-current .abt-manifesto__title {
-    color: var(--abt-gold);
-  }
-
-  @media (max-width: 900px) {
-    .abt-manifesto__head {
-      margin-bottom: 40px;
-    }
-    .abt-manifesto__row {
-      grid-template-columns: 1fr;
-      gap: 14px;
-      padding-block: 32px;
-    }
-    /* Sin hover disponible: el lockup gold + itálico aplica como estado base
-       para que la firma de marca sea visible en touch sin necesidad de gesto. */
-    .abt-manifesto__title {
-      color: var(--abt-gold);
-      font-style: italic;
-      font-weight: 400;
-      font-size: clamp(34px, 9vw, 44px);
-    }
-    .abt-manifesto__body {
-      max-width: none;
-    }
-    .abt-manifesto__idx {
-      padding-top: 0;
-    }
-  }
-
-  /* ── 03 EQUIPO ── */
-  .abt-team {
-    padding: clamp(72px, 10vw, 140px) var(--edge);
-    border-bottom: 1px solid var(--abt-line);
-  }
-  .abt-team__head {
-    margin-bottom: clamp(32px, 5vw, 64px);
-  }
-  .abt-team__title {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(40px, 9vw, 72px);
+    font-weight: 600;
+    font-size: clamp(36px, 5.4vw, 72px);
     letter-spacing: -0.035em;
-    margin: clamp(24px, 3vw, 36px) 0 0;
+    line-height: 1;
+    color: var(--color-ph-white);
+  }
+
+  .abt-step__body {
+    max-width: 44ch;
+    margin: 14px 0 0;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--ph-ink-body);
+  }
+
+  .abt-step__title,
+  .abt-step__body {
+    transition:
+      opacity 360ms var(--ph-ease-out),
+      transform 360ms var(--ph-ease-out);
+  }
+
+  .abt-step__body { transition-delay: 90ms; }
+
+  /* Con el script en marcha (`is-armed` en la pista, ph-scroll-draw.ts), cada
+     paso espera a que la punta del eje llegue a su nodo; sin él, se ve todo. */
+  .abt-line__track.is-armed .abt-step:not(.is-reached) .abt-step__title,
+  .abt-line__track.is-armed .abt-step:not(.is-reached) .abt-step__body {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+
+  .abt-step.is-reached .abt-step__node .ph-node {
+    background-color: var(--color-ph-gold);
+  }
+
+  .abt-step.is-reached .abt-step__node .ph-node::after {
+    background-color: var(--color-ph-black);
+  }
+
+  .abt-step.is-reached .abt-step__title { color: var(--color-ph-gold); }
+
+  @media (min-width: 900px) {
+    .abt-line__axis {
+      left: 0;
+      right: 0;
+      top: 10px;
+      bottom: auto;
+      width: auto;
+      height: 1.5px;
+    }
+    .abt-line__axis-fill { transform-origin: 0 50%; }
+    .abt-line__steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: clamp(24px, 3.4vw, 56px);
+      padding: 0;
+    }
+    .abt-step { padding-top: 40px; }
+    .abt-step__node { left: 0; top: 0; }
+    .abt-step__idx { position: absolute; left: 34px; top: 0; }
+    .abt-step__title { margin-top: 0; }
+  }
+
+  /* ── 03 Equipo: la hoja de plantilla ── */
+  .abt-team {
+    padding: clamp(56px, 8vw, 104px) var(--ph-section-px) clamp(72px, 10vw, 128px);
+  }
+
+  .abt-team__title {
+    --enter-delay: 80ms;
+    margin: clamp(22px, 3vw, 32px) 0 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(40px, 8.4vw, 76px);
+    letter-spacing: -0.04em;
     line-height: 0.98;
   }
 
-  .abt-team-table {
-    border-bottom: 1px solid var(--abt-line);
+  .abt-sheet {
+    margin-top: clamp(32px, 5vw, 56px);
+    border-top: 1px solid var(--ph-struct-soft);
   }
-  /* Tablero de salidas: cada fila con su línea arriba. La fila entra detrás de
-     su línea; el nombre sube por su ranura y el destino pasa por el abecedario. */
-  /* Cuatro columnas: número, nombre, cargo y sede. Con tres, la sede caía en una
-     línea aparte debajo del número. */
-  .abt-team-row {
+
+  /* Cada fila: índice, nombre, cargo y sede. Al señalarla, un visor la fija. */
+  .abt-row {
+    position: relative;
     display: grid;
-    grid-template-columns: 60px minmax(0, 1.4fr) minmax(0, 1.2fr) minmax(7em, auto);
-    gap: 24px;
-    align-items: center;
-    padding-block: clamp(18px, 2.5vw, 28px);
-    transition: background var(--ph-dur-move) var(--ph-ease-std);
+    grid-template-columns: 36px minmax(0, 1fr);
+    column-gap: 12px;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--ph-struct-soft);
   }
-  .abt-team-row > * {
-    transition: opacity 480ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 100ms);
-  }
-  :global(html.ph-anim) .abt-team-row:not(.is-inview) > * {
-    opacity: 0;
-  }
-  .abt-team-row__slot {
-    display: block;
-    overflow: hidden;
-  }
-  .abt-team-row__name-text {
-    display: block;
+
+  .abt-row > :not(.abt-row__visor) {
     transition:
-      transform var(--ph-dur-roll) var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 120ms),
-      color var(--ph-dur-move) var(--ph-ease-std);
+      opacity 360ms var(--ph-ease-out) calc(var(--r, 0) * 45ms),
+      transform 360ms var(--ph-ease-out) calc(var(--r, 0) * 45ms);
   }
-  :global(html.ph-anim) .abt-team-row:not(.is-inview) .abt-team-row__name-text {
-    transform: translateY(110%);
+
+  :global(html.ph-anim) .abt-row:not(.is-inview) > :not(.abt-row__visor) {
+    opacity: 0;
+    transform: translateX(-6px);
   }
-  /* Sin el JS de movimiento, a los 2,5 s en su sitio (global.css, «Red de
-     seguridad»). */
-  :global(html.ph-anim:not(.ph-motion)) .abt-team-row__name-text {
+
+  :global(html.ph-anim:not(.ph-motion)) .abt-row > * {
     animation: ph-motion-failsafe 0s linear 2.5s forwards;
   }
-  @media (hover: hover) {
-    .abt-team-row:hover {
-      background: rgba(214, 178, 94, 0.04);
-    }
-    .abt-team-row:hover .abt-team-row__name-text {
-      color: var(--abt-gold);
-    }
+
+  .abt-row__visor {
+    --visor-arm: 10px;
+    --visor-inset: 0px -8px;
   }
-  .abt-team-row__idx {
-    display: flex;
+
+  .abt-row__idx {
+    font-size: 13px;
+    color: var(--color-ph-gold);
   }
-  .abt-team-row__name-text {
+
+  .abt-row__name {
     font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(22px, 2.4vw, 34px);
+    font-weight: 600;
+    font-size: clamp(20px, calc(0.9vw + 16.5px), 30px);
     letter-spacing: -0.02em;
-    line-height: 1.1;
-    transition: color 300ms var(--ease-ph, ease);
+    line-height: 1.15;
   }
-  .abt-team-row__role {
-    font-size: 13px;
-    line-height: 1.4;
-    color: var(--ph-ink-lead);
-  }
-  .abt-team-row__flag {
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
-    font-size: 13px;
-    letter-spacing: 0.06em;
-    color: var(--ph-ink-meta);
-  }
-  .abt-team-row__mobile-extras {
+
+  .abt-row__role,
+  .abt-row__place {
     display: none;
   }
 
-  @media (max-width: 900px) {
-    .abt-team-row {
-      grid-template-columns: 40px 1fr;
-      gap: 10px;
-      padding-block: 18px;
-    }
-    .abt-team-row__role,
-    .abt-team-row__flag {
-      display: none;
-    }
-    .abt-team-row__name {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .abt-team-row__mobile-extras {
-      display: block;
-      font-size: 13px;
-      color: var(--ph-ink-meta);
-      font-style: normal;
-      line-height: 1.5;
-    }
+  .abt-row__mobile {
+    grid-column: 2;
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ph-ink-meta);
   }
 
-  /* ── 04 PRESENCIA ── */
+  @media (hover: hover) and (pointer: fine) {
+    .abt-row:hover .abt-row__name { color: var(--color-ph-gold); }
+  }
+
+  @media (min-width: 900px) {
+    .abt-row {
+      grid-template-columns: 52px minmax(0, 1.3fr) minmax(0, 1.2fr) minmax(7em, auto);
+      column-gap: 24px;
+      align-items: center;
+      padding: clamp(14px, 1.6vw, 20px) 0;
+    }
+    .abt-row__role,
+    .abt-row__place { display: block; }
+    .abt-row__role {
+      font-size: 14px;
+      line-height: 1.4;
+      color: var(--ph-ink-lead);
+    }
+    /* La sede en mayúsculas, como «ESPAÑA» en los textos, para que la columna
+       sea una sola; a 14 px y sin espaciar: nada de mayúsculas diminutas muy
+       espaciadas, que es lo que Mario no quiere leer. */
+    .abt-row__place {
+      justify-self: end;
+      font-size: 14px;
+      color: var(--ph-ink-meta);
+    }
+    .abt-row__mobile { display: none; }
+  }
+
+  /* ── 04 Presencia: el esquema de sedes ── */
   .abt-presencia {
-    padding: clamp(60px, 9vw, 100px) var(--edge);
-    border-bottom: 1px solid var(--abt-line);
+    padding: clamp(56px, 8vw, 104px) var(--ph-section-px) clamp(80px, 10vw, 140px);
   }
-  .abt-presencia__eyebrow-row {
-    margin-bottom: 32px;
-  }
-  .abt-presencia__grid {
+
+  .abt-map {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: clamp(40px, 6vw, 80px);
-    align-items: end;
-    padding-top: clamp(32px, 4vw, 48px);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'title'
+      'hq'
+      'fig'
+      'intl'
+      'list';
+    margin-top: clamp(28px, 4vw, 48px);
   }
-  .abt-presencia__madrid {
+
+  .abt-map__title {
+    grid-area: title;
+    margin: 0 0 0 -0.04em;
     font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(64px, 12vw, 144px);
+    font-weight: 600;
+    font-size: clamp(64px, 14vw, 144px);
     letter-spacing: -0.05em;
     line-height: 0.9;
-    margin: 0 0 0 -0.04em;
   }
-  .abt-presencia__madrid-label {
-    font-size: 13px;
-    letter-spacing: 0.05em;
-    color: var(--ph-ink-meta);
-    margin-top: 16px;
-  }
-  .abt-presencia__intl-label {
-    font-size: 13px;
-    letter-spacing: 0.05em;
-    color: var(--ph-ink-meta);
-    margin-bottom: 12px;
-  }
-  .abt-presencia__countries {
-    display: flex;
-    flex-direction: column;
-    border-bottom: 1px solid var(--abt-line);
-  }
-  /* Las sedes, como filas de tablero: el país a la izquierda y su código en
-     paletas a la derecha. */
-  .abt-presencia__countries {
-    gap: 0;
-  }
-  .abt-presencia__country {
-    display: flex;
-    justify-content: space-between;
+
+  .abt-map__hq {
+    --enter-delay: 80ms;
+    grid-area: hq;
+    display: inline-flex;
     align-items: center;
-    padding-block: 10px;
-    font-family: var(--font-body);
-    font-size: 15px;
-    color: var(--abt-ink);
+    gap: 10px;
+    margin: 16px 0 0;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    color: var(--ph-ink-meta);
   }
-  .abt-presencia__country-name {
-    transition: opacity 480ms var(--ph-ease-out) calc(var(--ph-seam-delay, 0ms) + 100ms);
+
+  .abt-map__fig {
+    grid-area: fig;
+    position: relative;
+    width: min(100%, 420px);
+    aspect-ratio: 1;
+    margin: clamp(28px, 5vw, 40px) auto 0;
   }
-  :global(html.ph-anim) .abt-presencia__country:not(.is-inview) .abt-presencia__country-name {
+
+  .abt-map__svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* Los anillos de distancia, sin números: solo estructura. */
+  .abt-map__ring {
+    fill: none;
+    stroke: var(--ph-struct-soft);
+    stroke-width: calc(1 * var(--k, 1));
+    stroke-dasharray: calc(2 * var(--k, 1)) calc(6 * var(--k, 1));
+  }
+
+  .abt-map__arc {
+    fill: none;
+    stroke: var(--color-ph-gold);
+    stroke-width: calc(1.5 * var(--k, 1));
+    --draw-dur: 640ms;
+    --draw-ease: cubic-bezier(0.05, 0.7, 0.1, 1);
+  }
+
+  .abt-map__node circle:first-child,
+  .abt-map__hub {
+    fill: var(--color-ph-black);
+    stroke: var(--color-ph-gold);
+    stroke-width: calc(1.5 * var(--k, 1));
+  }
+
+  .abt-map__dot,
+  .abt-map__ball { fill: var(--color-ph-gold); }
+
+  .abt-map__ball { opacity: 0; }
+
+  .abt-map__node {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity 180ms var(--ph-ease-out) calc(640ms + var(--i, 0) * 110ms),
+      transform 180ms var(--ph-ease-out) calc(640ms + var(--i, 0) * 110ms);
+  }
+
+  :global(html.ph-anim) .abt-map:not(.is-inview) .abt-map__node {
     opacity: 0;
+    transform: scale(0.6);
   }
 
-  @media (max-width: 900px) {
-    .abt-presencia__grid {
-      grid-template-columns: 1fr;
-      align-items: stretch;
-      gap: 32px;
+  .abt-map__intl {
+    --enter-delay: 120ms;
+    grid-area: intl;
+    margin: clamp(24px, 4vw, 36px) 0 10px;
+    max-width: none;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    color: var(--ph-ink-meta);
+  }
+
+  /* Móvil: la lista de sedes, debajo del esquema. */
+  .abt-map__list {
+    grid-area: list;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ph-struct-soft);
+  }
+
+  .abt-map__place {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    border-bottom: 1px solid var(--ph-struct-soft);
+    font-size: 15px;
+    color: var(--color-ph-white);
+    transition: opacity 300ms var(--ph-ease-out) calc(700ms + var(--i, 0) * 70ms);
+  }
+
+  .abt-map__place-node { background-color: var(--color-ph-black); }
+
+  .abt-map__place-iso {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--color-ph-gold);
+  }
+
+  :global(html.ph-anim) .abt-map:not(.is-inview) .abt-map__place { opacity: 0; }
+
+  :global(html.ph-anim:not(.ph-motion)) .abt-map__place,
+  :global(html.ph-anim:not(.ph-motion)) .abt-map__node {
+    animation: ph-motion-failsafe 0s linear 2.5s forwards;
+  }
+
+  /* Escritorio: Madrid y sus rótulos a la izquierda; el esquema a la derecha,
+     con cada sede rotulada junto a su nodo (la lista se coloca encima). */
+  @media (min-width: 900px) {
+    .abt-map {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      grid-template-rows: auto auto 1fr;
+      grid-template-areas:
+        'title fig'
+        'hq fig'
+        'intl fig';
+      column-gap: clamp(40px, 6vw, 96px);
+      align-items: start;
     }
-
+    .abt-map__fig {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 0 0 auto;
+    }
+    /* Debajo de la sede central, para que se lea como la entrada al esquema de
+       la derecha: abajo del todo quedaba lejos de los rótulos de las sedes. */
+    .abt-map__intl { align-self: start; margin: clamp(28px, 3vw, 44px) 0 0; }
+    .abt-map__list {
+      grid-area: fig;
+      position: relative;
+      width: 100%;
+      max-width: 560px;
+      aspect-ratio: 1;
+      margin: 0 0 0 auto;
+      border: 0;
+      pointer-events: none;
+    }
+    /* Con fondo del negro de la página detrás del rótulo, como en los mapas: un
+       arco que pase por debajo (el de Uruguay cruza el de Portugal) no tacha el
+       nombre. */
+    .abt-map__place {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      min-height: 0;
+      gap: 8px;
+      padding: 2px 6px;
+      border: 0;
+      background: rgba(13, 15, 18, 0.88);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .abt-map__place-node { display: none; }
+    .abt-map__place-iso { margin-left: 0; }
+    .abt-map__place--right { transform: translate(16px, -50%); }
+    .abt-map__place--left { transform: translate(calc(-100% - 16px), -50%); }
+    .abt-map__place--top { transform: translate(-50%, calc(-100% - 16px)); }
+    .abt-map__place--bottom { transform: translate(-50%, 16px); }
+    .abt-map__place--bottom:last-child { transform: translate(-14px, 16px); }
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .abt-row > :not(.abt-row__visor),
+    .abt-step__title,
+    .abt-step__body,
+    .abt-map__node,
+    .abt-map__place { transition: none; }
+    .abt-map__ball { display: none; }
+  }
 </style>
 
 <script>
   import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, stage, rollIn, riseIn, mountSection, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
-  import { cascade } from '@/scripts/ph-motion';
+  // Desde `gsap/all`, como Flip en Talentos: mismo tamaño y sin el aviso de
+  // mayúsculas de los tipos en macOS.
+  import { MotionPathPlugin } from 'gsap/all';
+  import { mountSection, afterTransitionPaint, EASE } from '@/scripts/ph-text-animations';
+  import { whenInView, prefersReducedMotion, ping } from '@/scripts/ph-motion';
+  import { scrollDraw } from '@/scripts/ph-scroll-draw';
 
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(MotionPathPlugin);
 
-  let currentRowObserver: IntersectionObserver | null = null;
-
-  function initAboutAnimations(): void {
-    const section = document.querySelector<HTMLElement>('.about-section');
-    if (!section) return;
-
-    if (!reducedMotion()) {
-      // Cabecera: pizarra, «Representar» rodando con su luz y la entradilla.
-      const hero = section.querySelector<HTMLElement>('.abt-hero');
-      if (hero) stage(hero, { glint: true });
-      // Los dos párrafos de la presentación suben enteros, uno tras otro. Antes
-      // entraban palabra a palabra con desenfoque (135 piezas con `filter: blur`):
-      // era el tirón de 217-359 ms al entrar en la página (docs/rendimiento.md).
-      riseIn(section.querySelectorAll<HTMLElement>('.abt-intro [data-m="body"]'), { delay: 0.45, stagger: 0.1 });
-
-      // Manifiesto: cada fila rueda su título y sube su texto al entrar.
-      section.querySelectorAll<HTMLElement>('.abt-manifesto__row').forEach((row) => {
-        const title = row.querySelector<HTMLElement>('[data-m="title"]');
-        const body = row.querySelector<HTMLElement>('[data-m="body"]');
-        if (title) rollIn(title, { trigger: row, delay: 0.12 });
-        if (body) riseIn(body, { trigger: row, delay: 0.26 });
+  /** La línea de tiempo: el eje crece con el scroll y cada nodo se enciende al
+   *  llegarle la punta. Horizontal en escritorio, vertical en el móvil. */
+  function initTimeline(section: HTMLElement): void {
+    const line = section.querySelector<HTMLElement>('[data-abt-line]');
+    const track = line?.querySelector<HTMLElement>('[data-abt-track]');
+    const fill = line?.querySelector<HTMLElement>('[data-abt-axis]');
+    if (!line || !track || !fill) return;
+    const horizontal = () => window.matchMedia('(min-width: 900px)').matches;
+    const steps = Array.from(line.querySelectorAll<HTMLElement>('[data-abt-step]'));
+    const stops = steps.map((el) => ({
+      el,
+      // Dónde cae su nodo a lo largo del eje, en fracción.
+      at: () => {
+        const t = track.getBoundingClientRect();
+        const n = el.querySelector('.abt-step__node')!.getBoundingClientRect();
+        return horizontal()
+          ? Math.max(0.02, (n.left + n.width / 2 - t.left) / Math.max(1, t.width))
+          : Math.max(0.02, (n.top + n.height / 2 - t.top) / Math.max(1, t.height));
+      },
+    }));
+    // En escritorio el eje se dibuja de izquierda a derecha; en el móvil, de
+    // arriba abajo (se decide en cada medida, así sigue al girar o redimensionar).
+    scrollDraw(track, fill, stops, () => (horizontal() ? 'x' : 'y'));
+    // Al llegar a un nodo, su anillo se expande una vez.
+    const seen = new Set<HTMLElement>();
+    const observer = new MutationObserver(() => {
+      steps.forEach((s) => {
+        if (s.classList.contains('is-reached') && !seen.has(s)) {
+          seen.add(s);
+          ping(s.querySelector('.ph-node'));
+        } else if (!s.classList.contains('is-reached')) {
+          seen.delete(s);
+        }
       });
-
-      const team = section.querySelector<HTMLElement>('.abt-team');
-      if (team) stage(team, { glint: true });
-      cascade(section.querySelectorAll<HTMLElement>('.abt-team-row'), 45);
-
-      const presencia = section.querySelector<HTMLElement>('.abt-presencia');
-      if (presencia) stage(presencia);
-      cascade(section.querySelectorAll<HTMLElement>('.abt-presencia__country'), 70);
-
-      // La fila del manifiesto que está en el centro de la pantalla se enciende.
-      currentRowObserver?.disconnect();
-      currentRowObserver = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) entry.target.classList.toggle('is-current', entry.isIntersecting);
-        },
-        { rootMargin: '-45% 0px -45% 0px' },
-      );
-      section.querySelectorAll('.abt-manifesto__row').forEach((row) => currentRowObserver!.observe(row));
-    }
-
-    mountSection(section);
+    });
+    steps.forEach((s) => observer.observe(s, { attributes: true, attributeFilter: ['class'] }));
+    document.addEventListener('astro:before-swap', () => observer.disconnect(), { once: true });
   }
 
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initAboutAnimations));
-  document.addEventListener('astro:before-swap', () => {
-    currentRowObserver?.disconnect();
-    currentRowObserver = null;
-  });
+  /** El mapa: los arcos se dibujan en cascada (CSS) y una bola recorre cada uno
+   *  una vez, detrás de su trazo. */
+  function initMap(section: HTMLElement): void {
+    const map = section.querySelector<HTMLElement>('[data-abt-map]');
+    if (!map || prefersReducedMotion()) return;
+    whenInView(map, () => {
+      map.querySelectorAll<SVGCircleElement>('[data-ball]').forEach((ball) => {
+        const i = Number(ball.dataset.ball);
+        const arc = map.querySelector<SVGPathElement>(`[data-arc="${i}"]`);
+        if (!arc) return;
+        gsap.timeline({ delay: 0.32 + i * 0.11 })
+          .set(ball, { opacity: 1 })
+          .to(ball, {
+            duration: 0.72,
+            ease: EASE.std,
+            motionPath: { path: arc, align: arc, alignOrigin: [0.5, 0.5] },
+          })
+          .to(ball, { opacity: 0, duration: 0.18, ease: EASE.in });
+      });
+      // La sede central se activa cuando salen los arcos.
+      window.setTimeout(() => ping(map.querySelector('.abt-map__hq .ph-node')), 200);
+    });
+  }
+
+  function initAbout(): void {
+    const section = document.querySelector<HTMLElement>('.about-section');
+    if (!section || section.dataset.ready) return;
+    section.dataset.ready = '1';
+    mountSection(section);
+    initTimeline(section);
+    initMap(section);
+  }
+
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initAbout));
 </script>
 
 <script>
-  // Fondo animado de la cabecera (se inicia solo en cada astro:page-load).
+  // Fondo animado de la página (se inicia solo en cada astro:page-load).
   import '@/scripts/ph-ambient';
 </script>

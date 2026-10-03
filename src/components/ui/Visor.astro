@@ -1,0 +1,33 @@
+---
+/**
+ * Visor: cuatro escuadras doradas que fijan lo que se enfoca (una foto, un
+ * titular, una fila). Va dentro de un padre con `position: relative` y lo
+ * rodea con un margen (`inset`). Estilos y estados en global.css (`.ph-visor`).
+ *
+ * - `mode="view"`: se fija al entrar en pantalla (lleva su propio `data-inview`).
+ * - `mode="hover"`: se fija al señalar o enfocar a su padre.
+ * - `mode="js"`: lo fija y lo suelta un script (`is-locked`, `is-released`).
+ * - `settle`: tras fijarse se queda en marcas pequeñas.
+ *
+ * Es decoración: siempre `aria-hidden`.
+ */
+interface Props {
+  mode?: 'view' | 'hover' | 'js';
+  /** Brazo de cada escuadra, en px (14-24). */
+  arm?: number;
+  /** Margen alrededor del padre, en px (negativo = por fuera). */
+  inset?: number;
+  settle?: boolean;
+  class?: string;
+}
+
+const { mode = 'view', arm = 16, inset = -10, settle = false, class: className } = Astro.props;
+const style = `--visor-arm: ${arm}px; --visor-inset: ${inset}px;`;
+---
+
+<span
+  class:list={['ph-visor', `ph-visor--${mode}`, settle && 'ph-visor--settle', className]}
+  style={style}
+  aria-hidden="true"
+  data-inview={mode === 'view' ? '' : undefined}
+><i></i><i></i><i></i><i></i></span>

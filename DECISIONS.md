@@ -13,7 +13,151 @@ leído el resto.
 
 ---
 
+## 2026-10-03 · Variante C «Análisis»: la web como la sala de análisis de un partido
+
+> **Estado: propuesta en la rama `feat/variante-c-analisis`, sin fusionar.** Sale de
+> `feat/rediseno-motion` (`e0c6360`) y es una de las tres variantes completas que
+> pidió Mario para elegir (las otras dos, en sus ramas). Si no se elige, esta
+> entrada se queda en esa rama y no existe en `preview` ni en `main`.
+
+**Qué pidió Mario.** Tras ver «Marcador» (la entrada de abajo), aclaró que «no tocar
+las secciones» quería decir no cambiar las páginas ni el orden de sus bloques, pero
+**sí** el diseño de dentro: el rediseño apenas cambiaba nada. Pidió tres variantes
+completas, con todas las secciones, funciones y clics, en lenguaje de motion
+graphics, móvil primero, con los mismos textos, paleta, fuentes y fotos, y con las
+decisiones de diseño delegadas.
+
+**La idea.** La web es la sala de análisis de PHSPORT: cada bloque es una capa de
+tracking como la de los gráficos de análisis de partido. El contenido no se
+decora, **se anota**. Todo sale de un vocabulario corto (cómo está hecho, en
+`ARCHITECTURE.md`, «Sistema de animaciones»):
+
+- **Retícula** de análisis fija a la pantalla, casi invisible (48 px; 64 en
+  escritorio), con las verticales en el borde del texto.
+- **Zona**: el rótulo que abre cada bloque («02 · Talentos») con una regla de marcas
+  sin números.
+- **Visor**: cuatro escuadras doradas que fijan lo que se enfoca (un titular, una
+  foto, la página activa del menú).
+- **Línea guía**: de un punto a su etiqueta, en codo (45°, la diagonal del logo, y
+  un tramo recto).
+- **Nodo**: anillo con punto; al activarse se expande una vez (nunca en bucle).
+- **Escaneo**: una línea dorada con estela que barre de arriba abajo y descubre una
+  foto, o la página nueva al navegar.
+- La firma: **una línea de pase que recorre la portada** con el scroll, desde
+  «Scroll» hasta el correo de contacto, tocando el nodo de cada bloque.
+
+**Qué cambia en cada página.**
+
+- **Todas**: cabecera como barra de herramientas (sólida al bajar, sin cristal; el
+  visor marca la página activa y se desplaza a la señalada), idioma como pestaña
+  con su código y el panel enmarcado por escuadras, menú móvil que dibuja un campo
+  con las páginas como nodos, pie como «informe final» (el lema con el nodo donde
+  acaba la línea de pase, el logo que se dibuja y listas con nodos), intro de la
+  portada como **calibración** (retícula, escuadras que se cierran en el centro y el
+  contorno del logo trazado justo donde está el neón del vídeo; 1,3 s, CSS puro con
+  las reglas de `docs/trampas-conocidas.md`) y el cambio de página como un
+  **escaneo** de 380 ms (de abajo arriba al volver atrás) en la pieza fija
+  `.ph-stinger`. Las legales solo heredan cabecera y pie, como pide el encargo.
+- **Portada**: el visor **sigue al rótulo de neón** mientras la cámara se mueve y
+  de sus esquinas salen líneas guía a «Now.», «Next.» y «Forever Football.»;
+  «El roster.» se fija con un visor y su CTA es un nodo; Servicios es un **diagrama
+  de 360°** (las cinco áreas como nodos de un dial y el Plan de Acción en el centro,
+  que comparten estado con la lista); Sobre PHSPORT lleva el **telestrador** (una
+  elipse a mano alrededor de «pero las personas marcan.») y las cifras como
+  esquemas (la red de siete sedes y el círculo de 360° que se cierra); en
+  Contacto, la línea de pase termina en el nodo del correo.
+- **Talentos**: barra de herramientas con buscador (plegable en el móvil) y dos
+  controles segmentados («Ver» y «Orden») con un visor que va a la opción activa;
+  cada tarjeta es un jugador en seguimiento: la foto (3:4, tal cual) se descubre con
+  un escaneo, un visor se clava en sus esquinas y se queda en marcas, y el nombre
+  cuelga por una línea guía. Mismas funciones, mismo orden y el mismo FLIP.
+- **Servicios**: el titular literalmente fuera de un campo dibujado; las cinco
+  áreas como filas con nodo (al abrir, las claves son nodos sobre una línea);
+  la trayectoria que baja del bloque de áreas a los pilares, con el scroll; los
+  pilares con su foto en un visor, descubierta por un escaneo, y sus etiquetas
+  anotando puntos de la imagen; el manifiesto con el telestrador.
+- **Sobre nosotros**: el titular fijado por un visor; la filosofía como línea de
+  tiempo (Now → Next → Forever) que se dibuja con el scroll; el equipo como hoja de
+  plantilla (visor sobre la fila señalada); Presencia como **esquema de sedes**:
+  Madrid en el centro y un arco hacia cada sede, que recorre una bola una vez.
+
+**Alternativas descartadas** (y por qué):
+
+- *Visor fijo sobre el neón, calculado con el encuadre `object-fit: cover`.* Se
+  midió la caja del rótulo en los vídeos: en vertical, en los primeros planos del
+  bucle, llega al borde de la pantalla. Una caja fija o se queda corta o sale de la
+  pantalla. Ahora el visor lee la caja de cada instante de una tabla medida en el
+  propio vídeo (`src/lib/heroTrack.ts`, que genera `scripts/build-hero-track.mjs`).
+- *Acordeones animando el alto.* Mueve el layout en cada fotograma. Se anima con
+  FLIP: lo de debajo se desplaza con `transform` y el panel se descubre con
+  `clip-path` (`src/scripts/ph-disclosure.ts`).
+- *Una sola línea de pase en un SVG de toda la página.* Un acordeón que se abre más
+  arriba la desencaja. Va en un tramo por bloque, y los tramos casan en las juntas
+  porque todos entran y salen por el mismo carril (`src/scripts/ph-pass.ts`).
+- *Quitar el fundido de `page-main` y dejar solo el escaneo.* Es la zona que
+  `docs/hallazgos-abiertos.md` pide no tocar sin Mario: el fundido se queda y el
+  escaneo va encima, en su pieza fija.
+- *Telestrador como elipse centrada.* Corta por fuerza la última letra de una
+  frase de dos líneas («marcan.»). Es una superelipse con un radio por lado,
+  medida con la letra real (`src/scripts/ph-telestrator.ts`).
+- *Un mapa de verdad en Presencia.* Pide geografía y datos que el contenido no
+  tiene; el esquema dice lo mismo (dónde, respecto a Madrid) sin inventar nada.
+- *Animaciones ligadas al scroll en CSS* (`animation-timeline`): mismo motivo que
+  en «Marcador» (Firefox). Lo que va con el scroll (la línea de pase, la
+  trayectoria de Servicios, la línea de tiempo) es JS pasivo que sigue al dedo y
+  nunca bloquea el scroll.
+
+**Qué deja obsoleto de «Marcador»** (su entrada queda como registro): las paletas
+split-flap, las letras de tablero, las costuras, los titulares que ruedan, el
+revelado de fotos por tonos, el destello, la luz entre páginas y las teclas. Se
+borran `Flap.astro`, `FlapText.astro`, `Slate.astro` y `Key.astro`; `rollIn`,
+`riseIn`, `stage`, `wrapWords` y el atributo `data-reveal`. Se mantienen su
+infraestructura (`ph-motion.ts` como núcleo sin GSAP, la red de seguridad, la pieza
+`.ph-stinger`, la fuga de listeners arreglada) y sus curvas.
+
+**Decidido además al construirla**:
+
+- **Fuera las banderas del selector de idioma** (`public/icons/flag-*.svg`): una
+  bandera es un país, no un idioma, y el selector ya muestra el código. **Fuera el
+  logo 3D del pie** (`public/logo-ph-3d*.webp`): el pie dibuja el logo en trazo, como
+  pide la dirección.
+- **Las palabras doradas ya no van en cursiva**: Söhne no tiene cursiva y el
+  navegador la sintetiza.
+- **«Scroll» en letra normal** y los códigos del selector a 13 px (estaban a 12), por
+  las preferencias de lectura de abajo.
+- En el manifiesto de Servicios, si lo que sigue a la parte dorada son palabras
+  («a largo plazo.»), va en su propia línea: así la elipse del telestrador la
+  rodea sin pisarlas. En inglés solo sigue el punto, y se queda pegado.
+
+**Costes y riesgos**:
+
+- **JS por página** (gzip, medido sobre el build): portada 83,3 KB, Talentos 87,7,
+  Servicios 81,0, Sobre nosotros 81,9, legales 20,5. GSAP con su infraestructura,
+  51,5 KB, se carga en las cuatro páginas, pero **ya ningún bloque crea un
+  ScrollTrigger**: queda como palanca (`docs/rendimiento.md`).
+- **El visor del hero se mueve mientras se ve el vídeo** (un `requestAnimationFrame`
+  con el hero a la vista y el vídeo en marcha). No es un bucle aparte: lee el
+  `currentTime` del vídeo, así que si se añade el control de pausa del hallazgo
+  WCAG 2.2.2, se para con él.
+- **Sin probar en un móvil real** (`docs/hallazgos-abiertos.md`).
+
+**Preferencias de Mario** (`DECISIONS.md`, 2026-10-01) — **se mantienen todas**:
+el contenido empieza en la primera pantalla (en Talentos asoma la primera fila de
+tarjetas en el móvil y en escritorio); entradillas de 18–22 px casi blancas;
+ninguna etiqueta por debajo de 13 px; nada de mayúsculas diminutas muy espaciadas
+(los rótulos que ya vienen en mayúsculas en los textos, como «21 INTEGRANTES · 7
+PAÍSES», van a 13 px con 0,03–0,05 em, lo justo para leer mayúsculas); fondo vivo
+en las interiores (los tres shaders siguen; el de Servicios, `estructura`, ahora
+enciende la propia retícula de la página); y el grid de Talentos en 2/3/5
+columnas. Los titulares de cabecera de las interiores siguen en 46–106 px.
+
+---
+
 ## 2026-10-02 · Lenguaje de movimiento «Marcador»: la web se mueve como el marcador de un estadio
+
+> **En la rama `feat/variante-c-analisis` este lenguaje está sustituido** por la
+> variante C «Análisis» (entrada de arriba, 2026-10-03). Lo que sigue es el registro
+> de cómo era.
 
 > **Estado: propuesta en la rama `feat/rediseno-motion`, sin fusionar.** Se hizo en
 > una rama paralela a `preview` a petición de Mario, para verla sin mezclarla con el

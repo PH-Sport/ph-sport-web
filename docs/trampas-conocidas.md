@@ -56,10 +56,10 @@ puede funcionar.**
   `data-astro-transition="forward"` o `"back"` en `<html>` y lo quita al acabar la
   View Transition, no al acabar las animaciones de la página. Una animación de CSS
   que dependa de ese atributo y dure más que la transición se reinicia a mitad con
-  otra: le pasó a la luz entre páginas (`.ph-stinger`), que al volver atrás
-  arrancaba al revés y a los 420 ms saltaba a la de avanzar (medido con eventos
-  `animationstart`, 2026-10-02). El sentido se apunta en el propio elemento al
-  empezar (`is-back`).
+  otra: le pasó a la luz entre páginas de «Marcador» (`.ph-stinger`), que al
+  volver atrás arrancaba al revés y a los 420 ms saltaba a la de avanzar (medido
+  con eventos `animationstart`, 2026-10-02). El sentido se apunta en el propio
+  elemento al empezar (`is-back`); el escaneo de la variante C lo hace igual.
 - **La foto de la página nueva se toma después de restaurar el scroll**
   (`moveToLocation` corre dentro del callback de la transición, en
   `astro/dist/transitions/router.js`). El grupo `page-main` queda entonces
@@ -77,11 +77,11 @@ puede funcionar.**
 - **Medir timing con la extensión de Chrome no es fiable**: al operar, la pestaña
   pasa a segundo plano, `rAF` se pausa y `setTimeout` se throttlea a ~1s.
 - **Lo mismo con el navegador integrado de Claude cuando su panel está oculto**: las
-  animaciones se quedan congeladas a medias y las capturas enseñan paletas
-  paradas en un número intermedio o titulares cortados que no existen. Para ver
-  el movimiento de verdad: Playwright sin cabeza (Chromium y WebKit) grabando
-  vídeo (`recordVideo`) y sacando fotogramas con `ffmpeg`. Las grabaciones
-  tampoco incluyen la capa de las View Transitions.
+  animaciones se quedan congeladas a medias y las capturas enseñan estados
+  intermedios que no existen (paletas paradas en un número, titulares cortados).
+  Para ver el movimiento de verdad: Playwright sin cabeza (Chromium y WebKit)
+  grabando vídeo (`recordVideo`) y sacando fotogramas con `ffmpeg`. Las
+  grabaciones tampoco incluyen la capa de las View Transitions.
 
 ## El scroll suave se apaga durante la navegación, y hay que dejarlo apagado
 

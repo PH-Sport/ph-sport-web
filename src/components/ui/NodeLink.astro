@@ -1,0 +1,36 @@
+---
+/**
+ * Enlace-nodo: el botón de la web. Un nodo (anillo dorado con punto) y su
+ * etiqueta; al señalarlo, el anillo se expande una vez y una flecha se dibuja
+ * hacia delante; al pulsarlo, el anillo se rellena. En pantallas táctiles la
+ * flecha está siempre dibujada. Estilos en global.css (`.ph-node-link`).
+ *
+ * Con `href` es un enlace; sin él, un `<button>` (p. ej. «Limpiar filtros»).
+ * `passNode` marca su anillo como parada de la línea de pase de la portada
+ * (src/scripts/ph-pass.ts).
+ */
+interface Props {
+  href?: string;
+  label: string;
+  hreflang?: string;
+  passNode?: boolean;
+  class?: string;
+  /** Atributos extra para el `<button>` (data-*). */
+  [key: `data-${string}`]: string | undefined;
+}
+
+const { href, label, hreflang, passNode = false, class: className, ...rest } = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  href={href}
+  hreflang={hreflang}
+  type={href ? undefined : 'button'}
+  class:list={['ph-node-link', className]}
+  {...rest}
+>
+  <span class="ph-node ph-node--pop" aria-hidden="true" data-pass-node={passNode ? '' : undefined}></span>
+  <span class="ph-node-link__label">{label}</span>
+  <svg class="ph-node-link__arrow" viewBox="0 0 40 12" aria-hidden="true"><path d="M0 6H38M32.5 1.5 38 6l-5.5 4.5" /></svg>
+</Tag>

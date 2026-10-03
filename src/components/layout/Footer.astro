@@ -28,52 +28,26 @@ const socialLabel = (id: SocialId) => {
   const key = id === 'instagram' ? 'footer.social.instagram' : 'footer.social.linkedin';
   return t(key);
 };
-
-/** El lema, palabra a palabra, para que ruede en CSS al entrar en pantalla (el pie
- *  está también en las páginas legales, que no cargan GSAP). */
-const words = (text: string) => text.split(' ').filter(Boolean);
-const leadWords = words(t('hero.claim.lead'));
-const accentWords = words(t('hero.claim.accent'));
 ---
 
-{/* El cierre de la retransmisión: la línea dorada se dibuja, el lema entra
-    rodando y el logo se vuelve a dibujar como en la intro de la portada. */}
+{/* El informe final: el lema cierra la página con un nodo terminal, el logo se
+    vuelve a dibujar y las páginas, el contacto y las redes van como listas con
+    nodos. El pie está también en las páginas legales, que no cargan GSAP: todo
+    su movimiento es CSS que arranca al entrar en pantalla (ph-motion.ts). */}
 <footer class="footer">
-  <div class="footer-gold-rule ph-seam" aria-hidden="true" data-inview></div>
+  <div class="ph-section footer-inner">
+    <div class="footer-close" data-inview data-footer-close>
+      <span class="footer-close__rule" aria-hidden="true"></span>
+      <p class="footer-lema">
+        <span class="footer-lema__lead ph-enter">{t('hero.claim.lead')}</span>
+        <span class="footer-lema__accent ph-enter">{t('hero.claim.accent')}<span class="ph-node ph-node--lg ph-node--pop footer-lema__node" aria-hidden="true" data-footer-node></span></span>
+      </p>
+    </div>
 
-  <div class="footer-logo-bg" aria-hidden="true">
-    <img
-      src="/logo-ph-3d.webp"
-      srcset="/logo-ph-3d-sm.webp 820w, /logo-ph-3d.webp 1640w"
-      sizes="min(92vw, 620px)"
-      alt=""
-      width="1640"
-      height="1321"
-      loading="lazy"
-      decoding="async"
-      fetchpriority="low"
-    />
-  </div>
-
-  <div class="ph-section">
-    <!-- 02 · Sello editorial -->
-    <p class="footer-sello" data-inview data-footer-sello>
-      {leadWords.map((w, i) => (
-        <><span class="footer-sello__slot"><span class="footer-sello__word" style={`--w: ${i}`}>{w}</span></span>{' '}</>
-      ))}
-      <span class="footer-sello__accent">
-        {accentWords.map((w, i) => (
-          <><span class="footer-sello__slot"><span class="footer-sello__word" style={`--w: ${i + leadWords.length}`}>{w}</span></span>{i < accentWords.length - 1 ? ' ' : ''}</>
-        ))}
-      </span>
-    </p>
-
-    <!-- 03 · 3-col funcional -->
     <div class="footer-grid">
-      <!-- Col 1: brand -->
       <div class="footer-brand">
-        {/* Se dibuja al entrar en pantalla: trazo y después relleno, como la
-            intro. Los perímetros (753 y 637) son los de LogoReveal.astro. */}
+        {/* Se dibuja al entrar en pantalla: trazo y después relleno. Los perímetros
+            (753 y 637) son los de LogoReveal.astro. */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 259.8 206.1"
@@ -90,13 +64,13 @@ const accentWords = words(t('hero.claim.accent'));
         </svg>
       </div>
 
-      <!-- Col 2: páginas -->
       <nav class="footer-col" aria-label={t('footer.nav.label')}>
         <span class="footer-col-label">{t('footer.pages')}</span>
-        <ul class="footer-nav">
+        <ul class="footer-list">
           {nav.map((item) => (
             <li>
               <a href={item.href} class="footer-link">
+                <span class="ph-node ph-node--sm footer-link__node" aria-hidden="true"></span>
                 <span>{item.label}</span>
               </a>
             </li>
@@ -104,47 +78,40 @@ const accentWords = words(t('hero.claim.accent'));
         </ul>
       </nav>
 
-      <!-- Col 3: contacto + social -->
       <div class="footer-col">
         <span class="footer-col-label">{t('footer.contact')}</span>
-        <div class="footer-contact">
-          <a href={`mailto:${t('footer.email')}`} class="footer-email">
-            {t('footer.email')}
-          </a>
-        </div>
+        <ul class="footer-list">
+          <li>
+            <a href={`mailto:${t('footer.email')}`} class="footer-link">
+              <span class="ph-node ph-node--sm footer-link__node" aria-hidden="true"></span>
+              <span>{t('footer.email')}</span>
+            </a>
+          </li>
+        </ul>
 
         <span class="footer-col-label footer-col-label--social">{t('footer.social.heading')}</span>
-        <ul class="footer-social-list" role="list" aria-label={t('footer.social.label')}>
-          {
-            SOCIAL_LINKS.map((s) => (
-              <li>
-                {isSocialPlaceholder(s.href) ? (
-                  <span
-                    class="footer-social-link footer-social-link--disabled"
-                    aria-disabled="true"
-                    title={socialLabel(s.id)}
-                  >
-                    <FooterSocialIcon id={s.id} />
-                  </span>
-                ) : (
-                  <a
-                    href={s.href}
-                    class="footer-social-link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={socialLabel(s.id)}
-                  >
-                    <FooterSocialIcon id={s.id} />
-                  </a>
-                )}
-              </li>
-            ))
-          }
+        <ul class="footer-list" aria-label={t('footer.social.label')}>
+          {SOCIAL_LINKS.map((s) => (
+            <li>
+              {isSocialPlaceholder(s.href) ? (
+                <span class="footer-link footer-link--disabled" aria-disabled="true">
+                  <span class="ph-node ph-node--sm ph-node--muted footer-link__node" aria-hidden="true"></span>
+                  <FooterSocialIcon id={s.id} />
+                  <span>{socialLabel(s.id)}</span>
+                </span>
+              ) : (
+                <a href={s.href} class="footer-link" target="_blank" rel="noopener noreferrer">
+                  <span class="ph-node ph-node--sm footer-link__node" aria-hidden="true"></span>
+                  <FooterSocialIcon id={s.id} />
+                  <span>{socialLabel(s.id)}</span>
+                </a>
+              )}
+            </li>
+          ))}
         </ul>
       </div>
     </div>
 
-    <!-- 04 · Copyright + legal -->
     <div class="footer-bottom">
       <p>&copy; {year} {t('site.name')}. {t('footer.rights')}</p>
       <nav class="footer-legal" aria-label={t('footer.legal.label')}>
@@ -165,99 +132,77 @@ const accentWords = words(t('hero.claim.accent'));
   .footer {
     position: relative;
     z-index: 1;
-    overflow: hidden;
   }
 
-  .footer-logo-bg {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 6%;
-    opacity: 0.18;
+  .footer-inner {
+    padding-block: 0 clamp(20px, 3vw, 28px);
   }
 
-  .footer-logo-bg img {
-    width: min(70vw, 620px);
-    height: auto;
-    user-select: none;
-  }
-
-  .footer > *:not(.footer-logo-bg) {
+  /* ── Cierre: el lema, con su nodo final ── */
+  .footer-close {
     position: relative;
-    z-index: 1;
+    padding-block: clamp(56px, 8vw, 104px) clamp(36px, 5vw, 56px);
   }
 
-  @media (max-width: 767px) {
-    .footer-logo-bg {
-      padding-right: 0;
-      justify-content: center;
-      opacity: 0.12;
-    }
-    .footer-logo-bg img {
-      width: min(90vw, 480px);
-    }
-  }
-
-  /* 01 · La línea dorada de arriba, que se dibuja al llegar al pie. */
-  .footer-gold-rule {
-    --ph-seam-color: rgba(214, 178, 94, 0.5);
+  .footer-close__rule {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 1px;
+    background: linear-gradient(to right, rgba(214, 178, 94, 0.6), var(--ph-struct-soft) 40%);
+    transform-origin: 0 50%;
+    transition: transform var(--ph-dur-field) var(--ph-ease-out);
   }
 
-  /* 02 · Sello: el lema, a escala de rótulo, entra palabra a palabra. */
-  .footer-sello {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(2.25rem, 8.6vw, 5.5rem);
-    line-height: 1.02;
-    letter-spacing: -0.01em;
-    text-transform: uppercase;
-    color: var(--color-ph-white);
-    max-width: none;
-    margin: 0;
-    padding-block: clamp(3rem, 7vw, 5rem) clamp(2.25rem, 5vw, 3.5rem);
+  :global(html.ph-anim) .footer-close:not(.is-inview) .footer-close__rule {
+    transform: scaleX(0);
   }
 
-  .footer-sello__accent {
-    color: var(--color-ph-gold);
-  }
-
-  .footer-sello__slot {
-    display: inline-block;
-    overflow: hidden;
-    vertical-align: bottom;
-    padding-right: 0.06em;
-    margin-right: -0.06em;
-  }
-
-  .footer-sello__word {
-    display: inline-block;
-    transition: transform var(--ph-dur-roll) var(--ph-ease-out) calc(var(--w, 0) * 70ms);
-  }
-
-  :global(html.ph-anim) .footer-sello:not(.is-inview) .footer-sello__word {
-    transform: translateY(110%);
-  }
-
-  :global(html.ph-anim:not(.ph-motion)) .footer-sello__word {
+  :global(html.ph-anim:not(.ph-motion)) .footer-close__rule {
     animation: ph-motion-failsafe 0s linear 2.5s forwards;
   }
 
-  /* 03 · 3-col funcional */
+  .footer-lema {
+    max-width: none;
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(40px, 8.4vw, 96px);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    color: var(--color-ph-white);
+  }
+
+  .footer-lema__lead,
+  .footer-lema__accent {
+    display: block;
+  }
+
+  .footer-lema__accent {
+    --enter-delay: 90ms;
+    color: var(--color-ph-gold);
+  }
+
+  /* El nodo terminal: donde acaba el recorrido. */
+  .footer-lema__node {
+    margin-left: 0.28em;
+    vertical-align: 0.12em;
+    transition-delay: 360ms;
+  }
+
+  /* ── Rejilla: marca, páginas, contacto y redes ── */
   .footer-grid {
     display: grid;
-    gap: 2.5rem;
-    padding-block: clamp(2rem, 4vw, 3rem);
+    gap: 32px;
+    padding-block: clamp(28px, 4vw, 40px);
     border-top: 1px solid var(--color-ph-white-10);
   }
 
   @media (min-width: 768px) {
     .footer-grid {
       grid-template-columns: 1fr 1fr 1fr;
-      gap: clamp(2rem, 4vw, 3rem);
+      gap: clamp(24px, 4vw, 48px);
       align-items: start;
     }
   }
@@ -313,57 +258,55 @@ const accentWords = words(t('hero.claim.accent'));
 
   .footer-col-label {
     font-family: var(--font-body);
-    font-size: 0.8125rem;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    color: var(--color-ph-gold);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    color: var(--ph-ink-meta);
   }
 
   .footer-col-label--social {
-    margin-top: 1.5rem;
+    margin-top: 22px;
   }
 
-  .footer-nav {
+  .footer-list {
     display: flex;
     flex-direction: column;
-    gap: 0.625rem;
-    margin: 0.875rem 0 0;
+    margin: 8px 0 0;
     padding: 0;
     list-style: none;
   }
 
-  /* Enlaces del pie: al señalarlos, una línea se dibuja debajo, de izquierda a
-     derecha, como las del tablero. */
+  /* Cada entrada, un nodo y su texto. Al señalarla, el nodo se rellena y el
+     anillo se expande una vez. */
   .footer-link {
-    position: relative;
-    display: inline-block;
-    padding-block: 0.125rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 40px;
     font-family: var(--font-display);
-    font-size: 1rem;
+    font-size: 16px;
     font-weight: 400;
-    color: var(--color-ph-white-60);
+    color: rgba(255, 255, 255, 0.74);
     transition: color var(--ph-dur-state) var(--ph-ease-std);
   }
 
-  .footer-link::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 1px;
-    background: currentColor;
-    transform: scaleX(0);
-    transform-origin: 0 50%;
-    transition: transform var(--ph-dur-move) var(--ph-ease-out);
+  .footer-link :global(.footer-social-svg) {
+    width: 16px;
+    height: 16px;
+    flex: none;
   }
 
   @media (hover: hover) {
     .footer-link:hover {
       color: var(--color-ph-white);
     }
-    .footer-link:hover::after {
-      transform: scaleX(1);
+    .footer-link:hover .footer-link__node {
+      background-color: var(--color-ph-gold);
+    }
+    .footer-link:hover .footer-link__node::after {
+      background-color: var(--color-ph-black);
+    }
+    .footer-link:hover .footer-link__node::before {
+      animation: ph-ping 320ms var(--ph-ease-out) both;
     }
   }
 
@@ -371,103 +314,42 @@ const accentWords = words(t('hero.claim.accent'));
     color: var(--color-ph-gold);
   }
 
-  .footer-contact {
-    margin-top: 0.875rem;
-  }
-
-  .footer-email {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    color: var(--color-ph-white-60);
-    transition: color var(--ph-dur-state) var(--ph-ease-std);
-  }
-
-  @media (hover: hover) {
-    .footer-email:hover {
-      color: var(--color-ph-gold);
-    }
-  }
-
-  .footer-social-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin: 0.875rem 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .footer-social-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: var(--radius-sm);
-    color: var(--color-ph-white-60);
-    border: 1px solid var(--color-ph-white-10);
-    transition:
-      color var(--ph-dur-state) var(--ph-ease-std),
-      border-color var(--ph-dur-state) var(--ph-ease-std),
-      background var(--ph-dur-state) var(--ph-ease-std),
-      transform var(--ph-dur-tap) var(--ph-ease-std);
-  }
-
-  .footer-social-link:active {
-    transform: scale(0.94);
-  }
-
-  @media (hover: hover) {
-    .footer-social-link:hover {
-      color: var(--color-ph-gold);
-      border-color: var(--color-ph-gold-muted);
-      background: rgba(214, 178, 94, 0.06);
-    }
-  }
-
-  .footer-social-link--disabled {
+  .footer-link--disabled {
     opacity: 0.45;
     pointer-events: none;
   }
 
-  .footer-social-link svg {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
-
-  /* 04 · Copyright */
-  .footer-bottom {
-    margin-top: clamp(2rem, 4vw, 2.5rem);
-    padding-top: 1.25rem;
-    padding-bottom: 1rem;
-    border-top: 1px solid var(--color-ph-white-10);
-  }
-
+  /* ── Una línea: copyright y textos legales ── */
   .footer-bottom {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
+    gap: 6px 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-ph-white-10);
   }
 
   .footer-bottom p {
-    font-family: var(--font-body);
-    font-size: 0.8125rem;
-    color: var(--color-ph-white-60);
     margin: 0;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ph-ink-meta);
   }
 
   .footer-legal {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 10px;
   }
 
   .footer-legal-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
     font-family: var(--font-body);
-    font-size: 0.8125rem;
-    color: var(--color-ph-white-60);
+    font-size: 13px;
+    color: var(--ph-ink-meta);
     transition: color var(--ph-dur-state) var(--ph-ease-std);
   }
 
@@ -478,40 +360,33 @@ const accentWords = words(t('hero.claim.accent'));
   }
 
   .footer-legal-sep {
-    font-size: 0.8125rem;
-    color: var(--color-ph-white-20);
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.3);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .footer-sello__word,
+    .footer-close__rule,
     .footer-logo__line,
-    .footer-link,
-    .footer-link::after,
-    .footer-social-link {
+    .footer-link {
       transition: none;
+    }
+    .footer-link:hover .footer-link__node::before {
+      animation: none;
     }
   }
 </style>
 
 <script>
   /* El pie está en todas las páginas: el núcleo de movimiento (sin GSAP) vigila lo
-     que entra en pantalla. Al terminar de rodar el lema, la luz cruza la parte
-     dorada, una vez. */
-  import { glint } from '@/scripts/ph-motion';
+     que entra en pantalla. Cuando el lema termina de llegar, su nodo final se
+     activa una vez. */
+  import { whenInView, ping } from '@/scripts/ph-motion';
 
   function initFooter(): void {
-    const sello = document.querySelector<HTMLElement>('[data-footer-sello]');
-    const accent = sello?.querySelector<HTMLElement>('.footer-sello__accent');
-    if (!sello || !accent) return;
-    const io = new IntersectionObserver((entries) => {
-      if (!entries.some((e) => e.isIntersecting)) return;
-      io.disconnect();
-      window.setTimeout(() => {
-        accent.querySelectorAll<HTMLElement>('.footer-sello__word').forEach((word, i) => glint(word, i * 140));
-      }, 760);
-    }, { rootMargin: '0px 0px -8% 0px' });
-    io.observe(sello);
-    document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
+    const close = document.querySelector<HTMLElement>('[data-footer-close]');
+    const node = close?.querySelector<HTMLElement>('[data-footer-node]');
+    if (!close || !node) return;
+    whenInView(close, () => window.setTimeout(() => ping(node), 620));
   }
 
   document.addEventListener('astro:page-load', initFooter);

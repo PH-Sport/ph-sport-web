@@ -71,72 +71,59 @@
      estirar sin que el layout se entere. Mismo arreglo que en ochoa-cokima. */
   --ph-viewport-h: 100svh;
 
-  /* Glassmorphism */
-  --ph-glass-bg:        rgba(255, 255, 255, 0.04);
-  --ph-glass-border:    rgba(255, 255, 255, 0.08);
-  --ph-glass-blur:      16px;
-  --ph-glass-blur-ui:   8px;
-  --ph-glass-blur-overlay: 10px;
-  --ph-glass-blur-modal: 24px;
-  --ph-glass-saturate:  1.1;
-  --ph-glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  /* Cadenas completas para backdrop-filter (-webkit duplicado en componentes) */
-  --ph-glass-backdrop: blur(var(--ph-glass-blur)) saturate(var(--ph-glass-saturate));
-  --ph-glass-backdrop-ui: blur(var(--ph-glass-blur-ui)) saturate(var(--ph-glass-saturate));
-  --ph-glass-backdrop-overlay: blur(var(--ph-glass-blur-overlay)) saturate(var(--ph-glass-saturate));
-  --ph-glass-backdrop-modal: blur(var(--ph-glass-blur-modal)) saturate(var(--ph-glass-saturate));
-
-  /* Secciones página: transparente para ver el fondo (body / logo parallax) a través de main */
+  /* Secciones página: transparente para ver el fondo (la retícula) a través de main */
   --ph-section-bg: transparent;
 
-  /* Cabecera de Talentos, Servicios y Sobre nosotros: fila índice, titular,
-     entradilla debajo y el contenido empieza ya en la primera pantalla. Las tres
-     usan estas cifras, así que al pasar de una a otra no cambia nada de sitio. Van
-     de móvil (390 px) a escritorio (1440 px) en línea recta. Ver ARCHITECTURE.md,
+  /* Cabecera de Talentos, Servicios y Sobre nosotros: zona, titular, entradilla
+     debajo y el contenido empieza ya en la primera pantalla. Las tres usan estas
+     cifras, así que al pasar de una a otra no cambia nada de sitio. Van de móvil
+     (390 px) a escritorio (1440 px) en línea recta. Ver ARCHITECTURE.md,
      «Cabecera de sección y fondo animado». */
   --ph-head-top:        clamp(76px, calc(3.8vw + 61px), 116px);
   --ph-head-index-pad:  clamp(14px, calc(0.4vw + 12.5px), 18px);
-  --ph-head-title-gap:  clamp(28px, calc(1.9vw + 20.6px), 48px);
+  --ph-head-title-gap:  clamp(24px, calc(1.9vw + 16.6px), 44px);
   --ph-head-title-size: clamp(46px, calc(5.6vw + 26px), 106px);
   --ph-head-lead-gap:   clamp(16px, calc(0.76vw + 13px), 24px);
   --ph-head-lead-size:  clamp(18px, calc(0.38vw + 16.5px), 22px);
-  --ph-head-after:      clamp(36px, calc(1.9vw + 28.6px), 56px);
+  --ph-head-after:      clamp(32px, calc(1.9vw + 24.6px), 52px);
   /* Tres tonos de texto sobre fondo oscuro: entradilla, texto corrido y datos. */
   --ph-ink-lead: rgba(255, 255, 255, 0.9);
   --ph-ink-body: rgba(255, 255, 255, 0.82);
   --ph-ink-meta: rgba(255, 255, 255, 0.62);
 
-  /* ── Movimiento: lenguaje «Marcador» ──
-     Dos velocidades. La del interfaz responde a un gesto y no se hace esperar
-     (120-320 ms); la de autor es la de las entradas de sección (600-800 ms). Las
-     curvas son las de Material 3 más la de la marca, y las mismas existen en JS
-     con el mismo nombre (src/scripts/ph-motion.ts). Ver ARCHITECTURE.md,
-     «Sistema de animaciones». */
+  /* ── Mundo «Análisis» ──
+     La web es la sala de análisis de PHSPORT: una retícula tenue fija a la
+     pantalla, líneas de estructura en blanco al 24 % y el oro solo para lo que
+     anota (líneas guía, nodos, visores, trayectorias). Ver ARCHITECTURE.md,
+     «Sistema de diseño» y «Sistema de animaciones». */
+  --ph-grid: 48px;                              /* paso de la retícula (64 px en escritorio) */
+  --ph-grid-line: rgba(255, 255, 255, 0.055);   /* sus líneas: casi no se ven */
+  --ph-struct: rgba(255, 255, 255, 0.24);       /* estructura: campo, ejes, reglas */
+  --ph-struct-soft: rgba(255, 255, 255, 0.12);  /* estructura secundaria */
+  --ph-stroke: 1.5px;                           /* el trazo de todo lo que anota */
+  --ph-gold-trail: rgba(214, 178, 94, 0.14);    /* estela del escaneo */
+
+  /* ── Movimiento ──
+     Curvas de la casa (las mismas existen en GSAP con el mismo nombre, en
+     src/scripts/ph-text-animations.ts) y tiempos por papel. La interfaz responde
+     en 100-260 ms; los trazos de autor van de 400 a 900 ms. Lo que se va, más
+     rápido que lo que llega. */
   --ph-ease-out:  cubic-bezier(0.16, 1, 0.3, 1);   /* llegada: frena como algo con masa */
   --ph-ease-emph: cubic-bezier(0.05, 0.7, 0.1, 1); /* entrada enfatizada (M3) */
   --ph-ease-std:  cubic-bezier(0.2, 0, 0, 1);      /* cambio de estado (M3 estándar) */
   --ph-ease-in:   cubic-bezier(0.3, 0, 0.8, 0.15); /* salida: acelera, como lo que cae (M3) */
-  --ph-dur-tap:   120ms;  /* respuesta a un toque */
-  --ph-dur-state: 200ms;  /* hover, color, estado */
-  --ph-dur-move:  320ms;  /* algo que se desplaza: menú, panel, flecha */
-  --ph-dur-draw:  640ms;  /* una línea que se dibuja */
-  --ph-dur-roll:  760ms;  /* un titular que entra rodando */
-
-  /* Las dos caras de una paleta del marcador: la de arriba un punto más clara,
-     como la luz que cae desde arriba sobre el panel. */
-  --ph-flap-top:    #1d2025;
-  --ph-flap-bottom: #15171b;
+  --ph-dur-tap:    120ms;  /* respuesta a un toque */
+  --ph-dur-state:  180ms;  /* hover, color, estado */
+  --ph-dur-lock:   240ms;  /* un visor que se fija */
+  --ph-dur-leader: 260ms;  /* una línea guía que se dibuja */
+  --ph-dur-move:   300ms;  /* algo que se desplaza: menú, panel */
+  --ph-dur-field:  520ms;  /* geometría del campo */
+  --ph-dur-scan:   600ms;  /* el escaneo que revela una foto */
+  --ph-dur-trace:  760ms;  /* trayectoria de autor */
 }
 
-@media (prefers-reduced-transparency: reduce) {
-  :root {
-    --ph-glass-blur: 0px;
-    --ph-glass-blur-ui: 0px;
-    --ph-glass-blur-overlay: 0px;
-    --ph-glass-blur-modal: 0px;
-    --ph-glass-saturate: 1;
-    --ph-glass-bg: rgba(255, 255, 255, 0.08);
-  }
+@media (min-width: 900px) {
+  :root { --ph-grid: 64px; }
 }
 
 /* ── FUENTES (self-hosted) ─────────────────────────────────────────────────── */
@@ -195,7 +182,9 @@ html {
 }
 
 body {
-  background-color: var(--color-ph-black);
+  /* Sin fondo propio: el negro lo pone <html> y encima va la retícula
+     (`body::before`). Si el body pintara su fondo, la taparía. */
+  background-color: transparent;
   color: var(--color-ph-white);
   font-family: var(--font-body);
   font-size: 1rem;
@@ -207,12 +196,30 @@ body {
   /* Zonas seguras: con `viewport-fit=cover` la página llega hasta los bordes físicos,
      así que el contenido se aparta del notch en apaisado y de la barra de gestos
      abajo. En vertical y en escritorio estos valores son 0 y no cambia nada. El
-     inset de arriba no va aquí sino en la cápsula del header, que es `fixed` y no
+     inset de arriba no va aquí sino en la barra del header, que es `fixed` y no
      hereda el padding del body; el hero, que sí debe llegar hasta el borde, se
      queda a sangre a propósito. */
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* La retícula de análisis: líneas de 1 px casi invisibles, fijas a la pantalla.
+   Las verticales caen en el borde del contenido (`--ph-section-px`), así el texto
+   se apoya en una línea de la retícula. Va detrás de todo (z-index -1 en el
+   contexto raíz); el contenido y el fondo animado de las interiores pasan por
+   encima. Pintada una vez y compuesta: el scroll no la repinta. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--ph-grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--ph-grid-line) 1px, transparent 1px);
+  background-size: var(--ph-grid) var(--ph-grid);
+  background-position: var(--ph-section-px) 0;
 }
 
 /* Sonda de medición del script que congela `--ph-viewport-h`. Lleva `svh` literal
@@ -232,7 +239,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.02em;
   color: var(--color-ph-white);
@@ -246,20 +253,31 @@ p {
 a {
   color: inherit;
   text-decoration: none;
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
 }
 
-:where(a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])):focus {
+:where(a, button, input, textarea, select, summary, [tabindex]:not([tabindex="-1"])):focus {
   outline: none;
 }
 
-:where(a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])):focus-visible {
-  outline: 2px solid var(--color-ph-gold);
-  outline-offset: 2px;
+/* Foco: un recuadro dorado fino con aire, como un visor sin esquinas. */
+:where(a, button, input, textarea, select, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 1.5px solid var(--color-ph-gold);
+  outline-offset: 4px;
 }
 
 strong {
   font-weight: 700;
   color: var(--color-ph-white);
+}
+
+/* Cifras e índices: lo único en monoespaciada (01-05, 7, 360°, códigos ISO). */
+.ph-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: 0;
 }
 
 /* ── UTILIDADES GLOBALES ───────────────────────────────────────────────────── */
@@ -271,12 +289,6 @@ strong {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-ph-gold);
-}
-
-.ph-divider {
-  width: 2.5rem;
-  height: 2px;
-  background-color: var(--color-ph-gold);
 }
 
 .ph-accent {
@@ -291,15 +303,6 @@ strong {
   max-width: none;
   margin-inline: auto;
 }
-
-.ph-glass {
-  background: var(--ph-glass-bg);
-  backdrop-filter: var(--ph-glass-backdrop);
-  -webkit-backdrop-filter: var(--ph-glass-backdrop);
-  border: 1px solid var(--ph-glass-border);
-  box-shadow: var(--ph-glass-highlight);
-}
-
 
 /**
  * Glass “brillante” (variante experimental): capas de sombra + bordes con gradiente.
@@ -395,8 +398,7 @@ strong {
 /* El cursor de texto, en el oro de la marca, como la selección. */
 input, textarea { caret-color: var(--color-ph-gold); }
 
-/* Texto solo para lectores de pantalla (la cifra de una ficha del marcador, por
-   ejemplo: se ve dividida en paletas y se lee entera). */
+/* Texto solo para lectores de pantalla. */
 .ph-sr {
   position: absolute;
   width: 1px;
@@ -409,26 +411,11 @@ input, textarea { caret-color: var(--color-ph-gold); }
   border: 0;
 }
 
-/* ── Word-curtain helpers (ph-text-animations.ts) ──────────────────────────── */
-
-.ph-clip {
-  display: inline-block;
-  vertical-align: bottom;
-  /* Clip only the bottom so the curtain reveal (yPercent: 115 → 0) works,
-     while letting ascenders, italic tops, and italic right-overshoot remain
-     visible at tight display line-heights (< 1). */
-  clip-path: inset(-0.25em -0.15em 0 -0.05em);
-}
-
-.ph-clip-inner {
-  display: inline-block;
-}
-
 /* ── Fondo animado de página (src/scripts/ph-ambient.ts) ──────────────────────
    Talentos, Servicios y Sobre nosotros: la luz es el fondo de toda la página. Va
-   fija a la pantalla, por detrás de todo el contenido de <main>, y el contenido
-   pasa por encima al hacer scroll. Sin máscaras de CSS: dónde brilla y dónde se
-   atenúa lo decide la propia animación. */
+   fija a la pantalla, por detrás de todo el contenido de <main> y por encima de
+   la retícula, y el contenido pasa por encima al hacer scroll. Sin máscaras de
+   CSS: dónde brilla y dónde se atenúa lo decide la propia animación. */
 .ph-page-bg {
   position: fixed;
   inset: 0;
@@ -451,72 +438,15 @@ input, textarea { caret-color: var(--color-ph-gold); }
 
 /* ── Cabecera de sección (Talentos, Servicios, Sobre nosotros) ─────────────────
    Cinco papeles con un tamaño cada uno, para que se distingan sin leerlos:
-   fila índice, titular, entradilla, texto corrido y datos. Cifras en `:root`
+   zona, titular, entradilla, texto corrido y datos. Cifras en `:root`
    (`--ph-head-*`). */
-
-/* Fila índice: una línea fina con una etiqueta a la izquierda y un dato a la
-   derecha. Ordena la página: número de sección, «Áreas de gestión», valores.
-   Es la «pizarra» del marcador: la línea se dibuja al entrar en pantalla y las
-   cifras van en paletas (`.ph-flap`). La pinta `Slate.astro`. */
-.ph-rowline {
-  position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px 24px;
-  margin: 0;
-  /* A veces es un <p>: sin esto heredaría el tope de 65ch de los párrafos y la
-     línea se cortaría a media pantalla. */
-  max-width: none;
-  padding-top: var(--ph-head-index-pad);
-}
-.ph-rowline__group {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-/* Los números (02, 05 disciplinas…) van en paletas del marcador (`Flap.astro`):
-   lo único que va en monoespaciada. */
-.ph-rowline__sep {
-  color: rgba(255, 255, 255, 0.3);
-}
-.ph-rowline__label {
-  font-size: clamp(14px, calc(0.1vw + 13.6px), 15px);
-  letter-spacing: 0.005em;
-  color: rgba(255, 255, 255, 0.86);
-}
-/* Datos en mayúsculas (los valores de Sobre nosotros): algo de aire, no más. */
-.ph-rowline__meta {
-  font-size: 13px;
-  letter-spacing: 0.05em;
-  color: var(--ph-ink-meta);
-}
-
-/* Pizarra (`Slate.astro`): la etiqueta y el dato suben por su ranura detrás de la
-   línea, que se dibuja primero. */
-.ph-slate__label {
-  display: inline-flex;
-  overflow: hidden;
-  padding-block: 0.12em;
-}
-.ph-slate__label > * {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35em;
-  transition: transform var(--ph-dur-roll) var(--ph-ease-out) 140ms;
-}
-html.ph-anim .ph-slate:not(.is-inview) .ph-slate__label > * {
-  transform: translateY(115%);
-}
-
 .ph-head-title {
-  margin: var(--ph-head-title-gap) 0 0 -0.05em;
+  margin: var(--ph-head-title-gap) 0 0 -0.04em;
   max-width: 10em;
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 600;
   font-size: var(--ph-head-title-size);
-  line-height: 0.92;
+  line-height: 0.94;
   letter-spacing: -0.04em;
   color: var(--color-ph-white);
   text-wrap: balance;
@@ -535,279 +465,446 @@ html.ph-anim .ph-slate:not(.is-inview) .ph-slate__label > * {
   text-wrap: balance;
 }
 
-/* ══ LENGUAJE «MARCADOR» ════════════════════════════════════════════════════
-   Las piezas comunes del movimiento. Cómo encajan y por qué, en ARCHITECTURE.md
-   («Sistema de animaciones»). Regla de todas: el estado de reposo es el
-   visible. Lo que espera a entrar en pantalla solo se esconde con `ph-anim` en
-   <html> (hay JS y no hay movimiento reducido) y tiene red de seguridad abajo. */
+/* ══ MUNDO «ANÁLISIS» ═══════════════════════════════════════════════════════
+   Las piezas comunes. Cómo encajan y por qué, en ARCHITECTURE.md («Sistema de
+   animaciones»). Regla de todas: el estado de reposo es el visible. Lo que
+   espera a entrar en pantalla solo se esconde con `ph-anim` en <html> (hay JS y
+   no hay movimiento reducido), debajo de un `[data-inview]` que aún no tiene
+   `is-inview`, y tiene red de seguridad al final de este archivo. Lo que se
+   anima con `transform` acaba siempre en `transform: none`: así la red de
+   seguridad (que pone `none`) deja cada pieza en su sitio. */
 
-/* ── Costura: una línea que se dibuja de izquierda a derecha ────────────────
-   La de la fila índice y la de cualquier `.ph-seam`. El JS le pone `is-inview`
-   al entrar en pantalla; el retardo de cada una, si va en cascada, en
-   `--ph-seam-delay`. */
-.ph-seam { position: relative; }
-.ph-rowline::before,
-.ph-seam::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--ph-seam-color, rgba(255, 255, 255, 0.14));
+/* ── Zona: el rótulo que abre cada bloque («02 · Talentos») ─────────────────
+   Una etiqueta con su índice en monoespaciada y una regla de 1 px con marcas
+   sin números, como el borde de una zona en un gráfico de análisis. La pinta
+   `Zone.astro`. Al entrar: la regla se traza y la etiqueta se desliza 6 px. */
+.ph-zone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0;
+  max-width: none;
+  font-family: var(--font-body);
+  font-size: clamp(14px, calc(0.1vw + 13.6px), 15px);
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.86);
+}
+.ph-zone__tag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45em;
+  white-space: nowrap;
+}
+.ph-zone__tag .ph-num { color: var(--color-ph-gold); font-size: 0.93em; }
+.ph-zone__sep { color: rgba(255, 255, 255, 0.36); }
+/* La regla: crece hasta el borde y lleva marcas cada paso de retícula. */
+.ph-zone__rule {
+  position: relative;
+  flex: 1 1 64px;
+  min-width: 48px;
+  height: 7px;
+  align-self: center;
+  background:
+    linear-gradient(var(--ph-struct), var(--ph-struct)) 0 50% / 100% 1px no-repeat,
+    repeating-linear-gradient(to right, var(--ph-struct-soft) 0 1px, transparent 1px var(--ph-grid)) 0 0 / 100% 100%;
   transform-origin: 0 50%;
-  transition: transform var(--ph-dur-draw) var(--ph-ease-out) var(--ph-seam-delay, 0ms);
+}
+.ph-zone__meta {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--ph-ink-meta);
+  white-space: nowrap;
+}
+.ph-zone__meta .ph-num { color: var(--color-ph-gold); }
+.ph-zone__tag,
+.ph-zone__meta {
+  transition:
+    opacity 320ms var(--ph-ease-out) 140ms,
+    transform 320ms var(--ph-ease-out) 140ms;
+}
+.ph-zone__rule { transition: transform var(--ph-dur-field) var(--ph-ease-out); }
+html.ph-anim .ph-zone:not(.is-inview) .ph-zone__rule { transform: scaleX(0); }
+html.ph-anim .ph-zone:not(.is-inview) .ph-zone__tag,
+html.ph-anim .ph-zone:not(.is-inview) .ph-zone__meta {
+  opacity: 0;
+  transform: translateX(-6px);
+}
+
+/* ── Visor: cuatro escuadras que fijan lo que se enfoca ─────────────────────
+   Cada esquina es un `<i>` (se desplaza al fijarse) con dos brazos en sus
+   pseudoelementos (se acortan sin cambiar de grosor). La pinta `Visor.astro`.
+   Tres maneras de fijarse:
+   - `ph-visor--view`: al entrar en pantalla (lleva `data-inview` propio).
+   - `ph-visor--hover`: al señalar a su padre (`:hover`, `:focus-visible`).
+   - `ph-visor--js`: lo fija y lo suelta un script (`is-locked`, `is-released`).
+   Llegan desde 12 px fuera en 240 ms; al soltarse se abren 6 px y se apagan en
+   150 ms. Con `ph-visor--settle`, tras fijarse se quedan en marcas pequeñas. */
+.ph-visor {
+  --visor-arm: 16px;
+  --visor-w: var(--ph-stroke);
+  --visor-color: var(--color-ph-gold);
+  --visor-off: 12px;
+  position: absolute;
+  inset: var(--visor-inset, -10px);
+  z-index: 2;
   pointer-events: none;
 }
-html.ph-anim .ph-rowline:not(.is-inview)::before,
-html.ph-anim .ph-seam:not(.is-inview)::before {
-  transform: scaleX(0);
+.ph-visor > i {
+  --vx: -1;
+  --vy: -1;
+  position: absolute;
+  width: var(--visor-arm);
+  height: var(--visor-arm);
+  transition:
+    transform var(--ph-dur-lock) var(--ph-ease-out),
+    opacity var(--ph-dur-lock) var(--ph-ease-out);
 }
+.ph-visor > i::before,
+.ph-visor > i::after {
+  content: '';
+  position: absolute;
+  background: var(--visor-color);
+  transition: transform 360ms var(--ph-ease-out);
+}
+.ph-visor > i::before { left: 0; right: 0; height: var(--visor-w); }
+.ph-visor > i::after { top: 0; bottom: 0; width: var(--visor-w); }
+.ph-visor > i:nth-child(1) { top: 0; left: 0; }
+.ph-visor > i:nth-child(1)::before { top: 0; transform-origin: 0 0; }
+.ph-visor > i:nth-child(1)::after { left: 0; transform-origin: 0 0; }
+.ph-visor > i:nth-child(2) { --vx: 1; top: 0; right: 0; }
+.ph-visor > i:nth-child(2)::before { top: 0; transform-origin: 100% 0; }
+.ph-visor > i:nth-child(2)::after { right: 0; transform-origin: 0 0; }
+.ph-visor > i:nth-child(3) { --vy: 1; bottom: 0; left: 0; }
+.ph-visor > i:nth-child(3)::before { bottom: 0; transform-origin: 0 0; }
+.ph-visor > i:nth-child(3)::after { left: 0; transform-origin: 0 100%; }
+.ph-visor > i:nth-child(4) { --vx: 1; --vy: 1; bottom: 0; right: 0; }
+.ph-visor > i:nth-child(4)::before { bottom: 0; transform-origin: 100% 0; }
+.ph-visor > i:nth-child(4)::after { right: 0; transform-origin: 0 100%; }
 
-/* ── Paletas del marcador (`Flap.astro`) ────────────────────────────────────
-   Cada carácter va en su paleta: dos caras partidas por una bisagra. Al entrar
-   en pantalla las paletas caen, una tras otra, hasta su valor (ph-motion.ts). El
-   HTML ya trae el valor final: sin JS o con movimiento reducido se ve tal cual. */
-.ph-flap {
-  display: inline-flex;
-  align-items: center;
-  vertical-align: middle;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  color: var(--color-ph-gold);
+/* Suelto: cada esquina, fuera y apagada. */
+html.ph-anim .ph-visor--view:not(.is-inview) > i,
+.ph-visor--hover > i,
+.ph-visor--js:not(.is-locked) > i {
+  opacity: 0;
+  transform: translate(calc(var(--vx) * var(--visor-off)), calc(var(--vy) * var(--visor-off)));
 }
-.ph-flap--md { font-size: 15px; }
-.ph-flap--lg { font-size: clamp(20px, calc(1.2vw + 15px), 28px); }
-.ph-flap--xl { font-size: clamp(38px, calc(4.2vw + 22px), 72px); }
-.ph-flap__cells {
-  display: inline-flex;
-  gap: 0.16em;
+/* Soltándose: se abre poco y se apaga deprisa. */
+.ph-visor--js.is-released > i,
+.ph-visor--hover > i {
+  transition-duration: 150ms;
+  transition-timing-function: var(--ph-ease-in);
 }
-.ph-flap__cell {
-  --flap-h: 1.9em;
+.ph-visor--js.is-released > i {
+  --visor-off: 6px;
+}
+/* Fijado al señalar a su padre. */
+:hover > .ph-visor--hover > i,
+:focus-visible > .ph-visor--hover > i,
+.is-targeted > .ph-visor--hover > i {
+  opacity: 1;
+  transform: none;
+  transition-duration: var(--ph-dur-lock);
+  transition-timing-function: var(--ph-ease-out);
+}
+/* Asentado en marcas pequeñas (después de fijarse al entrar). */
+.ph-visor--settle.is-inview > i::before { transform: scaleX(0.42); transition-delay: 520ms; }
+.ph-visor--settle.is-inview > i::after { transform: scaleY(0.42); transition-delay: 520ms; }
+:hover > .ph-visor--settle > i::before,
+.is-targeted > .ph-visor--settle > i::before { transform: none; transition-delay: 0ms; }
+:hover > .ph-visor--settle > i::after,
+.is-targeted > .ph-visor--settle > i::after { transform: none; transition-delay: 0ms; }
+
+/* ── Nodo: anillo con punto central ─────────────────────────────────────────
+   Marca un punto de interés. Al activarse, un anillo se expande una vez y se
+   apaga (`is-pinged`, sin pulsos infinitos). `ph-node--pop` entra de 0,6 a 1
+   con su contenedor en pantalla. */
+.ph-node {
+  --node: 16px;
+  --node-color: var(--color-ph-gold);
   position: relative;
   display: inline-block;
-  min-width: 1.5em;
-  height: var(--flap-h);
-  padding-inline: 0.22em;
-  line-height: var(--flap-h);
-  text-align: center;
-  background: linear-gradient(to bottom, var(--ph-flap-top) 50%, var(--ph-flap-bottom) 50%);
-  border-radius: 3px;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-    0 1px 2px rgba(0, 0, 0, 0.45);
-  perspective: 6em;
+  flex: none;
+  width: var(--node);
+  height: var(--node);
+  border: var(--ph-stroke) solid var(--node-color);
+  border-radius: 50%;
+  vertical-align: middle;
+  transition:
+    background-color var(--ph-dur-state) var(--ph-ease-std),
+    border-color var(--ph-dur-state) var(--ph-ease-std),
+    transform 180ms var(--ph-ease-out),
+    opacity 180ms var(--ph-ease-out);
 }
-.ph-flap--xl .ph-flap__cell { border-radius: 6px; min-width: 1.3em; --flap-h: 1.5em; }
-/* La bisagra: la raya que parte la paleta en dos. Es lo que hace que se lea como
-   marcador aun quieta. */
-.ph-flap__cell::after {
+.ph-node::after {
   content: '';
   position: absolute;
   top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  margin-top: -0.5px;
-  background: rgba(13, 15, 18, 0.92);
-  z-index: 4;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: var(--node-color);
+  transition: background-color var(--ph-dur-state) var(--ph-ease-std);
+}
+.ph-node::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--ph-stroke) * -1);
+  border: var(--ph-stroke) solid var(--node-color);
+  border-radius: 50%;
+  opacity: 0;
   pointer-events: none;
 }
-.ph-flap__char { display: block; }
-html.ph-anim .ph-flap:not(.is-flapped) .ph-flap__cell:not(.is-set) .ph-flap__char { opacity: 0; }
-
-/* Las capas de la caída: las crea el JS mientras dura y las quita al terminar.
-   Arriba la cara que cae (gira sobre la bisagra hacia el que mira) y abajo la
-   que llega. */
-.ph-flap__half {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 50%;
-  overflow: hidden;
-  backface-visibility: hidden;
+.ph-node--sm { --node: 11px; }
+.ph-node--sm::after { width: 3px; height: 3px; margin: -1.5px 0 0 -1.5px; }
+.ph-node--lg { --node: 20px; }
+.ph-node--muted { --node-color: rgba(255, 255, 255, 0.42); }
+.ph-node--filled { background-color: var(--node-color); }
+.ph-node--filled::after { background-color: var(--color-ph-black); }
+.ph-node.is-pinged::before { animation: ph-ping 320ms var(--ph-ease-out) both; }
+@keyframes ph-ping {
+  from { opacity: 0.9; transform: scale(1); }
+  to { opacity: 0; transform: scale(2.4); }
 }
-.ph-flap__half > span {
+html.ph-anim [data-inview]:not(.is-inview) .ph-node--pop {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+/* ── Línea guía: de un punto ancla a una etiqueta, en codo ──────────────────
+   Tramo a 45° (la diagonal del logo) y tramo recto. Primero se dibuja el codo y
+   después llega la etiqueta. La pinta `Leader.astro`: la geometría (`--diag`,
+   `--run`) va en px; la dirección, en la clase (`dr` baja a la derecha desde el
+   ancla, `ur` sube a la derecha; `dl`/`ul` son su espejo). El giro va en el
+   envoltorio y la escala en la barra, así lo que se anima termina en `none`. */
+.ph-leader {
+  --diag: 14px;
+  --run: 24px;
+  --leader-color: var(--color-ph-gold);
+  position: relative;
   display: block;
-  height: var(--flap-h);
-  line-height: var(--flap-h);
+  flex: none;
+  width: calc(var(--diag) + var(--run));
+  height: var(--diag);
+  pointer-events: none;
 }
-.ph-flap__half--top {
-  top: 0;
-  background: var(--ph-flap-top);
-  border-radius: 3px 3px 0 0;
-  transform-origin: 50% 100%;
+.ph-leader--dl,
+.ph-leader--ul { transform: scaleX(-1); }
+.ph-leader__diag,
+.ph-leader__run {
+  position: absolute;
+  height: var(--ph-stroke);
 }
-.ph-flap__half--bottom {
-  bottom: 0;
-  background: var(--ph-flap-bottom);
-  border-radius: 0 0 3px 3px;
-  transform-origin: 50% 0;
+.ph-leader__diag {
+  left: 0;
+  width: calc(var(--diag) * 1.41421);
+  transform-origin: 0 50%;
 }
-.ph-flap__half--bottom > span { transform: translateY(-50%); }
-.ph-flap__leaf { z-index: 2; }
-.ph-flap__half--bottom.ph-flap__leaf { transform: rotateX(90deg); }
+.ph-leader--dr .ph-leader__diag,
+.ph-leader--dl .ph-leader__diag { top: calc(var(--ph-stroke) / -2); transform: rotate(45deg); }
+.ph-leader--ur .ph-leader__diag,
+.ph-leader--ul .ph-leader__diag { top: calc(var(--diag) - var(--ph-stroke) / 2); transform: rotate(-45deg); }
+.ph-leader__run {
+  left: var(--diag);
+  width: var(--run);
+}
+.ph-leader--dr .ph-leader__run,
+.ph-leader--dl .ph-leader__run { top: calc(var(--diag) - var(--ph-stroke) / 2); }
+.ph-leader--ur .ph-leader__run,
+.ph-leader--ul .ph-leader__run { top: calc(var(--ph-stroke) / -2); }
+.ph-leader__diag > b,
+.ph-leader__run > b {
+  position: absolute;
+  inset: 0;
+  background: var(--leader-color);
+  transform-origin: 0 50%;
+  transition: transform var(--ph-dur-leader) var(--ph-ease-out);
+}
+.ph-leader__run > b { transition-delay: 150ms; }
+/* El punto donde ancla. */
+.ph-leader::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--leader-color);
+}
+.ph-leader--dr::before,
+.ph-leader--dl::before { top: -2px; }
+.ph-leader--ur::before,
+.ph-leader--ul::before { top: calc(var(--diag) - 2px); }
+html.ph-anim [data-inview]:not(.is-inview) .ph-leader > i > b,
+html.ph-anim .ph-leader[data-inview]:not(.is-inview) > i > b { transform: scaleX(0); }
+/* Lo que anota una línea guía llega detrás de ella, deslizándose 6 px en su
+   sentido (`ph-after-leader`). */
+.ph-after-leader {
+  transition:
+    opacity 300ms var(--ph-ease-out) 300ms,
+    transform 300ms var(--ph-ease-out) 300ms;
+}
+html.ph-anim [data-inview]:not(.is-inview) .ph-after-leader {
+  opacity: 0;
+  transform: translateX(-6px);
+}
 
-/* ── Tecla: el botón de la web ──────────────────────────────────────────────
-   Al pasar el ratón, una luz barre la tecla en la diagonal del logo, la palabra
-   rueda (sale por arriba y vuelve a entrar por abajo) y la flecha sale por la
-   esquina de arriba y vuelve por la de abajo: siempre hacia arriba a la derecha.
-   Al pulsarla se hunde un poco. La pinta `Key.astro`. */
-.ph-key {
-  --key-line: rgba(255, 255, 255, 0.24);
-  --key-ink: var(--color-ph-white);
+/* ── Trazos medidos ─────────────────────────────────────────────────────────
+   Un `path`/`line`/`circle` con `.ph-draw` se dibuja al entrar su contenedor en
+   pantalla. El script mide su longitud y la deja en `--len` (`measureStrokes`
+   en ph-motion.ts). Hasta entonces vale 4000, más largo que cualquier trazo de
+   la web: un guion de 4000 lo pinta entero en reposo y un desfase de 4000 lo
+   esconde, así que desde el primer pintado está bien escondido o bien entero. */
+.ph-draw {
+  stroke-dasharray: var(--len, 4000) var(--len, 4000);
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--draw-dur, var(--ph-dur-field)) var(--draw-ease, var(--ph-ease-out)) var(--draw-delay, 0ms);
+}
+html.ph-anim [data-inview]:not(.is-inview) .ph-draw { stroke-dashoffset: var(--len, 4000); }
+
+/* ── Enlace-nodo: el botón de la web ────────────────────────────────────────
+   Un nodo (anillo + punto) y su etiqueta. Al señalarlo, el anillo se expande
+   una vez y una flecha se dibuja hacia delante; al pulsarlo, el anillo se
+   rellena. La pinta `NodeLink.astro`. */
+.ph-node-link {
   position: relative;
   display: inline-flex;
   align-items: center;
   gap: 14px;
   min-height: 48px;
-  padding: 0 16px 0 20px;
-  border: 1px solid var(--key-line);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  line-height: 1;
-  color: var(--key-ink);
+  padding: 0 4px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(17px, calc(0.2vw + 16.2px), 19px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: var(--color-ph-white);
   text-decoration: none;
   white-space: nowrap;
-  overflow: hidden;
-  isolation: isolate;
   cursor: pointer;
+  background: none;
+  border: 0;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  transition:
-    border-color var(--ph-dur-state) var(--ph-ease-std),
-    color var(--ph-dur-state) var(--ph-ease-std),
-    transform var(--ph-dur-tap) var(--ph-ease-std);
+  transition: color var(--ph-dur-state) var(--ph-ease-std);
 }
-.ph-key--gold {
-  --key-line: rgba(214, 178, 94, 0.6);
-  --key-ink: var(--color-ph-gold);
-}
-.ph-key::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -56px;
-  right: -56px;
-  z-index: -1;
-  background: rgba(214, 178, 94, 0.12);
-  transform: translateX(-101%) skewX(45deg);
-  transition: transform var(--ph-dur-move) var(--ph-ease-out);
-}
-.ph-key__label {
-  display: grid;
-  overflow: hidden;
-  /* Un pelo más alto que la línea para que la cola de la g o la j no se corte. */
-  padding-block: 0.15em;
-}
-.ph-key__text {
-  grid-area: 1 / 1;
-  transition: transform var(--ph-dur-move) var(--ph-ease-out);
-}
-.ph-key__text + .ph-key__text { transform: translateY(125%); }
-.ph-key__arrow {
-  position: relative;
+.ph-node-link .ph-node { --node: 18px; }
+.ph-node-link__arrow {
   display: block;
-  width: 12px;
+  width: 40px;
   height: 12px;
-  overflow: hidden;
-  flex: 0 0 auto;
+  overflow: visible;
+  color: var(--color-ph-gold);
+  flex: none;
 }
-.ph-key__arrow svg {
+.ph-node-link__arrow path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--ph-stroke);
+  stroke-linecap: square;
+  stroke-dasharray: 60 60;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--ph-dur-leader) var(--ph-ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ph-node-link__arrow path { stroke-dashoffset: 60; transition-duration: 150ms; transition-timing-function: var(--ph-ease-in); }
+  .ph-node-link:hover .ph-node-link__arrow path,
+  .ph-node-link:focus-visible .ph-node-link__arrow path {
+    stroke-dashoffset: 0;
+    transition-duration: var(--ph-dur-leader);
+    transition-timing-function: var(--ph-ease-out);
+  }
+  .ph-node-link:hover { color: var(--color-ph-gold); }
+  .ph-node-link:hover .ph-node::before,
+  .ph-node-link:focus-visible .ph-node::before { animation: ph-ping 320ms var(--ph-ease-out) both; }
+}
+.ph-node-link:active .ph-node { background-color: var(--color-ph-gold); transition-duration: var(--ph-dur-tap); }
+.ph-node-link:active .ph-node::after { background-color: var(--color-ph-black); }
+
+/* ── Línea de pase de la portada (src/scripts/ph-pass.ts) ───────────────────
+   Cada bloque de la portada lleva su tramo (`.ph-pass`) por detrás de su
+   contenido: el bloque es un contexto de apilamiento (`.ph-pass-host`) y el
+   tramo va en `z-index: -1`. Los nodos que toca tapan la línea con su fondo y,
+   cuando la punta los alcanza (`is-reached`), se rellenan de oro. */
+.ph-pass-host {
+  position: relative;
+  isolation: isolate;
+}
+.ph-pass {
   position: absolute;
   inset: 0;
-  width: 12px;
-  height: 12px;
-  transition: transform var(--ph-dur-move) var(--ph-ease-out);
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
 }
-.ph-key__arrow svg + svg { transform: translate(-130%, 130%); }
-
-@media (hover: hover) and (pointer: fine) {
-  .ph-key:hover {
-    --key-line: var(--color-ph-gold);
-    color: var(--color-ph-gold);
-  }
-  .ph-key:hover::before { transform: translateX(0) skewX(45deg); }
-  .ph-key:hover .ph-key__text:first-child { transform: translateY(-125%); }
-  .ph-key:hover .ph-key__text + .ph-key__text { transform: none; }
-  .ph-key:hover .ph-key__arrow svg:first-child { transform: translate(130%, -130%); }
-  .ph-key:hover .ph-key__arrow svg + svg { transform: none; }
+.ph-pass path {
+  fill: none;
+  stroke: var(--color-ph-gold);
+  stroke-width: var(--ph-stroke);
+  stroke-linecap: round;
 }
-/* En pantalla táctil la respuesta es al dedo: la luz y el hundimiento, sin la
-   palabra rodando (no hay «hover» que deshacer después). */
-.ph-key:active {
-  transform: scale(0.97);
-  transition-duration: 80ms;
+[data-pass-node] {
+  background-color: var(--color-ph-black);
 }
-.ph-key:active::before {
-  transform: translateX(0) skewX(45deg);
-  transition-duration: var(--ph-dur-tap);
+[data-pass-node].is-reached {
+  background-color: var(--color-ph-gold);
+}
+[data-pass-node].is-reached::after {
+  background-color: var(--color-ph-black);
 }
 
-/* ── Revelado: las fotos salen del negro como una copia en la cubeta ────────
-   No es un fundido: el tono llega por partes. Primero asoman las luces (la
-   camiseta, el halo dorado) muy contrastadas y en blanco y negro; después se
-   rellenan los medios tonos y, al final, entra el color. La imagen se asienta a
-   la vez (de 1,06 a 1). Una vez por foto. `filter` y `transform` van por la
-   tarjeta gráfica. */
-.ph-develop {
+/* ── Escaneo: una línea dorada con estela barre de arriba abajo ─────────────
+   Revela una foto (`.ph-scan` con su `.ph-scan__media`): la foto se descubre al
+   paso de la línea, en 600 ms, una vez. El final es la foto tal cual. */
+.ph-scan {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
 }
-.ph-develop__media {
-  transition:
-    filter 1300ms cubic-bezier(0.45, 0, 0.25, 1) var(--ph-develop-delay, 0ms),
-    transform 1400ms var(--ph-ease-out) var(--ph-develop-delay, 0ms);
+.ph-scan__media {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path var(--ph-dur-scan) cubic-bezier(0.45, 0, 0.25, 1) var(--scan-delay, 0ms);
 }
-html.ph-anim .ph-develop:not(.is-inview) .ph-develop__media {
-  filter: brightness(0.12) contrast(2.2) saturate(0);
-  transform: scale(1.06);
-}
-
-/* ── Destello: la luz que cruza una palabra dorada, una sola vez ────────────
-   Lo pone y lo quita el JS (`glint` en ph-motion.ts); en reposo el texto es de
-   color liso. La banda va a 45°: entra por abajo a la izquierda y sale por arriba
-   a la derecha, como la flecha del logo. */
-.ph-glint {
-  background-image: linear-gradient(
-    45deg,
-    currentColor 0 44%,
-    rgba(255, 246, 222, 0.98) 50%,
-    currentColor 56% 100%
+/* La línea va en el borde de abajo de una capa del tamaño de la foto, con la
+   estela encima: la capa baja de -100 % a 0 y la línea recorre la foto entera
+   al mismo paso que el recorte. */
+.ph-scan::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(214, 178, 94, 0) calc(100% - 56px),
+    var(--ph-gold-trail) calc(100% - 8px),
+    var(--color-ph-gold) calc(100% - 1.5px)
   );
-  background-size: 320% 100%;
-  background-repeat: no-repeat;
-  background-position: 100% 0;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  /* La cursiva se sale de su caja por la derecha y el fondo solo pinta dentro
-     de la caja: sin este margen, la última letra perdería la punta mientras pasa
-     la luz. El margen negativo lo compensa y no mueve nada. */
-  padding-inline: 0.06em 0.18em;
-  margin-inline: -0.06em -0.18em;
-  animation: ph-glint 1100ms var(--ph-ease-std) var(--ph-glint-delay, 0ms) both;
+  opacity: 0;
+  transform: translateY(-100%);
 }
-@keyframes ph-glint {
-  from { background-position: 100% 0; }
-  to { background-position: 0 0; }
+html.ph-anim .ph-scan.is-inview::after {
+  animation: ph-scan-line var(--ph-dur-scan) cubic-bezier(0.45, 0, 0.25, 1) var(--scan-delay, 0ms) both;
 }
+@keyframes ph-scan-line {
+  0% { opacity: 1; transform: translateY(-100%); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(0); }
+}
+html.ph-anim .ph-scan:not(.is-inview) .ph-scan__media { clip-path: inset(0 0 100% 0); }
 
-/* ── Paso entre páginas: la luz que cruza ───────────────────────────────────
-   Mientras la página vieja se apaga y entra la nueva (el telón de BaseLayout),
-   una banda de luz dorada cruza la pantalla en la diagonal del logo: hacia arriba
-   a la derecha al avanzar, al revés al volver atrás. Va fija a la pantalla y con
-   nombre propio de View Transition, así se pinta por encima de la página y por
-   debajo de la cabecera, y no depende del tamaño de la página ni del scroll. La
-   arranca ph-motion.ts en `astro:before-swap`. */
+/* ── Paso entre páginas: el escaneo ─────────────────────────────────────────
+   La página vieja se apaga en 110 ms y una línea dorada barre la pantalla de
+   arriba abajo descubriendo la nueva (de abajo arriba al volver atrás). La pieza
+   va fija a la pantalla y con nombre propio de View Transition, así se pinta por
+   encima de la página y por debajo de la cabecera, y no depende del scroll
+   (docs/trampas-conocidas.md). La arranca ph-motion.ts en `astro:before-swap`;
+   el fundido de `page-main` está en BaseLayout. */
 .ph-stinger {
   position: fixed;
   inset: 0;
@@ -817,56 +914,62 @@ html.ph-anim .ph-develop:not(.is-inview) .ph-develop__media {
   contain: strict;
   view-transition-name: ph-stinger;
 }
+/* Una sola capa: arriba la estela y la línea, debajo el negro que tapa lo que
+   la línea aún no ha pasado. Mide la pantalla más 72 px (la estela) y empieza
+   con la línea en el borde de arriba. Primero aparece entera (100 ms, mientras
+   la página vieja se apaga) y después baja la pantalla entera: al bajar, el
+   negro se va y deja ver la página nueva por detrás de la línea. Solo
+   `transform` y `opacity`, que van por el compositor aunque la página nueva esté
+   montándose. */
 .ph-stinger::before {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 28vmax;
-  height: 260vmax;
-  margin: -130vmax 0 0 -14vmax;
+  left: 0;
+  right: 0;
+  top: -72px;
+  height: calc(100% + 72px);
   background: linear-gradient(
-    to right,
-    rgba(214, 178, 94, 0) 0%,
-    rgba(214, 178, 94, 0.06) 70%,
-    rgba(214, 178, 94, 0.22) 97%,
-    #d6b25e 99.6%,
-    rgba(214, 178, 94, 0) 100%
+    to bottom,
+    rgba(214, 178, 94, 0) 0,
+    rgba(214, 178, 94, 0.12) 60px,
+    #d6b25e 70.5px,
+    #0d0f12 72px,
+    #0d0f12 100%
   );
   opacity: 0;
-  transform: rotate(-45deg) translateX(-110vmax);
 }
-.ph-stinger.is-running::before {
-  animation: ph-stinger 560ms cubic-bezier(0.65, 0, 0.35, 1) both;
+.ph-stinger.is-running::before { animation: ph-scan-sweep 380ms linear both; }
+@keyframes ph-scan-sweep {
+  0% { opacity: 0; transform: translateY(0); animation-timing-function: linear; }
+  39% { opacity: 1; transform: translateY(0); animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
+  97% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(calc(100% - 72px)); }
 }
-/* Al volver atrás, al revés. El sentido lo apunta el JS en la propia pieza
-   (`is-back`) y no se lee del `data-astro-transition` de <html>: Astro lo quita
-   al acabar la View Transition, a mitad de la pasada, y la animación saltaría a
-   la de avanzar. */
+/* Al volver atrás, de abajo arriba. El sentido lo apunta el JS en la propia pieza
+   (`is-back`) y no se lee del `data-astro-transition` de <html>: Astro lo quita a
+   mitad de la pasada y la animación saltaría a la de avanzar. */
 .ph-stinger.is-back::before {
+  top: auto;
+  bottom: -72px;
   background: linear-gradient(
-    to left,
-    rgba(214, 178, 94, 0) 0%,
-    rgba(214, 178, 94, 0.06) 70%,
-    rgba(214, 178, 94, 0.22) 97%,
-    #d6b25e 99.6%,
-    rgba(214, 178, 94, 0) 100%
+    to top,
+    rgba(214, 178, 94, 0) 0,
+    rgba(214, 178, 94, 0.12) 60px,
+    #d6b25e 70.5px,
+    #0d0f12 72px,
+    #0d0f12 100%
   );
 }
-.ph-stinger.is-running.is-back::before {
-  animation-name: ph-stinger-back;
-}
-@keyframes ph-stinger {
-  0% { opacity: 1; transform: rotate(-45deg) translateX(-110vmax); }
-  100% { opacity: 1; transform: rotate(-45deg) translateX(110vmax); }
-}
-@keyframes ph-stinger-back {
-  0% { opacity: 1; transform: rotate(-45deg) translateX(110vmax); }
-  100% { opacity: 1; transform: rotate(-45deg) translateX(-110vmax); }
+.ph-stinger.is-running.is-back::before { animation-name: ph-scan-sweep-back; }
+@keyframes ph-scan-sweep-back {
+  0% { opacity: 0; transform: translateY(0); animation-timing-function: linear; }
+  39% { opacity: 1; transform: translateY(0); animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
+  97% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(calc(-100% + 72px)); }
 }
 /* Literales a propósito: `var()` no hereda en el árbol `::view-transition`
    (docs/trampas-conocidas.md). La vieja se oculta: si se fotografiara a medio
-   cruzar (dos navegaciones seguidas), la banda se quedaría congelada encima. */
+   barrer (dos navegaciones seguidas), la línea se quedaría congelada encima. */
 ::view-transition-group(ph-stinger),
 ::view-transition-new(ph-stinger) {
   animation: none;
@@ -877,30 +980,53 @@ html.ph-anim .ph-develop:not(.is-inview) .ph-develop__media {
 
 /* ── Red de seguridad ───────────────────────────────────────────────────────
    `ph-motion` lo pone en <html> el JS de movimiento al arrancar. Si no llega
-   nunca (un error, un bloqueador), a los 2,5 s se ve todo en su estado final:
-   también lo que espera a GSAP con `data-reveal` (BaseLayout), que hasta ahora
-   solo tenía red de seguridad en JS y se quedaba oculto si no llegaba ningún
-   módulo. */
+   nunca (un error, un bloqueador), a los 2,5 s se ve todo en su estado final.
+   Cada pieza que espera a entrar está en esta lista; las que tienen su propia
+   regla de entrada en un componente llevan ahí su línea. */
 @keyframes ph-motion-failsafe {
-  to { opacity: 1; transform: none; visibility: visible; filter: none; }
+  to { opacity: 1; transform: none; visibility: visible; filter: none; clip-path: none; stroke-dashoffset: 0; }
 }
-html.ph-anim:not(.ph-motion) .ph-rowline::before,
-html.ph-anim:not(.ph-motion) .ph-seam::before,
-html.ph-anim:not(.ph-motion) .ph-flap__char,
-html.ph-anim:not(.ph-motion) .ph-develop__media,
-html.ph-anim:not(.ph-motion) .ph-slate__label > *,
-html.ph-anim:not(.ph-motion) [data-inview],
-html.ph-anim:not(.ph-motion) [data-inview] > *,
-html.ph-anim:not(.ph-motion) [data-reveal] {
+html.ph-anim:not(.ph-motion) .ph-zone__rule,
+html.ph-anim:not(.ph-motion) .ph-zone__tag,
+html.ph-anim:not(.ph-motion) .ph-zone__meta,
+html.ph-anim:not(.ph-motion) .ph-visor--view > i,
+html.ph-anim:not(.ph-motion) .ph-node--pop,
+html.ph-anim:not(.ph-motion) .ph-leader > i > b,
+html.ph-anim:not(.ph-motion) .ph-after-leader,
+html.ph-anim:not(.ph-motion) .ph-draw,
+html.ph-anim:not(.ph-motion) .ph-scan__media,
+html.ph-anim:not(.ph-motion) .ph-enter {
   animation: ph-motion-failsafe 0s linear 2.5s forwards;
+}
+
+/* ── Entrada genérica: sube 8 px y aparece (texto que acompaña) ──────────── */
+.ph-enter {
+  transition:
+    opacity 420ms var(--ph-ease-out) var(--enter-delay, 0ms),
+    transform 420ms var(--ph-ease-out) var(--enter-delay, 0ms);
+}
+html.ph-anim [data-inview]:not(.is-inview) .ph-enter,
+html.ph-anim .ph-enter[data-inview]:not(.is-inview) {
+  opacity: 0;
+  transform: translateY(8px);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .ph-stinger { display: none; }
-  .ph-key,
-  .ph-key::before,
-  .ph-key__text,
-  .ph-key__arrow svg {
-    transition: none;
+  /* Movimiento reducido: nada se desplaza ni escala; se mantienen los cambios
+     de opacidad y de color que confirman un gesto. */
+  .ph-visor > i,
+  .ph-visor > i::before,
+  .ph-visor > i::after {
+    transition-property: opacity;
   }
+  .ph-visor--hover > i,
+  .ph-visor--js:not(.is-locked) > i { transform: none; }
+  .ph-visor--settle.is-inview > i::before,
+  .ph-visor--settle.is-inview > i::after { transform: none; }
+  .ph-node,
+  .ph-node-link__arrow path { transition-property: background-color, border-color, opacity; }
+  .ph-node.is-pinged::before,
+  .ph-node-link:hover .ph-node::before { animation: none; }
+  .ph-node-link__arrow path { stroke-dashoffset: 0 !important; }
 }

@@ -46,6 +46,7 @@ uniform float uPx;    // px internos por px CSS
 uniform float uTime;  // segundos
 uniform float uScroll; // px CSS desplazados en la página
 uniform vec3 uBand;   // titular en px CSS de página (arriba, abajo) y la luz fuera de él (0-1)
+uniform vec2 uGrid;   // retícula de la página: paso y desfase horizontal, en px CSS
 out vec4 o;
 const vec3 GOLD = vec3(0.839, 0.698, 0.369);   // --color-ph-gold #D6B25E
 const vec3 WHITE = vec3(1.0);
@@ -100,27 +101,35 @@ void main() {
   emit(c * stageMask(p, uRes.x / uPx, uRes.y / uPx));
 }`;
 
-// Servicios — «Estructura»: la retícula a 45° con la que se construye el logo, casi
-// invisible, y una luz lenta que la barre en diagonal y enciende sus cruces.
+// Servicios — «Estructura»: la retícula de la sala de análisis (la de CSS, fija a
+// la pantalla, `body::before` en global.css) se enciende al paso de una luz lenta
+// que la barre en la diagonal del logo; sus cruces brillan como nodos. El shader
+// no dibuja otra retícula: suma luz justo encima de las líneas de la de CSS
+// (mismo paso y mismo desfase, `uGrid`), así que la que se ve es una sola.
 const ESTRUCTURA = `${HEADER}
 void main() {
   vec2 p = gl_FragCoord.xy / uPx;
   float W = uRes.x / uPx, H = uRes.y / uPx;
-  float S = 72.0;
-  vec2 q = vec2(p.x + p.y, p.x - p.y) * 0.70710678 + vec2(uTime * 6.0, 0.0);
-  vec2 f = abs(fract(q / S + 0.5) - 0.5) * S;
-  float lines = max(1.0 - smoothstep(0.3, 1.2, f.x), 1.0 - smoothstep(0.3, 1.2, f.y));
-  float node = exp(-dot(f, f) / 6.0);
-  // Dos barridos: uno principal y otro más ancho y tenue en sentido contrario.
-  // Recorren el ancho más 600 px de margen a cada lado, así el salto de vuelta
-  // ocurre fuera de la vista.
-  float diag = p.x - p.y * 0.35;
-  float span = W + H * 0.35 + 1200.0;
-  float x1 = mod(uTime * 70.0, span) - 600.0;
-  float x2 = span - mod(uTime * 38.0 + span * 0.5, span) - 600.0;
-  float light = exp(-pow((diag - x1) / 220.0, 2.0)) + 0.5 * exp(-pow((diag - x2) / 340.0, 2.0));
-  float tw = 0.5 + 0.5 * sin(uTime * 1.3 + hash12(floor(q / S + 0.5)) * 6.2832);
-  vec3 c = WHITE * lines * 0.022 + GOLD * (lines * light * 0.32 + node * light * tw * 0.9);
+  float S = uGrid.x;
+  float fromTop = H - p.y;
+  // Distancia, en px CSS, a la línea vertical y a la horizontal más cercanas.
+  float gx = mod(p.x - uGrid.y, S);
+  float gy = mod(fromTop, S);
+  float dx = min(gx, S - gx);
+  float dy = min(gy, S - gy);
+  float lines = max(1.0 - smoothstep(0.5, 1.6, dx), 1.0 - smoothstep(0.5, 1.6, dy));
+  float node = exp(-(dx * dx + dy * dy) / 7.0);
+  // Dos barridos a 45°: uno principal y otro más ancho y tenue en sentido
+  // contrario. Recorren la diagonal más 450 px de margen a cada lado, así el
+  // salto de vuelta ocurre fuera de la vista.
+  float diag = (p.x + fromTop) * 0.70710678;
+  float span = (W + H) * 0.70710678 + 900.0;
+  float x1 = mod(uTime * 62.0, span) - 450.0;
+  float x2 = span - mod(uTime * 34.0 + span * 0.5, span) - 450.0;
+  float light = exp(-pow((diag - x1) / 210.0, 2.0)) + 0.45 * exp(-pow((diag - x2) / 330.0, 2.0));
+  vec2 cell = floor(vec2(p.x - uGrid.y, fromTop) / S + 0.5);
+  float tw = 0.5 + 0.5 * sin(uTime * 1.2 + hash12(cell) * 6.2832);
+  vec3 c = GOLD * (lines * light * 0.24 + node * light * tw * 0.8);
   emit(c * stageMask(p, W, H));
 }`;
 
@@ -214,6 +223,7 @@ function create(canvas: HTMLCanvasElement, reduceMotion: boolean): Instance | nu
   const uTime = gl.getUniformLocation(prog, 'uTime');
   const uScroll = gl.getUniformLocation(prog, 'uScroll');
   const uBand = gl.getUniformLocation(prog, 'uBand');
+  const uGrid = gl.getUniformLocation(prog, 'uGrid');
 
   // El titular de la sección: detrás de él la luz brilla entera. Su posición se
   // guarda en px de página y se vuelve a medir cuando cambia de tamaño.
@@ -225,6 +235,16 @@ function create(canvas: HTMLCanvasElement, reduceMotion: boolean): Instance | nu
     const r = title.getBoundingClientRect();
     bandTop = r.top + window.scrollY;
     bandBottom = r.bottom + window.scrollY;
+  };
+
+  // La retícula de CSS: paso (`--ph-grid`) y dónde cae la primera vertical (el
+  // margen de sección), leídos ya resueltos del propio pseudoelemento.
+  let gridStep = 48;
+  let gridOffset = 0;
+  const measureGrid = () => {
+    const cs = getComputedStyle(document.body, '::before');
+    gridStep = parseFloat(cs.backgroundSize) || (window.innerWidth >= 900 ? 64 : 48);
+    gridOffset = parseFloat(cs.backgroundPositionX) || 0;
   };
 
   let pxRatio = 1;
@@ -239,11 +259,13 @@ function create(canvas: HTMLCanvasElement, reduceMotion: boolean): Instance | nu
     gl.uniform1f(uTime, t);
     gl.uniform1f(uScroll, window.scrollY);
     gl.uniform3f(uBand, bandTop, bandBottom - 8, OUTSIDE_TITLE);
+    gl.uniform2f(uGrid, gridStep, gridOffset);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   };
 
   const resize = () => {
     measureBand();
+    measureGrid();
     const rect = canvas.getBoundingClientRect();
     pxRatio = Math.min(window.devicePixelRatio || 1, MAX_DPR) * scene.scale;
     const w = Math.max(1, Math.round(rect.width * pxRatio));

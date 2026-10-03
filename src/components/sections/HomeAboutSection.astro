@@ -1,8 +1,7 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
-import Slate from '@/components/ui/Slate.astro';
-import Flap from '@/components/ui/Flap.astro';
-import Key from '@/components/ui/Key.astro';
+import Zone from '@/components/ui/Zone.astro';
+import NodeLink from '@/components/ui/NodeLink.astro';
 
 interface Props {
   lang: Lang;
@@ -15,47 +14,89 @@ const aboutHref = localizePath('/sobre-nosotros/', lang);
 // Países donde opera PHSPORT: sale del texto traducido, la misma fuente que el
 // resto de menciones (ver la nota de `about.team.meta` en es.ts).
 const countriesValue = t('home.about.stats.countries.value');
+const serviceValue = t('home.about.stats.service.value');
+
+// La red de sedes, esquemática: Madrid en el centro y seis sedes en su dirección
+// aproximada (Portugal al oeste, Reino Unido al norte, Alemania al noreste,
+// Italia al este, Arabia Saudí lejos al sureste, Uruguay al otro lado del
+// Atlántico). Sin nombres ni distancias: es un esquema, no un mapa.
+const HUB = { x: 120, y: 84 };
+const offices = [
+  { x: 66, y: 94 },
+  { x: 104, y: 26 },
+  { x: 156, y: 38 },
+  { x: 176, y: 88 },
+  { x: 220, y: 138 },
+  { x: 16, y: 142 },
+];
+const values = [t('home.about.values.v1'), t('home.about.values.v2'), t('home.about.values.v3')];
 ---
 
-{/* La declaración de la agencia y sus cifras, que caen en el marcador al entrar:
-    los países y el 360. En pantallas anchas, la declaración a la izquierda y el
-    marcador a la derecha; en el resto, uno debajo del otro. */}
-<section class="home-about" id="sobre-nosotros" aria-labelledby="home-about-title">
-  <Slate text={t('home.about.eyebrow')} />
-  <div class="home-about__inner">
-    <div class="home-about__head">
-      <h2 class="home-about__title" id="home-about-title" data-m="title" data-reveal>
-        <span>{t('home.about.title')}</span>
-        <em data-glint>{t('home.about.titleAccent')}</em>
+{/* La declaración de la agencia, anotada: el telestrador rodea «pero las
+    personas marcan.» y las cifras son esquemas, no números sueltos: la red de
+    las siete sedes y el círculo de 360° que se cierra. La línea de pase toca la
+    cita por su nodo, en el margen. */}
+<section class="home-about ph-pass-host" id="sobre-nosotros" aria-labelledby="home-about-title" data-pass-section>
+  <svg class="ph-pass" aria-hidden="true" data-pass-seg><path /></svg>
+  <Zone text={t('home.about.eyebrow')} />
+  <div class="ha-grid">
+    <div class="ha-statement">
+      <h2 class="ha-quote" id="home-about-title" data-inview data-ha-quote>
+        <span class="ph-node ha-quote__node" aria-hidden="true" data-pass-node></span>
+        <span class="ha-quote__lead ph-enter">{t('home.about.title')}</span>
+        <span class="ha-quote__accent ph-enter" data-ha-accent>{t('home.about.titleAccent')}<svg class="ha-tele" aria-hidden="true" data-ha-tele><path /></svg></span>
       </h2>
-      <p class="home-about__body" data-m="lead" data-reveal>{t('home.about.body')}</p>
-      <div class="home-about__cta" data-m="item" data-reveal>
-        <Key href={aboutHref} label={t('home.about.cta')} />
+      <div class="ha-body" data-inview>
+        <p class="ha-body__text ph-enter">{t('home.about.body')}</p>
+        <div class="ha-body__cta ph-enter">
+          <NodeLink href={aboutHref} label={t('home.about.cta')} />
+        </div>
       </div>
     </div>
 
-    <div class="home-about__board">
-      <dl class="home-about__stats" aria-label={t('home.about.stats.aria')}>
-        <div class="home-about__stat ph-seam" data-inview>
-          <dt class="home-about__stat-value">
-            <Flap value={countriesValue} size="xl" />
-          </dt>
-          <dd class="home-about__stat-label">{t('home.about.stats.countries.label')}</dd>
+    <div class="ha-figures">
+      <dl class="ha-stats" aria-label={t('home.about.stats.aria')}>
+        <div class="ha-stat" data-inview>
+          <dt class="ha-stat__label">{t('home.about.stats.countries.label')}</dt>
+          <dd class="ha-stat__value">
+            <svg class="ha-net" viewBox="0 0 240 160" aria-hidden="true" data-hairline>
+              {offices.map((o, i) => (
+                <line class="ha-net__edge ph-draw" x1={HUB.x} y1={HUB.y} x2={o.x} y2={o.y} style={`--draw-delay: ${120 + i * 70}ms`} />
+              ))}
+              {offices.map((o, i) => (
+                <g class="ha-net__node" style={`--i: ${i}`}>
+                  <circle cx={o.x} cy={o.y} r="6" />
+                  <circle class="ha-net__dot" cx={o.x} cy={o.y} r="1.8" />
+                </g>
+              ))}
+              <circle class="ha-net__hub" cx={HUB.x} cy={HUB.y} r="9" />
+              <circle class="ha-net__dot" cx={HUB.x} cy={HUB.y} r="2.6" />
+            </svg>
+            <span class="ha-stat__num ph-num">{countriesValue}</span>
+          </dd>
         </div>
-        <div class="home-about__stat ph-seam" data-inview>
-          <dt class="home-about__stat-value">
-            <Flap value="360" size="xl" /><span class="home-about__stat-unit" aria-hidden="true">°</span>
-          </dt>
-          <dd class="home-about__stat-label">{t('home.about.stats.service.label')}</dd>
+        <div class="ha-stat" data-inview>
+          <dt class="ha-stat__label">{t('home.about.stats.service.label')}</dt>
+          <dd class="ha-stat__value">
+            <svg class="ha-ring" viewBox="0 0 160 160" aria-hidden="true" data-hairline>
+              <circle class="ha-ring__track" cx="80" cy="80" r="60" />
+              <circle class="ha-ring__arc ph-draw" cx="80" cy="80" r="60" transform="rotate(-90 80 80)" />
+              <line class="ha-ring__hand" x1="80" y1="80" x2="80" y2="20" />
+              <circle class="ha-net__dot" cx="80" cy="80" r="2.6" />
+            </svg>
+            <span class="ha-stat__num ph-num">{serviceValue}</span>
+          </dd>
         </div>
       </dl>
 
-      <ul class="home-about__values ph-seam" aria-label={t('home.about.values.aria')} role="list" data-inview>
-        <li data-cycle>{t('home.about.values.v1')}</li>
-        <li aria-hidden="true" class="home-about__values-sep">·</li>
-        <li data-cycle>{t('home.about.values.v2')}</li>
-        <li aria-hidden="true" class="home-about__values-sep">·</li>
-        <li data-cycle>{t('home.about.values.v3')}</li>
+      <ul class="ha-values" aria-label={t('home.about.values.aria')} role="list" data-inview>
+        {values.map((v, i) => (
+          <li class="ha-value" style={`--i: ${i}`}>
+            <span class="ha-value__label">{v}</span>
+            <span class="ha-value__stem" aria-hidden="true"></span>
+            <span class="ph-node ph-node--sm ph-node--pop ha-value__node" aria-hidden="true"></span>
+          </li>
+        ))}
       </ul>
     </div>
   </div>
@@ -63,131 +104,315 @@ const countriesValue = t('home.about.stats.countries.value');
 
 <style>
   .home-about {
-    padding: clamp(64px, 9vw, 128px) var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(80px, 11vw, 150px);
-    background: var(--color-ph-black, #0d0f12);
-    color: var(--color-ph-white, #ffffff);
+    padding: clamp(72px, 9vw, 128px) var(--ph-section-px) clamp(88px, 11vw, 150px);
+    color: var(--color-ph-white);
   }
 
-  .home-about__inner {
+  .ha-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: clamp(48px, 7vw, 96px);
-    margin-top: clamp(28px, 4vw, 48px);
+    gap: clamp(56px, 8vw, 104px);
+    margin-top: clamp(40px, 5vw, 64px);
   }
 
-  /* A dos columnas solo cuando el marcador cabe entero a la derecha: con 1024 px
-     el «360°» y su etiqueta se salían de la pantalla. */
   @media (min-width: 1200px) {
-    .home-about__inner {
+    .ha-grid {
       grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
       align-items: end;
     }
   }
 
-  .home-about__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(40px, 10.5vw, 84px);
-    letter-spacing: -0.04em;
-    line-height: 0.98;
+  /* ── La cita ── */
+  .ha-quote {
+    position: relative;
     margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(38px, 9.6vw, 84px);
+    letter-spacing: -0.04em;
+    line-height: 1;
     text-wrap: balance;
   }
-  .home-about__title span { display: block; }
-  .home-about__title em {
-    display: block;
-    color: var(--color-ph-gold, #d6b25e);
-    font-style: italic;
-    font-weight: 400;
+
+  /* Su nodo va en el margen, en el carril de la línea de pase, a la altura de la
+     primera línea: ahí la toca la línea. */
+  .ha-quote__node {
+    position: absolute;
+    left: calc(var(--ph-section-px) / -2);
+    top: 0.5em;
+    margin: -8px 0 0 -8px;
   }
 
-  .home-about__body {
-    margin: clamp(22px, 2.5vw, 30px) 0 0;
+  .ha-quote__lead {
+    display: block;
+  }
+
+  .ha-quote__accent {
+    --enter-delay: 90ms;
+    position: relative;
+    display: inline-block;
+    /* Aire con la línea de arriba: la elipse del telestrador pasa por ahí. */
+    margin-top: 0.2em;
+    color: var(--color-ph-gold);
+  }
+
+  /* El telestrador: una elipse a mano alrededor de la parte dorada. La traza el
+     script con la medida de la frase. */
+  .ha-tele {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 1px;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .ha-tele path {
+    fill: none;
+    stroke: var(--color-ph-gold);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.92;
+  }
+
+  .ha-body {
+    margin-top: clamp(28px, 3.4vw, 40px);
+  }
+
+  .ha-body__text {
     max-width: 52ch;
-    color: var(--ph-ink-body);
+    margin: 0;
     font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
     line-height: 1.65;
+    color: var(--ph-ink-body);
   }
 
-  .home-about__cta {
-    margin-top: clamp(28px, 4vw, 40px);
+  .ha-body__cta {
+    --enter-delay: 80ms;
+    margin-top: clamp(24px, 3.4vw, 36px);
   }
 
-  /* El marcador: cada cifra en su fila, con la línea encima. */
-  .home-about__stats {
+  /* ── Las cifras, como esquemas ── */
+  .ha-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(20px, 3vw, 40px);
     margin: 0;
-    padding: 0;
   }
 
-  /* La cifra y su etiqueta, juntas: se leen como un par, no como dos cosas en
-     los extremos de la fila. */
-  .home-about__stat {
+  .ha-stat {
     display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: clamp(16px, 2vw, 24px);
-    margin: 0;
-    padding: clamp(18px, 2.4vw, 28px) 0;
+    flex-direction: column-reverse;
+    gap: 10px;
   }
 
-  .home-about__stat-value {
-    display: inline-flex;
-    align-items: flex-start;
+  .ha-stat__value {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     margin: 0;
-    color: var(--color-ph-gold, #d6b25e);
   }
-  .home-about__stat-unit {
-    margin-left: 0.12em;
-    font-family: var(--font-display);
-    font-size: clamp(28px, calc(2.4vw + 18px), 52px);
+
+  .ha-stat__num {
+    font-size: clamp(24px, calc(1vw + 18px), 32px);
     line-height: 1;
-    color: var(--color-ph-gold, #d6b25e);
+    color: var(--color-ph-gold);
   }
-  .home-about__stat-label {
-    margin: 0;
-    font-size: clamp(14px, calc(0.1vw + 13.6px), 15px);
+
+  .ha-stat__label {
+    font-size: 15px;
     color: var(--ph-ink-lead);
   }
 
-  /* Valores: letras de tablero de salidas, que pasan por el abecedario hasta la
-     suya al entrar (el ancho se queda quieto mientras cambian). Letra normal: la
-     monoespaciada es solo para cifras. */
-  .home-about__values {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 14px;
-    margin: 0;
-    padding: clamp(18px, 2.4vw, 24px) 0 0;
-    font-family: var(--font-body);
-    font-size: 13px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ph-ink-lead);
+  /* La etiqueta llega detrás del dibujo. */
+  .ha-stat__num,
+  .ha-stat__label {
+    transition: opacity 320ms var(--ph-ease-out) 620ms;
   }
-  .home-about__values li { margin: 0; }
-  .home-about__values-sep { color: var(--color-ph-gold, #d6b25e); }
+
+  :global(html.ph-anim) .ha-stat:not(.is-inview) .ha-stat__num,
+  :global(html.ph-anim) .ha-stat:not(.is-inview) .ha-stat__label {
+    opacity: 0;
+  }
+
+  .ha-net,
+  .ha-ring {
+    display: block;
+    width: 100%;
+    max-width: 240px;
+    height: auto;
+    overflow: visible;
+  }
+
+  .ha-ring { max-width: 160px; }
+
+  @media (min-width: 1200px) {
+    .ha-net { max-width: 280px; }
+    .ha-ring { max-width: 184px; }
+  }
+
+  .ha-net__edge {
+    stroke: var(--ph-struct);
+    stroke-width: calc(1.2 * var(--k, 1));
+    --draw-dur: 360ms;
+  }
+
+  .ha-net__node circle:first-child,
+  .ha-net__hub {
+    fill: var(--color-ph-black);
+    stroke: var(--color-ph-gold);
+    stroke-width: calc(1.5 * var(--k, 1));
+  }
+
+  .ha-net__dot { fill: var(--color-ph-gold); }
+
+  .ha-net__node {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity 180ms var(--ph-ease-out) calc(300ms + var(--i, 0) * 70ms),
+      transform 180ms var(--ph-ease-out) calc(300ms + var(--i, 0) * 70ms);
+  }
+
+  :global(html.ph-anim) .ha-stat:not(.is-inview) .ha-net__node {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  /* El 360°: un radio barre una vuelta entera (800 ms) y deja el círculo
+     cerrado; luego el radio se apaga. */
+  .ha-ring__track {
+    fill: none;
+    stroke: var(--ph-struct-soft);
+    stroke-width: calc(1.2 * var(--k, 1));
+  }
+
+  .ha-ring__arc {
+    fill: none;
+    stroke: var(--color-ph-gold);
+    stroke-width: calc(1.5 * var(--k, 1));
+    --draw-dur: 800ms;
+    --draw-ease: cubic-bezier(0.45, 0, 0.25, 1);
+    --draw-delay: 120ms;
+  }
+
+  /* El radio solo existe mientras barre: en reposo no se ve. */
+  .ha-ring__hand {
+    stroke: var(--color-ph-gold);
+    stroke-width: calc(1.5 * var(--k, 1));
+    transform-box: view-box;
+    transform-origin: 80px 80px;
+    opacity: 0;
+  }
+
+  :global(html.ph-anim) .ha-stat:not(.is-inview) .ha-ring__hand {
+    opacity: 1;
+  }
+
+  :global(html.ph-anim) .ha-stat.is-inview .ha-ring__hand {
+    animation: ha-sweep 960ms linear 120ms both;
+  }
+
+  /* 800 ms de vuelta con la misma curva que el arco, y 160 ms para apagarse. */
+  @keyframes ha-sweep {
+    0% { opacity: 1; transform: rotate(0deg); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+    83.3% { opacity: 1; transform: rotate(360deg); animation-timing-function: linear; }
+    100% { opacity: 0; transform: rotate(360deg); }
+  }
+
+  /* ── Los valores, sobre un eje ── */
+  .ha-values {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: clamp(40px, 6vw, 64px) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* El eje, a la altura de los nodos. */
+  .ha-values::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 5px;
+    height: 1px;
+    background: var(--ph-struct);
+    transform-origin: 0 50%;
+    transition: transform var(--ph-dur-field) var(--ph-ease-out);
+  }
+
+  :global(html.ph-anim) .ha-values:not(.is-inview)::before { transform: scaleX(0); }
+  :global(html.ph-anim:not(.ph-motion)) .ha-values::before { animation: ph-motion-failsafe 0s linear 2.5s forwards; }
+
+  .ha-value {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .ha-value__label {
+    font-size: 15px;
+    color: var(--ph-ink-lead);
+    transition:
+      opacity 300ms var(--ph-ease-out) calc(420ms + var(--i, 0) * 70ms),
+      transform 300ms var(--ph-ease-out) calc(420ms + var(--i, 0) * 70ms);
+  }
+
+  /* La línea guía de cada valor: baja del nombre a su nodo. */
+  .ha-value__stem {
+    width: 1.5px;
+    height: 22px;
+    margin: 8px 0 0;
+    background: var(--color-ph-gold);
+    transform-origin: 50% 100%;
+    transition: transform var(--ph-dur-leader) var(--ph-ease-out) calc(300ms + var(--i, 0) * 70ms);
+  }
+
+  .ha-value__node {
+    margin-top: -1px;
+    transition-delay: calc(200ms + var(--i, 0) * 70ms);
+  }
+
+  :global(html.ph-anim) .ha-values:not(.is-inview) .ha-value__label { opacity: 0; transform: translateY(-6px); }
+  :global(html.ph-anim) .ha-values:not(.is-inview) .ha-value__stem { transform: scaleY(0); }
+  :global(html.ph-anim:not(.ph-motion)) .ha-value__label,
+  :global(html.ph-anim:not(.ph-motion)) .ha-value__stem,
+  :global(html.ph-anim:not(.ph-motion)) .ha-stat__num,
+  :global(html.ph-anim:not(.ph-motion)) .ha-stat__label,
+  :global(html.ph-anim:not(.ph-motion)) .ha-net__node {
+    animation: ph-motion-failsafe 0s linear 2.5s forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ha-ring__hand { display: none; }
+    .ha-value__label,
+    .ha-value__stem,
+    .ha-net__node { transition: none; }
+  }
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, stage, mountSection, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
-  import { cascade } from '@/scripts/ph-motion';
+  import { mountSection, afterTransitionPaint } from '@/scripts/ph-text-animations';
+  import { telestrator } from '@/scripts/ph-telestrator';
 
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initHomeAboutAnimations(): void {
+  function initHomeAbout(): void {
     const section = document.querySelector<HTMLElement>('.home-about');
     if (!section) return;
-    if (!reducedMotion()) {
-      stage(section, { glint: true });
-      cascade(section.querySelectorAll<HTMLElement>('.home-about__board .ph-seam'), 110);
-    }
     mountSection(section);
+    // El telestrador rodea «pero las personas marcan.» al entrar la cita.
+    const quote = section.querySelector<HTMLElement>('[data-ha-quote]');
+    const accent = section.querySelector<HTMLElement>('[data-ha-accent]');
+    const path = section.querySelector<SVGPathElement>('[data-ha-tele] path');
+    if (quote && accent && path && !quote.dataset.tele) {
+      quote.dataset.tele = '1';
+      telestrator(quote, accent, path);
+    }
   }
 
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeAboutAnimations));
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeAbout));
 </script>

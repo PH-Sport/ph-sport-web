@@ -1,7 +1,9 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
-import Slate from '@/components/ui/Slate.astro';
-import Key from '@/components/ui/Key.astro';
+import Zone from '@/components/ui/Zone.astro';
+import Visor from '@/components/ui/Visor.astro';
+import Leader from '@/components/ui/Leader.astro';
+import NodeLink from '@/components/ui/NodeLink.astro';
 
 interface Props {
   lang: Lang;
@@ -13,103 +15,123 @@ const t = useTranslations(lang);
 const listHref = localizePath('/talentos/', lang);
 ---
 
-{/* Bloque de paso hacia /talentos: la pizarra abre el segmento y el titular
-    ocupa la pantalla del móvil. Sin fotos a propósito: el grid destacado de la
-    portada se quitó en abril para llevar a la lista completa (commit 453e928). */}
-<section class="home-players" id="talentos" aria-labelledby="home-players-title">
-  <Slate text={t('home.players.eyebrow')} />
-  <div class="home-players__row">
-    <header class="home-players__head">
-      <h2 class="home-players__title" id="home-players-title" data-m="title" data-reveal>
-        {t('talents.title')}<em>{t('home.players.titleAccent')}</em>.
-      </h2>
-      <p class="home-players__lead" data-m="lead" data-reveal>{t('home.players.lead')}</p>
-    </header>
-
-    <div class="home-players__cta-wrap" data-m="item" data-reveal>
-      <Key href={listHref} label={t('home.players.cta')} tone="gold" />
+{/* Bloque de paso hacia /talentos: «El roster.» fijado por un visor al entrar,
+    la entradilla anotada con una línea guía y el CTA como nodo, que es la
+    primera parada de la línea de pase. Sin fotos a propósito: el grid destacado
+    de la portada se quitó en abril para llevar a la lista completa (commit
+    453e928). */}
+<section class="home-players ph-pass-host" id="talentos" aria-labelledby="home-players-title" data-pass-section>
+  <svg class="ph-pass" aria-hidden="true" data-pass-seg><path /></svg>
+  <Zone text={t('home.players.eyebrow')} />
+  <div class="hp-body">
+    <h2 class="hp-title" id="home-players-title" data-inview>
+      <span class="hp-title__text ph-enter">{t('talents.title')}<span class="ph-accent">{t('home.players.titleAccent')}</span>.</span>
+      <Visor mode="view" arm={22} inset={-14} class="hp-title__visor" />
+    </h2>
+    <div class="hp-lead" data-inview>
+      <Leader dir="dr" diag={16} run={28} class="hp-lead__leader" />
+      <p class="hp-lead__text ph-after-leader">{t('home.players.lead')}</p>
+    </div>
+    <div class="hp-cta" data-inview>
+      <NodeLink href={listHref} label={t('home.players.cta')} passNode />
     </div>
   </div>
 </section>
 
 <style>
   .home-players {
-    padding: clamp(64px, 9vw, 128px) var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(72px, 10vw, 136px);
-    background: var(--color-ph-black, #0d0f12);
-    color: var(--color-ph-white, #ffffff);
+    padding: clamp(72px, 9vw, 128px) var(--ph-section-px) clamp(88px, 10vw, 140px);
+    color: var(--color-ph-white);
   }
 
-  .home-players__row {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(32px, 4vw, 48px);
-    align-items: flex-start;
-    margin-top: clamp(28px, 4vw, 48px);
+  .hp-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: clamp(40px, 5vw, 64px);
   }
 
-  .home-players__head { max-width: 980px; }
-
-  /* El titular a escala de rótulo: «El roster.» llena el ancho del móvil. */
-  .home-players__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(72px, 24vw, 144px);
-    letter-spacing: -0.045em;
-    line-height: 0.86;
+  /* El titular a escala de rótulo; el visor lo abraza (caja en línea). */
+  .hp-title {
+    position: relative;
+    justify-self: start;
+    display: inline-block;
     margin: 0 0 0 -0.04em;
-  }
-  .home-players__title em {
-    color: var(--color-ph-gold, #d6b25e);
-    font-style: italic;
-    font-weight: 400;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(56px, 16vw, 128px);
+    letter-spacing: -0.045em;
+    line-height: 0.9;
   }
 
-  .home-players__lead {
-    margin: clamp(20px, 2.5vw, 28px) 0 0;
-    color: var(--ph-ink-lead);
+  .hp-title__text {
+    display: block;
+    --enter-delay: 60ms;
+  }
+
+  .hp-title__visor {
+    --visor-arm: 22px;
+  }
+
+  /* La entradilla, colgada del titular por una línea guía corta. */
+  .hp-lead {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 10px;
+    align-items: start;
+    margin-top: clamp(22px, 3vw, 30px);
+    max-width: 40ch;
+  }
+
+  .hp-lead__leader {
+    margin-left: 0.18em;
+  }
+
+  .hp-lead__text {
+    margin: calc(16px - 0.78em) 0 0;
     font-family: var(--font-display);
     font-size: var(--ph-head-lead-size);
     line-height: 1.45;
-    max-width: 30ch;
+    color: var(--ph-ink-lead);
     text-wrap: balance;
   }
 
-  .home-players__cta-wrap {
-    display: flex;
+  .hp-cta {
+    margin-top: clamp(36px, 5vw, 56px);
   }
 
+  /* Escritorio: titular a la izquierda y entradilla a su derecha, anotada desde
+     el final del titular; el nodo debajo, en la vertical del texto. */
   @media (min-width: 900px) {
-    .home-players__row {
-      flex-direction: row;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: clamp(32px, 5vw, 72px);
+    .hp-body {
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: clamp(20px, 2.4vw, 40px);
+      align-items: end;
     }
-    .home-players__title {
-      font-size: clamp(96px, 10vw, 144px);
+    .hp-lead {
+      grid-column: 2;
+      grid-row: 1;
+      margin: 0 0 0.6em;
     }
-    .home-players__cta-wrap {
-      flex-shrink: 0;
-      padding-bottom: 8px;
+    .hp-lead__leader {
+      margin-left: 0;
+    }
+    .hp-cta {
+      grid-column: 1 / -1;
+      grid-row: 2;
     }
   }
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, stage, mountSection, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
+  import { mountSection, afterTransitionPaint } from '@/scripts/ph-text-animations';
+  // La línea de pase vive en toda la portada; se registra desde aquí porque este
+  // bloque está en las tres portadas (ES, EN, IT).
+  import '@/scripts/ph-pass';
 
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initHomePlayersAnimations(): void {
+  function initHomePlayers(): void {
     const section = document.querySelector<HTMLElement>('.home-players');
-    if (!section) return;
-    if (!reducedMotion()) stage(section, { glint: true });
-    mountSection(section);
+    if (section) mountSection(section);
   }
 
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomePlayersAnimations));
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomePlayers));
 </script>

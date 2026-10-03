@@ -1,0 +1,33 @@
+---
+/**
+ * Línea guía de geometría fija: un tramo a 45° (la diagonal del logo) y un tramo
+ * recto, desde un punto ancla hasta lo que anota. Se dibuja cuando su
+ * contenedor `[data-inview]` entra en pantalla (o ella misma, con `view`); lo
+ * que anota llega detrás con `.ph-after-leader`. Estilos en global.css
+ * (`.ph-leader`). Las que cambian con el layout (las del hero, el diagrama de
+ * servicios) se calculan por script, no con esta pieza.
+ *
+ * `dir`: `dr` baja a la derecha desde el ancla, `ur` sube a la derecha; `dl` y
+ * `ul` son su espejo.
+ */
+interface Props {
+  dir?: 'dr' | 'ur' | 'dl' | 'ul';
+  /** Tramo a 45°, en px. */
+  diag?: number;
+  /** Tramo recto, en px. */
+  run?: number;
+  /** Se dibuja al entrar ella misma en pantalla. */
+  view?: boolean;
+  class?: string;
+}
+
+const { dir = 'dr', diag = 14, run = 24, view = false, class: className } = Astro.props;
+const style = `--diag: ${diag}px; --run: ${run}px;`;
+---
+
+<span
+  class:list={['ph-leader', `ph-leader--${dir}`, className]}
+  style={style}
+  aria-hidden="true"
+  data-inview={view ? '' : undefined}
+><i class="ph-leader__diag"><b></b></i><i class="ph-leader__run"><b></b></i></span>

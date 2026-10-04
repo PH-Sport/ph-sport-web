@@ -13,6 +13,41 @@ leído el resto.
 
 ---
 
+## 2026-10-04 · Talentos sin «Ver» ni «Orden»: el grid sale siempre en el orden del archivo
+
+> **Estado: en las tres variantes** (`feat/variante-a-retransmision`,
+> `feat/variante-b-titulos` y `feat/variante-c-analisis`), sin fusionar. `preview` y
+> `main` siguen con los dos controles.
+
+**Qué se decidió.** La página de Talentos pierde el filtro de rol («Ver»: Todos /
+Jugadores / Entrenadores) y el orden («Orden»: Predeterminado / A-Z / Z-A). El grid
+se ve siempre en el orden del archivo, que es el de la lista de Mario (entrada del
+2026-09-25). Se queda el buscador por nombre, con su aviso de «sin resultados» y el
+botón que lo vacía.
+
+**Quién y por qué.** Mario, el 2026-10-04, por dirección del equipo: «El orden es el
+que es, y se queda así». El orden del grid es editorial —quién sale antes lo decide
+PH— y un A-Z lo deshacía con un clic. El filtro de rol se retira en la misma
+decisión.
+
+**Alternativa descartada.** Mantenerlos, como pedía el encargo común de las variantes
+y como sigue teniéndolos la web publicada.
+
+**Qué cambia.**
+- Sin los dos controles y sin sus textos en los tres idiomas (`talents.role.*`,
+  `talents.sort.*`).
+- **El buscador ya no se pliega en el móvil.** Se plegaba en una lupa para compartir
+  fila con el orden; sin esa fila se ve entero y ocupa el mismo alto. Con ello sobra
+  el aspa que lo cerraba (`talents.search.close`).
+- El botón del aviso de vacío sigue diciendo «Limpiar filtros» (los textos no se
+  cambian) y ahora solo vacía la búsqueda.
+- El grid sigue animando con FLIP los cambios de la búsqueda.
+
+**Consecuencia.** No proponer volver a poner un orden o un filtro de rol sin hablarlo
+con el equipo: es una decisión editorial, no un olvido.
+
+---
+
 ## 2026-10-03 · Variante B «Títulos»: la web como la secuencia de títulos de crédito de una película
 
 > **Estado: propuesta en la rama `feat/variante-b-titulos`, sin fusionar.** Es una
@@ -67,8 +102,10 @@ Cómo está hecho, pieza a pieza: `ARCHITECTURE.md` («Sistema de animaciones» 
   nítido; y la pieza de autor: **«Hablemos.» con la foto del sobre dentro de las
   letras, y la cámara que entra por el punto final** hasta que la foto llena la
   pantalla y aparece el correo.
-- **Talentos**: controles tipográficos (el buscador es una línea de escritura; rol
-  y orden, palabras conmutables como grupos de radio); las fotos se abren como una
+- **Talentos**: ⚠️ *rol y orden se retiraron el 2026-10-04 y el buscador ya no se
+  pliega en el móvil (entrada «Talentos sin «Ver» ni «Orden»», arriba).* Controles
+  tipográficos (el buscador es una línea de escritura; rol y orden, palabras
+  conmutables como grupos de radio); las fotos se abren como una
   persiana; al señalar una tarjeta, las demás bajan de tono (foco de escena).
 - **Servicios**: índice de áreas, una banda «ACOMPAÑAMIENTO 360º · SERVICIO 365»
   que viaja, y cada pilar como escena: título gigante y su imagen abriéndose desde

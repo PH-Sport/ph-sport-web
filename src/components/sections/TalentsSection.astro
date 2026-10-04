@@ -24,25 +24,16 @@ const cards = players.map((player) => {
     .filter((b): b is { code: string; src: string } => b !== null);
   return { player, badges };
 });
-
-const roleOptions = [
-  { value: 'all', label: t('talents.role.all') },
-  { value: 'player', label: t('talents.role.players') },
-  { value: 'coach', label: t('talents.role.coaches') },
-];
-const sortOptions = [
-  { value: 'default', label: t('talents.sort.default') },
-  { value: 'az', label: t('talents.sort.az') },
-  { value: 'za', label: t('talents.sort.za') },
-];
 ---
 
 {/* Talentos: la escena del roster. Rótulo, «El roster.» grande pero contenido
-    (entra por letras), entradilla y los controles, con la primera fila de fotos
-    asomando ya en la primera pantalla. Los controles son tipográficos: el
-    buscador es una línea de escritura y el rol y el orden, palabras conmutables
-    (grupos de radio). Grid suizo de 2/3/5 columnas; cada foto se abre como una
-    persiana al entrar. Las tarjetas no son clicables (DECISIONS.md, 2026-04-24). */}
+    (entra por letras), entradilla y el buscador, con la primera fila de fotos
+    asomando ya en la primera pantalla. El buscador es una línea de escritura,
+    a la vista también en el móvil. El grid sale en el orden del archivo y no hay
+    controles para reordenarlo ni filtrarlo por rol: lo decidió el equipo
+    (DECISIONS.md, 2026-10-04). Grid suizo de 2/3/5 columnas; cada foto se abre
+    como una persiana al entrar. Las tarjetas no son clicables (DECISIONS.md,
+    2026-04-24). */}
 <section class="tl" aria-labelledby="talents-title">
   <div class="ph-page-bg" aria-hidden="true">
     <canvas class="ph-ambient" data-ambient="proyeccion"></canvas>
@@ -72,33 +63,12 @@ const sortOptions = [
       <button type="button" class="tl-search__btn tl-search__clear" aria-label={t('talents.search.clear')} data-talents-clear hidden>
         <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m6 6 12 12M18 6 6 18"></path></svg>
       </button>
-      <button type="button" class="tl-search__btn tl-search__close" aria-label={t('talents.search.close')} data-talents-search-close>
-        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m6 6 12 12M18 6 6 18"></path></svg>
-      </button>
     </label>
-
-    <div class="tl-switch tl-switch--role" data-talents-switch="role">
-      <span class="tl-switch__label" aria-hidden="true">{t('talents.role.trigger')}</span>
-      <div class="tl-switch__options" role="radiogroup" aria-label={t('talents.role.label')}>
-        {roleOptions.map((o, i) => (
-          <button type="button" class="tl-switch__opt" role="radio" aria-checked={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-value={o.value}>{o.label}</button>
-        ))}
-      </div>
-    </div>
-
-    <div class="tl-switch tl-switch--sort" data-talents-switch="sort">
-      <span class="tl-switch__label" aria-hidden="true">{t('talents.sort.trigger')}</span>
-      <div class="tl-switch__options" role="radiogroup" aria-label={t('talents.sort.label')}>
-        {sortOptions.map((o, i) => (
-          <button type="button" class="tl-switch__opt" role="radio" aria-checked={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-value={o.value}>{o.label}</button>
-        ))}
-      </div>
-    </div>
   </div>
 
   <ul class="tl-grid" role="list" data-talents-grid>
     {cards.map(({ player, badges }, idx) => (
-      <li class="tl-item" data-talent-card data-name={player.name} data-role={player.role} data-index={idx}>
+      <li class="tl-item" data-talent-card data-name={player.name}>
         <div class="tl-card" data-inview>
           <div class="tl-card__photo">
             <picture>
@@ -165,7 +135,7 @@ const sortOptions = [
     margin-top: clamp(14px, 1.6vw, 22px);
   }
 
-  /* ── Controles tipográficos ── */
+  /* ── El buscador ── */
   .tl-controls {
     position: relative;
     z-index: 2;
@@ -258,191 +228,8 @@ const sortOptions = [
     display: none;
   }
 
-  .tl-search__close {
-    display: none;
-  }
-
   @media (hover: hover) and (pointer: fine) {
     .tl-search__btn:hover { color: var(--color-ph-white); }
-  }
-
-  /* Rol y orden: palabras conmutables detrás de su rótulo. La activa en blanco
-     con un hilo; las demás, al 50 %. */
-  .tl-switch {
-    display: flex;
-    align-items: baseline;
-    gap: 14px;
-  }
-
-  .tl-switch__label {
-    font-family: var(--font-body);
-    font-size: var(--ph-small);
-    letter-spacing: 0.02em;
-    color: var(--ph-ink-meta);
-  }
-
-  .tl-switch__options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 14px;
-  }
-
-  .tl-switch__opt {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 16px;
-    letter-spacing: -0.01em;
-    color: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    transition: color var(--ph-dur-state) var(--ph-ease-std);
-  }
-
-  .tl-switch__opt::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 9px;
-    height: 1px;
-    background: var(--color-ph-white);
-    transform: scaleX(0);
-    transform-origin: 0 50%;
-    transition: transform var(--ph-dur-state) var(--ph-ease-out);
-  }
-
-  .tl-switch__opt[aria-checked='true'] {
-    color: var(--color-ph-white);
-  }
-
-  .tl-switch__opt[aria-checked='true']::after {
-    transform: scaleX(1);
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .tl-switch__opt:hover {
-      color: rgba(255, 255, 255, 0.86);
-    }
-  }
-
-  .tl-switch__opt:active {
-    color: var(--color-ph-gold);
-  }
-
-  @media (min-width: 1024px) {
-    .tl-switch--role {
-      margin-left: auto;
-    }
-  }
-
-  /* Móvil: dos filas de palabras y el buscador plegado a un icono, que al
-     tocarlo se despliega sobre los controles. */
-  @media (max-width: 719px) {
-    .tl-controls {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 44px;
-      gap: 0 12px;
-    }
-
-    .tl-switch--role {
-      grid-column: 1 / -1;
-      grid-row: 1;
-    }
-
-    .tl-switch--sort {
-      grid-column: 1;
-      grid-row: 2;
-    }
-
-    .tl-switch__options {
-      gap: 0 12px;
-    }
-
-    .tl-search {
-      grid-column: 2;
-      grid-row: 2;
-      justify-content: center;
-      width: 44px;
-      min-height: 44px;
-      max-width: none;
-      color: var(--color-ph-white);
-      cursor: pointer;
-    }
-
-    .tl-search::after {
-      display: none;
-    }
-
-    .tl-search .tl-search__input,
-    .tl-search .tl-search__clear,
-    .tl-search .tl-search__close {
-      display: none;
-    }
-
-    /* Desplegado: ocupa toda la zona de los controles. Un hijo absoluto de una
-       retícula toma como caja su área de la retícula: por eso abarca las dos
-       filas y las dos columnas (con `-1` no valdría: no hay filas explícitas). */
-    .tl-search.is-expanded,
-    .tl-search.is-collapsing {
-      position: absolute;
-      grid-column: 1 / -1;
-      grid-row: 1 / span 2;
-      inset: 10px 0 0;
-      z-index: 4;
-      width: auto;
-      justify-content: flex-start;
-      gap: 12px;
-      background: var(--color-ph-black);
-    }
-
-    .tl-search.is-expanded {
-      cursor: text;
-      animation: tl-search-open 280ms var(--ph-ease-out) both;
-    }
-
-    .tl-search.is-collapsing {
-      animation: tl-search-close 180ms var(--ph-ease-in) both;
-      pointer-events: none;
-    }
-
-    .tl-search.is-expanded::after,
-    .tl-search.is-collapsing::after {
-      display: block;
-      bottom: 18px;
-    }
-
-    .tl-search.is-expanded .tl-search__input,
-    .tl-search.is-collapsing .tl-search__input {
-      display: block;
-    }
-
-    .tl-search.is-expanded .tl-search__clear:not([hidden]),
-    .tl-search.is-expanded .tl-search__close {
-      display: inline-flex;
-    }
-
-    @keyframes tl-search-open {
-      from { clip-path: inset(0 0 0 calc(100% - 44px)); }
-      to { clip-path: inset(0 0 0 0); }
-    }
-
-    @keyframes tl-search-close {
-      from { clip-path: inset(0 0 0 0); }
-      to { clip-path: inset(0 0 0 calc(100% - 44px)); }
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .tl-search.is-expanded,
-    .tl-search.is-collapsing {
-      animation: none;
-    }
   }
 
   /* ── Grid suizo: 2 → 3 → 5 columnas ── */
@@ -691,21 +478,18 @@ const sortOptions = [
 
   gsap.registerPlugin(Flip);
 
-  type SortMode = 'default' | 'az' | 'za';
-  type RoleFilter = 'all' | 'player' | 'coach';
-
   const reduceMotion = (): boolean => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /**
-   * Cambia el grid (filtrar, buscar, ordenar) y anima el cambio en vez de saltar:
-   * las fichas que se quedan se deslizan a su sitio nuevo, las que salen se
-   * encogen y las que entran crecen desde el suyo (FLIP). Así se ve qué ha
-   * pasado con cada una. Con movimiento reducido, el cambio es directo.
+   * Cambia el grid al buscar y anima el cambio en vez de saltar: las fichas que
+   * se quedan se deslizan a su sitio nuevo, las que salen se encogen y las que
+   * entran crecen desde el suyo (FLIP). Así se ve qué ha pasado con cada una. Con
+   * movimiento reducido, el cambio es directo.
    */
   function flipGrid(cards: HTMLElement[], mutate: () => void): void {
     if (reduceMotion()) { mutate(); return; }
     // Las fichas que aún no habían entrado en pantalla (con la persiana cerrada)
-    // llegarían vacías: al reordenar se dan todas por abiertas.
+    // llegarían vacías: al recolocarse se dan todas por abiertas.
     cards.forEach((card) => card.querySelector('.tl-card')?.classList.add('is-inview'));
     const state = Flip.getState(cards);
     mutate();
@@ -725,57 +509,6 @@ const sortOptions = [
     return s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
   }
 
-  function isMobile(): boolean {
-    return window.matchMedia('(max-width: 719px)').matches;
-  }
-
-  interface SwitchController {
-    setValue(value: string): void;
-  }
-
-  /**
-   * Palabras conmutables como grupo de radio: una marcada; con las flechas se
-   * pasa a la siguiente (y se marca), y solo la marcada entra en el orden del
-   * tabulador.
-   */
-  function initSwitch(root: HTMLElement, onChange: (value: string) => void): SwitchController {
-    const options = Array.from(root.querySelectorAll<HTMLButtonElement>('[role="radio"]'));
-
-    const select = (opt: HTMLButtonElement, notify: boolean) => {
-      options.forEach((o) => {
-        const on = o === opt;
-        o.setAttribute('aria-checked', on ? 'true' : 'false');
-        o.tabIndex = on ? 0 : -1;
-      });
-      if (notify) onChange(opt.dataset.value ?? '');
-    };
-
-    options.forEach((opt, i) => {
-      opt.addEventListener('click', () => {
-        if (opt.getAttribute('aria-checked') === 'true') return;
-        select(opt, true);
-      });
-      opt.addEventListener('keydown', (e) => {
-        let next = -1;
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (i + 1) % options.length;
-        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (i - 1 + options.length) % options.length;
-        else if (e.key === 'Home') next = 0;
-        else if (e.key === 'End') next = options.length - 1;
-        if (next < 0) return;
-        e.preventDefault();
-        options[next].focus();
-        select(options[next], true);
-      });
-    });
-
-    return {
-      setValue(value: string): void {
-        const opt = options.find((o) => o.dataset.value === value);
-        if (opt) select(opt, false);
-      },
-    };
-  }
-
   function initTalents(): void {
     const controls = document.querySelector<HTMLElement>('[data-talents-controls]');
     const grid = document.querySelector<HTMLUListElement>('[data-talents-grid]');
@@ -785,43 +518,20 @@ const sortOptions = [
     const searchWrap = controls.querySelector<HTMLLabelElement>('[data-talents-search-wrap]');
     const search = controls.querySelector<HTMLInputElement>('[data-talents-search]');
     const clearBtn = controls.querySelector<HTMLButtonElement>('[data-talents-clear]');
-    const closeBtn = controls.querySelector<HTMLButtonElement>('[data-talents-search-close]');
-    const roleSwitch = controls.querySelector<HTMLElement>('[data-talents-switch="role"]');
-    const sortSwitch = controls.querySelector<HTMLElement>('[data-talents-switch="sort"]');
     const reset = empty.querySelector<HTMLButtonElement>('[data-talents-reset]');
-    if (!searchWrap || !search || !clearBtn || !closeBtn || !roleSwitch || !sortSwitch || !reset) return;
+    if (!searchWrap || !search || !clearBtn || !reset) return;
 
     const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-talent-card]'));
-    let currentRole: RoleFilter = 'all';
-
-    function sortCards(mode: SortMode): void {
-      const sorted = [...cards].sort((a, b) => {
-        if (mode === 'default') {
-          return Number(a.dataset.index) - Number(b.dataset.index);
-        }
-        const cmp = (a.dataset.name ?? '').localeCompare(b.dataset.name ?? '', undefined, { sensitivity: 'base' });
-        return mode === 'az' ? cmp : -cmp;
-      });
-      for (const card of sorted) grid!.appendChild(card);
-    }
 
     function filterCards(query: string): void {
       const norm = normalize(query.trim());
       let visible = 0;
       for (const card of cards) {
-        const name = card.dataset.name ?? '';
-        const r = card.dataset.role ?? 'player';
-        const nameMatch = !norm || normalize(name).includes(norm);
-        const roleMatch = currentRole === 'all' || currentRole === r;
-        const match = nameMatch && roleMatch;
+        const match = !norm || normalize(card.dataset.name ?? '').includes(norm);
         card.hidden = !match;
         if (match) visible++;
       }
       empty!.hidden = visible > 0;
-    }
-
-    function applySort(mode: SortMode): void {
-      flipGrid(cards, () => sortCards(mode));
     }
 
     function applyFilter(query: string): void {
@@ -832,26 +542,6 @@ const sortOptions = [
       const has = search!.value.length > 0;
       clearBtn!.hidden = !has;
       searchWrap!.classList.toggle('has-value', has);
-    }
-
-    function openSearch(): void {
-      searchWrap!.classList.remove('is-collapsing');
-      searchWrap!.classList.add('is-expanded');
-      requestAnimationFrame(() => search!.focus());
-    }
-
-    function closeSearch(): void {
-      if (!searchWrap!.classList.contains('is-expanded')) return;
-      search!.blur();
-      searchWrap!.classList.remove('is-expanded');
-      if (reduceMotion()) return;
-      searchWrap!.classList.add('is-collapsing');
-      const onEnd = (e: AnimationEvent): void => {
-        if (e.target !== searchWrap) return;
-        searchWrap!.classList.remove('is-collapsing');
-        searchWrap!.removeEventListener('animationend', onEnd);
-      };
-      searchWrap!.addEventListener('animationend', onEnd);
     }
 
     search.addEventListener('input', () => {
@@ -868,50 +558,10 @@ const sortOptions = [
       search.focus();
     });
 
-    /* Móvil: tocar el buscador plegado lo despliega. */
-    searchWrap.addEventListener('click', (e) => {
-      if (!isMobile()) return;
-      if (searchWrap.classList.contains('is-expanded')) return;
-      e.preventDefault();
-      openSearch();
-    });
-
-    closeBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    reset.addEventListener('click', () => {
       search.value = '';
       syncSearchState();
       applyFilter('');
-      closeSearch();
-    });
-
-    search.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && searchWrap.classList.contains('is-expanded')) {
-        e.preventDefault();
-        closeSearch();
-      }
-    });
-
-    const roleCtl = initSwitch(roleSwitch, (value) => {
-      currentRole = value === 'player' || value === 'coach' ? value : 'all';
-      applyFilter(search.value);
-    });
-
-    const sortCtl = initSwitch(sortSwitch, (value) => {
-      applySort(value === 'az' || value === 'za' ? value : 'default');
-    });
-
-    reset.addEventListener('click', () => {
-      search.value = '';
-      currentRole = 'all';
-      roleCtl.setValue('all');
-      sortCtl.setValue('default');
-      syncSearchState();
-      flipGrid(cards, () => {
-        filterCards('');
-        sortCards('default');
-      });
-      closeSearch();
       search.focus();
     });
 
@@ -956,7 +606,7 @@ const sortOptions = [
     if (!section) return;
     if (!reducedMotion()) {
       // La cabecera, en la primera pantalla: el titular entra por letras y detrás
-      // la entradilla y los controles.
+      // la entradilla y el buscador.
       const title = section.querySelector<HTMLElement>('.tl__title');
       if (title) riseLetters(title, { delay: 0.08 });
       fadeUp(section.querySelectorAll<HTMLElement>('.tl__lead, [data-talents-controls]'), { delay: 0.32, stagger: 0.08 });

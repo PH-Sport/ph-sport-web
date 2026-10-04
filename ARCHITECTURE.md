@@ -57,7 +57,7 @@ ph-sport-web/
 │   │   │   ├── HomeContactSection.astro    # «Hablemos.» con la foto dentro: la cámara entra por el punto
 │   │   │   ├── AboutSection.astro          # Cabecera, Filosofía en cartones fijados, equipo en créditos, presencia
 │   │   │   ├── ServicesSection.astro       # Índice de áreas, banda que viaja, 5 pilares como escenas
-│   │   │   └── TalentsSection.astro        # Controles tipográficos y grid suizo 2/3/5 con persianas
+│   │   │   └── TalentsSection.astro        # Buscador en una línea de escritura y grid suizo 2/3/5 con persianas
 │   │   └── ui/
 │   │       ├── Button.astro             # Sin uso (anterior a «Títulos»)
 │   │       ├── FooterSocialIcon.astro
@@ -417,7 +417,7 @@ adónde se va— y no adorna.
 | **Enfoque** | Las cifras entran de desenfoque (10 px) y escala 1,15 a nítidas, 700 ms | `rackFocus` |
 | **La cámara entra en la palabra** | «Hablemos.» con la foto dentro de las letras; al bajar, la capa se acerca al punto final hasta que la foto llena la pantalla | `HomeContactSection.astro` |
 | **Cartón de título** | Al navegar, un cartón negro con el nombre de la página de destino sube y tapa (100 ms), el router espera a que tape, y sale por arriba sobre la página nueva (160 ms) | `.ph-stinger` en `BaseLayout`; `ph-motion.ts` |
-| **Reflujo** | Al abrir o cerrar un panel, lo que tiene debajo se desliza a su sitio nuevo (FLIP) en vez de saltar | `reflow`; `ph-accordion.ts`. En Talentos, GSAP Flip al filtrar u ordenar |
+| **Reflujo** | Al abrir o cerrar un panel, lo que tiene debajo se desliza a su sitio nuevo (FLIP) en vez de saltar | `reflow`; `ph-accordion.ts`. En Talentos, GSAP Flip al buscar |
 | **Interfaz** | Al señalar un enlace, sus letras suben 2 px en cascada de 10 ms y el subrayado se dibuja (120-200 ms) | `.ph-tlink`, `.nav-link`; `setLetters` |
 
 **Curvas y tiempos.** Las mismas en CSS (`--ph-ease-*`, `--ph-dur-*` en
@@ -756,7 +756,7 @@ que ejecutar nada a mano.
 | `HomeContactSection.astro` | ✅ Completo | «Hablemos.» con la foto dentro de las letras y la cámara entrando por el punto final; el correo sobre la foto (2026-10-03) |
 | `AboutSection.astro` | ✅ Completo | Cabecera, Filosofía en tres cartones de título fijados, el equipo como créditos, Presencia con los países entrando desde su lado |
 | `ServicesSection.astro` | ✅ Completo | Índice de áreas, banda que viaja, 5 pilares como escenas (imagen desde una rendija), manifiesto |
-| `TalentsSection.astro` | ✅ Completo | Grid 3:4 no clicable en 2/3/5 columnas; controles tipográficos (radios); persianas; foco de escena; filtrar y ordenar con FLIP |
+| `TalentsSection.astro` | ✅ Completo | Grid 3:4 no clicable en 2/3/5 columnas, siempre en el orden del archivo: sin filtro de rol ni orden (`DECISIONS.md`, 2026-10-04). Buscador en una línea de escritura, a la vista también en el móvil; persianas; foco de escena; la búsqueda recoloca con FLIP |
 | `SceneLabel.astro`, `TitleLink.astro` | ✅ Completo | Piezas de «Títulos» (2026-10-03). Ver Motion y Sistema de diseño |
 | `FooterSocialIcon.astro` | ✅ Completo | |
 | `Button.astro`, `SectionHeader.astro`, `LanguageSwitcher.astro` | ⚠️ Sin uso | Anteriores; nadie los importa |

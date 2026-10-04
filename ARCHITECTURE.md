@@ -57,7 +57,7 @@ ph-sport-web/
 │   │   │   ├── HomeContactSection.astro    # «Hablemos.», correo en placa llave y ventana de repetición
 │   │   │   ├── AboutSection.astro          # Cartones de filosofía, hoja de alineación, lista de señales
 │   │   │   ├── ServicesSection.astro       # Áreas (acordeón), modelo, pilares como segmentos, manifiesto
-│   │   │   └── TalentsSection.astro        # Barra de filtros segmentada y fichas de alineación (FLIP)
+│   │   │   └── TalentsSection.astro        # Buscador en placa y fichas de alineación (FLIP al buscar)
 │   │   └── ui/
 │   │       ├── Bug.astro                # Rótulo pequeño que abre un bloque («02 · Talentos»): celda + placa
 │   │       ├── Button.astro
@@ -405,7 +405,7 @@ Servicios; los cartones de Sobre nosotros) y el resto, apoyo.
 | **Cortinilla** | Al navegar, bandas blanca y dorada y una placa negra barren la pantalla, la tapan un instante en el centro y salen (380 ms); al revés al volver atrás | `.ph-stinger` en `BaseLayout`; `ph-motion.ts` |
 | **Marcador de esquina** | La etiqueta de la página rueda en vertical al navegar (200 ms) y la barra dorada de la barra de canales se desliza (View Transition propia) | `Header.astro` |
 | **Acordeones** | El panel se descubre con un recorte y lo de debajo se desliza con `transform` (FLIP medido); abrir 320 ms, cerrar 220 ms | `ph-disclosure.ts` |
-| **Reordenado** | El grid de talentos desliza cada ficha a su sitio (FLIP); las que salen se apagan en 150 ms y las que entran se descubren | `flipGrid` en `TalentsSection.astro` (GSAP Flip) |
+| **Reordenado** | Al buscar, el grid de talentos desliza cada ficha a su sitio (FLIP); las que salen se apagan en 150 ms y las que entran se descubren | `flipGrid` en `TalentsSection.astro` (GSAP Flip) |
 
 **Curvas y tiempos.** Las mismas en CSS (`--ph-ease-*`, `--ph-dur-*` en
 global.css) y en GSAP (`EASE` en `ph-text-animations.ts`, con CustomEase):
@@ -734,7 +734,7 @@ que ejecutar nada a mano.
 | `HomeContactSection.astro` | ✅ Completo | «Hablemos.» en placa, el correo como placa llave grande y la imagen en una ventana de repetición que se descubre en diagonal |
 | `AboutSection.astro` | ✅ Completo | V3 — absorbe /equipo. Hero en placas, cartones de filosofía, hoja de alineación (21 integrantes), lista de señales con códigos ISO |
 | `ServicesSection.astro` | ✅ Completo | Hero en escalera, áreas (acordeón con panel), cintas, corte de segmento del modelo, pilares como segmentos, manifiesto en placas |
-| `TalentsSection.astro` | ✅ Completo | Grid 3:4 no clicable. Barra de filtros con controles segmentados (radios), fichas con rótulo inferior y escudos en placas; reveladas en diagonal; filtrar y ordenar con FLIP |
+| `TalentsSection.astro` | ✅ Completo | Grid 3:4 no clicable, siempre en el orden del archivo: sin filtro de rol ni orden (`DECISIONS.md`, 2026-10-04). Buscador en placa, a la vista también en el móvil; fichas con rótulo inferior y escudos en placas; reveladas en diagonal; la búsqueda recoloca con FLIP |
 | `Button.astro` | ✅ Completo | Primary / secondary, `<a>` o `<button>` |
 | `SectionHeader.astro` | ✅ Completo | |
 | `LanguageSwitcher.astro` | ✅ Completo | Integrado en Header |

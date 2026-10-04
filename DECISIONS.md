@@ -13,6 +13,41 @@ leído el resto.
 
 ---
 
+## 2026-10-04 · Talentos sin «Ver» ni «Orden»: el grid sale siempre en el orden del archivo
+
+> **Estado: en las tres variantes** (`feat/variante-a-retransmision`,
+> `feat/variante-b-titulos` y `feat/variante-c-analisis`), sin fusionar. `preview` y
+> `main` siguen con los dos controles.
+
+**Qué se decidió.** La página de Talentos pierde el filtro de rol («Ver»: Todos /
+Jugadores / Entrenadores) y el orden («Orden»: Predeterminado / A-Z / Z-A). El grid
+se ve siempre en el orden del archivo, que es el de la lista de Mario (entrada del
+2026-09-25). Se queda el buscador por nombre, con su aviso de «sin resultados» y el
+botón que lo vacía.
+
+**Quién y por qué.** Mario, el 2026-10-04, por dirección del equipo: «El orden es el
+que es, y se queda así». El orden del grid es editorial —quién sale antes lo decide
+PH— y un A-Z lo deshacía con un clic. El filtro de rol se retira en la misma
+decisión.
+
+**Alternativa descartada.** Mantenerlos, como pedía el encargo común de las variantes
+y como sigue teniéndolos la web publicada.
+
+**Qué cambia.**
+- Sin los dos controles y sin sus textos en los tres idiomas (`talents.role.*`,
+  `talents.sort.*`).
+- **El buscador ya no se pliega en el móvil.** Se plegaba en una lupa para compartir
+  fila con el orden; sin esa fila se ve entero y ocupa el mismo alto. Con ello sobra
+  el aspa que lo cerraba (`talents.search.close`).
+- El botón del aviso de vacío sigue diciendo «Limpiar filtros» (los textos no se
+  cambian) y ahora solo vacía la búsqueda.
+- El grid sigue animando con FLIP los cambios de la búsqueda.
+
+**Consecuencia.** No proponer volver a poner un orden o un filtro de rol sin hablarlo
+con el equipo: es una decisión editorial, no un olvido.
+
+---
+
 ## 2026-10-03 · Variante A «Retransmisión»: la web como la realización de un partido en televisión
 
 > **Estado: propuesta en la rama `feat/variante-a-retransmision`, sin fusionar.** Sale
@@ -73,9 +108,11 @@ animaciones», «Cabecera de sección», «Hero»).
   cifras (7 con siete segmentos, 360° con barra continua) y los valores en la cinta.
   Contacto: «Hablemos.», el correo como placa llave grande y la imagen en una
   ventana de repetición con marco de placa.
-- **Talentos.** Barra de filtros de realización: buscador en placa (plegable en el
-  móvil) y rol y orden como **controles segmentados** (grupos de radios nativos;
-  caben a 360 px en italiano). Ficha = rótulo inferior sobre la foto (nombre y club
+- **Talentos.** ⚠️ *Rol y orden se retiraron el 2026-10-04 y el buscador ya no se
+  pliega en el móvil (entrada «Talentos sin «Ver» ni «Orden»», arriba).* Barra de
+  filtros de realización: buscador en placa (plegable en el móvil) y rol y orden
+  como **controles segmentados** (grupos de radios nativos; caben a 360 px en
+  italiano). Ficha = rótulo inferior sobre la foto (nombre y club
   en placas, escudos en placas cuadradas). Filtrar y ordenar con FLIP; las que
   salen se apagan en 150 ms, las que entran se descubren en diagonal.
 - **Servicios.** «Un equipo / fuera del campo.» en escalera; las áreas como

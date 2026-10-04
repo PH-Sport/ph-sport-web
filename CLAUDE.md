@@ -206,7 +206,10 @@ Thomas Christiansen, que volvió al grid el 2026-10-02 (`DECISIONS.md`). **Quié
 entra lo decide el campograma interno** (`campograma-ph`),
 no la web anterior. **El orden del grid es el orden del archivo**: las visibles
 van al principio de `jugadores.json`; para meter a alguien hay que saber su
-posición en la lista de Mario (`DECISIONS.md`, 2026-09-25). El grid es de
+posición en la lista de Mario (`DECISIONS.md`, 2026-09-25). En la página no hay
+controles para cambiarlo: el filtro de rol y el orden A-Z/Z-A se retiraron el
+2026-10-04 por decisión del equipo (`DECISIONS.md`); queda solo el buscador. El
+grid es de
 2/3/5 columnas y Mario prefiere que cierre en móvil y escritorio: con 52
 tarjetas cierra en móvil y deja dos sueltas en escritorio, y lo sabe.
 

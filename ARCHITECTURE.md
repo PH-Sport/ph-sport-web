@@ -56,7 +56,7 @@ ph-sport-web/
 │   │   │   ├── HomeContactSection.astro    # «Hablemos.» y el correo, donde acaba la línea de pase
 │   │   │   ├── AboutSection.astro          # Absorbe /equipo: línea de tiempo, hoja de plantilla, esquema de sedes
 │   │   │   ├── ServicesSection.astro       # Campo dibujado, áreas, trayectoria, 5 pilares, manifiesto
-│   │   │   └── TalentsSection.astro        # Grid de talentos «en seguimiento», con escudos de selección
+│   │   │   └── TalentsSection.astro        # Buscador y grid de talentos «en seguimiento», con escudos de selección
 │   │   └── ui/                          # Piezas del mundo «Análisis» (ver Motion)
 │   │       ├── Button.astro             # SIN USO: nadie lo importa (ya antes de la variante C)
 │   │       ├── Digits.astro             # Envuelve las cifras de un texto en monoespaciada
@@ -431,7 +431,7 @@ dos cosas reales del contenido; ninguna adorna. Sustituye al lenguaje «Marcador
 | **Trazo con el scroll** | Una línea que avanza con el dedo y descubre sus anotaciones al pasar (la trayectoria de Servicios, la línea de tiempo de Sobre nosotros). Lo descubierto no se vuelve a esconder al subir | `ph-scroll-draw.ts` |
 | **Telestrador** | Una elipse a mano alrededor de unas palabras, una vez por página como mucho | `ph-telestrator.ts` |
 | **Acordeón** | Abre y cierra sin animar el alto: lo de debajo se desplaza con FLIP y el panel se descubre con `clip-path` | `ph-disclosure.ts` |
-| **Reordenado** | El grid de talentos desliza cada ficha a su sitio nuevo al filtrar, buscar u ordenar | `flipGrid` en `TalentsSection.astro` (GSAP Flip) |
+| **Reordenado** | El grid de talentos desliza cada ficha a su sitio nuevo al buscar | `flipGrid` en `TalentsSection.astro` (GSAP Flip) |
 
 **Curvas y tiempos.** Las mismas en CSS (`--ph-ease-*`, `--ph-dur-*` en
 global.css) y en GSAP (`EASE` en `ph-text-animations.ts`, con CustomEase):
@@ -775,7 +775,7 @@ que ejecutar nada a mano.
 | `HomeContactSection.astro` | ✅ Completo | «Hablemos.» con visor y el correo, donde acaba la línea de pase; foto en un visor, descubierta por un escaneo |
 | `AboutSection.astro` | ✅ Completo | Absorbe /equipo. Línea de tiempo con el scroll, hoja de plantilla (21), esquema de sedes con arcos desde Madrid |
 | `ServicesSection.astro` | ✅ Completo | Titular fuera de un campo dibujado, áreas con nodos, trayectoria con el scroll, 5 pilares anotados, manifiesto con telestrador |
-| `TalentsSection.astro` | ✅ Completo | Grid 3:4 no clicable (2/3/5 columnas). Tarjeta «en seguimiento»: escaneo, visor que se queda en marcas, nombre en línea guía. Buscar, filtrar y ordenar con FLIP; controles segmentados con visor |
+| `TalentsSection.astro` | ✅ Completo | Grid 3:4 no clicable (2/3/5 columnas). Tarjeta «en seguimiento»: escaneo, visor que se queda en marcas, nombre en línea guía. Siempre en el orden del archivo: sin filtro de rol ni orden (`DECISIONS.md`, 2026-10-04). Buscador a la vista también en el móvil; la búsqueda recoloca con FLIP |
 | `Zone.astro`, `Visor.astro`, `Leader.astro`, `NodeLink.astro`, `Digits.astro` | ✅ Completo | Piezas del mundo «Análisis» (2026-10-03). Ver Motion |
 | `FooterSocialIcon.astro` | ✅ Completo | |
 | `Button.astro`, `SectionHeader.astro` | ⚠️ Sin uso | Nadie los importa; de diseños anteriores |

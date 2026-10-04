@@ -26,21 +26,12 @@ const cards = players.map((player) => {
     .filter((b): b is { code: string; src: string } => b !== null);
   return { player, badges };
 });
-
-const roleOptions = [
-  { value: 'all', label: t('talents.role.all') },
-  { value: 'player', label: t('talents.role.players') },
-  { value: 'coach', label: t('talents.role.coaches') },
-];
-const sortOptions = [
-  { value: 'default', label: t('talents.sort.default') },
-  { value: 'az', label: t('talents.sort.az') },
-  { value: 'za', label: t('talents.sort.za') },
-];
 ---
 
-{/* Talentos: la sala de seguimiento. La barra de herramientas filtra y ordena;
-    cada tarjeta es un jugador en seguimiento: un visor se clava en las esquinas
+{/* Talentos: la sala de seguimiento. La barra de herramientas lleva el
+    buscador, a la vista también en el móvil; no hay controles para reordenar el
+    grid ni filtrarlo por rol: lo decidió el equipo (DECISIONS.md, 2026-10-04).
+    Cada tarjeta es un jugador en seguimiento: un visor se clava en las esquinas
     de su foto (que se descubre con un escaneo) y se queda en marcas pequeñas, y
     su nombre cuelga de la esquina por una línea guía. Las tarjetas no son
     clicables y el orden del grid es el del archivo (CLAUDE.md, «Roster»). */}
@@ -84,50 +75,16 @@ const sortOptions = [
           <path d="m6 6 12 12M18 6 6 18"></path>
         </svg>
       </button>
-      <button
-        type="button"
-        class="talents__search-close"
-        aria-label={t('talents.search.close')}
-        data-talents-search-close
-      >
-        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="m6 6 12 12M18 6 6 18"></path>
-        </svg>
-      </button>
       <span class="talents__search-line" aria-hidden="true"></span>
     </label>
-
-    {/* Rol y orden: controles segmentados (grupos de radios) con su rótulo; un
-        visor se desliza a la opción activa. */}
-    <div class="talents__seg" data-talents-seg="role">
-      <span class="talents__seg-label" aria-hidden="true">{t('talents.role.trigger')}</span>
-      <div class="talents__seg-options" role="radiogroup" aria-label={t('talents.role.label')} data-seg-options>
-        <span class="talents__seg-visor" aria-hidden="true" data-seg-visor><i></i><i></i><i></i><i></i></span>
-        {roleOptions.map((o, i) => (
-          <button type="button" role="radio" class="talents__seg-option" aria-checked={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-value={o.value}>{o.label}</button>
-        ))}
-      </div>
-    </div>
-
-    <div class="talents__seg" data-talents-seg="sort">
-      <span class="talents__seg-label" aria-hidden="true">{t('talents.sort.trigger')}</span>
-      <div class="talents__seg-options" role="radiogroup" aria-label={t('talents.sort.label')} data-seg-options>
-        <span class="talents__seg-visor" aria-hidden="true" data-seg-visor><i></i><i></i><i></i><i></i></span>
-        {sortOptions.map((o, i) => (
-          <button type="button" role="radio" class="talents__seg-option" aria-checked={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-value={o.value}>{o.label}</button>
-        ))}
-      </div>
-    </div>
   </div>
 
   <ul class="talents__grid" role="list" data-talents-grid>
-    {cards.map(({ player, badges }, idx) => (
+    {cards.map(({ player, badges }) => (
       <li
         class="talents__item"
         data-talent-card
         data-name={player.name}
-        data-role={player.role}
-        data-index={idx}
       >
         <article class="tcard" data-inview>
           <div class="tcard__photo ph-scan" data-inview>
@@ -215,7 +172,7 @@ const sortOptions = [
     display: block;
   }
 
-  /* ── Barra de herramientas ── */
+  /* ── Barra de herramientas: el buscador ── */
   .talents__controls {
     position: relative;
     z-index: 2;
@@ -292,8 +249,7 @@ const sortOptions = [
     transform: scaleY(2);
   }
 
-  .talents__search-clear,
-  .talents__search-close {
+  .talents__search-clear {
     flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
@@ -307,181 +263,8 @@ const sortOptions = [
     transition: color var(--ph-dur-state) var(--ph-ease-std);
   }
 
-  .talents__search-clear:hover,
-  .talents__search-close:hover {
+  .talents__search-clear:hover {
     color: var(--color-ph-gold);
-  }
-
-  .talents__search-close { display: none; }
-
-  /* ── Controles segmentados ── */
-  .talents__seg {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 0 0 auto;
-  }
-
-  .talents__seg-label {
-    font-size: 13px;
-    color: var(--ph-ink-meta);
-  }
-
-  .talents__seg-options {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  .talents__seg-option {
-    min-height: 44px;
-    padding: 0 10px;
-    background: none;
-    border: 0;
-    font-family: var(--font-body);
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.66);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: color var(--ph-dur-state) var(--ph-ease-std);
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .talents__seg-option:hover { color: var(--color-ph-white); }
-
-  .talents__seg-option[aria-checked='true'] {
-    color: var(--color-ph-gold);
-  }
-
-  /* El visor de la opción activa: lo coloca el script; sin él, la opción
-     activa se distingue por el color. */
-  .talents__seg-visor {
-    position: absolute;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity var(--ph-dur-state) var(--ph-ease-std);
-  }
-
-  .talents__seg-visor.is-shown { opacity: 1; }
-
-  .talents__seg-visor > i {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 6px;
-    height: 6px;
-    border: 0 solid var(--color-ph-gold);
-    transform: translate(var(--x, 0px), var(--y, 0px));
-  }
-
-  .talents__seg-visor.is-animated > i {
-    transition: transform var(--ph-dur-lock) var(--ph-ease-out);
-  }
-
-  .talents__seg-visor > i:nth-child(1) { border-top-width: 1.5px; border-left-width: 1.5px; }
-  .talents__seg-visor > i:nth-child(2) { border-top-width: 1.5px; border-right-width: 1.5px; }
-  .talents__seg-visor > i:nth-child(3) { border-bottom-width: 1.5px; border-left-width: 1.5px; }
-  .talents__seg-visor > i:nth-child(4) { border-bottom-width: 1.5px; border-right-width: 1.5px; }
-
-  @media (min-width: 1024px) {
-    .talents__controls > .talents__seg:first-of-type { margin-left: auto; }
-  }
-
-  /* ── Móvil: el buscador se pliega a un icono y se abre encima de la barra ── */
-  @media (max-width: 720px) {
-    .talents__controls {
-      gap: 4px 8px;
-    }
-
-    .talents__seg[data-talents-seg='role'] {
-      order: -1;
-      flex: 1 1 100%;
-    }
-
-    .talents__seg[data-talents-seg='sort'] {
-      flex: 1 1 auto;
-    }
-
-    .talents__seg-option { padding: 0 8px; }
-
-    .talents__search {
-      order: 2;
-      flex: 0 0 44px;
-      max-width: none;
-      width: 44px;
-      height: 44px;
-      padding: 0;
-      gap: 0;
-      justify-content: center;
-      cursor: pointer;
-    }
-
-    .talents__search .talents__search-input,
-    .talents__search .talents__search-clear,
-    .talents__search .talents__search-close,
-    .talents__search .talents__search-line {
-      display: none;
-    }
-
-    /* Abierto: ocupa la barra entera, por encima de los controles. */
-    .talents__search.is-expanded,
-    .talents__search.is-collapsing {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 10px;
-      bottom: 10px;
-      z-index: 4;
-      width: auto;
-      height: auto;
-      padding: 0 4px 0 6px;
-      gap: 10px;
-      justify-content: flex-start;
-      background: var(--color-ph-black);
-    }
-
-    .talents__search.is-expanded {
-      animation: talentsSearchOpen 300ms var(--ph-ease-out) both;
-    }
-
-    .talents__search.is-collapsing {
-      animation: talentsSearchClose 200ms var(--ph-ease-in) both;
-      pointer-events: none;
-    }
-
-    .talents__search.is-expanded .talents__search-input,
-    .talents__search.is-collapsing .talents__search-input,
-    .talents__search.is-expanded .talents__search-line,
-    .talents__search.is-collapsing .talents__search-line {
-      display: block;
-    }
-
-    .talents__search.is-expanded .talents__search-clear:not([hidden]),
-    .talents__search.is-collapsing .talents__search-clear:not([hidden]),
-    .talents__search.is-expanded .talents__search-close,
-    .talents__search.is-collapsing .talents__search-close {
-      display: inline-flex;
-    }
-
-    @keyframes talentsSearchOpen {
-      from { clip-path: inset(0 0 0 calc(100% - 44px)); }
-      to { clip-path: inset(0); }
-    }
-
-    @keyframes talentsSearchClose {
-      from { clip-path: inset(0); }
-      to { clip-path: inset(0 0 0 calc(100% - 44px)); }
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .talents__search.is-expanded,
-    .talents__search.is-collapsing {
-      animation: none;
-    }
-    .talents__seg-visor.is-animated > i { transition: none; }
   }
 
   /* ── Grid: 2 → 3 → 5 columnas ── */
@@ -736,9 +519,6 @@ const sortOptions = [
 
   gsap.registerPlugin(Flip);
 
-  type SortMode = 'default' | 'az' | 'za';
-  type RoleFilter = 'all' | 'player' | 'coach';
-
   const reduceMotion = (): boolean => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /** Da por entrada una tarjeta: escaneada, fijada y con su etiqueta. */
@@ -747,15 +527,15 @@ const sortOptions = [
   }
 
   /**
-   * Cambia el grid (filtrar, buscar, ordenar) y anima el cambio en vez de saltar:
-   * las fichas que se quedan se deslizan a su sitio nuevo, las que salen se
-   * encogen y las que entran crecen desde el suyo (FLIP). Así se ve qué ha
-   * pasado con cada una. Con movimiento reducido, el cambio es directo.
+   * Cambia el grid al buscar y anima el cambio en vez de saltar: las fichas que
+   * se quedan se deslizan a su sitio nuevo, las que salen se encogen y las que
+   * entran crecen desde el suyo (FLIP). Así se ve qué ha pasado con cada una. Con
+   * movimiento reducido, el cambio es directo.
    */
   function flipGrid(cards: HTMLElement[], mutate: () => void): void {
     if (reduceMotion()) { mutate(); return; }
     // Las fichas que aún no habían entrado en pantalla llegarían vacías: al
-    // reordenar se dan todas por vistas.
+    // recolocarse se dan todas por vistas.
     cards.forEach(markSeen);
     const state = Flip.getState(cards);
     mutate();
@@ -775,90 +555,6 @@ const sortOptions = [
     return s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
   }
 
-  function isMobile(): boolean {
-    return window.matchMedia('(max-width: 720px)').matches;
-  }
-
-  interface SegmentController {
-    setValue(value: string): void;
-    place(animate: boolean): void;
-  }
-
-  /**
-   * Control segmentado: un grupo de radios. Flechas para cambiar (y elegir),
-   * Inicio/Fin para ir a los extremos; el foco se queda en la elegida (tabindex
-   * itinerante). El visor se desliza hasta la opción activa.
-   */
-  function initSegment(seg: HTMLElement, onChange: (value: string) => void): SegmentController | null {
-    const wrap = seg.querySelector<HTMLElement>('[data-seg-options]');
-    const visor = seg.querySelector<HTMLElement>('[data-seg-visor]');
-    const radios = Array.from(seg.querySelectorAll<HTMLButtonElement>('[role="radio"]'));
-    if (!wrap || !visor || radios.length === 0) return null;
-
-    const ARM = 6;
-    const PAD_X = 2;
-    const PAD_Y = 8;
-
-    const current = (): number => Math.max(0, radios.findIndex((r) => r.getAttribute('aria-checked') === 'true'));
-
-    const place = (animate: boolean): void => {
-      const target = radios[current()];
-      if (!target || target.offsetWidth === 0) return;
-      visor.classList.toggle('is-animated', animate);
-      const x0 = target.offsetLeft + PAD_X;
-      const x1 = target.offsetLeft + target.offsetWidth - PAD_X - ARM;
-      const y0 = target.offsetTop + PAD_Y;
-      const y1 = target.offsetTop + target.offsetHeight - PAD_Y - ARM;
-      const pos: Array<[number, number]> = [[x0, y0], [x1, y0], [x0, y1], [x1, y1]];
-      Array.from(visor.children).forEach((c, i) => {
-        (c as HTMLElement).style.setProperty('--x', `${pos[i][0]}px`);
-        (c as HTMLElement).style.setProperty('--y', `${pos[i][1]}px`);
-      });
-      visor.classList.add('is-shown');
-    };
-
-    const select = (i: number, focus: boolean): void => {
-      const n = (i + radios.length) % radios.length;
-      radios.forEach((r, j) => {
-        r.setAttribute('aria-checked', String(j === n));
-        r.tabIndex = j === n ? 0 : -1;
-      });
-      if (focus) radios[n].focus();
-      place(true);
-      onChange(radios[n].dataset.value ?? '');
-    };
-
-    radios.forEach((r, i) => {
-      r.addEventListener('click', () => {
-        if (i !== current()) select(i, false);
-      });
-      r.addEventListener('keydown', (e) => {
-        const key = e.key;
-        if (key === 'ArrowRight' || key === 'ArrowDown') { e.preventDefault(); select(i + 1, true); }
-        else if (key === 'ArrowLeft' || key === 'ArrowUp') { e.preventDefault(); select(i - 1, true); }
-        else if (key === 'Home') { e.preventDefault(); select(0, true); }
-        else if (key === 'End') { e.preventDefault(); select(radios.length - 1, true); }
-      });
-    });
-
-    place(false);
-    requestAnimationFrame(() => visor.classList.add('is-animated'));
-
-    return {
-      setValue(value: string) {
-        radios.forEach((r) => {
-          const on = r.dataset.value === value;
-          r.setAttribute('aria-checked', String(on));
-          r.tabIndex = on ? 0 : -1;
-        });
-        place(true);
-      },
-      place,
-    };
-  }
-
-  let resizeHandler: (() => void) | null = null;
-
   function initTalents(): void {
     const controls = document.querySelector<HTMLElement>('[data-talents-controls]');
     const grid = document.querySelector<HTMLUListElement>('[data-talents-grid]');
@@ -869,35 +565,16 @@ const sortOptions = [
     const searchWrap = controls.querySelector<HTMLLabelElement>('[data-talents-search-wrap]');
     const search = controls.querySelector<HTMLInputElement>('[data-talents-search]');
     const clearBtn = controls.querySelector<HTMLButtonElement>('[data-talents-clear]');
-    const closeBtn = controls.querySelector<HTMLButtonElement>('[data-talents-search-close]');
-    const roleSeg = controls.querySelector<HTMLElement>('[data-talents-seg="role"]');
-    const sortSeg = controls.querySelector<HTMLElement>('[data-talents-seg="sort"]');
     const reset = empty.querySelector<HTMLButtonElement>('[data-talents-reset]');
-    if (!searchWrap || !search || !clearBtn || !closeBtn || !roleSeg || !sortSeg || !reset) return;
+    if (!searchWrap || !search || !clearBtn || !reset) return;
 
     const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-talent-card]'));
-    let currentRole: RoleFilter = 'all';
-
-    function sortCards(mode: SortMode): void {
-      const sorted = [...cards].sort((a, b) => {
-        if (mode === 'default') {
-          return Number(a.dataset.index) - Number(b.dataset.index);
-        }
-        const cmp = (a.dataset.name ?? '').localeCompare(b.dataset.name ?? '', undefined, { sensitivity: 'base' });
-        return mode === 'az' ? cmp : -cmp;
-      });
-      for (const card of sorted) grid!.appendChild(card);
-    }
 
     function filterCards(query: string): void {
       const norm = normalize(query.trim());
       let visible = 0;
       for (const card of cards) {
-        const name = card.dataset.name ?? '';
-        const r = card.dataset.role ?? 'player';
-        const nameMatch = !norm || normalize(name).includes(norm);
-        const roleMatch = currentRole === 'all' || currentRole === r;
-        const match = nameMatch && roleMatch;
+        const match = !norm || normalize(card.dataset.name ?? '').includes(norm);
         card.hidden = !match;
         // Al buscar, lo que coincide queda fijado por su visor.
         card.querySelector('.tcard__photo')?.classList.toggle('is-targeted', match && !!norm);
@@ -906,36 +583,12 @@ const sortOptions = [
       empty!.hidden = visible > 0;
     }
 
-    function applySort(mode: SortMode): void {
-      flipGrid(cards, () => sortCards(mode));
-    }
-
     function applyFilter(query: string): void {
       flipGrid(cards, () => filterCards(query));
     }
 
     function syncClearBtn(): void {
       clearBtn!.hidden = search!.value.length === 0;
-    }
-
-    function openSearch(): void {
-      searchWrap!.classList.remove('is-collapsing');
-      searchWrap!.classList.add('is-expanded');
-      requestAnimationFrame(() => search!.focus());
-    }
-
-    function closeSearch(): void {
-      if (!searchWrap!.classList.contains('is-expanded')) return;
-      search!.blur();
-      searchWrap!.classList.remove('is-expanded');
-      searchWrap!.classList.add('is-collapsing');
-      const onEnd = (e: AnimationEvent): void => {
-        if (e.target !== searchWrap) return;
-        searchWrap!.classList.remove('is-collapsing');
-        searchWrap!.removeEventListener('animationend', onEnd);
-      };
-      searchWrap!.addEventListener('animationend', onEnd);
-      if (reduceMotion()) searchWrap!.classList.remove('is-collapsing');
     }
 
     let typingTimer = 0;
@@ -957,58 +610,12 @@ const sortOptions = [
       search.focus();
     });
 
-    /* Móvil: tocar el icono plegado abre el buscador. */
-    searchWrap.addEventListener('click', (e) => {
-      if (!isMobile()) return;
-      if (searchWrap.classList.contains('is-expanded')) return;
-      e.preventDefault();
-      openSearch();
-    });
-
-    closeBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    reset.addEventListener('click', () => {
       search.value = '';
       syncClearBtn();
       applyFilter('');
-      closeSearch();
-    });
-
-    search.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && searchWrap.classList.contains('is-expanded')) {
-        e.preventDefault();
-        closeSearch();
-      }
-    });
-
-    const roleCtl = initSegment(roleSeg, (value) => {
-      currentRole = value === 'player' || value === 'coach' ? value : 'all';
-      applyFilter(search.value);
-    });
-
-    const sortCtl = initSegment(sortSeg, (value) => {
-      applySort(value === 'az' || value === 'za' ? value : 'default');
-    });
-
-    reset.addEventListener('click', () => {
-      search.value = '';
-      currentRole = 'all';
-      roleCtl?.setValue('all');
-      sortCtl?.setValue('default');
-      syncClearBtn();
-      flipGrid(cards, () => {
-        filterCards('');
-        sortCards('default');
-      });
-      closeSearch();
       search.focus();
     });
-
-    // Las fuentes y el ancho mueven las opciones: el visor las sigue sin viajar.
-    document.fonts?.ready.then(() => { roleCtl?.place(false); sortCtl?.place(false); });
-    if (resizeHandler) window.removeEventListener('resize', resizeHandler);
-    resizeHandler = () => { roleCtl?.place(false); sortCtl?.place(false); };
-    window.addEventListener('resize', resizeHandler, { passive: true });
 
     syncClearBtn();
   }

@@ -13,6 +13,41 @@ leído el resto.
 
 ---
 
+## 2026-10-04 · Talentos sin «Ver» ni «Orden»: el grid sale siempre en el orden del archivo
+
+> **Estado: en las tres variantes** (`feat/variante-a-retransmision`,
+> `feat/variante-b-titulos` y `feat/variante-c-analisis`), sin fusionar. `preview` y
+> `main` siguen con los dos controles.
+
+**Qué se decidió.** La página de Talentos pierde el filtro de rol («Ver»: Todos /
+Jugadores / Entrenadores) y el orden («Orden»: Predeterminado / A-Z / Z-A). El grid
+se ve siempre en el orden del archivo, que es el de la lista de Mario (entrada del
+2026-09-25). Se queda el buscador por nombre, con su aviso de «sin resultados» y el
+botón que lo vacía.
+
+**Quién y por qué.** Mario, el 2026-10-04, por dirección del equipo: «El orden es el
+que es, y se queda así». El orden del grid es editorial —quién sale antes lo decide
+PH— y un A-Z lo deshacía con un clic. El filtro de rol se retira en la misma
+decisión.
+
+**Alternativa descartada.** Mantenerlos, como pedía el encargo común de las variantes
+y como sigue teniéndolos la web publicada.
+
+**Qué cambia.**
+- Sin los dos controles y sin sus textos en los tres idiomas (`talents.role.*`,
+  `talents.sort.*`).
+- **El buscador ya no se pliega en el móvil.** Se plegaba en una lupa para compartir
+  fila con el orden; sin esa fila se ve entero y ocupa el mismo alto. Con ello sobra
+  el aspa que lo cerraba (`talents.search.close`).
+- El botón del aviso de vacío sigue diciendo «Limpiar filtros» (los textos no se
+  cambian) y ahora solo vacía la búsqueda.
+- El grid sigue animando con FLIP los cambios de la búsqueda.
+
+**Consecuencia.** No proponer volver a poner un orden o un filtro de rol sin hablarlo
+con el equipo: es una decisión editorial, no un olvido.
+
+---
+
 ## 2026-10-03 · Variante C «Análisis»: la web como la sala de análisis de un partido
 
 > **Estado: propuesta en la rama `feat/variante-c-analisis`, sin fusionar.** Sale de
@@ -66,8 +101,9 @@ decora, **se anota**. Todo sale de un vocabulario corto (cómo está hecho, en
   elipse a mano alrededor de «pero las personas marcan.») y las cifras como
   esquemas (la red de siete sedes y el círculo de 360° que se cierra); en
   Contacto, la línea de pase termina en el nodo del correo.
-- **Talentos**: barra de herramientas con buscador (plegable en el móvil) y dos
-  controles segmentados («Ver» y «Orden») con un visor que va a la opción activa;
+- **Talentos**: ⚠️ *rol y orden se retiraron el 2026-10-04 y el buscador ya no se
+  pliega en el móvil (entrada «Talentos sin «Ver» ni «Orden»», arriba).* Barra de
+  herramientas con buscador (plegable en el móvil) y dos controles segmentados («Ver» y «Orden») con un visor que va a la opción activa;
   cada tarjeta es un jugador en seguimiento: la foto (3:4, tal cual) se descubre con
   un escaneo, un visor se clava en sus esquinas y se queda en marcas, y el nombre
   cuelga por una línea guía. Mismas funciones, mismo orden y el mismo FLIP.

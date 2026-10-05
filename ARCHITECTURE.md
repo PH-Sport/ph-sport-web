@@ -489,7 +489,7 @@ una al azar y nunca la de la página anterior (memoria y `sessionStorage`); el
 
 | Escena | Qué se ve | Con el ratón |
 |---|---|---|
-| `velo` | Una red de luz tenue, como la del agua al sol, casi una textura | Se concentra apenas (al 10 %) |
+| `velo` | Una red de luz tenue, como la del agua al sol, casi una textura (con el doble de luz que en Mochi, 2026-10-05) | Se concentra apenas (al 10 %) |
 | `neon` | El contorno del logo en grande, con ecos, y una luz que recorre el tubo | Se encienden los trazos cercanos |
 | `trayectorias` | Líneas finas a 45° (la diagonal del logo) por las que suben destellos dorados | Líneas y destellos se avivan |
 | `estructura` | La retícula a 45° del logo, casi invisible, que barre una luz lenta encendiendo sus cruces | Una linterna |

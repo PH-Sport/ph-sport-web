@@ -82,9 +82,10 @@ void emit(vec3 c) {
 }
 `;
 
-// Velo: la red de luz que deja un cristal (o el agua) al sol, a 45°, muy tenue y
-// lenta; casi una textura. Junto al ratón se concentra apenas, como bajo una lupa
-// (al 10 % de la fuerza de las demás escenas, a petición de Mario).
+// Velo: la red de luz que deja un cristal (o el agua) al sol, a 45°, tenue y lenta;
+// casi una textura. Junto al ratón se concentra apenas, como bajo una lupa (al 10 %
+// de la fuerza de las demás escenas, a petición de Mario). Con el doble de luz que
+// en Mochi: allí apenas se notaba la neblina (Mario, 2026-10-05).
 const VELO = `${HEADER}
 float caustic(vec2 uv, float t) {
   vec2 p = mod(uv * 6.28318, 6.28318) - 250.0;
@@ -107,7 +108,9 @@ void main() {
   float k2 = caustic(r / 620.0 + 0.37, uTime * 0.045 + 11.0);
   float v = k * 0.7 + k2 * 0.3;
   vec3 c = GOLD * v * (0.1 + m * 0.14) + WHITE * v * 0.008;
-  emit(c * stageMask(p, W, H));
+  // Todo por igual, para que el movimiento y la reacción al ratón no cambien.
+  const float GAIN = 2.0;
+  emit(c * GAIN * stageMask(p, W, H));
 }`;
 
 // Neón: el contorno del logo en grande, con ecos paralelos como curvas de nivel, y

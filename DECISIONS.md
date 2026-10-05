@@ -13,6 +13,31 @@ leído el resto.
 
 ---
 
+## 2026-10-05 · Velo, con el doble de luz
+
+> **Estado: en la rama `feat/variante-a-retransmision`**, sin fusionar.
+
+**Qué pidió Mario.** Al ver el bombo (entrada siguiente): de Velo le gustan el
+movimiento y la reacción al ratón, pero «la neblina como tal apenas se nota».
+
+**Qué cambia.** Toda la luz de Velo se multiplica por 2 (`GAIN` en su shader), por
+igual, así que el movimiento y la reacción al ratón no cambian. En Mochi, Mario
+la había pedido «aligerada» (2026-10-02); con la regla del tercio de las páginas
+interiores y sin los paneles esmerilados de Mochi, se quedaba corta.
+
+**Medido** con todo el contenido oculto, en una pantalla de 1440 × 900. Es el brillo
+del 1 % de píxeles más vivos, con el negro de la página en 14,6:
+
+| | Portada (luz entera) | Página interior (fuera del titular) |
+|---|---|---|
+| Antes | 23,9 | 18,9 |
+| Ahora | 34,9 | 22,0 |
+| Las otras escenas | 16,8–38,2 | 16,9–23,9 |
+
+Queda a la par que las demás, sin pasar a Calidez, la más viva.
+
+---
+
 ## 2026-10-05 · La A estrena el bombo de fondos: cinco escenas al azar en todas las páginas, con Neón y Velo
 
 > **Estado: en la rama `feat/variante-a-retransmision`**, sin fusionar en `preview` ni

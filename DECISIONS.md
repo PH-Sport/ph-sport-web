@@ -13,6 +13,27 @@ leído el resto.
 
 ---
 
+## 2026-10-05 · Contacto sin la imagen del sobre dorado: el hueco espera la nueva
+
+> **Estado: en las tres variantes** (`feat/variante-a-retransmision`,
+> `feat/variante-b-titulos` y `feat/variante-c-analisis`), sin fusionar. `preview` y
+> `main` siguen mostrándola en phsport.es.
+
+**Qué se decidió.** Fuera de la sección de contacto de la portada la imagen del sobre
+negro con filo y sello dorados (`public/contact-image.webp`), y fuera también el
+archivo. Su sitio se queda: el marco, el tamaño y la animación siguen, con el tono
+de espera de las fotos (`#15171b`) dentro, hasta que llegue la imagen nueva.
+
+**Quién y por qué.** Mario, el 2026-10-05: le han ordenado retirar esa imagen en
+concreto y pondrá otra. El motivo de la orden no consta.
+
+**Consecuencia.** No volver a usar esa imagen: sigue en el historial de git y en
+`preview` y `main`. La nueva va como fondo de `.replay__img` en `HomeContactSection.astro` (la ventana de
+repetición), encima del tono de espera. La anterior era decorativa (sin texto
+alternativo); si la nueva aporta información, necesita su texto en los tres idiomas.
+
+---
+
 ## 2026-10-04 · Talentos sin «Ver» ni «Orden»: el grid sale siempre en el orden del archivo
 
 > **Estado: en las tres variantes** (`feat/variante-a-retransmision`,
@@ -106,8 +127,9 @@ animaciones», «Cabecera de sección», «Hero»).
   escritorio, al lado del titular; el Plan de Acción va aparte, a todo lo ancho, con
   sus cinco sub-áreas en cinco columnas. Sobre: la frase en dos placas, la tabla de
   cifras (7 con siete segmentos, 360° con barra continua) y los valores en la cinta.
-  Contacto: «Hablemos.», el correo como placa llave grande y la imagen en una
-  ventana de repetición con marco de placa.
+  Contacto (⚠️ *sin imagen desde el 2026-10-05: el hueco espera la nueva; entrada
+  «Contacto sin la imagen del sobre dorado», arriba*): «Hablemos.», el correo como
+  placa llave grande y la imagen en una ventana de repetición con marco de placa.
 - **Talentos.** ⚠️ *Rol y orden se retiraron el 2026-10-04 y el buscador ya no se
   pliega en el móvil (entrada «Talentos sin «Ver» ni «Orden»», arriba).* Barra de
   filtros de realización: buscador en placa (plegable en el móvil) y rol y orden

@@ -731,7 +731,7 @@ que ejecutar nada a mano.
 | `HomePlayersSection.astro` | ✅ Completo | Bug, «El roster.» en placa y placa llave a /talentos. Sin fotos a propósito (commit `453e928`) |
 | `HomeServicesSection.astro` | ✅ Completo | La alineación (acordeón `<details>` sin animar alturas) y el Plan de Acción aparte, a todo lo ancho, con sus cinco sub-áreas en placas |
 | `HomeAboutSection.astro` | ✅ Completo | La frase en dos placas, tabla de estadísticas (7 con segmentos, 360° con barra) y cinta de valores ligada al scroll |
-| `HomeContactSection.astro` | ✅ Completo | «Hablemos.» en placa, el correo como placa llave grande y la imagen en una ventana de repetición que se descubre en diagonal |
+| `HomeContactSection.astro` | ✅ Completo | «Hablemos.» en placa, el correo como placa llave grande y una ventana de repetición que se descubre en diagonal, vacía hasta que llegue la imagen nueva (`DECISIONS.md`, 2026-10-05) |
 | `AboutSection.astro` | ✅ Completo | V3 — absorbe /equipo. Hero en placas, cartones de filosofía, hoja de alineación (21 integrantes), lista de señales con códigos ISO |
 | `ServicesSection.astro` | ✅ Completo | Hero en escalera, áreas (acordeón con panel), cintas, corte de segmento del modelo, pilares como segmentos, manifiesto en placas |
 | `TalentsSection.astro` | ✅ Completo | Grid 3:4 no clicable, siempre en el orden del archivo: sin filtro de rol ni orden (`DECISIONS.md`, 2026-10-04). Buscador en placa, a la vista también en el móvil; fichas con rótulo inferior y escudos en placas; reveladas en diagonal; la búsqueda recoloca con FLIP |

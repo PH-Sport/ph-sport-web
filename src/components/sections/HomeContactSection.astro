@@ -13,8 +13,9 @@ const t = useTranslations(lang);
 ---
 
 {/* «Final del partido»: «Hablemos.» a escala de rótulo, el correo como la placa
-    llave grande y la imagen en una ventana de repetición con marco de placa, que
-    se descubre en diagonal al entrar. */}
+    llave grande y una ventana de repetición con marco de placa, que se descubre
+    en diagonal al entrar. Hoy la ventana está vacía: la imagen del sobre se
+    retiró y el hueco espera la nueva (DECISIONS.md, 2026-10-05). */}
 <section class="home-contact" id="contacto" aria-labelledby="home-contact-title">
   <Bug text={t('home.contact.eyebrow')} />
   <div class="home-contact__grid">
@@ -88,13 +89,12 @@ const t = useTranslations(lang);
       0 0, 100% 0, 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, 0 100%, 0 0,
       1px 1px, 1px calc(100% - 1px), calc(100% - var(--c) - 0.41px) calc(100% - 1px), calc(100% - 1px) calc(100% - var(--c) - 0.41px), calc(100% - 1px) 1px, 1px 1px);
   }
+  /* El hueco de la imagen: el tono de espera de las fotos. La nueva irá aquí,
+     como fondo (`url(...) center / cover`) encima de ese tono. */
   .replay__img {
     position: absolute;
     inset: 0;
-    background:
-      linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.18)),
-      url('/contact-image.webp') center / cover no-repeat,
-      #15171b;
+    background: #15171b;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, 0 100%);
   }
   .replay__tab {

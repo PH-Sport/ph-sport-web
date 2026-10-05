@@ -11,7 +11,9 @@ const t = useTranslations(lang);
 ---
 
 {/* Última escena de la portada y su pieza de autor: «Hablemos.» a todo lo ancho,
-    con la foto del sobre DENTRO de las letras. Al bajar, con la escena fijada,
+    con una foto DENTRO de las letras. Hoy es un hueco: la del sobre se retiró y
+    la nueva va en `.hc__photo` (DECISIONS.md, 2026-10-05); mientras, las letras se
+    rellenan con el tono de espera y se ven en gris. Al bajar, con la escena fijada,
     la cámara entra en la palabra por su punto final: las letras crecen hasta que
     el punto llena la pantalla y la foto queda a pantalla completa; entonces
     aparecen, sobre una veladura, «Email directo» y el correo.
@@ -26,9 +28,7 @@ const t = useTranslations(lang);
 <section class="hc" id="contacto" aria-labelledby="home-contact-title">
   <div class="hc__stage">
     <SceneLabel class="hc__label" text={t('home.contact.eyebrow')} />
-    <div class="hc__photo" aria-hidden="true">
-      <img src="/contact-image.webp" alt="" width="1600" height="1000" loading="lazy" decoding="async" />
-    </div>
+    <div class="hc__photo" aria-hidden="true"></div>
     <div class="hc__lift" aria-hidden="true" data-hc-lift></div>
     <div class="hc__mask" data-hc-mask>
       <h2 class="hc__word ph-giant" id="home-contact-title" data-hc-word>{t('home.contact.title')}<span class="hc__base" aria-hidden="true"></span></h2>
@@ -59,10 +59,12 @@ const t = useTranslations(lang);
     padding: clamp(72px, 10vw, 144px) var(--ph-section-px) clamp(96px, 12vw, 160px);
   }
 
+  /* El hueco de la foto, con el tono de espera de las fotos. */
   .hc__photo {
     order: 2;
     aspect-ratio: 16 / 10;
     overflow: hidden;
+    background: #15171b;
   }
 
   .hc__photo img {
@@ -331,7 +333,8 @@ const t = useTranslations(lang);
       const lift = section.querySelector<HTMLElement>('[data-hc-lift]');
       const mail = section.querySelector<HTMLElement>('[data-hc-mail]');
       const link = section.querySelector<HTMLAnchorElement>('[data-hc-link]');
-      if (mask && word && photo && veil && lift && mail && link) {
+      // La foto es opcional: sin ella (hoy, el hueco) la escena funciona igual.
+      if (mask && word && veil && lift && mail && link) {
         let geo = measure(mask, word);
         const zoom = { p: 0 };
         // Acercamiento exponencial (la velocidad aparente es constante) y el punto
@@ -365,9 +368,9 @@ const t = useTranslations(lang);
             },
           },
         });
-        tl.to(zoom, { p: 1, duration: 0.6, onUpdate: render }, 0)
-          .fromTo(photo, { scale: 1.14 }, { scale: 1, duration: 0.62 }, 0)
-          .fromTo(lift, { opacity: 0.38 }, { opacity: 0, duration: 0.5 }, 0.08)
+        tl.to(zoom, { p: 1, duration: 0.6, onUpdate: render }, 0);
+        if (photo) tl.fromTo(photo, { scale: 1.14 }, { scale: 1, duration: 0.62 }, 0);
+        tl.fromTo(lift, { opacity: 0.38 }, { opacity: 0, duration: 0.5 }, 0.08)
           .fromTo(veil, { opacity: 0 }, { opacity: 0.42, duration: 0.1 }, 0.58)
           .fromTo(mail, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.1 }, 0.62)
           .to({}, { duration: 0.28 });

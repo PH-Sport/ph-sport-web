@@ -50,6 +50,15 @@ auditorías. **No abordarlo sin que Mario lo supervise.**
 
 Detalle en [`rendimiento.md`](rendimiento.md).
 
+### Contacto sin imagen: el hueco espera la nueva (2026-10-05)
+
+La imagen del sobre dorado se retiró por orden (`DECISIONS.md`, 2026-10-05) y su
+sitio en la sección de contacto de la portada se ve vacío **a propósito**: el marco
+con el tono de espera de las fotos. No es un fallo de carga. Se cierra cuando Mario
+pase la imagen nueva, que va un `<img>` dentro de `.hc__photo` en `HomeContactSection.astro`; la escena
+la anima sola (el acercamiento la escala si existe). Hasta entonces, «Hablemos.»
+se ve en gris: las letras se rellenan con lo que haya en ese hueco.
+
 ## Diagnosticados, con la causa equivocada ya descartada
 
 ### Sitelinks de Google mezclando ES y EN

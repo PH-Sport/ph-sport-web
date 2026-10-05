@@ -290,7 +290,8 @@ Lo que hay que saber **antes de tocar nada**:
 Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: backlog de
 rendimiento del 2026-08-18, SEO P1/P2, el vídeo del hero y los fondos animados de
 sección sin probar en un móvil real (2026-10-01), la variante B «Títulos»
-tampoco (2026-10-03, rama `feat/variante-b-titulos`), sin control para
+tampoco (2026-10-03, rama `feat/variante-b-titulos`), la imagen nueva de
+Contacto, que hoy es un hueco (2026-10-05), sin control para
 pausar el movimiento continuo (WCAG 2.2.2), y las fotos de talentos en AVIF, que
 con 4G lento tardan bastante más en aparecer (2026-10-01).
 

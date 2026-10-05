@@ -13,6 +13,28 @@ leído el resto.
 
 ---
 
+## 2026-10-05 · Contacto sin la imagen del sobre dorado: el hueco espera la nueva
+
+> **Estado: en las tres variantes** (`feat/variante-a-retransmision`,
+> `feat/variante-b-titulos` y `feat/variante-c-analisis`), sin fusionar. `preview` y
+> `main` siguen mostrándola en phsport.es.
+
+**Qué se decidió.** Fuera de la sección de contacto de la portada la imagen del sobre
+negro con filo y sello dorados (`public/contact-image.webp`), y fuera también el
+archivo. Su sitio se queda: el marco, el tamaño y la animación siguen, con el tono
+de espera de las fotos (`#15171b`) dentro, hasta que llegue la imagen nueva.
+
+**Quién y por qué.** Mario, el 2026-10-05: le han ordenado retirar esa imagen en
+concreto y pondrá otra. El motivo de la orden no consta.
+
+**Consecuencia.** No volver a usar esa imagen: sigue en el historial de git y en
+`preview` y `main`. La nueva va un `<img>` dentro de `.hc__photo` en `HomeContactSection.astro`; la escena
+la anima sola (el acercamiento la escala si existe). Hasta entonces, «Hablemos.»
+se ve en gris: las letras se rellenan con lo que haya en ese hueco. La anterior era decorativa (sin texto
+alternativo); si la nueva aporta información, necesita su texto en los tres idiomas.
+
+---
+
 ## 2026-10-04 · Talentos sin «Ver» ni «Orden»: el grid sale siempre en el orden del archivo
 
 > **Estado: en las tres variantes** (`feat/variante-a-retransmision`,
@@ -99,7 +121,9 @@ Cómo está hecho, pieza a pieza: `ARCHITECTURE.md` («Sistema de animaciones» 
   escena de Talentos **corta** por encima; «El roster.» más ancho que la pantalla,
   viajando; «Representamos con propósito.» y «Las marcas suman…» se encienden al
   leerlas; las áreas, un índice tipográfico; 7 y 360° entran de desenfoque a
-  nítido; y la pieza de autor: **«Hablemos.» con la foto del sobre dentro de las
+  nítido; y la pieza de autor (⚠️ *la foto del sobre se retiró el 2026-10-05 y hasta
+  la nueva las letras se rellenan con el hueco; entrada «Contacto sin la imagen del
+  sobre dorado», arriba*): **«Hablemos.» con la foto del sobre dentro de las
   letras, y la cámara que entra por el punto final** hasta que la foto llena la
   pantalla y aparece el correo.
 - **Talentos**: ⚠️ *rol y orden se retiraron el 2026-10-04 y el buscador ya no se

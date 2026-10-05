@@ -54,7 +54,7 @@ ph-sport-web/
 │   │   │   ├── HomePlayersSection.astro    # «El roster.» que viaja; corta al hero
 │   │   │   ├── HomeServicesSection.astro   # Lectura cinética + índice tipográfico (acordeón)
 │   │   │   ├── HomeAboutSection.astro      # Declaración que se enciende, 7 y 360° con enfoque
-│   │   │   ├── HomeContactSection.astro    # «Hablemos.» con la foto dentro: la cámara entra por el punto
+│   │   │   ├── HomeContactSection.astro    # «Hablemos.» con la foto dentro (hoy, el hueco): la cámara entra por el punto
 │   │   │   ├── AboutSection.astro          # Cabecera, Filosofía en cartones fijados, equipo en créditos, presencia
 │   │   │   ├── ServicesSection.astro       # Índice de áreas, banda que viaja, 5 pilares como escenas
 │   │   │   └── TalentsSection.astro        # Buscador en una línea de escritura y grid suizo 2/3/5 con persianas
@@ -753,7 +753,7 @@ que ejecutar nada a mano.
 | `HomePlayersSection.astro` | ✅ Completo | Corta al hero; «El roster.» más ancho que la pantalla viaja con el scroll. Sin fotos a propósito (commit `453e928`) |
 | `HomeServicesSection.astro` | ✅ Completo | Titular en lectura cinética e índice tipográfico de áreas (botón + panel, `ph-accordion.ts`) con el Plan de Acción en columnas |
 | `HomeAboutSection.astro` | ✅ Completo | Declaración en lectura cinética; 7 y 360° con enfoque, en composición asimétrica; valores en una línea |
-| `HomeContactSection.astro` | ✅ Completo | «Hablemos.» con la foto dentro de las letras y la cámara entrando por el punto final; el correo sobre la foto (2026-10-03) |
+| `HomeContactSection.astro` | ✅ Completo | «Hablemos.» con la foto dentro de las letras y la cámara entrando por el punto final; el correo sobre la foto (2026-10-03). Hoy la foto es un hueco con el tono de espera, a la espera de la nueva (`DECISIONS.md`, 2026-10-05) |
 | `AboutSection.astro` | ✅ Completo | Cabecera, Filosofía en tres cartones de título fijados, el equipo como créditos, Presencia con los países entrando desde su lado |
 | `ServicesSection.astro` | ✅ Completo | Índice de áreas, banda que viaja, 5 pilares como escenas (imagen desde una rendija), manifiesto |
 | `TalentsSection.astro` | ✅ Completo | Grid 3:4 no clicable en 2/3/5 columnas, siempre en el orden del archivo: sin filtro de rol ni orden (`DECISIONS.md`, 2026-10-04). Buscador en una línea de escritura, a la vista también en el móvil; persianas; foco de escena; la búsqueda recoloca con FLIP |

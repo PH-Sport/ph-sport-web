@@ -46,7 +46,8 @@ const t = useTranslations(lang);
   .home-contact {
     position: relative;
     padding: clamp(64px, 7vw, 104px) var(--ph-section-px) clamp(72px, 8vw, 120px);
-    background: var(--color-ph-black);
+    /* Transparente: el fondo es la luz animada de toda la página (`.ph-page-bg`). */
+    background: transparent;
   }
 
   .home-contact__grid {

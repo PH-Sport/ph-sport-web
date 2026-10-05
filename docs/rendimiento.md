@@ -63,6 +63,8 @@ Home en carga fría 224 → 118 ms (−47 %).
 
 **Octubre · la variante A «Retransmisión»** (rama `feat/variante-a-retransmision`, `DECISIONS.md` 2026-10-03). JS comprimido con gzip, medido en el build: GSAP + infraestructura 49,2 KB, núcleo `ph-motion` 1,7 KB, `ph-disclosure` 1,0 KB, Flip 11,0 KB en `/talentos`. Por página: portada 71,9 KB, `/talentos` 83,3 KB, `/servicios` 74,6 KB, `/sobre-nosotros` 72,8 KB, legales 20,9 KB. Sin medir aún con CPU ×4 ni en un móvil real.
 
+**Octubre · el bombo de fondos en la A** (`DECISIONS.md` 2026-10-05). `ph-ambient.ts` pasa de las tres páginas interiores a `BaseLayout`: 5,6 KB con gzip en todas las páginas, también en la portada y en las legales (donde no monta canvas y no hace nada). La GPU dibuja también en la portada, bajo el vídeo. Sin medir en un móvil real.
+
 **Octubre · el lenguaje de movimiento «Marcador»** (rama `feat/rediseno-motion`, `DECISIONS.md` 2026-10-02). Medido con Playwright sobre el build, Chromium sin cabeza en esta máquina, con el mismo método antes (el build de `preview`) y después:
 - **Entrar en `/sobre-nosotros` desde `/servicios`** por navegación SPA, CPU ×4, 3 pasadas: tarea larga más larga **80-85 ms → 0-54 ms**. Los párrafos ya no entran palabra a palabra con `filter: blur()`. La cifra de 217-359 ms del 2026-08-18 se midió con otro método y no es comparable.
 - **Listeners de `scroll` en el documento** tras tres vueltas home → talentos → home: **4 → 5 → 6 → 7** antes, **4 → 4 → 4 → 4** después (la fuga de `initHeroScrollCue`, arreglada).

@@ -109,7 +109,7 @@ ph-sport-web/
 │   │
 │   ├── scripts/                     # Scripts vanilla para interacciones y animaciones
 │   │   ├── dropdown.ts              # SIN USO: nadie lo importa. Talentos monta su combo aparte
-│   │   ├── ph-ambient.ts            # Luz animada de fondo de Talentos, Servicios y Sobre nosotros (WebGL2 en directo)
+│   │   ├── ph-ambient.ts            # Luz animada de fondo de toda la web: bombo de cinco escenas (WebGL2 en directo)
 │   │   ├── ph-disclosure.ts         # Acordeones sin animar alturas (FLIP medido), con GSAP
 │   │   ├── ph-motion.ts             # Núcleo «Retransmisión», sin GSAP: entradas, cascadas, placas por líneas, cortinilla
 │   │   └── ph-text-animations.ts   # Infraestructura GSAP (refresh, scroll al navegar, curvas) y cintas
@@ -480,47 +480,58 @@ pantalla y que todo se lea sin esfuerzo:
   el resto a la placa (el separador queda para los lectores de pantalla). Si un
   idioma cambiara ese separador en el rótulo, saldría entero como etiqueta.
 
-El fondo es un `<canvas class="ph-ambient" data-ambient="<escena>">` dentro de
-`<div class="ph-page-bg">`. Lo dibuja en directo `src/scripts/ph-ambient.ts` con
-un shader de WebGL2:
+El fondo es un único `<canvas class="ph-ambient" data-ambient>` dentro de
+`<div class="ph-page-bg">`, que monta `BaseLayout` en todas las páginas salvo las
+legales (`ambient={false}`). Lo dibuja en directo `src/scripts/ph-ambient.ts` con un
+shader de WebGL2. **La escena sale de un bombo** (`POOL`): en cada carga de página,
+una al azar y nunca la de la página anterior (memoria y `sessionStorage`); el
+`data-ambient` del canvas dice cuál salió (`DECISIONS.md`, 2026-10-05).
 
-| Sección | Escena | Qué se ve |
+| Escena | Qué se ve | Con el ratón |
 |---|---|---|
-| Talentos | `trayectorias` | Líneas finas a 45° (la diagonal del logo) por las que suben destellos dorados |
-| Servicios | `estructura` | La retícula a 45° del logo, casi invisible, que barre una luz lenta encendiendo sus cruces |
-| Sobre nosotros | `calidez` | Un haz de luz cálida que se mece, con motas de polvo dentro |
+| `velo` | Una red de luz tenue, como la del agua al sol, casi una textura | Se concentra apenas (al 10 %) |
+| `neon` | El contorno del logo en grande, con ecos, y una luz que recorre el tubo | Se encienden los trazos cercanos |
+| `trayectorias` | Líneas finas a 45° (la diagonal del logo) por las que suben destellos dorados | Líneas y destellos se avivan |
+| `estructura` | La retícula a 45° del logo, casi invisible, que barre una luz lenta encendiendo sus cruces | Una linterna |
+| `calidez` | Un haz de luz cálida que se mece, con motas de polvo dentro | El haz se inclina hacia el cursor |
 
 Cómo convive con la página, todo dentro del módulo:
 
 - **Es el fondo de toda la página**: `.ph-page-bg` va fijo a la pantalla
   (`position: fixed`, `z-index: -1` dentro de `<main>`) y el contenido pasa por
-  encima al hacer scroll. Por eso las secciones `.talents` y `.srv` tienen el fondo
-  transparente; si una vuelve a llevar fondo opaco, tapa la luz.
+  encima al hacer scroll. Por eso las secciones de las páginas y los bloques de la
+  portada tienen el fondo transparente; si uno vuelve a llevar fondo opaco, tapa la
+  luz. Depende de que `<main>` sea contexto de apilamiento (lo es por su
+  `transition:name`): sin él, el negro del `<body>` lo taparía.
 - **Dónde brilla lo decide el shader** (`stageMask`):
-  - La luz está entera solo detrás del titular (el `<h1>` de la sección, medido en
-    px de página).
-  - En el resto de la página baja al 32 % (`OUTSIDE_TITLE`), para que no ensucie
-    los párrafos.
+  - En las páginas interiores, la luz está entera detrás del titular (el `<h1>`,
+    medido en px de página) y baja al 32 % en el resto (`OUTSIDE_TITLE`), para que
+    no ensucie los párrafos.
+  - En la portada va entera en toda la página: su `<h1>` es el lema del hero,
+    tapado por el vídeo.
   - Bajo el menú se apaga siempre.
   - El shader recibe el scroll en cada fotograma.
   - No hay `mask-image` ni fondo de color en el contenedor: con una caja con
     fundidos de CSS se veía su borde (la «placa» gris de la primera versión).
+- **El ratón** (solo con puntero fino) llega amortiguado por un muelle. En táctil no
+  reacciona.
 - **Dibuja mientras la pestaña está visible**, a la frecuencia de la pantalla. Como
-  ocupa la pantalla entera, ya no se pausa al hacer scroll: es el coste de que la
-  luz esté siempre (ver `docs/hallazgos-abiertos.md`).
+  ocupa la pantalla entera, no se pausa al hacer scroll: es el coste de que la luz
+  esté siempre (ver `docs/hallazgos-abiertos.md`).
 - **`prefers-reduced-motion`**: un fotograma fijo, sin animación, que se repinta al
-  hacer scroll porque la zona brillante se mueve con el titular.
+  hacer scroll y al mover el ratón.
 - **Se suma al fondo**: salida premultiplicada, así que no tapa nada.
-- **ClientRouter**: al cambiar de página destruye los contextos de WebGL de la que
-  se va (el navegador tiene un tope de contextos vivos).
+- **ClientRouter**: al cambiar de página destruye el contexto de WebGL de la que se
+  va (el navegador tiene un tope de contextos vivos), y la nueva saca otra escena.
 - **Sin WebGL2**: el canvas queda transparente y se ve un halo dorado de CSS
   (`.ph-ambient:not(.is-live)`); con la animación en marcha lleva `is-live` y el
   halo desaparece.
-- **Densidad**: resolución interna con tope de 1,5 px por px CSS (y al 75 % en
-  `calidez`, que es suave). Más no se nota en algo tan tenue y cuesta GPU.
+- **Densidad**: resolución interna con tope de 1,5 px por px CSS (al 70-80 % en
+  `velo`, `neon` y `calidez`, que son suaves). Más no se nota en algo tan tenue y
+  cuesta GPU.
 
-Para tocar una escena: su shader está en el mismo archivo. Se ve en directo con
-`npm run dev`.
+Para tocar una escena: su shader está en el mismo archivo. Para quitar o añadir una
+del bombo, la lista `POOL`. Para ver una concreta: `?fondo=<escena>` en la URL.
 
 **El marcador de esquina cae en la vertical de los textos**: la cabecera tiene el
 mismo margen lateral que las secciones (`--ph-section-px`), así la placa del logo

@@ -37,7 +37,8 @@ const listHref = localizePath('/talentos/', lang);
   .home-players {
     position: relative;
     padding: clamp(72px, 9vw, 120px) var(--ph-section-px) clamp(64px, 7vw, 104px);
-    background: var(--color-ph-black);
+    /* Transparente: el fondo es la luz animada de toda la página (`.ph-page-bg`). */
+    background: transparent;
   }
 
   .home-players__row {

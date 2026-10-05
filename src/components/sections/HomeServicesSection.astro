@@ -111,7 +111,8 @@ const servicesHref = localizePath('/servicios/', lang);
   .home-services {
     position: relative;
     padding: clamp(64px, 7vw, 104px) var(--ph-section-px);
-    background: var(--color-ph-black);
+    /* Transparente: el fondo es la luz animada de toda la página (`.ph-page-bg`). */
+    background: transparent;
   }
   /* En pantallas anchas, la alineación al lado de su titular, como el grafismo
      de una alineación junto al rótulo del partido. */

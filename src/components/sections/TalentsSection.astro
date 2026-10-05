@@ -28,10 +28,6 @@ const cards = players.map((player) => {
 ---
 
 <section class="talents" aria-labelledby="talents-title">
-  <div class="ph-page-bg" aria-hidden="true">
-    <canvas class="ph-ambient" data-ambient="trayectorias"></canvas>
-  </div>
-
   {/* Cabecera: bug, «El roster.» en su placa y la entradilla. El buscador y la
       primera fila de fichas asoman ya en la primera pantalla. */}
   <header class="ph-head talents__head" data-inview>
@@ -497,7 +493,3 @@ const cards = players.map((player) => {
   });
 </script>
 
-<script>
-  // Fondo animado de la página (se inicia solo en cada astro:page-load).
-  import '@/scripts/ph-ambient';
-</script>

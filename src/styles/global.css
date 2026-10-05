@@ -419,10 +419,12 @@ input, textarea { caret-color: var(--color-ph-gold); }
 }
 
 /* ── Fondo animado de página (src/scripts/ph-ambient.ts) ──────────────────────
-   Talentos, Servicios y Sobre nosotros: la luz es el fondo de toda la página. Va
-   fija a la pantalla, por detrás de todo el contenido de <main>, y el contenido
-   pasa por encima al hacer scroll. Sin máscaras de CSS: dónde brilla y dónde se
-   atenúa lo decide la propia animación. */
+   Todas las páginas salvo las legales (lo monta BaseLayout, una escena del bombo
+   en cada carga): la luz es el fondo de toda la página. Va fija a la pantalla, por
+   detrás de todo el contenido de <main>, y el contenido pasa por encima al hacer
+   scroll. Sin máscaras de CSS: dónde brilla y dónde se atenúa lo decide la propia
+   animación. Depende de que <main> sea un contexto de apilamiento (lo es por su
+   `transition:name`): sin él, el negro del <body> lo taparía. */
 .ph-page-bg {
   position: fixed;
   inset: 0;

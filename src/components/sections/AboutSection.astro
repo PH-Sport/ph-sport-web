@@ -32,10 +32,6 @@ const titlePre = t('about.hero.titlePre');
 ---
 
 <section class="about-section" aria-labelledby="about-hero-title">
-  <div class="ph-page-bg" aria-hidden="true">
-    <canvas class="ph-ambient" data-ambient="calidez"></canvas>
-  </div>
-
   {/* 01 — Cabecera: «Representar» (en oro) y «con propósito.» en dos placas en
       escalera y la entradilla; debajo, los valores y el pie como dos bugs en una
       barra, y los párrafos 2 y 3 en dos paneles. */}
@@ -488,7 +484,3 @@ const titlePre = t('about.hero.titlePre');
   document.addEventListener('astro:page-load', () => afterTransitionPaint(initAbout));
 </script>
 
-<script>
-  // Fondo animado de la página (se inicia solo en cada astro:page-load).
-  import '@/scripts/ph-ambient';
-</script>

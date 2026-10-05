@@ -13,6 +13,77 @@ leído el resto.
 
 ---
 
+## 2026-10-05 · La A estrena el bombo de fondos: cinco escenas al azar en todas las páginas, con Neón y Velo
+
+> **Estado: en la rama `feat/variante-a-retransmision`**, sin fusionar en `preview` ni
+> en `main`.
+
+**Qué pidió Mario.** Que Neón y Velo, dos fondos del rediseño «Mochi», pasen a la A.
+Para decidir dónde se le ofrecieron dos formas, y eligió **«bombo en todas»**, como en
+Mochi. La otra era «turnos en la portada»: las páginas interiores con su fondo fijo, y
+Neón y Velo alternándose solo en la portada.
+
+**Qué cambia.**
+
+- **Cinco escenas**: Velo (una red de luz tenue, como la del agua al sol), Neón (el
+  contorno del logo con ecos y una luz que recorre el tubo) y las tres que ya tenía la
+  A: Trayectorias, Estructura y Calidez. Los shaders vienen de Mochi tal cual; las
+  tres de siempre solo cambian en que reaccionan al ratón.
+- **El bombo**: en cada carga de página sale una escena al azar, nunca la de la
+  página anterior (memoria y `sessionStorage`). `?fondo=<escena>` fuerza una para
+  revisarla.
+- **Dónde**: lo monta `BaseLayout` en todas las páginas, también en la portada bajo
+  el vídeo. Las legales van planas (`ambient={false}`), como pidió Mario en Mochi.
+  Talentos, Servicios y Sobre nosotros dejan de montar su propio fondo, y los bloques
+  de la portada pierden su negro opaco para que se vea.
+- **Ratón**: en ordenador, la luz reacciona al cursor con un muelle, sin saltos.
+  Velo, al 10 % de la fuerza de las demás (decisión de Mario en Mochi).
+- **La luz**:
+  - En las páginas interiores se queda como estaba aprobada en la A: entera
+    detrás del titular y al 32 % en el resto.
+  - En la portada va entera en toda la página, como en Mochi. Su titular es el lema
+    del hero, que tapa el vídeo; con la regla del tercio, el fondo apenas se veía
+    bajo el vídeo (comprobado con capturas).
+- **Calidez está en el bombo** porque la opción que eligió Mario decía «uno de los
+  cinco». En Mochi la había sacado el 2026-10-02. Quitarla es borrarla de `POOL`.
+
+**De dónde viene.** Del rediseño «Mochi» (rama `feat/rediseno-mochi`, borrada el
+2026-10-05; último commit `39bc41e`). Allí, el 2026-10-02, Mario decidió el bombo,
+la reacción al ratón, Velo al 10 % y las legales planas. De Mochi no se traen sus
+paneles esmerilados ni la luz entera en las páginas interiores.
+
+**Alternativas descartadas.**
+
+- *Turnos solo en la portada*: Mario eligió el bombo.
+- *Luz entera también en las páginas interiores, como en Mochi*: se quedó la regla
+  aprobada para la A. Cambiarlo es poner `OUTSIDE_TITLE` a 1.
+
+**Consecuencias.**
+
+- Hay movimiento continuo en todas las páginas salvo las legales
+  (`docs/hallazgos-abiertos.md`, WCAG 2.2.2).
+- La GPU trabaja también en la portada.
+- `ph-ambient.ts` (5,6 KB con gzip) se carga en todas las páginas, también en las
+  legales, donde no hace nada.
+- Sin medir en un móvil real.
+
+---
+
+## 2026-10-05 · El equipo se queda con la variante A
+
+> **Estado: decidido.** La A sigue en su rama (`feat/variante-a-retransmision`), sin
+> fusionar en `preview` ni en `main`.
+
+**Qué se decidió.** Mario, el 2026-10-05: el equipo se queda con la **variante A
+«Retransmisión»**.
+
+- Se conservan, sin borrar: las variantes B («Títulos») y C («Análisis»), el
+  «Marcador» (`feat/rediseno-motion`) y `preview`.
+- Se borra el rediseño «Mochi» (`feat/rediseno-mochi`, último commit `39bc41e`),
+  después de traer a la A sus dos fondos que se quedan (entrada de arriba).
+
+---
+
 ## 2026-10-05 · Contacto sin la imagen del sobre dorado: el hueco espera la nueva
 
 > **Estado: en las tres variantes** (`feat/variante-a-retransmision`,
@@ -574,6 +645,10 @@ la home del idioma elegido, porque quien elige idioma pide leer en él.
 ---
 
 ## 2026-10-01 · Fondos animados en directo para Talentos, Servicios y Sobre nosotros
+
+> ⚠️ **En la variante A, superado el 2026-10-05**: las escenas ya no van fijas por
+> página; sale una al azar en cada página, de un bombo de cinco (entrada «La A
+> estrena el bombo de fondos»).
 
 > ⚠️ **Composición SUPERADA el mismo día** por la entrada «Cabecera «Escenario»…»
 > (arriba): el fondo ya no va en el contenedor de las fotos, sino en toda la

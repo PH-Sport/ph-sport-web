@@ -77,7 +77,8 @@ const countrySegments = Math.max(1, Number.parseInt(countriesValue, 10) || 1);
   .home-about {
     position: relative;
     padding: clamp(64px, 7vw, 104px) 0 0;
-    background: var(--color-ph-black);
+    /* Transparente: el fondo es la luz animada de toda la página (`.ph-page-bg`). */
+    background: transparent;
   }
   .home-about__inner {
     padding: 0 var(--ph-section-px) clamp(64px, 8vw, 112px);

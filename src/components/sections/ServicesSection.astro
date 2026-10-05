@@ -34,10 +34,6 @@ const manifestTicker = t('services.manifest.eyebrow').split(' · ');
 ---
 
 <section class="srv" aria-labelledby="srv-hero-title">
-  <div class="ph-page-bg" aria-hidden="true">
-    <canvas class="ph-ambient" data-ambient="estructura"></canvas>
-  </div>
-
   {/* 01 — Cabecera: «Un equipo» / «fuera del campo.» en dos placas en escalera.
       En la primera pantalla ya asoma el bloque de áreas. */}
   <header class="ph-head srv-head" data-inview>
@@ -663,7 +659,3 @@ const manifestTicker = t('services.manifest.eyebrow').split(' · ');
   document.addEventListener('astro:page-load', () => afterTransitionPaint(initServicesAnimations));
 </script>
 
-<script>
-  // Fondo animado de la página (se inicia solo en cada astro:page-load).
-  import '@/scripts/ph-ambient';
-</script>

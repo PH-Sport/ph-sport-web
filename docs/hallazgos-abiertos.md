@@ -189,8 +189,8 @@ animación: no sale en capturas). **Falta un iPhone y un Android de verdad**:
 ### Sin control para pausar el movimiento continuo (WCAG 2.2.2)
 
 Visto al investigar el rediseño, el 2026-10-02; **ya pasaba antes**. El vídeo del
-hero va en bucle y los fondos de Talentos, Servicios y Sobre nosotros se mueven
-mientras la página está abierta, más de 5 s y junto a otro contenido, sin un botón
+hero va en bucle y el fondo animado (en la variante A, en todas las páginas salvo
+las legales desde el 2026-10-05) se mueve mientras la página está abierta, más de 5 s y junto a otro contenido, sin un botón
 para pararlos. (En la variante A ya no hay más bucles que esos dos: la línea del
 bug «Scroll» se llena con el scroll en vez de correr sola, y las cintas solo se
 mueven con el scroll.) Con `prefers-reduced-motion` se paran todos, pero WCAG 2.2.2 (nivel
@@ -198,6 +198,11 @@ A) pide además un control en la página. Arreglarlo es añadir un botón, y su 
 no existe en las traducciones: es decisión de Mario.
 
 ### Fondos animados de sección: sin medir en un móvil real (2026-10-01)
+
+**En la variante A, desde el 2026-10-05**, el fondo está en todas las páginas salvo
+las legales, también en la portada bajo el vídeo, y sale de un bombo de cinco
+escenas (`DECISIONS.md`). Neón y Velo, que vienen de Mochi, tampoco se han medido
+en un móvil real.
 
 Los fondos en directo de Talentos, Servicios y Sobre nosotros (`DECISIONS.md`,
 2026-10-01) están comprobados en Chromium y WebKit con Playwright, en escritorio y

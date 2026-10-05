@@ -14,7 +14,8 @@ const t = useTranslations(lang);
 {/* El cierre de la portada: «Hablemos.» fijado por un visor y el correo como
     la acción. La línea de pase termina aquí, en el nodo del correo: el gol. La
     foto va enmarcada por escuadras y se descubre con un escaneo; en el móvil,
-    debajo. */}
+    debajo. Hoy el marco está vacío: la imagen del sobre se retiró y el hueco
+    espera la nueva (DECISIONS.md, 2026-10-05). */}
 <section class="home-contact ph-pass-host" id="contacto" aria-labelledby="home-contact-title" data-pass-section data-pass-goal>
   <svg class="ph-pass" aria-hidden="true" data-pass-seg><path /></svg>
   <div class="hc-grid">
@@ -35,17 +36,8 @@ const t = useTranslations(lang);
     </header>
 
     <div class="hc-photo">
-      <div class="hc-photo__frame ph-scan" data-inview>
-        <img
-          class="ph-scan__media"
-          src="/contact-image.webp"
-          alt=""
-          width="1600"
-          height="1000"
-          loading="lazy"
-          decoding="async"
-        />
-      </div>
+      {/* El hueco: la imagen nueva va aquí como `<img class="ph-scan__media">`. */}
+      <div class="hc-photo__frame ph-scan" data-inview></div>
       <Visor mode="view" arm={24} inset={-12} />
     </div>
   </div>
@@ -166,11 +158,13 @@ const t = useTranslations(lang);
     align-self: center;
   }
 
+  /* Con el tono de espera de las fotos: hoy es el hueco a la vista. */
   .hc-photo__frame {
     aspect-ratio: 16 / 10;
     background: #15171b;
   }
 
+  /* Para la imagen nueva, cuando llegue. */
   .hc-photo__frame img {
     display: block;
     width: 100%;

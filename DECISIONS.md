@@ -13,6 +13,27 @@ leído el resto.
 
 ---
 
+## 2026-10-05 · Contacto sin la imagen del sobre dorado: el hueco espera la nueva
+
+> **Estado: en las tres variantes** (`feat/variante-a-retransmision`,
+> `feat/variante-b-titulos` y `feat/variante-c-analisis`), sin fusionar. `preview` y
+> `main` siguen mostrándola en phsport.es.
+
+**Qué se decidió.** Fuera de la sección de contacto de la portada la imagen del sobre
+negro con filo y sello dorados (`public/contact-image.webp`), y fuera también el
+archivo. Su sitio se queda: el marco, el tamaño y la animación siguen, con el tono
+de espera de las fotos (`#15171b`) dentro, hasta que llegue la imagen nueva.
+
+**Quién y por qué.** Mario, el 2026-10-05: le han ordenado retirar esa imagen en
+concreto y pondrá otra. El motivo de la orden no consta.
+
+**Consecuencia.** No volver a usar esa imagen: sigue en el historial de git y en
+`preview` y `main`. La nueva va un `<img class="ph-scan__media">` dentro de `.hc-photo__frame` en
+`HomeContactSection.astro`; el escaneo y el visor ya están montados. La anterior era decorativa (sin texto
+alternativo); si la nueva aporta información, necesita su texto en los tres idiomas.
+
+---
+
 ## 2026-10-04 · Talentos sin «Ver» ni «Orden»: el grid sale siempre en el orden del archivo
 
 > **Estado: en las tres variantes** (`feat/variante-a-retransmision`,

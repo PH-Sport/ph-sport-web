@@ -772,7 +772,7 @@ que ejecutar nada a mano.
 | `HomePlayersSection.astro` | ✅ Completo | Zona, rótulo «El roster.» con visor, entradilla anotada y CTA como nodo. Sin fotos a propósito (commit `453e928`) |
 | `HomeServicesSection.astro` | ✅ Completo | Diagrama de 360°: dial con las cinco áreas y el Plan de Acción en el centro, y lista acordeón con el mismo estado. Desde 1280 px, los títulos rodean el dial y el área elegida sale en un panel unido por una línea guía |
 | `HomeAboutSection.astro` | ✅ Completo | Cita con telestrador; 7 países como red de sedes y 360° como círculo que se cierra; valores sobre un eje |
-| `HomeContactSection.astro` | ✅ Completo | «Hablemos.» con visor y el correo, donde acaba la línea de pase; foto en un visor, descubierta por un escaneo |
+| `HomeContactSection.astro` | ✅ Completo | «Hablemos.» con visor y el correo, donde acaba la línea de pase; foto en un visor, descubierta por un escaneo. Hoy el marco está vacío, a la espera de la imagen nueva (`DECISIONS.md`, 2026-10-05) |
 | `AboutSection.astro` | ✅ Completo | Absorbe /equipo. Línea de tiempo con el scroll, hoja de plantilla (21), esquema de sedes con arcos desde Madrid |
 | `ServicesSection.astro` | ✅ Completo | Titular fuera de un campo dibujado, áreas con nodos, trayectoria con el scroll, 5 pilares anotados, manifiesto con telestrador |
 | `TalentsSection.astro` | ✅ Completo | Grid 3:4 no clicable (2/3/5 columnas). Tarjeta «en seguimiento»: escaneo, visor que se queda en marcas, nombre en línea guía. Siempre en el orden del archivo: sin filtro de rol ni orden (`DECISIONS.md`, 2026-10-04). Buscador a la vista también en el móvil; la búsqueda recoloca con FLIP |

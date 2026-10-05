@@ -13,6 +13,52 @@ leído el resto.
 
 ---
 
+## 2026-10-05 · Ajustes de Diego al grid de `/talentos`: 61 jugadores, con las canteras de los escudos
+
+**Decisión**: se aplica tal cual un mensaje de Diego (PH) con cambios de orden,
+bajas y altas en el grid. Mario pidió seguir **el orden exacto del mensaje** y
+dejar fuera a los que estén en duda, con la idea de volver a meterlos si se
+aclaran. Quedan 61 jugadores y, al final, el seleccionador: 62 tarjetas.
+
+**Cambios de orden**: Owen Emeka pasa delante de Thiago Helguera, y Abde
+Raihani va justo detrás de Dani Rebollo.
+
+**Salen** (ocultos, `on-hold`, con nota):
+- **Gonzalo Rodríguez.** No consta en el Atlético La Paz esta temporada y su
+  club está sin confirmar. Diego pidió a Eva que lo confirme.
+- **Lawson Sunderland.** Sin equipo desde que rescindió con el FC Dordrecht
+  el 26-08-2026. Su ficha pasa a `club: null`.
+- **Zéno Stassin.** Juega en el Huesca B, en Tercera Federación, no en 1ª RFEF.
+
+**Entran**, todos ya existían en el archivo como ocultos:
+- Detrás de Jorge Rajado: Andrés Corcoba, Pablo Ibáñez, Jesús Palacios, Unai
+  Ordóñez y Hugo Fernández (Real Madrid); Byron Mendoza y Víctor Santiago
+  (Barça); David Fernández, Carlos Núñez y Miguel Serrano (Atlético).
+- Detrás de Eneko Ortiz: Sosu Kwame y José Mejías (Betis) y Mario Guilabert
+  (Valencia). «JL Mejías» pasa a llamarse **José Mejías**, como lo escriben
+  Diego y la lista de Mario; no tenía foto, así que el cambio de nombre no deja
+  a nadie sin ella.
+
+**Qué cambia respecto al 2026-09-25**: aquella regla solo dejaba entrar a los
+escudos importantes que la lista de Mario ponía por delante de una categoría
+superior. Ahora entran también las canteras de Real Madrid, Barça, Atlético,
+Betis y Valencia, **en el sitio que dice Diego**, que no es su posición en la
+lista de Mario. Ejemplo: en la lista, Jesús Palacios va antes que Pablo Ibáñez;
+en el mensaje de Diego, después, y manda el mensaje.
+
+**Alternativas descartadas**:
+- *Dejar a Lawson con la tarjeta sin club.* Diego dudaba entre quitarlo o
+  cambiarlo; Mario prefirió fuera a los que estén en duda.
+- *Esperar a Eva para quitar a Gonzalo.* Mismo criterio: fuera mientras no se
+  confirme. Ocultar es reversible.
+
+**Consecuencias**: con 62 tarjetas el grid cierra en móvil y deja dos sueltas
+en tablet y dos en escritorio. Sin foto todavía, y salen con el avatar
+genérico: Jesús Palacios, Víctor Santiago, David Fernández y José Mejías. Las
+fotos las pone Mario en otro paso. José Rey sigue visible aunque la
+verificación del 2026-09-25 no pudo confirmar en qué equipo del Depor está: el
+mensaje de Diego no lo nombra.
+
 ## 2026-10-02 · El entrenador vuelve al grid de `/talentos`, al final
 
 **Decisión**: Thomas Christiansen (Seleccionador de Panamá) vuelve a mostrarse en
@@ -656,6 +702,12 @@ Dos cosas de este archivo que no se ven a simple vista:
 ---
 
 ## 2026-09-25 · `/talentos` sigue el orden de la lista de Mario, no los bloques por categoría
+
+> **Superada en parte el 2026-10-05**: siguen vigentes la lista de Mario como
+> base del orden y las cinco categorías, pero ya no es cierto que solo entren
+> los escudos que la lista pone delante. Las canteras de Real Madrid, Barça,
+> Atlético, Betis y Valencia entran donde dijo Diego, y Gonzalo Rodríguez,
+> Lawson Sunderland y Zéno Stassin salen. Ver la entrada del 2026-10-05.
 
 **Decisión**: el grid enseña **51 jugadores en el orden exacto de la lista de
 notas de Mario** (su listado de 126 posiciones, que no está en el repo). Entran

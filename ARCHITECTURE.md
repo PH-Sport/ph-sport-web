@@ -682,7 +682,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
-| Fotos jugadores | ✅ 52 de las 52 tarjetas visibles | 51 jugadores y el entrenador, todos de la serie de estudio de Mario y con la camiseta del club de la ficha (2026-10-02). Ver «Fotos de jugadores» arriba |
+| Fotos jugadores | ⏳ 58 de las 62 tarjetas visibles | Sin ninguna: Jesús Palacios, Víctor Santiago, David Fernández y José Mejías, que entraron el 2026-10-05 con la tanda de Diego; las nueve fotos que sí tienen los demás que entraron ese día no se han revisado contra la serie de estudio. Los 51 jugadores anteriores y el entrenador son de la serie de estudio de Mario y con la camiseta del club de la ficha (2026-10-02). Ver «Fotos de jugadores» arriba |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
 | OG image (1200×630px) | ❌ Pendiente | |

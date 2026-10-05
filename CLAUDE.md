@@ -200,14 +200,17 @@ no se rellena a posteriori inventándolo. El porqué, en `DECISIONS.md`
 
 Desde el 2026-09-25 la web muestra **una selección en el orden de la lista de
 notas de Mario** (no está en el repo): todos los de 1ª España, 2ª España, 1ª
-Fuera, 2ª Fuera y 1ª RFEF, más los escudos importantes que su lista pone por
-delante de una categoría superior. Detrás de los jugadores va el seleccionador
+Fuera, 2ª Fuera y 1ª RFEF, más escudos importantes. Desde el 2026-10-05 los
+escudos son los que la lista pone por delante de una categoría superior y las
+canteras de Real Madrid, Barça, Atlético, Betis y Valencia, en el sitio que
+pidió Diego (PH); los dudosos quedan fuera hasta que se aclaren (`DECISIONS.md`,
+2026-10-05). Detrás de los jugadores va el seleccionador
 Thomas Christiansen, que volvió al grid el 2026-10-02 (`DECISIONS.md`). **Quién
 entra lo decide el campograma interno** (`campograma-ph`),
 no la web anterior. **El orden del grid es el orden del archivo**: las visibles
 van al principio de `jugadores.json`; para meter a alguien hay que saber su
 posición en la lista de Mario (`DECISIONS.md`, 2026-09-25). El grid es de
-2/3/5 columnas y Mario prefiere que cierre en móvil y escritorio: con 52
+2/3/5 columnas y Mario prefiere que cierre en móvil y escritorio: con 62
 tarjetas cierra en móvil y deja dos sueltas en escritorio, y lo sabe.
 
 **No hay páginas individuales por jugador.** `/talentos/` es un grid único y las
@@ -278,7 +281,7 @@ Lo que hay que saber **antes de tocar nada**:
 
 - **Transfermarkt no es fuente verificada**: sus datos los editan usuarios y la
   asignación de agencia va muy por detrás. Vale para levantar sospechas, no para
-  aplicar cambios de roster a ciegas. Hay 12 fichas de jugadores pendientes de que
+  aplicar cambios de roster a ciegas. Hay 11 fichas de jugadores pendientes de que
   el equipo de PH valide el club.
 
 Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: backlog de

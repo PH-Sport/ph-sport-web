@@ -42,7 +42,7 @@ añadir el peso cursivo que se use (Buch Kursiv) y declararlo con
 
 ### Coste del snapshot del `ClientRouter` en páginas pesadas
 
-`/talentos`, 116 tarjetas cuando se midió. **Desde el 2026-09-25 son 51**: las
+`/talentos`, 116 tarjetas cuando se midió. **Desde el 2026-10-05 son 62**: las
 cifras de aquí y de `rendimiento.md` son anteriores a ese recorte y habría que
 volver a medir antes de decidir nada. Identificado en junio, **sin hacer a propósito por riesgo
 alto**: tocar la View Transition ahí puede romper la fluidez que costó dos
@@ -59,7 +59,7 @@ sitelinks los elige Google y no hay control directo. No perseguirlo.
 
 ## Pendientes acotados
 
-### 12 jugadores con el club sin confirmar (2026-09-03)
+### 11 jugadores con el club sin confirmar (2026-09-03)
 
 El 2026-09-03 se cotejó `data/jugadores.json` con la ficha de la agencia PHSPORT en
 Transfermarkt (<https://www.transfermarkt.es/phsport/beraterfirma/berater/8087>).
@@ -69,8 +69,9 @@ filial contra club matriz —el fichero nombra siempre el matriz, decisión de M
 **estos 16 quedaron sin cerrar, a la espera de que el equipo de PH los valide**.
 El 2026-09-21 se cerraron tres (Abdoulaye Keita y Dani Rebollo al AVS, confirmado
 por prensa portuguesa; Adrián Martín al Getafe B, confirmado por Mario). El
-2026-09-25 se cerró Santi Pallarés (CE Europa, lo que dice el campograma) y
-quedan 12.
+2026-09-25 se cerró Santi Pallarés (CE Europa, lo que dice el campograma). El
+2026-10-05 se cerró Lawson Sunderland: aquí acertaba Transfermarkt, porque
+rescindió con el Dordrecht el 26-08-2026 y sigue sin equipo; se ocultó. Quedan 11.
 
 **Transfermarkt dice otra cosa y no hay fuente que lo decida** (9). Primera columna,
 lo que dice hoy la web:
@@ -90,11 +91,10 @@ lo que dice hoy la web:
 En **Tomás Méndez** se sospecha que Transfermarkt mezcla a dos jugadores distintos:
 un Tomás Méndez del juvenil del Sevilla y un Tomás Mendes portugués del Torreense.
 
-**Aquí el que falla es Transfermarkt, no la web** (3). No tocar estas tres fichas:
+**Aquí el que falla es Transfermarkt, no la web** (2). No tocar estas dos fichas:
 
 | Jugador | En la web (correcto) | En Transfermarkt | Comprobación |
 |---|---|---|---|
-| Lawson Sunderland | FC Dordrecht | Sin equipo | ESPN, Sofascore y la Premier League lo mantienen en el Dordrecht, con contrato hasta 2027 |
 | Adrián Vidican | Real Betis Balompié | Sin equipo | el Betis lo lista en la plantilla de su Juvenil LN |
 | Jorge Rajado | Real Madrid CF | Sin equipo | fichó por el Madrid el 2026-09-02; ya aplicado |
 

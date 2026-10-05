@@ -50,6 +50,14 @@ auditorías. **No abordarlo sin que Mario lo supervise.**
 
 Detalle en [`rendimiento.md`](rendimiento.md).
 
+### Contacto sin imagen: el hueco espera la nueva (2026-10-05)
+
+La imagen del sobre dorado se retiró por orden (`DECISIONS.md`, 2026-10-05) y su
+sitio en la sección de contacto de la portada se ve vacío **a propósito**: el marco
+con el tono de espera de las fotos. No es un fallo de carga. Se cierra cuando Mario
+pase la imagen nueva, que va como fondo de `.replay__img` en `HomeContactSection.astro` (la ventana de
+repetición), encima del tono de espera.
+
 ## Diagnosticados, con la causa equivocada ya descartada
 
 ### Sitelinks de Google mezclando ES y EN
@@ -137,17 +145,16 @@ Por rentabilidad, de mayor a menor:
 
 1. Los diccionarios `i18n` completos viajan en el JS del header para usar **ocho
    cadenas**.
-2. ScrollTrigger se carga en las cuatro páginas cuando `ScrollTrigger.create()` se
-   usa **una sola vez** en todo el sitio.
-3. Tirón de **217-359 ms** al entrar en `/sobre-nosotros` (135 spans animados con
-   `filter: blur()`).
-4. Cuatro imágenes con margen de compresión real.
+2. ~~ScrollTrigger se carga en las cuatro páginas para dos usos en el hero~~ — en la
+   rama de la variante A ya no aplica: las entradas son CSS con un
+   `IntersectionObserver` y ScrollTrigger se usa para lo ligado al scroll de
+   verdad (las cintas, la salida del rótulo del hero, la banda del modelo y el
+   empuje de los pilares de Servicios).
+3. Cuatro imágenes con margen de compresión real.
 
-### Fuga de listeners de scroll en la home
-
-Uno nuevo por visita: `initHeroScrollCue` registra una función nueva en cada
-`astro:page-load` sin quitar la anterior. Comprobado contando listeners reales:
-**3 → 4 → 6**.
+El tirón al entrar en `/sobre-nosotros` (135 spans con `filter: blur()`) se
+resolvió el 2026-10-02: los párrafos ya no entran palabra a palabra. Cifras en
+[`rendimiento.md`](rendimiento.md).
 
 ### SEO pendiente (P1/P2)
 
@@ -156,7 +163,46 @@ Uno nuevo por visita: `initHeroScrollCue` registra una función nueva en cada
 - Una página `/faq` con preguntas y respuestas literales.
 - Auditar los `alt=""` de Header, Footer y Hero para confirmar que son decorativos.
 
+### Variante A «Retransmisión»: sin probar en un móvil real (2026-10-03)
+
+En `preview` desde el 2026-10-05 (`DECISIONS.md`, 2026-10-03 y 2026-10-05; sustituye
+al «Marcador» del 2026-10-02, que tampoco se llegó a probar en un
+móvil). Comprobado con Playwright sobre el build, en Chromium y WebKit, a 360, 390,
+768, 1024 y 1440 px en los tres idiomas: desbordes, la diagonal de las placas
+contra su texto, movimiento reducido, JS bloqueado, consola en las 16 páginas,
+las interacciones una a una y la cortinilla en los dos sentidos (por eventos de
+animación: no sale en capturas). **Falta un iPhone y un Android de verdad**:
+
+- Que las entradas por `clip-path` aguanten fluidas en `/talentos` en un móvil
+  modesto, con el fondo animado detrás: entran hasta ~10 fichas a la vez (foto y
+  dos placas cada una). Si tira, la primera palanca es quitar el recorte de las
+  placas de las fichas y dejar solo el de la foto.
+- Que la cortinilla (una placa del tamaño de la diagonal de la pantalla) y el menú
+  móvil vayan a 60 fps.
+- **Lo que Playwright no puede comprobar**: en WebKit el tabulador no lleva el foco
+  a los enlaces (es el ajuste por defecto de macOS), así que el foco atrapado del
+  menú móvil y el paso por las opciones de idioma se han comprobado solo en
+  Chromium. Y el `<noscript>` que despliega los paneles de Servicios sin JS no se
+  aplica en el modo «sin JavaScript» de Playwright (el analizador sigue tratando
+  `<noscript>` como texto): se comprobó que la regla está en el HTML servido.
+
+### Sin control para pausar el movimiento continuo (WCAG 2.2.2)
+
+Visto al investigar el rediseño, el 2026-10-02; **ya pasaba antes**. El vídeo del
+hero va en bucle y el fondo animado (en la variante A, en todas las páginas salvo
+las legales desde el 2026-10-05) se mueve mientras la página está abierta, más de 5 s y junto a otro contenido, sin un botón
+para pararlos. (En la variante A ya no hay más bucles que esos dos: la línea del
+bug «Scroll» se llena con el scroll en vez de correr sola, y las cintas solo se
+mueven con el scroll.) Con `prefers-reduced-motion` se paran todos, pero WCAG 2.2.2 (nivel
+A) pide además un control en la página. Arreglarlo es añadir un botón, y su texto
+no existe en las traducciones: es decisión de Mario.
+
 ### Fondos animados de sección: sin medir en un móvil real (2026-10-01)
+
+**En la variante A, desde el 2026-10-05**, el fondo está en todas las páginas salvo
+las legales, también en la portada bajo el vídeo, y sale de un bombo de cinco
+escenas (`DECISIONS.md`). Neón y Velo, que vienen de Mochi, tampoco se han medido
+en un móvil real.
 
 Los fondos en directo de Talentos, Servicios y Sobre nosotros (`DECISIONS.md`,
 2026-10-01) están comprobados en Chromium y WebKit con Playwright, en escritorio y

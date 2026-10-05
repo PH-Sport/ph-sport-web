@@ -10,6 +10,13 @@
 // pase lo que pase. El JS que queda no la controla, sólo anota que ya se ha
 // visto.
 //
+// Desde el 2026-10-03 (variante A «Retransmisión», DECISIONS.md) el telón es una
+// cortinilla de canal: sobre negro, el trazo del logo se dibuja justo donde está
+// el rótulo de neón del vídeo de la portada, con su mismo tamaño, y una banda
+// dorada a 45° barre la pantalla desde la esquina de abajo a la izquierda
+// llevándose el negro —y el logo dibujado— detrás de ella: debajo aparece el neón
+// en el mismo sitio, un corte a juego. Por eso el logo va dentro de la cortina.
+//
 // El overlay se monta como hermano de <main> (ver BaseLayout), no dentro. Con
 // `transition:name` en <main> se forma un contexto de apilamiento propio y el
 // z-index del overlay no podía ganar al header; había un parche de CSS para
@@ -29,6 +36,7 @@ const POLYGON_2_POINTS =
  *  del segmento de cierre del polígono en el offset máximo. */
 const LEN_1 = 753; // real 752,4284
 const LEN_2 = 637; // real 636,0980
+
 ---
 
 {/*
@@ -38,20 +46,23 @@ const LEN_2 = 637; // real 636,0980
   más frecuente. Ver docs/trampas-conocidas.md.
 */}
 <div data-logo-reveal-overlay aria-hidden="true" inert>
-  <div class="logo-reveal-container" data-logo-reveal-container>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox={LOGO_VIEWBOX}
-      fill="currentColor"
-      stroke="currentColor"
-      stroke-width="3"
-      stroke-linecap="butt"
-      stroke-linejoin="bevel"
-    >
-      <polygon data-logo-line1 points={POLYGON_1_POINTS} stroke-dasharray={LEN_1} stroke-dashoffset={LEN_1} />
-      <polygon data-logo-line2 points={POLYGON_2_POINTS} stroke-dasharray={LEN_2} stroke-dashoffset={LEN_2} />
-    </svg>
+  <div class="intro-curtain">
+    <div class="logo-reveal-container">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox={LOGO_VIEWBOX}
+        fill="currentColor"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="butt"
+        stroke-linejoin="bevel"
+      >
+        <polygon data-logo-line1 points={POLYGON_1_POINTS} stroke-dasharray={LEN_1} stroke-dashoffset={LEN_1} />
+        <polygon data-logo-line2 points={POLYGON_2_POINTS} stroke-dasharray={LEN_2} stroke-dashoffset={LEN_2} />
+      </svg>
+    </div>
   </div>
+  <span class="intro-band"></span>
 </div>
 
 {/* El CSS del telón NO vive aquí sino en línea en el <head> de BaseLayout.

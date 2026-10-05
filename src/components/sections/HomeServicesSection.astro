@@ -1,5 +1,8 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
+import Bug from '@/components/ui/Bug.astro';
+import Plate from '@/components/ui/Plate.astro';
+import KeyPlate from '@/components/ui/KeyPlate.astro';
 
 interface Props {
   lang: Lang;
@@ -9,558 +12,453 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const areas = [
-  {
-    title: t('home.services.area.management.title'),
-    body: t('home.services.area.management.body'),
-  },
-  {
-    title: t('home.services.area.career.title'),
-    body: t('home.services.area.career.body'),
-  },
-  {
-    title: t('home.services.area.international.title'),
-    body: t('home.services.area.international.body'),
-  },
-  {
-    title: t('home.services.area.comms.title'),
-    body: t('home.services.area.comms.body'),
-  },
-  {
-    title: t('home.services.area.legal.title'),
-    body: t('home.services.area.legal.body'),
-  },
+  { title: t('home.services.area.management.title'), body: t('home.services.area.management.body') },
+  { title: t('home.services.area.career.title'), body: t('home.services.area.career.body') },
+  { title: t('home.services.area.international.title'), body: t('home.services.area.international.body') },
+  { title: t('home.services.area.comms.title'), body: t('home.services.area.comms.body') },
+  { title: t('home.services.area.legal.title'), body: t('home.services.area.legal.body') },
 ];
 
 const actionPlanSub = [
   {
     title: t('home.services.actionPlan.press.title'),
-    bullets: [
-      t('home.services.actionPlan.press.b1'),
-      t('home.services.actionPlan.press.b2'),
-      t('home.services.actionPlan.press.b3'),
-    ],
+    bullets: [t('home.services.actionPlan.press.b1'), t('home.services.actionPlan.press.b2'), t('home.services.actionPlan.press.b3')],
   },
   {
     title: t('home.services.actionPlan.media.title'),
-    bullets: [
-      t('home.services.actionPlan.media.b1'),
-      t('home.services.actionPlan.media.b2'),
-      t('home.services.actionPlan.media.b3'),
-    ],
+    bullets: [t('home.services.actionPlan.media.b1'), t('home.services.actionPlan.media.b2'), t('home.services.actionPlan.media.b3')],
   },
   {
     title: t('home.services.actionPlan.psych.title'),
-    bullets: [
-      t('home.services.actionPlan.psych.b1'),
-      t('home.services.actionPlan.psych.b2'),
-      t('home.services.actionPlan.psych.b3'),
-    ],
+    bullets: [t('home.services.actionPlan.psych.b1'), t('home.services.actionPlan.psych.b2'), t('home.services.actionPlan.psych.b3')],
   },
   {
     title: t('home.services.actionPlan.performance.title'),
-    bullets: [
-      t('home.services.actionPlan.performance.b1'),
-      t('home.services.actionPlan.performance.b2'),
-      t('home.services.actionPlan.performance.b3'),
-    ],
+    bullets: [t('home.services.actionPlan.performance.b1'), t('home.services.actionPlan.performance.b2'), t('home.services.actionPlan.performance.b3')],
   },
   {
     title: t('home.services.actionPlan.familyOffice.title'),
-    bullets: [
-      t('home.services.actionPlan.familyOffice.b1'),
-      t('home.services.actionPlan.familyOffice.b2'),
-      t('home.services.actionPlan.familyOffice.b3'),
-    ],
+    bullets: [t('home.services.actionPlan.familyOffice.b1'), t('home.services.actionPlan.familyOffice.b2'), t('home.services.actionPlan.familyOffice.b3')],
   },
 ];
 
 const servicesHref = localizePath('/servicios/', lang);
 ---
 
+{/* «La alineación»: las cinco áreas como las filas de una alineación en
+    pantalla, con su número, y el Plan de Acción como la fila distinta, con filo
+    dorado. Acordeón con `<details name>`: sin JS ya deja una sola abierta; con JS
+    se anima sin animar alturas (src/scripts/ph-disclosure.ts). */}
 <section class="home-services" id="servicios" aria-labelledby="home-services-title">
-  <header class="home-services__head">
-    <span class="home-services__eyebrow">{t('home.services.eyebrow')}</span>
-    <h2 class="home-services__title" id="home-services-title">
-      {t('home.services.title')}
-    </h2>
-    <p class="home-services__lead">{t('home.services.lead')}</p>
+  <Bug text={t('home.services.eyebrow')} />
+  <header class="home-services__head" data-inview>
+    <h2 class="home-services__title ph-in-wipe" id="home-services-title">{t('home.services.title')}</h2>
+    <p class="home-services__lead ph-in-rise" style="--d: 140ms">{t('home.services.lead')}</p>
   </header>
 
-  <ol class="home-services__list" role="list">
+  <ol class="lineup" role="list">
     {areas.map((item, idx) => (
-      <li class="home-services__item">
-        <details class="home-services__row" name="home-services">
-          <summary class="home-services__summary">
-            <span class="home-services__num">{String(idx + 1).padStart(2, '0')}</span>
-            <span class="home-services__name">{item.title}</span>
-            <span class="home-services__plus" aria-hidden="true">
-              <span></span><span></span>
-            </span>
+      <li class="lineup__item" data-inview data-cascade="60">
+        <details class="lineup__row" name="home-services">
+          <summary class="lineup__summary">
+            <span class="lineup__tab" aria-hidden="true"></span>
+            <span class="lineup__num">{String(idx + 1).padStart(2, '0')}</span>
+            <span class="lineup__name">{item.title}</span>
+            <span class="lineup__plus" aria-hidden="true"><span></span><span></span></span>
           </summary>
-          <div class="home-services__body">
-            <div class="home-services__body-inner">
-              <p>{item.body}</p>
-            </div>
+          <div class="lineup__body">
+            <p class="lineup__text">{item.body}</p>
           </div>
         </details>
       </li>
     ))}
 
-    <li class="home-services__item home-services__item--featured">
-      <details class="home-services__row home-services__row--plan" name="home-services">
-        <summary class="home-services__summary">
-          <span class="home-services__num home-services__num--rombo" aria-hidden="true"></span>
-          <span class="home-services__plan-stack">
-            <span class="home-services__plan-eyebrow">{t('home.services.actionPlan.eyebrow')}</span>
-            <span class="home-services__name">{t('home.services.actionPlan.title')}</span>
-          </span>
-          <span class="home-services__plus" aria-hidden="true">
-            <span></span><span></span>
-          </span>
-        </summary>
-        <div class="home-services__body">
-          <div class="home-services__body-inner home-services__body-inner--plan">
-            <ul class="home-services__plan-grid" role="list">
-              {actionPlanSub.map((card) => (
-                <li class="home-services__plan-card">
-                  <h3 class="home-services__plan-card-title">{card.title}</h3>
-                  <ul class="home-services__plan-card-bullets" role="list">
-                    {card.bullets.map((b) => (
-                      <li>{b}</li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </details>
-    </li>
   </ol>
 
-  <div class="home-services__cta-wrap">
-    <a class="home-services__cta" href={servicesHref}>
-      {t('home.services.cta')}
-      <span class="home-services__arrow" aria-hidden="true">→</span>
-    </a>
+  {/* El Plan de Acción va aparte: no es la sexta área sino lo que se suma a las
+      cinco. En escritorio ocupa todo el ancho, para que sus cinco sub-áreas
+      quepan en cinco columnas. */}
+  <div class="lineup__item lineup__item--plan" data-inview>
+    <Bug text={t('home.services.actionPlan.eyebrow')} inview={false} class="lineup__plan-bug" />
+    <details class="lineup__row lineup__row--plan" name="home-services">
+      <summary class="lineup__summary">
+        <span class="lineup__tab" aria-hidden="true"></span>
+        <span class="lineup__num lineup__num--plan" aria-hidden="true"><span></span></span>
+        <span class="lineup__name">{t('home.services.actionPlan.title')}</span>
+        <span class="lineup__plus" aria-hidden="true"><span></span><span></span></span>
+      </summary>
+      <div class="lineup__body lineup__body--plan">
+        <ul class="plan-grid" role="list" data-plan-grid>
+          {actionPlanSub.map((card, i) => (
+            <li class="plan-card" style={`--d: ${i * 60}ms`}>
+              <Plate as="div" variant="label" class="plan-card__title">{card.title}</Plate>
+              <ul class="plan-card__bullets" role="list">
+                {card.bullets.map((b) => <li>{b}</li>)}
+              </ul>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <div class="home-services__cta ph-in-rise" data-inview>
+    <KeyPlate href={servicesHref} label={t('home.services.cta')} />
   </div>
 </section>
 
 <style>
   .home-services {
-    padding: clamp(56px, 8vw, 120px) var(--ph-section-px, clamp(20px, 4vw, 48px));
-    background: var(--color-ph-bg-2, #15171b);
-    color: var(--color-ph-white, #ffffff);
+    position: relative;
+    padding: clamp(64px, 7vw, 104px) var(--ph-section-px);
+    /* Transparente: el fondo es la luz animada de toda la página (`.ph-page-bg`). */
+    background: transparent;
+  }
+  /* En pantallas anchas, la alineación al lado de su titular, como el grafismo
+     de una alineación junto al rótulo del partido. */
+  @media (min-width: 1100px) {
+    .home-services {
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      grid-template-rows: auto auto 1fr;
+      column-gap: clamp(40px, 5vw, 88px);
+      align-items: start;
+    }
+    .home-services > :global(.ph-bug) { grid-column: 1; grid-row: 1; justify-self: start; }
+    .home-services__head { grid-column: 1; grid-row: 2; margin-bottom: 0; }
+    .home-services .home-services__title { font-size: clamp(48px, 4.6vw, 72px); }
+    .lineup { grid-column: 2; grid-row: 1 / 4; }
+    .lineup__item--plan { grid-column: 1 / -1; grid-row: 4; margin-top: clamp(40px, 4vw, 56px); }
+    /* La placa llave cierra el bloque, detrás del plan. */
+    .home-services__cta { grid-column: 1; grid-row: 5; }
   }
 
-  .home-services__head { max-width: 720px; margin-bottom: clamp(32px, 5vw, 56px); }
-
-  .home-services__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-services__eyebrow::before {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
+  .home-services__head {
+    max-width: 880px;
+    margin: clamp(28px, 4vw, 48px) 0 clamp(32px, 4.5vw, 52px);
   }
 
   .home-services__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(32px, 5vw, 60px);
-    letter-spacing: -0.03em;
-    line-height: 1.02;
-    margin: 14px 0 0;
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(36px, 9.4vw, 76px);
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    text-wrap: balance;
   }
 
   .home-services__lead {
-    margin: 18px 0 0;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 15px;
-    line-height: 1.6;
-    max-width: 520px;
+    margin: clamp(18px, 2vw, 24px) 0 0;
+    max-width: 40ch;
+    font-family: var(--font-display);
+    font-size: var(--ph-head-lead-size);
+    line-height: 1.45;
+    color: var(--ph-ink-lead);
+    text-wrap: pretty;
   }
 
-  .home-services__list {
-    list-style: none;
-    padding: 0;
-    margin: clamp(32px, 5vw, 56px) 0 0;
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-  }
-
-  .home-services__item { border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12)); }
-
-  /* Plan de Acción como anexo: alineado con los 01-05 pero sin número de
-     secuencia. Un rombo dorado y la micro-eyebrow ("Además de") le dan
-     carácter sin convertirlo en el sexto ítem de la lista. */
-  .home-services__item--featured {
-    margin-top: clamp(12px, 2vw, 24px);
-    border-bottom: none;
-  }
-  /* Rombo hueco dorado como marcador del anexo. La columna del grid en
-     .home-services__summary es fija (20px) para todas las filas, así que el
-     slot tiene el mismo ancho que "01..05" y los títulos alinean. */
-  .home-services__num--rombo {
-    position: relative;
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    font-size: 0;
-  }
-  .home-services__num--rombo::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border: 1px solid var(--color-ph-gold, #d6b25e);
-    box-sizing: border-box;
-    transform: rotate(45deg);
-  }
-  .home-services__plan-stack {
+  /* ── La alineación ─────────────────────────────────────────────────────
+     Cada área, una fila en placa: la celda con el número, el nombre y el «+».
+     Abierta, gana la pestaña dorada y debajo se despliega su texto. */
+  .lineup {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    min-width: 0;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
-  .home-services__plan-eyebrow {
+  .lineup__item {
+    transition: clip-path var(--ph-dur-wipe) var(--ph-ease-out) var(--cd, 0ms);
+    clip-path: inset(-8px -8px -8px -8px);
+  }
+  :global(html.ph-anim) .lineup__item:not(.is-inview) { clip-path: inset(-8px 100% -8px -8px); }
+  :global(html.ph-anim:not(.ph-motion)) .lineup__item { animation: ph-failsafe-unclip 0s linear 2.5s forwards; }
+
+  .lineup__row > summary { list-style: none; }
+  .lineup__row > summary::-webkit-details-marker { display: none; }
+
+  .lineup__summary {
+    --cut: 60px;
+    --edge: var(--ph-plate-edge);
+    position: relative;
+    z-index: 0;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(12px, 2vw, 22px);
+    min-height: 60px;
+    padding: 10px calc(var(--cut) * 0.75) 10px 10px;
+    color: var(--color-ph-white);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .lineup__summary::before,
+  .lineup__summary::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .lineup__summary::before {
+    inset: 0;
+    background: var(--edge);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+    transition: background-color var(--ph-dur-state) var(--ph-ease-std);
+  }
+  .lineup__summary::after {
+    inset: 1px;
+    background: var(--ph-plate);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) + 0.59px), calc(100% - var(--cut) + 0.59px) 100%, 0 100%);
+    transition: background-color var(--ph-dur-state) var(--ph-ease-std);
+  }
+  .lineup__summary:focus-visible { outline: 2px solid var(--color-ph-gold); outline-offset: 3px; }
+
+  /* La pestaña dorada: la fila abierta está «en directo». */
+  .lineup__tab {
+    position: absolute;
+    left: 0;
+    bottom: 100%;
+    width: var(--ph-tab-w);
+    height: var(--ph-tab-h);
+    background: var(--color-ph-gold);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 150ms var(--ph-ease-in);
+  }
+
+  .lineup__num {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
-    white-space: nowrap;
-  }
-  .home-services__plan-eyebrow::before {
-    content: "";
-    width: 20px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-    flex-shrink: 0;
-  }
-
-  .home-services__row { width: 100%; }
-  .home-services__row > summary { list-style: none; cursor: pointer; }
-  .home-services__row > summary::-webkit-details-marker { display: none; }
-
-  .home-services__summary {
-    display: grid;
-    grid-template-columns: 20px 1fr auto;
-    align-items: center;
-    gap: clamp(16px, 2.5vw, 32px);
-    padding: clamp(20px, 3vw, 32px) 0;
-    transition: color 0.3s;
-    color: var(--color-ph-white, #ffffff);
-  }
-  .home-services__row:hover .home-services__summary { color: var(--color-ph-gold, #d6b25e); }
-  .home-services__row[open] .home-services__summary { color: var(--color-ph-gold, #d6b25e); }
-
-  .home-services__row > summary:focus-visible {
-    outline: 2px solid var(--color-ph-gold, #d6b25e);
-    outline-offset: 4px;
-  }
-
-  .home-services__num {
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-
-  .home-services__name {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    font-family: var(--font-mono);
+    font-size: 14px;
     font-weight: 500;
-    font-size: clamp(22px, 3vw, 36px);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ph-gold);
+    box-shadow: inset 0 0 0 1px rgba(214, 178, 94, 0.75);
+  }
+  /* El Plan de Acción no es la sexta área: en su celda, un rombo dorado. */
+  .lineup__num--plan span {
+    width: 10px;
+    height: 10px;
+    box-shadow: inset 0 0 0 1px var(--color-ph-gold);
+    transform: rotate(45deg);
   }
 
-  .home-services__plus {
-    position: relative;
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
+  .lineup__name {
+    font-family: var(--font-display);
+    font-size: clamp(17px, calc(0.9vw + 14px), 26px);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    transition: transform var(--ph-dur-state) var(--ph-ease-out), color var(--ph-dur-state) var(--ph-ease-std);
   }
-  .home-services__plus span {
+
+  .lineup__plus {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .lineup__plus span {
     position: absolute;
     top: 50%;
     left: 0;
-    width: 20px;
-    height: 1px;
+    width: 18px;
+    height: 2px;
+    margin-top: -1px;
     background: currentColor;
-    transform: translateY(-50%);
-    transition: transform 0.3s;
+    transition: transform var(--ph-dur-state) var(--ph-ease-out);
   }
-  .home-services__plus span:last-child {
-    transform: translateY(-50%) rotate(90deg);
-  }
-  .home-services__row[open] .home-services__plus span:last-child {
-    transform: translateY(-50%) rotate(0deg);
-  }
+  .lineup__plus span:last-child { transform: rotate(90deg); }
 
-  @media (prefers-reduced-motion: reduce) {
-    .home-services__summary,
-    .home-services__plus span { transition: none; }
+  @media (hover: hover) and (pointer: fine) {
+    .lineup__summary:hover::after { background: #15171b; }
+    .lineup__summary:hover .lineup__name { transform: translateX(4px); }
   }
+  .lineup__summary:active::after { background: #1a1d22; }
 
-  .home-services__body {
-    overflow: hidden;
-    height: 0;
-    opacity: 0;
+  /* Abierta: con JS, `data-state` manda desde el clic (el `open` de layout llega
+     al final del cierre); sin JS, el `open` nativo. */
+  .lineup__row:is([open]:not([data-state='closed']), [data-state='open']) .lineup__tab {
+    transform: scaleX(1);
+    transition: transform var(--ph-dur-tab) var(--ph-ease-out);
   }
-  .home-services__row[open] .home-services__body {
-    height: auto;
-    opacity: 1;
+  .lineup__row:is([open]:not([data-state='closed']), [data-state='open']) .lineup__name { color: var(--color-ph-gold); }
+  .lineup__row:is([open]:not([data-state='closed']), [data-state='open']) .lineup__plus { color: var(--color-ph-gold); }
+  .lineup__row:is([open]:not([data-state='closed']), [data-state='open']) .lineup__plus span:last-child { transform: rotate(0deg); }
+
+  /* Lo que se despliega: el texto, alineado con el nombre. */
+  .lineup__body {
+    padding: 14px clamp(12px, 3vw, 40px) 22px calc(10px + 40px + clamp(12px, 2vw, 22px));
   }
-  .home-services__body-inner {
-    padding: 0 0 clamp(20px, 3vw, 32px);
-    max-width: 640px;
-  }
-  .home-services__body-inner p {
+  .lineup__text {
     margin: 0;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 15px;
+    max-width: 56ch;
+    font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
     line-height: 1.6;
+    color: var(--ph-ink-body);
   }
 
-  /* Plan de Acción: el body se extiende a todo el ancho para albergar el grid. */
-  .home-services__body-inner--plan {
-    max-width: none;
-  }
+  /* ── El Plan de Acción: la fila distinta ────────────────────────────── */
+  .lineup__item--plan { margin-top: 26px; }
+  .lineup__plan-bug { margin-bottom: 10px; }
+  .lineup__row--plan > .lineup__summary { --edge: rgba(214, 178, 94, 0.8); }
 
-  .home-services__plan-grid {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .lineup__body--plan { padding: 14px 0 6px; }
+
+  /* Sus cinco sub-áreas, como placas pequeñas: 1, 2 y 5 columnas. Al abrir
+     entran en cascada (el script les da `is-inview`). */
+  .plan-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
   @media (min-width: 640px) {
-    .home-services__plan-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
+    .plan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
-  @media (min-width: 960px) {
-    .home-services__plan-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
+  @media (min-width: 1200px) {
+    .plan-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   }
-
-  .home-services__plan-card {
-    padding: 18px 18px 16px;
-    border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    border-radius: var(--radius-sm);
-    background: rgba(13, 15, 18, 0.4);
-  }
-
-  .home-services__plan-card-title {
-    margin: 0 0 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-
-  .home-services__plan-card-bullets {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .plan-card {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 12px;
+    padding: 0 0 4px;
+    min-width: 0;
   }
-  .home-services__plan-card-bullets li {
+  .plan-card__title { max-width: 100%; }
+  .plan-card__bullets {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin: 0;
+    padding: 0 0 0 2px;
+    list-style: none;
+    transition: opacity 320ms var(--ph-ease-out) calc(var(--d, 0ms) + 160ms);
+  }
+  .plan-card__bullets li {
     position: relative;
-    padding-left: 14px;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 14px;
-    line-height: 1.5;
+    padding-left: 16px;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--ph-ink-body);
   }
-  .home-services__plan-card-bullets li::before {
-    content: "";
+  .plan-card__bullets li::before {
+    content: '';
     position: absolute;
     left: 0;
-    top: 0.65em;
-    width: 6px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
+    top: 0.62em;
+    width: 7px;
+    height: 7px;
+    background: var(--color-ph-gold);
+    clip-path: polygon(0 0, 100% 0, 0 100%);
   }
-
-  .home-services__cta-wrap {
-    margin-top: clamp(32px, 5vw, 56px);
-    display: flex;
-    justify-content: center;
+  :global(html.ph-anim) [data-plan-grid][data-inview]:not(.is-inview) .plan-card__bullets { opacity: 0; }
+  /* Las sub-áreas solo esperan si este script las gobierna (`data-inview` lo pone
+     él). Si no llega, se ven al abrir el plan: la red de seguridad de CSS no
+     corre dentro de un `<details>` cerrado, que no se pinta. */
+  :global(html.ph-anim) .lineup__body [data-plan-grid]:not([data-inview]) :global(.ph-plate::before) {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
   }
-
-  .home-services__cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 20px;
-    background: var(--color-ph-gold, #d6b25e);
-    color: var(--color-ph-black, #0d0f12);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 13px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: background 0.2s;
+  :global(html.ph-anim) .lineup__body [data-plan-grid]:not([data-inview]) :global(.ph-plate__t) {
+    clip-path: polygon(1px 1px, calc(100% - 1px) 1px, calc(100% - 1px) calc(100% - var(--cut) - 0.41px), calc(100% - var(--cut) - 0.41px) calc(100% - 1px), 1px calc(100% - 1px));
   }
-  .home-services__cta:hover { background: var(--color-ph-gold-soft, #e6c682); }
-  .home-services__cta:hover .home-services__arrow { transform: translateX(4px); }
-  .home-services__arrow { transition: transform 0.2s; }
+  :global(html.ph-anim) .lineup__body [data-plan-grid]:not([data-inview]) :global(.ph-plate__in) { transform: none; }
 
-  @media (max-width: 720px) {
-    .home-services__summary { gap: 14px; }
-    .home-services__name { font-size: 20px; }
-    .home-services__plan-card { padding: 16px 16px 14px; }
-    .home-services__plan-card-bullets li { font-size: 13.5px; }
+  .home-services__cta { margin-top: clamp(36px, 5vw, 56px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lineup__item,
+    .lineup__tab,
+    .lineup__name,
+    .lineup__plus span,
+    .lineup__summary::before,
+    .lineup__summary::after,
+    .plan-card__bullets { transition: none; }
   }
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, revealOnView, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
+  import { mountSection, afterTransitionPaint } from '@/scripts/ph-text-animations';
+  import { animateDisclosures, type DisclosureChange } from '@/scripts/ph-disclosure';
 
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initHomeServicesAnimations(): void {
+  function initHomeServices(): void {
     const section = document.querySelector<HTMLElement>('.home-services');
-    if (!section) return;
-    if (reducedMotion()) return;
-
-    const eyebrow = section.querySelector<HTMLElement>('.home-services__eyebrow');
-    const title = section.querySelector<HTMLElement>('.home-services__title');
-    const lead = section.querySelector<HTMLElement>('.home-services__lead');
-    const head = section.querySelector<HTMLElement>('.home-services__head');
-    const list = section.querySelector<HTMLElement>('.home-services__list');
-    const rows = section.querySelectorAll<HTMLElement>('.home-services__row');
-
-    if (eyebrow && head) {
-      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
-    }
-    if (title) {
-      revealOnView(title, { y: 24, duration: 0.9 });
-    }
-    if (lead && head) {
-      gsap.from(lead, {
-        opacity: 0,
-        y: 18,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.2,
-        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
-      });
-    }
-    if (rows.length && list) {
-      gsap.from(rows, {
-        opacity: 0,
-        y: 12,
-        duration: 0.7,
-        ease: 'power3.out',
-        stagger: 0.06,
-        scrollTrigger: { trigger: list, start: 'top 82%', once: true },
-      });
-    }
-
-    scheduleScrollTriggerRefresh();
+    if (section) mountSection(section);
   }
 
-  function initHomeServicesAccordion(): void {
-    if (reducedMotion()) return;
-    const details = document.querySelectorAll<HTMLDetailsElement>('.home-services__row');
-    if (!details.length) return;
+  /** ¿Está abierta? Con JS manda `data-state`, que cambia con el clic. */
+  function isOpen(d: HTMLDetailsElement): boolean {
+    return d.dataset.state ? d.dataset.state === 'open' : d.open;
+  }
 
-    const DURATION = 0.5;
-    const EASE = 'power3.out';
-    const active = new WeakMap<HTMLElement, gsap.core.Tween>();
+  function initLineup(): void {
+    const rows = Array.from(document.querySelectorAll<HTMLDetailsElement>('.home-services .lineup__row'));
+    if (!rows.length || rows[0].dataset.lineupOn) return;
+    rows.forEach((d) => {
+      d.dataset.lineupOn = '1';
+      // El `name` deja una sola abierta sin JS. Con JS la exclusividad la lleva
+      // este script: si no, abrir una cerraría la otra de golpe, sin animarla.
+      if (d.getAttribute('name')) d.removeAttribute('name');
+      d.dataset.state = d.open ? 'open' : 'closed';
+    });
 
-    const animateClose = (d: HTMLDetailsElement): void => {
-      const body = d.querySelector<HTMLElement>('.home-services__body');
-      if (!body) { d.removeAttribute('open'); return; }
-      active.get(body)?.kill();
-      const current = body.offsetHeight;
-      body.style.height = current + 'px';
-      body.style.opacity = '1';
-      const tween = gsap.to(body, {
-        height: 0,
-        opacity: 0,
-        duration: DURATION,
-        ease: EASE,
-        onComplete: () => {
-          d.removeAttribute('open');
-          body.style.height = '';
-          body.style.opacity = '';
-          active.delete(body);
+    // Las sub-áreas del plan entran en cascada cada vez que se abre.
+    const planGrid = document.querySelector<HTMLElement>('.home-services [data-plan-grid]');
+    // Lo destapa este script al abrir, no el observador de pantalla.
+    planGrid?.setAttribute('data-inview', '');
+    planGrid?.setAttribute('data-inview-manual', '');
+
+    const change = (d: HTMLDetailsElement, open: boolean): DisclosureChange | null => {
+      const panel = d.querySelector<HTMLElement>('.lineup__body');
+      if (!panel) return null;
+      d.dataset.state = open ? 'open' : 'closed';
+      return {
+        panel,
+        open,
+        setOpen: (v) => {
+          d.open = v;
         },
-      });
-      active.set(body, tween);
+        // Las sub-áreas del plan entran en cascada cada vez que se abre.
+        onOpen: () => {
+          const grid = panel.querySelector<HTMLElement>('[data-plan-grid]');
+          if (!grid) return;
+          grid.classList.remove('is-inview');
+          void grid.offsetWidth;
+          grid.classList.add('is-inview');
+        },
+      };
     };
 
-    const animateOpen = (d: HTMLDetailsElement): void => {
-      const body = d.querySelector<HTMLElement>('.home-services__body');
-      const inner = body?.querySelector<HTMLElement>('.home-services__body-inner');
-      if (!body || !inner) { d.setAttribute('open', ''); return; }
-      active.get(body)?.kill();
-      d.setAttribute('open', '');
-      body.style.height = '0px';
-      body.style.opacity = '0';
-      const target = inner.offsetHeight;
-      const tween = gsap.to(body, {
-        height: target,
-        opacity: 1,
-        duration: DURATION,
-        ease: EASE,
-        onComplete: () => {
-          body.style.height = '';
-          body.style.opacity = '';
-          active.delete(body);
-        },
-      });
-      active.set(body, tween);
-    };
-
-    details.forEach((d) => {
-      const summary = d.querySelector<HTMLElement>('summary');
-      if (!summary) return;
-      summary.addEventListener('click', (e) => {
+    rows.forEach((d) => {
+      const summary = d.querySelector('summary');
+      summary?.addEventListener('click', (e) => {
         e.preventDefault();
-        if (d.hasAttribute('open')) {
-          animateClose(d);
-          return;
-        }
-        const name = d.getAttribute('name');
-        if (name) {
-          document.querySelectorAll<HTMLDetailsElement>(
-            `details[name="${name}"][open]`,
-          ).forEach((other) => {
-            if (other !== d) animateClose(other);
+        const opening = !isOpen(d);
+        const changes: DisclosureChange[] = [];
+        if (opening) {
+          rows.filter((o) => o !== d && isOpen(o)).forEach((o) => {
+            const c = change(o, false);
+            if (c) changes.push(c);
           });
         }
-        animateOpen(d);
+        const c = change(d, opening);
+        if (c) changes.push(c);
+        animateDisclosures(changes);
       });
     });
   }
 
   document.addEventListener('astro:page-load', () => {
-    afterTransitionPaint(initHomeServicesAnimations);
-    initHomeServicesAccordion();
+    afterTransitionPaint(initHomeServices);
+    initLineup();
   });
 </script>

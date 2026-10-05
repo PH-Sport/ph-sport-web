@@ -3,6 +3,7 @@ import { useTranslations, type Lang } from '@/i18n/utils';
 import {
   HERO_INTRO_SOURCES, HERO_LOOP_SOURCES, HERO_PORTRAIT_MEDIA, HERO_POSTER, HERO_SIZE,
 } from '@/lib/heroMedia';
+import Plate from '@/components/ui/Plate.astro';
 
 interface Props {
   lang: Lang;
@@ -13,6 +14,10 @@ const { lang, sectionId } = Astro.props;
 const t = useTranslations(lang);
 ---
 
+{/* La señal en directo: el vídeo del neón a sangre y, en el tercio de abajo, el
+    lema como rótulo inferior de retransmisión (pestaña dorada, «Now. Next.» y
+    «Forever Football.» en dos placas en escalera). Abajo a la derecha, el bug
+    «Scroll», cuya línea se llena con el scroll de la portada. */}
 <section
   id={sectionId}
   class="hero hero--home"
@@ -49,18 +54,24 @@ const t = useTranslations(lang);
     </video>
   </div>
 
-  <div class="hero-overlay" aria-hidden="true"></div>
 
-  <div class="hero-content">
-    <h1 class="hero-claim">
-      <span class="hero-claim__lead">{t('hero.claim.lead')}</span>
-      <span class="hero-claim__accent">{t('hero.claim.accent')}</span>
+  <div class="hero-shade" aria-hidden="true"></div>
+  {/* Velo que oscurece la señal al bajar: la portada cede el paso al bloque
+      siguiente. Lo mueve el scroll (script de abajo). */}
+  <div class="hero-veil" aria-hidden="true"></div>
+
+  {/* El rótulo espera a que se abra la intro: lo destapa el script, no el
+      observador de pantalla (`data-inview-manual`). */}
+  <div class="hero-lt" data-inview data-inview-manual>
+    <h1 class="hero-claim ph-lt">
+      <Plate tab class="hero-claim__plate">{t('hero.claim.lead')}</Plate>{' '}
+      <Plate gold d={80} step={1} class="hero-claim__plate">{t('hero.claim.accent')}</Plate>
     </h1>
   </div>
 
   <a class="hero-scroll" href="#talentos" data-hero-scroll-indicator>
     <span class="hero-scroll__label">{t('hero.scroll.label')}</span>
-    <span class="hero-scroll__line" aria-hidden="true"></span>
+    <span class="hero-scroll__track" aria-hidden="true"><span class="hero-scroll__fill" data-hero-scroll-fill></span></span>
   </a>
 </section>
 
@@ -73,8 +84,8 @@ const t = useTranslations(lang);
        hero y arrastraba el documento entero. */
     min-height: var(--ph-viewport-h);
     overflow: hidden;
-    background: var(--color-ph-black, #0d0f12);
-    color: var(--color-ph-white, #ffffff);
+    background: var(--color-ph-black);
+    color: var(--color-ph-white);
   }
 
   .hero-media {
@@ -82,6 +93,7 @@ const t = useTranslations(lang);
     inset: 0;
     z-index: 0;
     overflow: hidden;
+    transform-origin: 50% 50%;
   }
 
   /* Fondo bajo el póster: se ve mientras carga. */
@@ -90,10 +102,8 @@ const t = useTranslations(lang);
     inset: 0;
     z-index: 0;
     background:
-      radial-gradient(ellipse at 70% 80%, rgba(214, 178, 94, 0.06) 0%, transparent 42%),
-      radial-gradient(ellipse at 30% 20%, rgba(214, 178, 94, 0.10) 0%, transparent 48%),
-      radial-gradient(ellipse at 50% 100%, rgba(13, 15, 18, 0.9) 0%, transparent 55%),
-      var(--ph-section-bg, #0d0f12);
+      radial-gradient(ellipse at 50% 50%, rgba(214, 178, 94, 0.08) 0%, transparent 46%),
+      var(--color-ph-black);
   }
 
   /* Póster y vídeos llenan el hero con `cover`, centrados. El render
@@ -127,170 +137,125 @@ const t = useTranslations(lang);
   .hero-video--intro { z-index: 3; }
   .hero-video.is-on { opacity: 1; }
 
-  /* Dark gradient overlay for legibility of the claim over the photo */
-  .hero-overlay {
+  /* Sombra abajo: asienta el rótulo y el bug sobre la señal. */
+  .hero-shade {
     position: absolute;
     inset: 0;
     z-index: 3;
     pointer-events: none;
     background:
-      linear-gradient(180deg,
-        rgba(13,15,18,0.55) 0%,
-        rgba(13,15,18,0) 30%,
-        rgba(13,15,18,0) 55%,
-        rgba(13,15,18,0.85) 100%),
-      linear-gradient(90deg,
-        rgba(13,15,18,0.35) 0%,
-        rgba(13,15,18,0) 55%);
+      linear-gradient(0deg, rgba(13, 15, 18, 0.78) 0%, rgba(13, 15, 18, 0) 42%),
+      linear-gradient(180deg, rgba(13, 15, 18, 0.5) 0%, rgba(13, 15, 18, 0) 18%);
   }
 
-  .hero-content {
+  .hero-veil {
     position: absolute;
-    left: var(--ph-section-px, clamp(20px, 4vw, 48px));
-    right: var(--ph-section-px, clamp(20px, 4vw, 48px));
-    bottom: clamp(72px, 10vw, 140px);
-    z-index: 4;
-    max-width: 980px;
-  }
-
-  .hero-claim {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(44px, 8.5vw, 132px);
-    letter-spacing: -0.03em;
-    line-height: 0.96;
-    margin: 0;
-    text-wrap: balance;
-  }
-  .hero-claim__lead {
-    display: block;
-    color: var(--color-ph-white, #ffffff);
-  }
-  .hero-claim__accent {
-    display: block;
-    color: var(--color-ph-gold, #d6b25e);
-    font-style: italic;
-    font-weight: 400;
-  }
-
-  /* Vertical scroll cue — bottom-right */
-  .hero-scroll {
-    position: absolute;
-    right: var(--ph-section-px, clamp(20px, 4vw, 48px));
-    bottom: clamp(24px, 4vw, 48px);
-    z-index: 4;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    color: var(--color-ph-white, #ffffff);
-    opacity: 0.7;
-    transition: opacity 0.2s ease, color 0.2s ease;
-    text-decoration: none;
-  }
-  .hero-scroll:hover {
-    opacity: 1;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .hero-scroll__label {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-  .hero-scroll__line {
-    position: relative;
-    width: 1px;
-    height: 56px;
-    background: currentColor;
-    overflow: hidden;
-  }
-  .hero-scroll__line::after {
-    content: "";
-    position: absolute;
-    top: -100%;
-    left: 0;
-    width: 1px;
-    height: 60%;
-    background: var(--color-ph-gold, #d6b25e);
-    animation: heroScrollCue 2.4s linear infinite;
-  }
-  @keyframes heroScrollCue {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(400%); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .hero-scroll__line::after { animation: none; }
-  }
-
-  .hero-scroll.is-hidden {
+    inset: 0;
+    z-index: 3;
+    background: var(--color-ph-black);
     opacity: 0;
     pointer-events: none;
   }
 
-  /* Mientras el indicador está oculto (usuario ya scrolleó), pausar la
-     animación CSS infinita evita que mantenga el compositor activo
-     gastando ciclos de GPU para algo invisible. */
-  .hero-scroll.is-hidden .hero-scroll__line::after {
-    animation-play-state: paused;
+  /* El rótulo inferior, en el tercio de abajo y a la izquierda. Cada placa, una
+     línea: el tamaño sale de «Forever Football.» más su escalera, que tiene que
+     caber en 360 px. */
+  .hero-lt {
+    position: absolute;
+    left: var(--ph-section-px);
+    right: var(--ph-section-px);
+    bottom: clamp(92px, 12vh, 132px);
+    z-index: 4;
+  }
+  .hero-claim {
+    margin: 0;
+    font-size: clamp(34px, 10.2vw, 88px);
   }
 
-  @media (max-width: 720px) {
-    .hero-content {
-      bottom: clamp(24px, 4vw, 48px);
-      right: 64px;
-    }
+  /* El bug «Scroll»: su línea se llena con el scroll de la portada y lleva a
+     Talentos. */
+  .hero-scroll {
+    --cut: 40px;
+    position: absolute;
+    right: var(--ph-section-px);
+    bottom: clamp(24px, 4vh, 40px);
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    height: 40px;
+    padding: 0 calc(var(--cut) * 0.7) 0 14px;
+    color: var(--color-ph-white);
+    text-decoration: none;
+    isolation: isolate;
+  }
+  .hero-scroll::before,
+  .hero-scroll::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+  }
+  .hero-scroll::before {
+    inset: 0;
+    background: var(--ph-plate-edge);
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
+  }
+  .hero-scroll::after {
+    inset: 1px;
+    background: var(--ph-plate);
+    clip-path: polygon(0 0, calc(100% - 0.41px) 0, calc(100% - var(--cut) + 1.59px) 100%, 0 100%);
+  }
+  .hero-scroll__label {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1;
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
+  }
+  .hero-scroll__track {
+    position: relative;
+    width: 44px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.24);
+    overflow: hidden;
+  }
+  .hero-scroll__fill {
+    position: absolute;
+    inset: 0;
+    background: var(--color-ph-gold);
+    transform: scaleX(0.12);
+    transform-origin: 0 50%;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .hero-scroll:hover .hero-scroll__label { color: var(--color-ph-gold); }
+  }
+  .hero-scroll:active .hero-scroll__label { color: var(--color-ph-gold); }
+  .hero-scroll:focus-visible { outline: 2px solid var(--color-ph-gold); outline-offset: 3px; }
+
+  /* En escritorio el rótulo baja hasta casi el borde, para pisar lo menos
+     posible el pie del neón. */
+  @media (min-width: 768px) {
+    .hero-lt { bottom: clamp(56px, 8vh, 96px); }
   }
 
-  @media (min-width: 1024px) {
-    .hero-content {
-      bottom: clamp(40px, 5vw, 72px);
-    }
-    .hero-claim {
-      font-size: clamp(56px, 6.2vw, 96px);
-    }
+  /* Red de seguridad propia: el rótulo lo destapa el script de la portada al
+     abrirse la intro, no el observador de pantalla. Si ese script no llega, a
+     los 2,6 s se ve igual (la intro termina a 1,3 s). */
+  :global(html.ph-anim) .hero-lt:not(.is-inview) :global(.ph-plate::before) {
+    animation: ph-failsafe-plate-edge 0s linear 2.6s forwards;
   }
-
-  /* El titular arranca oculto para que GSAP controle su primer fotograma, con una
-     red de seguridad en CSS: pase lo que pase, a 1,1 s se muestra.
-
-     Antes no hacía falta porque el telón de intro y este titular colgaban del
-     mismo evento (`astro:page-load` = `window.load`): cuando el telón se
-     levantaba, el titular ya estaba puesto. Ahora el telón es CSS y termina a
-     1,26 s por su cuenta, así que son dos relojes distintos: si el JS se retrasa
-     —y `window.load` es mucho más variable que el primer pintado—, el telón se
-     abriría sobre un hero mudo.
-
-     El retardo hace que esto no estorbe cuando todo va bien: durante la espera la
-     animación no aplica nada (no es `backwards`), así que el `visibility` que
-     pone GSAP manda y el efecto de entrada se ve igual que siempre. */
-  .hero-claim__lead,
-  .hero-claim__accent {
-    visibility: hidden;
-    animation: ph-hero-claim-visible 0s linear 1.1s forwards;
+  :global(html.ph-anim) .hero-lt:not(.is-inview) :global(.ph-plate__t) {
+    animation: ph-failsafe-plate-fill 0s linear 2.6s forwards;
   }
-
-  @keyframes ph-hero-claim-visible {
-    to { visibility: visible; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero-claim__lead,
-    .hero-claim__accent { visibility: visible; animation: none; }
+  :global(html.ph-anim) .hero-lt:not(.is-inview) :global(.ph-plate__in),
+  :global(html.ph-anim) .hero-lt:not(.is-inview) :global(.ph-plate__tab) {
+    animation: ph-motion-failsafe 0s linear 2.6s forwards;
   }
 </style>
 
 <script>
-  function initHeroScrollCue(): void {
-    const cue = document.querySelector<HTMLElement>('[data-hero-scroll-indicator]');
-    if (!cue) return;
-    const toggle = () => cue.classList.toggle('is-hidden', window.scrollY > 48);
-    toggle();
-    document.addEventListener('scroll', toggle, { passive: true });
-  }
-
   /* El rótulo se enciende una vez (vídeo de encendido) y luego queda encendido en
    * bucle (otro vídeo). Si algo impide reproducir, la portada pasa al póster
    * encendido: nunca se queda con el rótulo apagado. */
@@ -366,65 +331,58 @@ const t = useTranslations(lang);
     else window.addEventListener('load', start, { once: true });
   }
 
-  document.addEventListener('astro:page-load', () => {
-    initHeroScrollCue();
-    initHeroNeon();
-  });
+  document.addEventListener('astro:page-load', initHeroNeon);
 </script>
 
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, wrapWords, scheduleScrollTriggerRefresh, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
+  import { reducedMotion, scheduleScrollTriggerRefresh, afterTransitionPaint } from '@/scripts/ph-text-animations';
 
   gsap.registerPlugin(ScrollTrigger);
 
+  /** Segundos que faltan para que la cortinilla de la intro pase por la esquina
+   *  de abajo a la izquierda, donde va el rótulo (0 si no hay intro). */
+  function introRemaining(): number {
+    const overlay = document.querySelector<HTMLElement>('[data-logo-reveal-overlay]');
+    if (!overlay || document.documentElement.classList.contains('ph-sin-intro')) return 0;
+    const salida = overlay
+      .getAnimations()
+      .find((a) => (a as CSSAnimation).animationName === 'ph-intro-salir');
+    if (!salida) return 0;
+    const elapsed = Number(salida.currentTime ?? 0) / 1000;
+    // El barrido empieza a 0,9 s desde esa esquina: el rótulo entra detrás de él.
+    return Math.max(0, 1.0 - elapsed);
+  }
+
   function initHeroAnimations(): void {
     const hero = document.querySelector<HTMLElement>('.hero--home');
-    if (!hero) return;
-    if (reducedMotion()) return;
-
-    const lead = hero.querySelector<HTMLElement>('.hero-claim__lead');
-    const accent = hero.querySelector<HTMLElement>('.hero-claim__accent');
-    const claim = hero.querySelector<HTMLElement>('.hero-claim');
-
-    // Reveal now so GSAP controls the first visible frame.
-    if (lead) lead.style.visibility = 'visible';
-    if (accent) accent.style.visibility = 'visible';
-
-    if (lead) {
-      const words = wrapWords(lead);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 1.0,
-        ease: 'power4.out',
-        stagger: 0.08,
-        delay: 0.2,
-      });
+    const lt = hero?.querySelector<HTMLElement>('.hero-lt');
+    if (!hero || !lt) return;
+    if (reducedMotion()) {
+      lt.classList.add('is-inview');
+      return;
     }
-    if (accent) {
-      const words = wrapWords(accent);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 1.0,
-        ease: 'power4.out',
-        stagger: 0.08,
-        delay: 0.4,
-      });
-    }
-    if (claim) {
-      ScrollTrigger.create({
-        trigger: hero,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: 0.8,
-        onUpdate: (self) => {
-          gsap.set(claim, { yPercent: self.progress * 20 });
-        },
-      });
-    }
+
+    // El momento de autor de la portada: la pestaña, «Now. Next.» y «Forever
+    // Football.» entran como el rótulo de una retransmisión (CSS, global.css).
+    window.setTimeout(() => lt.classList.add('is-inview'), introRemaining() * 1000 + 60);
+
+    // Al bajar, las placas salen hacia la izquierda en escalera, la señal se
+    // oscurece y la línea del bug se llena: todo al ritmo del dedo.
+    const plates = Array.from(lt.querySelectorAll<HTMLElement>('.ph-plate'));
+    const media = hero.querySelector<HTMLElement>('.hero-media');
+    const veil = hero.querySelector<HTMLElement>('.hero-veil');
+    const fill = hero.querySelector<HTMLElement>('[data-hero-scroll-fill]');
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.5, invalidateOnRefresh: true },
+    });
+    plates.forEach((plate, i) => {
+      tl.to(plate, { x: () => -(plate.getBoundingClientRect().right + 24), ease: 'none', duration: 0.7 }, i * 0.12);
+    });
+    if (veil) tl.to(veil, { opacity: 0.72, ease: 'none', duration: 1 }, 0);
+    if (media) tl.to(media, { scale: 1.08, ease: 'none', duration: 1 }, 0);
+    if (fill) tl.fromTo(fill, { scaleX: 0.12 }, { scaleX: 1, ease: 'none', duration: 1 }, 0);
 
     scheduleScrollTriggerRefresh();
   }

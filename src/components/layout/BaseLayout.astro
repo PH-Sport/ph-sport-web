@@ -20,6 +20,9 @@ interface Props {
   /** Monta el telón de intro (sólo la home). Va aquí y no en la página para que
    *  quede fuera de <main> — ver el comentario junto a <LogoReveal />. */
   intro?: boolean;
+  /** Fondo animado (el «bombo» de `ph-ambient.ts`). Todas las páginas lo llevan
+   *  salvo los textos legales, que van planos (decisión de Mario, 2026-10-02). */
+  ambient?: boolean;
   /**
    * Imagen LCP a precargar. Si la imagen tiene variantes responsive,
    * pasa { mobile, desktop } y se emiten dos preloads media-aware
@@ -28,7 +31,7 @@ interface Props {
   preloadImage?: string | { mobile: string; desktop: string; mobileMaxWidth?: number };
 }
 
-const { title, description, lang, canonical, ogImage, hasHero = false, noIndex = false, intro = false, preloadImage } = Astro.props;
+const { title, description, lang, canonical, ogImage, hasHero = false, noIndex = false, intro = false, ambient = true, preloadImage } = Astro.props;
 const preloadIsResponsive = typeof preloadImage === 'object' && preloadImage !== null;
 const preloadMobile = preloadIsResponsive ? preloadImage.mobile : null;
 const preloadDesktop = preloadIsResponsive ? preloadImage.desktop : null;
@@ -94,7 +97,7 @@ const organizationJsonLd = {
     {/* `viewport-fit=cover`: la página se dibuja también bajo la barra de estado y el
         notch, así esas franjas salen del negro de la web y no del blanco del sistema
         cuando el móvil está en modo claro. Lo que queda tapado se recupera con
-        `env(safe-area-inset-*)` en global.css y en la cápsula del header. */}
+        `env(safe-area-inset-*)` en global.css y en la cabecera (`.hdr`). */}
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
     {/* La web es oscura siempre, no sigue al sistema. Sin esta declaración el
@@ -107,10 +110,10 @@ const organizationJsonLd = {
         pausa del parser:
 
         1. FOUC guard: marca el documento si vamos a animar (no reduced-motion).
-           El CSS oculta [data-reveal] mientras esté la clase; el init de cada
-           sección los revela cuando GSAP toma el control, evitando el parpadeo
-           entre el pintado y el arranque. Sin JS o con reduced-motion la clase
-           no se añade → visible.
+           Con la clase, el CSS deja recogidas las placas y fotos que esperan a
+           entrar en pantalla (global.css, «Retransmisión»), sin parpadeo entre el
+           pintado y el arranque. Sin JS o con reduced-motion la clase no se
+           añade → todo visible.
 
         2. Telón de intro: si ya se vio hace menos de 18 h y el usuario no lo ha
            pedido a propósito (clic en el logo), se marca el documento para que el
@@ -207,24 +210,38 @@ const organizationJsonLd = {
         atributo `style` del elemento, que ganan a cualquier regla y hacían
         imposible ocultarlo. Esto es una hoja normal, así que la regla de
         `ph-sin-intro` funciona. */}
+    {/* La intro es una cortinilla de canal (LogoReveal.astro): sobre negro, el
+        logo se dibuja con el tamaño y en el sitio exactos del rótulo de neón del
+        vídeo —las dos fórmulas de ancho salen del encuadre del render, `scale` en
+        scripts/hero-neon/neon.html, con la cámara en la pose con la que arranca el
+        encendido (distancia 1,22): 0,48 del alto en apaisado y 0,70 del ancho en
+        vertical, entre 1,22, con `cover`— y a 0,9 s una banda dorada a 45° barre la
+        pantalla desde la esquina de abajo a la izquierda y se lleva el negro (y el
+        logo dibujado) detrás de ella, descubriendo el neón en el mismo sitio. El
+        frente del barrido y la banda recorren lo mismo con la misma curva, así que
+        la banda va siempre montada en el borde. Todo en CSS: la animación de
+        salida sigue llamándose `ph-intro-salir` porque el script del componente la
+        busca por nombre. */}
     {intro && (
       <style is:inline set:html={`
-[data-logo-reveal-overlay]{--e-trazo:cubic-bezier(.77,0,.175,1);--e-color:cubic-bezier(.645,.045,.355,1);--e-salida:cubic-bezier(.95,.05,.795,.035);position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background-color:#0d0f12;view-transition-name:ph-intro;touch-action:none;animation:ph-intro-salir .18s linear 1.08s forwards}
+[data-logo-reveal-overlay]{--e-trazo:cubic-bezier(.77,0,.175,1);--e-color:cubic-bezier(.645,.045,.355,1);--e-barrido:cubic-bezier(.65,0,.35,1);position:fixed;inset:0;z-index:9999;overflow:hidden;view-transition-name:ph-intro;touch-action:none;animation:ph-intro-salir .12s linear 1.2s forwards}
 html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
 @media (prefers-reduced-motion:reduce){[data-logo-reveal-overlay]{display:none}}
-.logo-reveal-container{width:120px;color:#fff;animation:ph-intro-color .18s var(--e-color) .55s forwards}
-@media (min-width:1024px){.logo-reveal-container{width:220px}}
+.intro-curtain{position:absolute;inset:0;background-color:#0d0f12;clip-path:polygon(-100vh 0,100vw 0,calc(100vw + 100vh) 100%,0 100%);animation:ph-intro-barrido .3s var(--e-barrido) .9s both}
+.intro-band{position:absolute;top:50%;left:50%;width:12px;height:300vmax;margin:-150vmax 0 0 -6px;background:#D6B25E;opacity:0;transform:rotate(-45deg) translateX(calc((100vw + 100vh) * -.3536));animation:ph-intro-banda .3s var(--e-barrido) .9s forwards}
+[data-logo-reveal-overlay] .logo-reveal-container{position:absolute;left:50%;top:50%;width:max(27.9vw,49.6vh);color:#fff;transform:translate(-50%,-50%);animation:ph-intro-color .18s var(--e-color) .55s forwards}
+@media (max-aspect-ratio:9/10){[data-logo-reveal-overlay] .logo-reveal-container{width:max(57.4vw,26.5vh)}}
 [data-logo-reveal-overlay] svg{display:block;width:100%;height:auto;overflow:visible}
-[data-logo-line1],[data-logo-line2]{fill-opacity:0;transform-box:fill-box;transform-origin:center}
-[data-logo-line1]{animation:ph-intro-trazo-1 .52s var(--e-trazo) 0s both,ph-intro-relleno .2s var(--e-color) .66s forwards,ph-intro-sin-trazo .12s linear .84s forwards,ph-intro-salida-izq .28s var(--e-salida) .96s forwards}
-[data-logo-line2]{animation:ph-intro-trazo-2 .45s var(--e-trazo) .2s both,ph-intro-relleno .2s var(--e-color) .66s forwards,ph-intro-sin-trazo .12s linear .84s forwards,ph-intro-salida-der .28s var(--e-salida) .96s forwards}
+[data-logo-line1],[data-logo-line2]{fill-opacity:0}
+[data-logo-line1]{animation:ph-intro-trazo-1 .52s var(--e-trazo) 0s both,ph-intro-relleno .18s var(--e-color) .62s forwards,ph-intro-sin-trazo .12s linear .78s forwards}
+[data-logo-line2]{animation:ph-intro-trazo-2 .45s var(--e-trazo) .2s both,ph-intro-relleno .18s var(--e-color) .62s forwards,ph-intro-sin-trazo .12s linear .78s forwards}
 @keyframes ph-intro-trazo-1{from{stroke-dashoffset:753}to{stroke-dashoffset:0}}
 @keyframes ph-intro-trazo-2{from{stroke-dashoffset:637}to{stroke-dashoffset:0}}
 @keyframes ph-intro-color{to{color:#D6B25E}}
 @keyframes ph-intro-relleno{from{fill-opacity:0}to{fill-opacity:1}}
 @keyframes ph-intro-sin-trazo{from{stroke-opacity:1}to{stroke-opacity:0}}
-@keyframes ph-intro-salida-izq{from{transform:translateX(0);opacity:1}to{transform:translateX(-300%);opacity:0}}
-@keyframes ph-intro-salida-der{from{transform:translateX(0);opacity:1}to{transform:translateX(300%);opacity:0}}
+@keyframes ph-intro-barrido{from{clip-path:polygon(-100vh 0,100vw 0,calc(100vw + 100vh) 100%,0 100%)}to{clip-path:polygon(100vw 0,calc(200vw + 100vh) 0,calc(200vw + 200vh) 100%,calc(100vw + 100vh) 100%)}}
+@keyframes ph-intro-banda{0%{opacity:1;transform:rotate(-45deg) translateX(calc((100vw + 100vh) * -.3536))}96%{opacity:1}100%{opacity:0;transform:rotate(-45deg) translateX(calc((100vw + 100vh) * .3536))}}
 @keyframes ph-intro-salir{from{opacity:1}99%{opacity:0;visibility:visible;pointer-events:auto}to{opacity:0;visibility:hidden;pointer-events:none}}
 `} />
     )}
@@ -252,9 +269,34 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
       class:list={[!hasHero && 'main--padded']}
       transition:name="page-main"
     >
+      {/* Fondo animado de toda la página: fijo a la pantalla, por detrás del
+          contenido. La escena la elige `ph-ambient.ts` al cargar (el bombo). */}
+      {ambient && (
+        <div class="ph-page-bg" aria-hidden="true">
+          <canvas class="ph-ambient" data-ambient=""></canvas>
+        </div>
+      )}
       <slot />
     </main>
     <Footer />
+    {/* La cortinilla que barre la pantalla al cambiar de página (`.ph-stinger` en
+        global.css; la arranca src/scripts/ph-motion.ts): una placa negra con una
+        banda dorada y una blanca fina delante. Va fija a la pantalla y con su
+        propio nombre de View Transition: así se pinta por encima de la página que
+        cambia y por debajo de la cabecera. */}
+    <script>
+      // Fondo animado: sale una escena del bombo en cada página (si hay canvas).
+      import '@/scripts/ph-ambient';
+    </script>
+
+    <div class="ph-stinger" data-stinger aria-hidden="true">
+      <div class="ph-stinger__sweep">
+        <span class="ph-stinger__plate"></span>
+        <span class="ph-stinger__gold"></span>
+        <span class="ph-stinger__gap"></span>
+        <span class="ph-stinger__white"></span>
+      </div>
+    </div>
 
     <script>
       /* El alto de pantalla se mide una vez y se queda quieto.
@@ -299,7 +341,6 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
       window.addEventListener('resize', medirAltoPantalla, { passive: true });
       document.addEventListener('astro:after-swap', reaplicarAltoPantalla);
 
-      const HEADER_SCROLL_THRESHOLD = 16;
       const SCROLL_HIDE_MIN_Y = 64;
       const SCROLL_DIRECTION_DELTA = 6;
 
@@ -329,7 +370,6 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
         const delta = y - lastScrollY;
 
         // PHASE 2 — compute (sin tocar DOM)
-        const shouldBeSolid = y > HEADER_SCROLL_THRESHOLD;
         let shouldHide = wasHidden;
 
         if (reducedMotion || menuOpen || y < SCROLL_HIDE_MIN_Y) {
@@ -339,7 +379,6 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
         }
 
         // PHASE 3 — writes
-        header.classList.toggle('header--solid', shouldBeSolid);
         header.classList.toggle('header--scroll-hidden', shouldHide);
 
         lastScrollY = y;
@@ -369,26 +408,19 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
 </html>
 
 <style is:global>
-  /* FOUC guard: el contenido con animación de entrada arranca oculto hasta que
-     GSAP toma el control (ver revealReveals en ph-text-animations.ts). Gateado
-     por .ph-anim (la añade el script inline del head solo si el JS corre y no hay
-     reduced-motion), así sin JS o con reduced-motion el contenido es visible. */
-  html.ph-anim [data-reveal] {
-    visibility: hidden;
-  }
-
   .main--padded {
-    /* 5rem reserva la zona del header; +0.875rem el margen superior de la cápsula flotante */
+    /* La zona del marcador de esquina (44 px + su margen) y aire debajo. */
     padding-top: calc(5rem + 0.875rem);
   }
 
-  /* ── Telón de transición entre páginas ──────────────────────────────────
-     Fundido a oscuro: el contenido viejo (page-main) baja de opacidad hasta
-     dejar ver el fondo oscuro del body (~175ms); el nuevo aparece después
-     (~175ms, retardado), sin solape → en el punto medio solo se ve el fondo =
-     el telón. El header (ph-header) y la barra dorada (ph-nav-indicator) son
-     grupos de View Transition propios → quedan/se deslizan POR ENCIMA, ajenos
-     al telón. */
+  /* ── Paso entre páginas ───────────────────────────────────────────────────
+     La cortinilla (`.ph-stinger`, global.css) barre la pantalla por encima y, por
+     debajo, la página vieja se apaga mientras la placa negra la tapa y la nueva
+     aparece cuando la placa ya se va. El marcador de esquina (ph-header) y su
+     barra dorada (ph-nav-indicator) son grupos de View Transition propios: se
+     quedan, como el rótulo fijo de una retransmisión. No se le da un recorte
+     geométrico a `page-main`: la foto de la página nueva se toma después de
+     restaurar el scroll (docs/trampas-conocidas.md). */
   @keyframes ph-telon-out {
     from { opacity: 1; }
     to { opacity: 0; }
@@ -401,20 +433,22 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
 
   /* Duración/curva LITERALES (sin var): las custom properties no heredan de forma
      fiable en el árbol de pseudo-elementos ::view-transition; con var() la
-     animación podía quedar inválida → corte seco sin telón. */
+     animación podía quedar inválida → corte seco. */
   ::view-transition-old(page-main) {
-    animation: ph-telon-out 0.175s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: ph-telon-out 0.15s cubic-bezier(0.3, 0, 0.8, 0.15) both;
   }
 
   ::view-transition-new(page-main) {
-    animation: ph-telon-in 0.175s cubic-bezier(0.16, 1, 0.3, 1) 0.175s both;
+    animation: ph-telon-in 0.15s cubic-bezier(0.16, 1, 0.3, 1) 0.19s both;
   }
 
-  /* Sin movimiento: cambio instantáneo, sin fundido. */
+  /* Sin movimiento: no hay cortinilla, solo un fundido corto. */
   @media (prefers-reduced-motion: reduce) {
-    ::view-transition-old(page-main),
+    ::view-transition-old(page-main) {
+      animation: ph-telon-out 0.1s linear both;
+    }
     ::view-transition-new(page-main) {
-      animation: none;
+      animation: ph-telon-in 0.12s linear 0.1s both;
     }
   }
 
@@ -424,69 +458,31 @@ html.ph-sin-intro [data-logo-reveal-overlay]{display:none}
     left: 0;
     right: 0;
     z-index: 50;
-    background: transparent;
-    border: none;
     pointer-events: none;
-    transition: none;
   }
 
-  /* En mobile el header siempre encima del overlay (z-index 100) sin depender de .is-open,
-     así evitamos el salto de z-index en el momento en que se elimina la clase al cerrar. */
+  /* En móvil la cabecera va siempre encima del menú abierto (z-index 100): su
+     botón es el que lo cierra. */
   @media (max-width: 767px) {
     [data-header] {
       z-index: 110;
     }
   }
 
-  /* Hit target: solo la cápsula recibe eventos */
-  [data-header] .header-shell {
-    pointer-events: auto;
+  /* Al bajar, el marcador se esconde hacia arriba; al subir, vuelve. */
+  [data-header].header--scroll-hidden .hdr {
+    transform: translateY(calc(-100% - 16px));
   }
-
-  [data-header].header--scroll-hidden {
-    pointer-events: none;
-  }
-
-  [data-header] .header-shell {
-    background-color: transparent;
-    border: 1px solid transparent;
-    /* Sin backdrop-filter cuando el header es transparente: blur(0) seguía
-       asignando un render pass GPU innecesario. Solo se aplica cuando
-       header--solid lo necesita de verdad. */
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    box-shadow: none;
-  }
-
-  [data-header].header--solid .header-shell {
-    background-color: rgba(13, 15, 18, 0.88);
-    border-color: var(--ph-glass-border);
-    backdrop-filter: var(--ph-glass-backdrop);
-    -webkit-backdrop-filter: var(--ph-glass-backdrop);
-    box-shadow: var(--ph-glass-highlight);
-  }
-
-  [data-header].header--scroll-hidden .header-shell {
-    transform: translateY(calc(-100% - 0.875rem));
+  [data-header].header--scroll-hidden .hdr > * {
     pointer-events: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    [data-header].header--scroll-hidden .header-shell {
+    [data-header].header--scroll-hidden .hdr {
       transform: none;
+    }
+    [data-header].header--scroll-hidden .hdr > * {
       pointer-events: auto;
     }
   }
-
-  /* Menú móvil abierto: la cápsula del header se funde con el overlay */
-  @media (max-width: 767px) {
-    html:has(#mobile-menu.is-open) [data-header] .header-shell {
-      background-color: transparent;
-      border-color: transparent;
-      backdrop-filter: blur(0);
-      -webkit-backdrop-filter: blur(0);
-      box-shadow: none;
-    }
-  }
-
 </style>

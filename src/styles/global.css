@@ -53,7 +53,10 @@
 
 :root {
   --ph-section-py: clamp(4rem, 8vw, 8rem);
-  --ph-section-px: clamp(1.5rem, 5vw, 6rem);
+  /* Margen lateral: el «título seguro» de la retransmisión, un 5 % del ancho. En
+     el móvil baja a 16-20 px para que los rótulos en placa quepan en una línea
+     también en italiano (las medidas, en DECISIONS.md, variante A). */
+  --ph-section-px: clamp(16px, 5vw, 96px);
   --ph-duration:   400ms;
 
   /* Alto de pantalla, congelado. Lo usa todo lo que ocupa la pantalla entera.
@@ -89,22 +92,47 @@
   /* Secciones página: transparente para ver el fondo (body / logo parallax) a través de main */
   --ph-section-bg: transparent;
 
-  /* Cabecera de Talentos, Servicios y Sobre nosotros: fila índice, titular,
-     entradilla debajo y el contenido empieza ya en la primera pantalla. Las tres
-     usan estas cifras, así que al pasar de una a otra no cambia nada de sitio. Van
-     de móvil (390 px) a escritorio (1440 px) en línea recta. Ver ARCHITECTURE.md,
-     «Cabecera de sección y fondo animado». */
-  --ph-head-top:        clamp(76px, calc(3.8vw + 61px), 116px);
-  --ph-head-index-pad:  clamp(14px, calc(0.4vw + 12.5px), 18px);
-  --ph-head-title-gap:  clamp(28px, calc(1.9vw + 20.6px), 48px);
-  --ph-head-title-size: clamp(46px, calc(5.6vw + 26px), 106px);
-  --ph-head-lead-gap:   clamp(16px, calc(0.76vw + 13px), 24px);
-  --ph-head-lead-size:  clamp(18px, calc(0.38vw + 16.5px), 22px);
-  --ph-head-after:      clamp(36px, calc(1.9vw + 28.6px), 56px);
+  /* Cabecera de Talentos, Servicios y Sobre nosotros: bug («02 · Talentos»),
+     rótulo en placas, entradilla y el contenido empieza ya en la primera
+     pantalla. Las tres usan estas cifras, así que al pasar de una a otra no
+     cambia nada de sitio. Ver ARCHITECTURE.md, «Cabecera de sección». */
+  --ph-head-top:        clamp(84px, calc(3vw + 72px), 124px);
+  --ph-head-title-gap:  clamp(22px, calc(1.5vw + 16px), 40px);
+  --ph-head-lead-gap:   clamp(18px, calc(0.76vw + 15px), 26px);
+  --ph-head-lead-size:  clamp(18px, calc(0.38vw + 16.5px), 21px);
+  --ph-head-after:      clamp(32px, calc(1.9vw + 24px), 56px);
   /* Tres tonos de texto sobre fondo oscuro: entradilla, texto corrido y datos. */
   --ph-ink-lead: rgba(255, 255, 255, 0.9);
   --ph-ink-body: rgba(255, 255, 255, 0.82);
-  --ph-ink-meta: rgba(255, 255, 255, 0.62);
+  --ph-ink-meta: rgba(255, 255, 255, 0.66);
+
+  /* ── Movimiento: lenguaje «Retransmisión» ──
+     Las curvas de la casa, con el mismo nombre en GSAP (ph-text-animations.ts).
+     Tiempos: el interfaz responde en 100-300 ms; las placas entran en 320 ms y
+     su texto sube en 240 ms; las fotos se revelan en 520 ms. Lo que se va, en
+     2/3 de lo que tardó en llegar. Ver ARCHITECTURE.md, «Sistema de animaciones». */
+  --ph-ease-out:  cubic-bezier(0.16, 1, 0.3, 1);   /* llegada: frena como algo con masa */
+  --ph-ease-emph: cubic-bezier(0.05, 0.7, 0.1, 1); /* entrada enfatizada (M3) */
+  --ph-ease-std:  cubic-bezier(0.2, 0, 0, 1);      /* cambio de estado (M3 estándar) */
+  --ph-ease-in:   cubic-bezier(0.3, 0, 0.8, 0.15); /* salida: acelera (M3) */
+  --ph-dur-tap:    120ms;  /* respuesta a un toque */
+  --ph-dur-state:  200ms;  /* hover, color, estado */
+  --ph-dur-tab:    160ms;  /* la pestaña dorada, que entra la primera */
+  --ph-dur-wipe:   320ms;  /* una placa que crece desde su borde izquierdo */
+  --ph-dur-rise:   240ms;  /* el texto que sube dentro de su placa */
+  --ph-dur-reveal: 520ms;  /* una foto que se descubre en diagonal */
+
+  /* ── Placas: la pieza base de la retransmisión ──
+     Negro casi opaco con un filo blanco al 12 % y el borde derecho cortado a 45°.
+     Sobre vídeo o foto se leen como el rótulo de una retransmisión; sobre el negro
+     de la página, el filo las dibuja. */
+  --ph-plate:      rgba(13, 15, 18, 0.92);
+  --ph-plate-edge: rgba(255, 255, 255, 0.12);
+  --ph-plate-line: rgba(255, 255, 255, 0.12);
+  --ph-tab-h: 5px;
+  --ph-tab-w: 56px;
+  /* La escalera del rótulo inferior: cada placa de abajo, un paso a la derecha. */
+  --ph-step: clamp(14px, 2.6vw, 44px);
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -186,7 +214,7 @@ body {
   /* Zonas seguras: con `viewport-fit=cover` la página llega hasta los bordes físicos,
      así que el contenido se aparta del notch en apaisado y de la barra de gestos
      abajo. En vertical y en escritorio estos valores son 0 y no cambia nada. El
-     inset de arriba no va aquí sino en la cápsula del header, que es `fixed` y no
+     inset de arriba no va aquí sino en la cabecera (`.hdr`), que es `fixed` y no
      hereda el padding del body; el hero, que sí debe llegar hasta el borde, se
      queda a sangre a propósito. */
   padding-left: env(safe-area-inset-left);
@@ -361,43 +389,42 @@ strong {
 
 /* ── SCROLLBAR ─────────────────────────────────────────────────────────────── */
 
+/* La barra de scroll es una pestaña más: oro apagado, cantos rectos (las placas
+   no son redondeadas). */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-ph-black); }
-::-webkit-scrollbar-thumb { background: var(--color-ph-gold-muted); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--color-ph-gold-muted); border-radius: 0; }
 
-/* ── Word-curtain helpers (ph-text-animations.ts) ──────────────────────────── */
-
-.ph-clip {
-  display: inline-block;
-  vertical-align: bottom;
-  /* Clip only the bottom so the curtain reveal (yPercent: 115 → 0) works,
-     while letting ascenders, italic tops, and italic right-overshoot remain
-     visible at tight display line-heights (< 1). */
-  clip-path: inset(-0.25em -0.15em 0 -0.05em);
+/* Firefox no lee los pseudo-elementos de arriba: mismo color con la propiedad
+   estándar. */
+@supports not selector(::-webkit-scrollbar) {
+  html { scrollbar-color: var(--color-ph-gold-muted) var(--color-ph-black); scrollbar-width: thin; }
 }
 
-.ph-clip-inner {
-  display: inline-block;
-}
+/* El cursor de texto, en el oro de la marca, como la selección. */
+input, textarea { caret-color: var(--color-ph-gold); }
 
-/* ── Logo reveal ───────────────────────────────────────────────────────────── */
-
-.logo-reveal-container {
-  width: 120px;
-  overflow: visible;
-}
-
-@media (min-width: 1024px) {
-  .logo-reveal-container {
-    width: 220px;
-  }
+/* Texto solo para lectores de pantalla (un antetítulo que se ve partido en celda
+   y etiqueta, por ejemplo, se lee entero). */
+.ph-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ── Fondo animado de página (src/scripts/ph-ambient.ts) ──────────────────────
-   Talentos, Servicios y Sobre nosotros: la luz es el fondo de toda la página. Va
-   fija a la pantalla, por detrás de todo el contenido de <main>, y el contenido
-   pasa por encima al hacer scroll. Sin máscaras de CSS: dónde brilla y dónde se
-   atenúa lo decide la propia animación. */
+   Todas las páginas salvo las legales (lo monta BaseLayout, una escena del bombo
+   en cada carga): la luz es el fondo de toda la página. Va fija a la pantalla, por
+   detrás de todo el contenido de <main>, y el contenido pasa por encima al hacer
+   scroll. Sin máscaras de CSS: dónde brilla y dónde se atenúa lo decide la propia
+   animación. Depende de que <main> sea un contexto de apilamiento (lo es por su
+   `transition:name`): sin él, el negro del <body> lo taparía. */
 .ph-page-bg {
   position: fixed;
   inset: 0;
@@ -418,74 +445,628 @@ strong {
   background: radial-gradient(ellipse at 72% 28%, rgba(214, 178, 94, 0.08) 0%, transparent 60%);
 }
 
-/* ── Cabecera de sección (Talentos, Servicios, Sobre nosotros) ─────────────────
-   Cinco papeles con un tamaño cada uno, para que se distingan sin leerlos:
-   fila índice, titular, entradilla, texto corrido y datos. Cifras en `:root`
-   (`--ph-head-*`). */
+/* ══ RETRANSMISIÓN ══════════════════════════════════════════════════════════
+   La web es la realización de un partido en televisión: cada bloque es un
+   grafismo de retransmisión (placas, rótulos inferiores, bugs, la cinta, la
+   tabla de estadísticas) que entra barriendo en la diagonal del logo. Por qué y
+   qué se descartó: DECISIONS.md (variante A, 2026-10-03). Cómo encaja:
+   ARCHITECTURE.md («Sistema de animaciones»).
 
-/* Fila índice: una línea fina con una etiqueta a la izquierda y un dato a la
-   derecha. Ordena la página: número de sección, «Áreas de gestión», valores. */
-.ph-rowline {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 6px 24px;
+   Regla de todas las piezas: el estado de reposo es el visible. Lo que espera a
+   entrar en pantalla solo se esconde con `ph-anim` en <html> (hay JS y no hay
+   movimiento reducido) mientras su bloque `[data-inview]` no lleva `is-inview`
+   (lo pone src/scripts/ph-motion.ts), y tiene red de seguridad al final. Los
+   retardos de cada pieza van en `--d`. */
+
+/* ── Placa ───────────────────────────────────────────────────────────────────
+   La pinta Plate.astro:
+     <span class="ph-plate"> [pestaña] <span class="ph-plate__t"><span class="ph-plate__in">…
+   - `::before` es el filo (blanco al 12 %) con el borde derecho cortado a 45°.
+   - `.ph-plate__t` es el relleno, un píxel más adentro, y a la vez la máscara
+     del texto: el texto nunca sale de la placa, ni mientras crece.
+   - `.ph-plate__in` es el texto, que sube dentro de la máscara.
+   El corte (`--cut`) mide lo que una línea de placa: en una placa de una línea el
+   borde derecho entero es la diagonal; si el texto se parte en dos líneas, el
+   corte se queda en la esquina de abajo, también a 45°. `--pr` deja sitio a la
+   diagonal para que no muerda la última letra. */
+.ph-plate {
+  --pt: 0.12em;
+  --pb: 0.08em;
+  --pl: 0.2em;
+  /* Medido: con menos de 1 em, la diagonal muerde el punto final («roster.») y
+     la cola de la coma («suman,»). */
+  --pr: 1.06em;
+  --lh: 0.95;
+  --cut: calc(var(--lh) * 1em + var(--pt) + var(--pb));
+  --fill: var(--ph-plate);
+  --edge: var(--ph-plate-edge);
+  /* Retardo: el de la cascada de su bloque (`--cd`, lo pone ph-motion.ts) más
+     el suyo (`--d`), más el de su pestaña si la lleva (`--tab-lead`). */
+  --d-wipe: calc(var(--cd, 0ms) + var(--d, 0ms) + var(--tab-lead, 0ms));
+  position: relative;
+  z-index: 0;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
   margin: 0;
-  /* A veces es un <p>: sin esto heredaría el tope de 65ch de los párrafos y la
-     línea se cortaría a media pantalla. */
-  max-width: none;
-  padding-top: var(--ph-head-index-pad);
-  border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+  padding: var(--pt) var(--pr) var(--pb) var(--pl);
+  line-height: var(--lh);
 }
-.ph-rowline__group {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 8px;
+.ph-plate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--edge);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+  transition: clip-path var(--ph-dur-wipe) var(--ph-ease-out) var(--d-wipe);
+  pointer-events: none;
 }
-/* Números (02, 05 disciplinas…): lo único que va en monoespaciada. */
-.ph-rowline__num {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.04em;
+.ph-plate__t {
+  display: block;
+  margin: calc(var(--pt) * -1) calc(var(--pr) * -1) calc(var(--pb) * -1) calc(var(--pl) * -1);
+  padding: var(--pt) var(--pr) var(--pb) var(--pl);
+  background: var(--fill);
+  clip-path: polygon(1px 1px, calc(100% - 1px) 1px, calc(100% - 1px) calc(100% - var(--cut) - 0.41px), calc(100% - var(--cut) - 0.41px) calc(100% - 1px), 1px calc(100% - 1px));
+  transition: clip-path var(--ph-dur-wipe) var(--ph-ease-out) var(--d-wipe);
+}
+.ph-plate__in {
+  display: block;
+  transition: transform var(--ph-dur-rise) var(--ph-ease-out) calc(var(--d-wipe) + 80ms);
+}
+/* Lo dorado de un rótulo («roster», «campo»): una palabra en oro, sin cursiva
+   (la cursiva de Söhne sería sintética). */
+.ph-plate em {
+  font-style: normal;
   color: var(--color-ph-gold);
 }
-.ph-rowline__sep {
-  color: rgba(255, 255, 255, 0.3);
-}
-.ph-rowline__label {
-  font-size: clamp(14px, calc(0.1vw + 13.6px), 15px);
-  letter-spacing: 0.005em;
-  color: rgba(255, 255, 255, 0.86);
-}
-/* Datos en mayúsculas (los valores de Sobre nosotros): algo de aire, no más. */
-.ph-rowline__meta {
-  font-size: 13px;
-  letter-spacing: 0.05em;
-  color: var(--ph-ink-meta);
+.ph-plate--gold { color: var(--color-ph-gold); }
+
+/* La pestaña dorada: la «señal en directo» encima de la placa, a la izquierda.
+   Marca lo activo o lo importante, y entra la primera. */
+.ph-plate--tab { --tab-lead: 90ms; }
+.ph-plate__tab {
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  width: var(--ph-tab-w);
+  max-width: 50%;
+  height: var(--ph-tab-h);
+  background: var(--color-ph-gold);
+  transform-origin: 0 50%;
+  transition: transform var(--ph-dur-tab) var(--ph-ease-out) calc(var(--cd, 0ms) + var(--d, 0ms));
+  pointer-events: none;
 }
 
-.ph-head-title {
-  margin: var(--ph-head-title-gap) 0 0 -0.05em;
-  max-width: 10em;
+/* Tamaños. El de rótulo (Söhne 700) lo fija cada bloque con su `font-size`:
+   cada titular se dimensiona por su palabra más larga en italiano. */
+.ph-plate--display {
   font-family: var(--font-display);
-  font-weight: 500;
-  font-size: var(--ph-head-title-size);
-  line-height: 0.92;
-  letter-spacing: -0.04em;
+  font-weight: 700;
+  letter-spacing: -0.035em;
   color: var(--color-ph-white);
-  text-wrap: balance;
+}
+.ph-plate--display.ph-plate--gold { color: var(--color-ph-gold); }
+/* Placa de etiqueta (bugs, sedes, etiquetas de los pilares). */
+.ph-plate--label {
+  --lh: 1.2;
+  --pt: 0.6em;
+  --pb: 0.55em;
+  --pl: 0.85em;
+  --pr: 2.05em;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+}
+/* Placa de texto corrido: el corte va solo en la esquina. */
+.ph-plate--text {
+  --lh: 1.6;
+  --pt: 1.05em;
+  --pb: 1.1em;
+  --pl: 1.15em;
+  --pr: 1.5em;
+  --cut: 24px;
+  font-family: var(--font-body);
+  font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
+  color: var(--ph-ink-body);
+}
+/* Si la placa de texto se estira (dos paneles en una fila del mismo alto), el
+   relleno la llena entera. */
+.ph-plate--text { display: flex; flex-direction: column; }
+.ph-plate--text > .ph-plate__t { flex: 1 1 auto; }
+/* Las placas que se parten por líneas reparten el texto a lo ancho antes de
+   partirse: sin una última línea de una palabra. */
+[data-plate-lines] { text-wrap: balance; }
+
+/* Placa partida por líneas (`data-plate-lines`, ph-motion.ts): cuando el texto
+   no cabe en una línea, cada línea pasa a ser su propia placa, como en un rótulo
+   de televisión. La original se queda para los lectores de pantalla; las copias
+   son solo visuales. Sin JS se ve la placa de varias líneas. */
+.ph-plate.is-split {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.ph-plate-line + .ph-plate-line { margin-top: 3px; }
+
+/* Rótulo inferior: pestaña + placa principal + placa secundaria, apiladas y
+   desplazadas en escalera. */
+.ph-lt {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+/* Cada placa dice su peldaño (`--step-n`, Plate.astro): así las líneas de una
+   placa partida conservan el suyo. */
+.ph-lt > .ph-plate {
+  margin-left: calc(var(--ph-step) * var(--step-n, 0));
+  max-width: calc(100% - var(--ph-step) * var(--step-n, 0));
 }
 
-/* Entradilla: puente entre el titular y el texto, en la voz del titular. */
+/* ── Bug: el rótulo pequeño que abre un bloque («02 · Talentos») ─────────────
+   Una celda con el número en monoespaciada dentro de un cuadro con filo dorado
+   y la etiqueta en una placa pequeña. La pinta Bug.astro. */
+.ph-bug {
+  display: inline-flex;
+  align-items: stretch;
+  max-width: 100%;
+  margin: 0;
+  vertical-align: top;
+}
+.ph-bug__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 38px;
+  padding: 0 9px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--color-ph-gold);
+  background: var(--ph-plate);
+  box-shadow: inset 0 0 0 1px var(--color-ph-gold);
+  transition: clip-path var(--ph-dur-tab) var(--ph-ease-out) calc(var(--cd, 0ms) + var(--bug-d, 0ms));
+  clip-path: inset(0 0 0 0);
+}
+/* La celda entra la primera y la etiqueta crece detrás, pegada a ella. */
+.ph-bug__plate { --d: var(--bug-d, 0ms); }
+.ph-bug__num ~ .ph-bug__plate { --d: calc(var(--bug-d, 0ms) + 70ms); margin-left: -1px; }
+/* Cifras dentro de la etiqueta («21 INTEGRANTES · 7 PAÍSES»): cada una en su
+   celda, como en el marcador de la esquina. */
+.ph-bug__n {
+  display: inline-block;
+  margin: -3px 0.15em -3px 0;
+  padding: 2px 5px 1px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ph-gold);
+  box-shadow: inset 0 0 0 1px rgba(214, 178, 94, 0.7);
+}
+
+/* ── Placa llave: el botón ───────────────────────────────────────────────────
+   La única placa blanca de cada bloque, con texto negro y su flecha. Al
+   señalarla, una barra dorada la barre de izquierda a derecha (con la misma
+   diagonal delante) y la palabra rueda. La pinta KeyPlate.astro. */
+.ph-key {
+  --kh: 52px;
+  --cut: var(--kh);
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-width: 0;
+  max-width: 100%;
+  height: var(--kh);
+  padding: 0 calc(var(--cut) * 0.62 + 2px) 0 20px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1;
+  color: var(--color-ph-black);
+  text-decoration: none;
+  white-space: nowrap;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.ph-key::before,
+.ph-key::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ph-key::before {
+  z-index: -2;
+  background: var(--color-ph-white);
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
+}
+.ph-key::after {
+  z-index: -1;
+  background: var(--color-ph-gold);
+  clip-path: polygon(0 0, 0 0, calc(0px - var(--cut)) 100%, 0 100%);
+  transition: clip-path 160ms var(--ph-ease-in);
+}
+.ph-key__label {
+  display: grid;
+  overflow: hidden;
+  min-width: 0;
+  /* Un pelo más alto que la línea para que la cola de la g o la p no se corte. */
+  padding-block: 0.18em;
+}
+.ph-key__text {
+  grid-area: 1 / 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: transform 140ms var(--ph-ease-in);
+}
+.ph-key__text + .ph-key__text { transform: translateY(115%); }
+.ph-key__arrow {
+  flex: 0 0 auto;
+  width: 11px;
+  height: 11px;
+  transition: transform 140ms var(--ph-ease-in);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ph-key:hover::after {
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
+    transition: clip-path 240ms var(--ph-ease-out);
+  }
+  .ph-key:hover .ph-key__text { transition: transform var(--ph-dur-state) var(--ph-ease-out); }
+  .ph-key:hover .ph-key__text:first-child { transform: translateY(-115%); }
+  .ph-key:hover .ph-key__text + .ph-key__text { transform: none; }
+  .ph-key:hover .ph-key__arrow { transform: translateX(3px); transition: transform var(--ph-dur-state) var(--ph-ease-out); }
+}
+.ph-key:focus-visible {
+  outline: 2px solid var(--color-ph-gold);
+  outline-offset: 3px;
+}
+.ph-key:focus-visible::after {
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
+  transition: clip-path 240ms var(--ph-ease-out);
+}
+/* En pantalla táctil la respuesta es al dedo: el oro entra en seco. */
+.ph-key:active::after {
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
+  transition-duration: 90ms;
+}
+/* A todo lo ancho (la de Talentos en el móvil). */
+.ph-key--wide { display: flex; width: 100%; }
+/* Grande: el correo de Contacto. */
+.ph-key--xl {
+  --kh: clamp(60px, calc(2vw + 52px), 80px);
+  gap: 24px;
+  padding-left: clamp(18px, 2vw, 28px);
+  font-size: clamp(20px, calc(1.6vw + 14px), 34px);
+  letter-spacing: -0.02em;
+}
+.ph-key--xl .ph-key__arrow { width: 0.5em; height: 0.5em; }
+
+/* ── Cinta inferior (ticker) ─────────────────────────────────────────────────
+   Barra negra a todo lo ancho con un bloque dorado a la izquierda. El texto se
+   desplaza con el scroll y solo con él (WCAG 2.2.2: nada se mueve solo). La
+   pinta Ticker.astro; el desplazamiento, ph-text-animations.ts (`mountTickers`). */
+.ph-ticker {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  height: 48px;
+  overflow: hidden;
+  background: var(--ph-plate);
+  box-shadow: inset 0 1px 0 var(--ph-plate-line), inset 0 -1px 0 var(--ph-plate-line);
+}
+.ph-ticker__block {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  width: 66px;
+  padding-left: 14px;
+  color: var(--color-ph-black);
+  background: var(--color-ph-gold);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 48px) 100%, 0 100%);
+  margin-right: -30px;
+}
+.ph-ticker__block svg { width: 22px; height: auto; display: block; }
+.ph-ticker__view {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.ph-ticker__track {
+  display: flex;
+  flex: 0 0 auto;
+  width: max-content;
+  padding-left: 30px;
+}
+.ph-ticker__run {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  white-space: nowrap;
+}
+.ph-ticker__item {
+  padding: 0 0.95em;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--ph-ink-lead);
+}
+.ph-ticker__sep {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  background: var(--color-ph-gold);
+  transform: skewX(-45deg);
+}
+.ph-num {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Revelado en diagonal (fotos y vídeo) ────────────────────────────────────
+   La imagen se descubre desde la esquina de abajo a la izquierda con un frente a
+   45° (un recorte de cuatro vértices que avanza) y se asienta de 1,06 a 1. Para
+   que el frente sea de 45° de verdad, `--arh` es el alto de la pieza en % de su
+   ancho (62,5 % en 16:10, 133,33 % en 3:4). */
+.ph-reveal {
+  --arh: 62.5%;
+  position: relative;
+  overflow: hidden;
+  clip-path: polygon(100% 0, calc(100% + var(--arh)) 100%, calc(0% - var(--arh)) 100%, calc(0% - var(--arh)) 0);
+  transition: clip-path var(--ph-dur-reveal) var(--ph-ease-out) calc(var(--cd, 0ms) + var(--d, 0ms));
+}
+.ph-reveal__img {
+  transition: transform 760ms var(--ph-ease-out) calc(var(--cd, 0ms) + var(--d, 0ms));
+}
+
+/* ── Entradas de apoyo ───────────────────────────────────────────────────────
+   Un titular largo, que no va en placa, se barre de izquierda a derecha; el texto
+   corrido sube un poco y aparece. Las dos, con su `--d`. */
+.ph-in-wipe {
+  clip-path: inset(-0.4em -1em -0.4em -0.4em);
+  transition: clip-path 460ms var(--ph-ease-out) calc(var(--cd, 0ms) + var(--d, 0ms));
+}
+.ph-in-rise {
+  transition:
+    opacity 420ms var(--ph-ease-out) calc(var(--cd, 0ms) + var(--d, 0ms)),
+    transform 520ms var(--ph-ease-out) calc(var(--cd, 0ms) + var(--d, 0ms));
+}
+
+/* Estados de espera: solo con JS y sin movimiento reducido, mientras el bloque
+   (o la pieza misma) no ha entrado en pantalla. */
+html.ph-anim [data-inview]:not(.is-inview) .ph-plate::before,
+html.ph-anim .ph-plate[data-inview]:not(.is-inview)::before {
+  clip-path: polygon(0 0, 0 0, 0 calc(100% - var(--cut)), calc(0px - var(--cut)) 100%, 0 100%);
+}
+html.ph-anim [data-inview]:not(.is-inview) .ph-plate__t,
+html.ph-anim .ph-plate[data-inview]:not(.is-inview) > .ph-plate__t {
+  clip-path: polygon(1px 1px, 1px 1px, 1px calc(100% - var(--cut) - 0.41px), calc(1.59px - var(--cut)) calc(100% - 1px), 1px calc(100% - 1px));
+}
+html.ph-anim [data-inview]:not(.is-inview) .ph-plate__in,
+html.ph-anim .ph-plate[data-inview]:not(.is-inview) .ph-plate__in {
+  transform: translateY(calc(100% + 0.3em));
+}
+html.ph-anim [data-inview]:not(.is-inview) .ph-plate__tab,
+html.ph-anim .ph-plate[data-inview]:not(.is-inview) > .ph-plate__tab {
+  transform: scaleX(0);
+}
+html.ph-anim [data-inview]:not(.is-inview) .ph-bug__num,
+html.ph-anim .ph-bug[data-inview]:not(.is-inview) .ph-bug__num {
+  clip-path: inset(0 100% 0 0);
+}
+html.ph-anim [data-inview]:not(.is-inview) .ph-reveal,
+html.ph-anim .ph-reveal[data-inview]:not(.is-inview) {
+  clip-path: polygon(calc(0% - var(--arh)) 0, 0% 100%, calc(0% - var(--arh)) 100%, calc(0% - var(--arh)) 0);
+}
+html.ph-anim [data-inview]:not(.is-inview) .ph-reveal__img,
+html.ph-anim .ph-reveal[data-inview]:not(.is-inview) .ph-reveal__img {
+  transform: scale(1.06);
+}
+html.ph-anim [data-inview]:not(.is-inview) .ph-in-wipe,
+html.ph-anim .ph-in-wipe[data-inview]:not(.is-inview) {
+  clip-path: inset(-0.4em 100% -0.4em -0.4em);
+}
+html.ph-anim [data-inview]:not(.is-inview) .ph-in-rise,
+html.ph-anim .ph-in-rise[data-inview]:not(.is-inview) {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+/* ── Cabecera de sección (Talentos, Servicios, Sobre nosotros) ───────────────
+   Bug → rótulo en placas → entradilla, y el contenido de la página empieza ya en
+   la primera pantalla. Mismas cifras en las tres (`--ph-head-*`). */
+.ph-head {
+  position: relative;
+  z-index: 1;
+  padding: var(--ph-head-top) var(--ph-section-px) 0;
+}
+.ph-head__title {
+  margin: var(--ph-head-title-gap) 0 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+}
 .ph-head-lead {
   margin: var(--ph-head-lead-gap) 0 0;
-  max-width: 44ch;
+  max-width: 42ch;
   font-family: var(--font-display);
   font-weight: 400;
   font-size: var(--ph-head-lead-size);
   line-height: 1.45;
   letter-spacing: -0.005em;
   color: var(--ph-ink-lead);
-  text-wrap: balance;
+  text-wrap: pretty;
+}
+
+/* ── Cortinilla entre páginas ────────────────────────────────────────────────
+   Al navegar, dos bandas a 45° (una blanca fina y una dorada) y una placa negra
+   barren la pantalla en la diagonal del logo: hacia arriba a la derecha al
+   avanzar, al revés al volver. La placa tapa el cambio de página en el centro
+   del barrido, se para un instante y sale. 380 ms en total. Va fija a la pantalla
+   y con su propio nombre de View Transition: se pinta por encima de la página que
+   cambia y por debajo de la cabecera, y no depende del scroll. La arranca
+   ph-motion.ts en `astro:before-swap`. */
+.ph-stinger {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+  view-transition-name: ph-stinger;
+}
+.ph-stinger__sweep {
+  /* El ancho de la placa negra es lo que mide la pantalla en la dirección del
+     barrido, (ancho + alto) / √2: así la tapa entera en el centro. */
+  --cover: calc((100vw + 100vh) * 0.7072 + 2px);
+  --travel: calc((100vw + 100vh) * 0.7072 + 40px);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: stretch;
+  height: 300vmax;
+  margin-top: -150vmax;
+  transform: translateX(-50%) rotate(-45deg) translateX(calc(var(--travel) * -1));
+  visibility: hidden;
+}
+/* La placa lleva un filo dorado en la cola (el lado que sale el último). */
+.ph-stinger__plate { flex: 0 0 var(--cover); background: #0d0f12; box-shadow: inset 1px 0 0 rgba(214, 178, 94, 0.55); }
+.ph-stinger.is-back .ph-stinger__plate { box-shadow: inset -1px 0 0 rgba(214, 178, 94, 0.55); }
+.ph-stinger__gold { flex: 0 0 14px; margin-left: 0; background: #d6b25e; }
+.ph-stinger__gap { flex: 0 0 9px; }
+.ph-stinger__white { flex: 0 0 3px; background: #ffffff; }
+.ph-stinger.is-running .ph-stinger__sweep {
+  visibility: visible;
+  animation: ph-stinger 380ms both;
+}
+/* Al volver atrás, al revés: las bandas van delante en el otro sentido. El
+   sentido lo apunta el JS en la propia pieza (`is-back`) y no se lee del
+   `data-astro-transition` de <html>: Astro lo quita a mitad de la pasada
+   (docs/trampas-conocidas.md). */
+.ph-stinger.is-back .ph-stinger__sweep { flex-direction: row-reverse; }
+.ph-stinger.is-running.is-back .ph-stinger__sweep { animation-name: ph-stinger-back; }
+/* Entra frenando, tapa la pantalla un instante y sale acelerando: el perfil de
+   una cortinilla de televisión. */
+@keyframes ph-stinger {
+  0% { transform: translateX(-50%) rotate(-45deg) translateX(calc(var(--travel) * -1)); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  45% { transform: translateX(-50%) rotate(-45deg) translateX(0); animation-timing-function: linear; }
+  55% { transform: translateX(-50%) rotate(-45deg) translateX(0); animation-timing-function: cubic-bezier(0.3, 0, 0.8, 0.15); }
+  100% { transform: translateX(-50%) rotate(-45deg) translateX(var(--travel)); }
+}
+@keyframes ph-stinger-back {
+  0% { transform: translateX(-50%) rotate(-45deg) translateX(var(--travel)); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  45% { transform: translateX(-50%) rotate(-45deg) translateX(0); animation-timing-function: linear; }
+  55% { transform: translateX(-50%) rotate(-45deg) translateX(0); animation-timing-function: cubic-bezier(0.3, 0, 0.8, 0.15); }
+  100% { transform: translateX(-50%) rotate(-45deg) translateX(calc(var(--travel) * -1)); }
+}
+/* Literales a propósito: `var()` no hereda en el árbol `::view-transition`
+   (docs/trampas-conocidas.md). La foto vieja se oculta: si se fotografiara a
+   medio barrido (dos navegaciones seguidas), la banda se quedaría congelada. */
+::view-transition-group(ph-stinger),
+::view-transition-new(ph-stinger) {
+  animation: none;
+}
+::view-transition-old(ph-stinger) {
+  display: none;
+}
+
+/* ── Red de seguridad ───────────────────────────────────────────────────────
+   `ph-motion` lo pone en <html> el JS de movimiento al arrancar. Si no llega
+   nunca (un error, un bloqueador), a los 2,5 s se ve todo en su estado final.
+   Las placas tienen su propio fotograma final porque su recorte es su forma. */
+@keyframes ph-motion-failsafe {
+  to { opacity: 1; transform: none; visibility: visible; }
+}
+@keyframes ph-failsafe-unclip {
+  to { clip-path: inset(-2em -2em -2em -2em); transform: none; opacity: 1; }
+}
+@keyframes ph-failsafe-plate-edge {
+  to { clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%); }
+}
+@keyframes ph-failsafe-plate-fill {
+  to { clip-path: polygon(1px 1px, calc(100% - 1px) 1px, calc(100% - 1px) calc(100% - var(--cut) - 0.41px), calc(100% - var(--cut) - 0.41px) calc(100% - 1px), 1px calc(100% - 1px)); }
+}
+html.ph-anim:not(.ph-motion) .ph-plate::before { animation: ph-failsafe-plate-edge 0s linear 2.5s forwards; }
+html.ph-anim:not(.ph-motion) .ph-plate__t { animation: ph-failsafe-plate-fill 0s linear 2.5s forwards; }
+html.ph-anim:not(.ph-motion) .ph-plate__in,
+html.ph-anim:not(.ph-motion) .ph-plate__tab,
+html.ph-anim:not(.ph-motion) .ph-in-rise,
+html.ph-anim:not(.ph-motion) .ph-reveal__img {
+  animation: ph-motion-failsafe 0s linear 2.5s forwards;
+}
+html.ph-anim:not(.ph-motion) .ph-bug__num,
+html.ph-anim:not(.ph-motion) .ph-reveal,
+html.ph-anim:not(.ph-motion) .ph-in-wipe {
+  animation: ph-failsafe-unclip 0s linear 2.5s forwards;
+}
+
+/* ── Movimiento reducido ─────────────────────────────────────────────────────
+   Nada barre, sube ni se escala: todo está en su sitio desde el principio (sin
+   `ph-anim` no hay estados de espera). Quedan los cambios de color y de
+   opacidad que confirman un gesto. La cortinilla pasa a un fundido corto
+   (BaseLayout). */
+@media (prefers-reduced-motion: reduce) {
+  .ph-stinger { display: none; }
+  .ph-plate::before,
+  .ph-plate__t,
+  .ph-plate__in,
+  .ph-plate__tab,
+  .ph-bug__num,
+  .ph-reveal,
+  .ph-reveal__img,
+  .ph-in-wipe,
+  .ph-in-rise,
+  .ph-key__text,
+  .ph-key__arrow {
+    transition: none !important;
+  }
+  /* El oro de la placa llave aparece con un fundido, sin barrer. */
+  .ph-key::after {
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
+    opacity: 0;
+    transition: opacity 150ms linear !important;
+  }
+  .ph-key:hover::after,
+  .ph-key:focus-visible::after,
+  .ph-key:active::after { opacity: 1; }
+  .ph-key:hover .ph-key__text:first-child { transform: none; }
+  .ph-key:hover .ph-key__text + .ph-key__text { transform: translateY(115%); }
+  .ph-key:hover .ph-key__arrow { transform: none; }
 }

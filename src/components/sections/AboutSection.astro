@@ -1,6 +1,8 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
 import { getTeamMembers } from '@/lib/teamMembers';
+import Bug from '@/components/ui/Bug.astro';
+import Plate from '@/components/ui/Plate.astro';
 
 interface Props {
   lang: Lang;
@@ -11,655 +13,474 @@ const t = useTranslations(lang);
 
 const teamMembers = getTeamMembers(lang);
 
-/** «04 · Sobre nosotros»: el número y la etiqueta van en estilos distintos en la fila índice. */
-const [eyebrowNum, ...eyebrowRest] = t('about.hero.eyebrow').split(' · ');
-const eyebrowLabel = eyebrowRest.join(' · ');
-
 const internationalCountries = [
   { key: 'portugal' as const, iso: 'PT' },
-  { key: 'uk' as const,       iso: 'UK' },
+  { key: 'uk' as const, iso: 'UK' },
   { key: 'alemania' as const, iso: 'DE' },
-  { key: 'italia' as const,   iso: 'IT' },
-  { key: 'arabia' as const,   iso: 'KSA' },
-  { key: 'uruguay' as const,  iso: 'UY' },
+  { key: 'italia' as const, iso: 'IT' },
+  { key: 'arabia' as const, iso: 'KSA' },
+  { key: 'uruguay' as const, iso: 'UY' },
 ];
 
+const philosophy = [
+  { idx: t('about.manifesto.blocks.now.idx'), title: t('about.manifesto.blocks.now.title'), body: t('about.manifesto.blocks.now.body') },
+  { idx: t('about.manifesto.blocks.next.idx'), title: t('about.manifesto.blocks.next.title'), body: t('about.manifesto.blocks.next.body') },
+  { idx: t('about.manifesto.blocks.forever.idx'), title: t('about.manifesto.blocks.forever.title'), body: t('about.manifesto.blocks.forever.body') },
+];
+
+const titlePre = t('about.hero.titlePre');
 ---
 
 <section class="about-section" aria-labelledby="about-hero-title">
-  <div class="ph-page-bg" aria-hidden="true">
-    <canvas class="ph-ambient" data-ambient="calidez"></canvas>
-  </div>
-
-  <!-- 01 HERO: misma cabecera que Talentos y Servicios (global.css): fila índice,
-       titular y entradilla debajo. -->
-  <div class="abt-hero">
-    <p class="ph-rowline abt-hero__index" data-reveal>
-      <span class="ph-rowline__group">
-        <span class="ph-rowline__num">{eyebrowNum}</span>
-        <span class="ph-rowline__sep" aria-hidden="true">·</span>
-        <span class="ph-rowline__label">{eyebrowLabel}</span>
-      </span>
-    </p>
-    <h1 id="about-hero-title" class="abt-hero__title ph-head-title" data-reveal>
-      {t('about.hero.titlePre')}<span class="abt-gold">{t('about.hero.titleAccent')}</span>{t('about.hero.titlePost')}
+  {/* 01 — Cabecera: «Representar» (en oro) y «con propósito.» en dos placas en
+      escalera y la entradilla; debajo, los valores y el pie como dos bugs en una
+      barra, y los párrafos 2 y 3 en dos paneles. */}
+  <header class="ph-head abt-head" data-inview>
+    <Bug text={t('about.hero.eyebrow')} inview={false} />
+    <h1 id="about-hero-title" class="ph-head__title abt-head__title ph-lt">
+      <Plate tab d={60}>{titlePre}<em>{t('about.hero.titleAccent')}</em></Plate>{' '}
+      <Plate d={140} step={1}>{t('about.hero.titlePost').trim()}</Plate>
     </h1>
-    <p class="abt-hero__lead ph-head-lead" data-reveal>{t('about.hero.body1')}</p>
+    <p class="ph-head-lead ph-in-rise" style="--d: 320ms">{t('about.hero.body1')}</p>
+  </header>
+
+  <div class="abt-bar" data-inview>
+    <Bug as="div" text={t('about.hero.values')} inview={false} />
+    <Bug as="div" text={t('about.hero.caption')} inview={false} d={80} />
   </div>
 
-  <!-- Valores y pie en una fila índice, y el resto de la presentación en dos
-       columnas. Mismo texto y mismo orden que antes. -->
-  <div class="ph-rowline abt-hero__rail">
-    <span class="ph-rowline__meta abt-hero__values" data-reveal>{t('about.hero.values')}</span>
-    <span class="ph-rowline__meta abt-hero__caption">{t('about.hero.caption')}</span>
-  </div>
-  <div class="abt-intro">
-    <p class="abt-hero__body" data-reveal>{t('about.hero.body2')}</p>
-    <p class="abt-hero__body" data-reveal>{t('about.hero.body3')}</p>
+  <div class="abt-intro" data-inview>
+    <Plate as="p" variant="text" class="abt-intro__panel">{t('about.hero.body2')}</Plate>
+    <Plate as="p" variant="text" d={100} class="abt-intro__panel">{t('about.hero.body3')}</Plate>
   </div>
 
-  <!-- 02 MANIFESTO (Now. Next. Forever Football. — explicado por bloques) -->
-  <div class="abt-manifesto" id="historia">
-    <div class="abt-manifesto__head">
-      <div class="abt-eyebrow">{t('about.manifesto.eyebrow')}</div>
-    </div>
-
-    <div class="abt-manifesto__rows">
-      {[
-        { idx: t('about.manifesto.blocks.now.idx'),     title: t('about.manifesto.blocks.now.title'),     body: t('about.manifesto.blocks.now.body') },
-        { idx: t('about.manifesto.blocks.next.idx'),    title: t('about.manifesto.blocks.next.title'),    body: t('about.manifesto.blocks.next.body') },
-        { idx: t('about.manifesto.blocks.forever.idx'), title: t('about.manifesto.blocks.forever.title'), body: t('about.manifesto.blocks.forever.body') },
-      ].map((row) => (
-        <article class="abt-manifesto__row">
-          <span class="abt-manifesto__idx">{row.idx}</span>
-          <h3 class="abt-manifesto__title">{row.title}</h3>
-          <p class="abt-manifesto__body">{row.body}</p>
+  {/* 02 — Filosofía: tres cartones de título a todo lo ancho, Now, Next y
+      Forever Football, cada uno con su texto. Entran barriendo al llegar. */}
+  <div class="abt-philo" id="historia">
+    <Bug text={t('about.manifesto.eyebrow')} />
+    <div class="abt-philo__cards">
+      {philosophy.map((block) => (
+        <article class="ph-plate title-card" data-inview>
+          <span class="ph-plate__tab" aria-hidden="true"></span>
+          <div class="ph-plate__t">
+            <div class="ph-plate__in title-card__in">
+              <div class="title-card__head">
+                <span class="title-card__idx ph-num">{block.idx}</span>
+                <h3 class="title-card__title">{block.title}</h3>
+              </div>
+              <p class="title-card__body">{block.body}</p>
+            </div>
+          </div>
         </article>
       ))}
     </div>
   </div>
 
-  <!-- 03 EQUIPO -->
-  <div class="abt-team" id="equipo" aria-labelledby="about-team-title">
-    <div class="abt-team__head">
-      <div>
-        <div class="abt-eyebrow">{t('about.team.eyebrow')}</div>
-        <h2 id="about-team-title" class="abt-team__title">
-          {t('about.team.titlePre')}<span class="abt-gold">{t('about.team.titleAccent')}</span>{t('about.team.titlePost')}
-        </h2>
-      </div>
-      <div class="abt-team__meta">{t('about.team.meta')}</div>
+  {/* 03 — Equipo: la hoja de alineación. Cada integrante, una fila en placa
+      (número, nombre, cargo y la sede en su placa pequeña); en el móvil, el
+      nombre y debajo «cargo · sede». */}
+  <div class="abt-team" id="equipo">
+    <div class="abt-team__bugs">
+      <Bug as="div" text={t('about.team.eyebrow')} />
+      <Bug as="div" text={t('about.team.meta')} d={80} />
     </div>
+    <h2 id="about-team-title" class="abt-team__title" data-inview>
+      <Plate tab lines>{t('about.team.titlePre')}<em>{t('about.team.titleAccent')}</em>{t('about.team.titlePost')}</Plate>
+    </h2>
 
-    <div class="abt-team-table" role="list">
-      {teamMembers.map((m) => (
-        <div class="abt-team-row" role="listitem" data-id={m.id}>
-          <span class="abt-team-row__idx">{m.index}</span>
-          <div class="abt-team-row__name">
-            <span class="abt-team-row__name-text">{m.name}</span>
-            <span class="abt-team-row__mobile-extras">
-              {m.role} · {m.country ?? m.defaultLocation}
+    <ol class="sheet" role="list">
+      {teamMembers.map((m) => {
+        const place = m.country ?? m.defaultLocation;
+        return (
+          <li class="sheet__row" data-id={m.id} data-inview data-cascade="40">
+            <span class="sheet__idx ph-num">{m.index}</span>
+            <span class="sheet__who">
+              <span class="sheet__name">{m.name}</span>
+              <span class="sheet__mobile">{m.role} · {place.toUpperCase()}</span>
             </span>
-          </div>
-          <span class="abt-team-row__role">{m.role}</span>
-          <span class="abt-team-row__flag">
-            <span>{(m.country ?? m.defaultLocation).toUpperCase()}</span>
-          </span>
-        </div>
-      ))}
-    </div>
+            <span class="sheet__role">{m.role}</span>
+            <span class="sheet__loc">{place.toUpperCase()}</span>
+          </li>
+        );
+      })}
+    </ol>
   </div>
 
-  <!-- 04 PRESENCIA -->
-  <div class="abt-presencia" id="presencia" aria-labelledby="about-presencia-title">
-    <div class="abt-presencia__eyebrow-row">
-      <div class="abt-eyebrow">{t('about.presencia.eyebrow')}</div>
-    </div>
-    <div class="abt-presencia__grid">
-      <div class="abt-presencia__left">
-        <h3 id="about-presencia-title" class="abt-presencia__madrid">
-          {t('about.presencia.madridTitle')}
+  {/* 04 — Presencia: «Madrid.» en su placa con el bug de la sede central, y los
+      seis países como una lista de señales, cada uno con su código en su celda. */}
+  <div class="abt-presence" id="presencia">
+    <Bug text={t('about.presencia.eyebrow')} />
+    <div class="abt-presence__grid">
+      <div class="abt-presence__hq" data-inview>
+        <h3 id="about-presencia-title" class="abt-presence__madrid">
+          <Plate tab>{t('about.presencia.madridTitle')}</Plate>
         </h3>
-        <div class="abt-presencia__madrid-label">{t('about.presencia.madridLabel')}</div>
+        <Bug as="div" text={t('about.presencia.madridLabel')} code inview={false} d={260} />
       </div>
-      <div class="abt-presencia__right">
-        <div class="abt-presencia__intl-label">{t('about.presencia.internationalLabel')}</div>
-        <div class="abt-presencia__countries">
+      <div class="abt-presence__intl" data-inview>
+        <Bug as="div" text={t('about.presencia.internationalLabel')} inview={false} />
+        <ul class="signals" role="list">
           {internationalCountries.map((c) => (
-            <div class="abt-presencia__country">
-              <span>{t(`about.presencia.country.${c.key}` as const)}</span>
-              <span class="abt-presencia__iso">{c.iso}</span>
-            </div>
+            <li class="signal" data-inview data-cascade="50">
+              <span class="signal__name">{t(`about.presencia.country.${c.key}` as const)}</span>
+              <span class="signal__code ph-num">{c.iso}</span>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </div>
   </div>
-
 </section>
 
 <style>
   .about-section {
-    --abt-gold: var(--color-ph-gold);
-    --abt-ink: var(--color-ph-white);
-    --abt-ink-soft: var(--color-ph-white-80);
-    --abt-ink-faint: var(--color-ph-white-60);
-    --abt-line: var(--color-ph-white-10);
-    --abt-line-strong: var(--color-ph-white-20);
-    --abt-bg: transparent;
-    --abt-bg-2: rgba(255, 255, 255, 0.02);
-    --edge: var(--ph-section-px);
-
     position: relative;
-    background: var(--abt-bg);
-    color: var(--abt-ink);
+    background: transparent;
+    padding-bottom: clamp(72px, 10vw, 140px);
   }
 
-  .about-section .abt-gold {
-    color: var(--abt-gold);
-    font-weight: 400;
-    font-style: italic;
-  }
+  /* «Rappresentare» y «con uno scopo.» (las más largas, en italiano) más su
+     escalera caben a 360 px. */
+  .abt-head__title { font-size: clamp(38px, 11.2vw, 106px); }
 
-  /* Shared eyebrow pattern (mono). */
-  .about-section .abt-eyebrow {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--abt-gold);
-  }
-
-  /* ── 01 HERO: misma cabecera que Talentos y Servicios (estilos y cifras en
-     global.css: `.ph-rowline`, `.ph-head-*`) ── */
-  .abt-hero {
+  /* Valores y pie: dos bugs en una barra. */
+  .abt-bar {
     position: relative;
-    padding: var(--ph-head-top) var(--edge) 0;
-  }
-
-  /* Valores y pie en una fila índice, nada más acabar la entradilla. */
-  .abt-hero__rail {
-    margin: var(--ph-head-after) var(--edge) 0;
-  }
-
-  /* El resto de la presentación, en dos columnas de lectura cómoda. */
-  .abt-intro {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: clamp(16px, 2vw, 32px);
-    row-gap: 18px;
-    margin-top: clamp(24px, calc(1.14vw + 19.5px), 36px);
-    padding: 0 var(--edge) clamp(48px, 6vw, 88px);
-    border-bottom: 1px solid var(--abt-line);
-  }
-  .abt-hero__body {
-    margin: 0;
-    max-width: 62ch;
-    font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
-    line-height: 1.65;
-    letter-spacing: 0.003em;
-    color: var(--ph-ink-body);
-    text-wrap: pretty;
-  }
-  .abt-intro .abt-hero__body:nth-child(1) { grid-column: 1 / 7; }
-  .abt-intro .abt-hero__body:nth-child(2) { grid-column: 7 / 13; }
-
-  @media (max-width: 900px) {
-    .abt-intro { grid-template-columns: minmax(0, 1fr); }
-    .abt-intro .abt-hero__body:nth-child(1),
-    .abt-intro .abt-hero__body:nth-child(2) { grid-column: 1 / -1; }
-  }
-
-  /* ── 02 MANIFESTO (Now. Next. Forever Football.) ── */
-  .abt-manifesto {
-    padding: clamp(72px, 10vw, 140px) var(--edge);
-    border-bottom: 1px solid var(--abt-line);
-  }
-  .abt-manifesto__head {
-    margin-bottom: clamp(40px, 6vw, 72px);
-  }
-
-  .abt-manifesto__rows {
-    border-top: 1px solid var(--abt-line-strong);
-  }
-  .abt-manifesto__row {
-    display: grid;
-    grid-template-columns: 80px 1.3fr 1.7fr;
-    gap: clamp(20px, 3vw, 40px);
-    align-items: start;
-    padding-block: clamp(36px, 5vw, 64px);
-    border-bottom: 1px solid var(--abt-line);
-    transition: padding 300ms var(--ease-ph, ease), background 300ms var(--ease-ph, ease);
-  }
-  .abt-manifesto__idx {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-ink-faint);
-    letter-spacing: 0.2em;
-    /* Compensar el desplazamiento del baseline tipográfico para que el "01"
-       quede ópticamente alineado con la cap-height del título. */
-    padding-top: 0.6em;
-  }
-  /* Estado base (desktop con puntero): blanco display 500, sin itálica.
-     El lockup de marca (oro + itálico, idéntico a .hero-claim__accent) se
-     "desbloquea" al hacer hover. En mobile / touch (sin hover disponible)
-     se aplica directamente como base — ver media queries más abajo. */
-  .abt-manifesto__title {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(40px, 5.5vw, 72px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    margin: 0;
-    color: var(--abt-ink);
-    transition: color 300ms var(--ease-ph, ease);
-  }
-  .abt-manifesto__body {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--abt-ink-soft);
-    margin: 0;
-    max-width: 480px;
-    /* El body alinea ópticamente con el primer descender del título. */
-    padding-top: 0.4em;
-  }
-
-  @media (hover: hover) {
-    .abt-manifesto__row:hover {
-      padding-inline: 18px;
-      background: rgba(201, 164, 90, 0.04);
-    }
-    /* Hover desbloquea el lockup de marca: gold + itálico + weight 400
-       (firma del eslogan, idéntica a .hero-claim__accent del home/footer). */
-    .abt-manifesto__row:hover .abt-manifesto__title {
-      color: var(--abt-gold);
-      font-style: italic;
-      font-weight: 400;
-    }
-  }
-
-  @media (max-width: 900px) {
-    .abt-manifesto__head {
-      margin-bottom: 40px;
-    }
-    .abt-manifesto__row {
-      grid-template-columns: 1fr;
-      gap: 14px;
-      padding-block: 32px;
-    }
-    /* Sin hover disponible: el lockup gold + itálico aplica como estado base
-       para que la firma de marca sea visible en touch sin necesidad de gesto. */
-    .abt-manifesto__title {
-      color: var(--abt-gold);
-      font-style: italic;
-      font-weight: 400;
-      font-size: clamp(34px, 9vw, 44px);
-    }
-    .abt-manifesto__body {
-      max-width: none;
-    }
-    .abt-manifesto__idx {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .abt-manifesto__idx::after {
-      content: '';
-      width: 18px;
-      height: 1px;
-      background: var(--abt-gold);
-      opacity: 0.6;
-    }
-  }
-
-  /* ── 03 EQUIPO ── */
-  .abt-team {
-    padding: clamp(72px, 10vw, 140px) var(--edge);
-    border-bottom: 1px solid var(--abt-line);
-  }
-  .abt-team__head {
+    z-index: 1;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 20px;
     flex-wrap: wrap;
-    margin-bottom: clamp(32px, 5vw, 64px);
-  }
-  .abt-team__title {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(36px, 5vw, 64px);
-    letter-spacing: -0.02em;
-    margin: 10px 0 0;
-    line-height: 1;
-  }
-  .abt-team__meta {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-ink-faint);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+    gap: 8px 10px;
+    margin: var(--ph-head-after) var(--ph-section-px) 0;
   }
 
-  .abt-team-table {
-    border-top: 1px solid var(--abt-line-strong);
-  }
-  .abt-team-row {
+  /* Los párrafos 2 y 3, en dos paneles. */
+  .abt-intro {
+    position: relative;
+    z-index: 1;
     display: grid;
-    grid-template-columns: 60px 1.4fr 1.2fr;
-    gap: 24px;
-    align-items: center;
-    padding-block: clamp(18px, 2.5vw, 28px);
-    border-bottom: 1px solid var(--abt-line);
-    transition: padding 300ms var(--ease-ph, ease), background 300ms var(--ease-ph, ease);
+    gap: 6px;
+    margin: 14px var(--ph-section-px) 0;
   }
-  @media (hover: hover) {
-    .abt-team-row:hover {
-      padding-inline: 18px;
-      background: rgba(201, 164, 90, 0.04);
-    }
-    .abt-team-row:hover .abt-team-row__name-text {
-      color: var(--abt-gold);
-    }
-  }
-  .abt-team-row__idx {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-gold);
-    letter-spacing: 0.15em;
-  }
-  .abt-team-row__name-text {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(22px, 2.4vw, 34px);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    transition: color 300ms var(--ease-ph, ease);
-  }
-  .abt-team-row__role {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-ink-soft);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-  .abt-team-row__flag {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-ink-soft);
-    letter-spacing: 0.1em;
-  }
-  .abt-team-row__mobile-extras {
-    display: none;
+  .abt-intro__panel { width: 100%; max-width: none; }
+  @media (min-width: 900px) {
+    .abt-intro { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
   }
 
-  @media (max-width: 900px) {
-    .abt-team-row {
-      grid-template-columns: 40px 1fr;
-      gap: 10px;
-      padding-block: 18px;
-    }
-    .abt-team-row__role,
-    .abt-team-row__flag {
-      display: none;
-    }
-    .abt-team-row__name {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .abt-team-row__mobile-extras {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--abt-ink-soft);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      font-style: normal;
-      line-height: 1.5;
-    }
+  /* ── 02 Filosofía ────────────────────────────────────────────────────── */
+  .abt-philo {
+    position: relative;
+    z-index: 1;
+    padding: clamp(80px, 11vw, 150px) var(--ph-section-px) 0;
   }
-
-  /* ── 04 PRESENCIA ── */
-  .abt-presencia {
-    padding: clamp(60px, 9vw, 100px) var(--edge);
-    border-bottom: 1px solid var(--abt-line);
-  }
-  .abt-presencia__eyebrow-row {
-    margin-bottom: 32px;
-  }
-  .abt-presencia__grid {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: clamp(40px, 6vw, 80px);
-    align-items: end;
-    border-top: 1px solid var(--abt-line);
-    padding-top: clamp(32px, 4vw, 48px);
-  }
-  .abt-presencia__madrid {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(36px, 5vw, 56px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    margin: 0;
-  }
-  .abt-presencia__madrid-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--abt-ink-faint);
-    text-transform: uppercase;
-    margin-top: 12px;
-  }
-  .abt-presencia__intl-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--abt-ink-faint);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .abt-presencia__countries {
+  .abt-philo__cards {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: clamp(14px, 2vw, 22px);
+    margin-top: clamp(30px, 4vw, 48px);
   }
-  .abt-presencia__country {
+  /* El cartón: una placa a todo lo ancho, con el corte en la esquina. */
+  .title-card {
+    --pt: clamp(26px, 3vw, 40px);
+    --pb: clamp(26px, 3vw, 40px);
+    --pl: clamp(18px, 2.4vw, 36px);
+    --pr: clamp(40px, 5vw, 84px);
+    --cut: clamp(36px, 4vw, 64px);
+    width: 100%;
+    max-width: none;
+    line-height: normal;
+  }
+  .title-card .ph-plate__tab { width: 72px; }
+  .title-card__in {
+    display: grid;
+    gap: 18px 40px;
+  }
+  @media (min-width: 900px) {
+    .title-card__in {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      align-items: end;
+    }
+  }
+  .title-card__head {
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-family: var(--font-body);
+    align-items: flex-start;
+    gap: clamp(12px, 1.6vw, 22px);
+    min-width: 0;
+  }
+  .title-card__idx {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    min-width: 42px;
+    height: 36px;
+    margin-top: 0.3em;
+    font-size: 14px;
+    color: var(--color-ph-gold);
+    box-shadow: inset 0 0 0 1px var(--color-ph-gold);
+  }
+  .title-card__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(40px, 10vw, 104px);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 0.95;
+    color: var(--color-ph-white);
+    min-width: 0;
+  }
+  .title-card:last-child .title-card__title { color: var(--color-ph-gold); }
+  .title-card__body {
+    margin: 0;
+    max-width: 52ch;
+    font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
+    line-height: 1.65;
+    color: var(--ph-ink-body);
+  }
+
+  /* ── 03 Equipo ───────────────────────────────────────────────────────── */
+  .abt-team {
+    position: relative;
+    z-index: 1;
+    padding: clamp(80px, 11vw, 150px) var(--ph-section-px) 0;
+  }
+  .abt-team__bugs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+  }
+  .abt-team__title {
+    margin: clamp(26px, 3.4vw, 44px) 0 clamp(26px, 3.4vw, 44px);
+    font-size: clamp(38px, 9.4vw, 96px);
+  }
+
+  /* La hoja de alineación. */
+  .sheet {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sheet__row {
+    --cut: 30px;
+    position: relative;
+    z-index: 0;
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    min-height: 62px;
+    padding: 10px calc(var(--cut) + 8px) 10px 10px;
+    transition: clip-path var(--ph-dur-wipe) var(--ph-ease-out) var(--cd, 0ms);
+    clip-path: inset(-6px -6px -6px -6px);
+  }
+  .sheet__row::before,
+  .sheet__row::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .sheet__row::before {
+    inset: 0;
+    background: var(--ph-plate-edge);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+  }
+  .sheet__row::after {
+    inset: 1px;
+    background: var(--ph-plate);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) + 0.59px), calc(100% - var(--cut) + 0.59px) 100%, 0 100%);
+    transition: background-color var(--ph-dur-state) var(--ph-ease-std);
+  }
+  :global(html.ph-anim) .sheet__row:not(.is-inview) { clip-path: inset(-6px 100% -6px -6px); }
+  :global(html.ph-anim:not(.ph-motion)) .sheet__row { animation: ph-failsafe-unclip 0s linear 2.5s forwards; }
+  @media (hover: hover) and (pointer: fine) {
+    .sheet__row:hover::after { background: #15171b; }
+    .sheet__row:hover .sheet__name { color: var(--color-ph-gold); }
+  }
+  .sheet__idx {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
     font-size: 13px;
-    color: var(--abt-ink);
-    border-bottom: 1px solid var(--abt-line);
-    padding-bottom: 6px;
+    color: var(--color-ph-gold);
+    box-shadow: inset 0 0 0 1px rgba(214, 178, 94, 0.7);
   }
-  .abt-presencia__iso {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--abt-gold);
-    letter-spacing: 0.15em;
+  .sheet__who {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .sheet__name {
+    font-family: var(--font-display);
+    font-size: clamp(18px, calc(0.6vw + 15.6px), 24px);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+    color: var(--color-ph-white);
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
+  }
+  .sheet__mobile {
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ph-ink-meta);
+  }
+  .sheet__role,
+  .sheet__loc { display: none; }
+
+  @media (min-width: 900px) {
+    .sheet__row {
+      /* La sede, en una columna fija: con `auto`, cada fila medía distinto y el
+         cargo no caía en la misma vertical. 132 px caben «PORTOGALLO». */
+      grid-template-columns: 46px minmax(0, 1.2fr) minmax(0, 1.3fr) 132px;
+      gap: 24px;
+    }
+    .sheet__mobile { display: none; }
+    .sheet__role {
+      display: block;
+      font-size: 14px;
+      line-height: 1.4;
+      color: var(--ph-ink-lead);
+    }
+    /* La sede, en su placa pequeña. */
+    .sheet__loc {
+      --c: 26px;
+      position: relative;
+      z-index: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-self: end;
+      height: 26px;
+      padding: 0 calc(var(--c) * 0.8) 0 10px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: rgba(255, 255, 255, 0.86);
+    }
+    .sheet__loc::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: rgba(255, 255, 255, 0.07);
+      clip-path: polygon(0 0, 100% 0, calc(100% - var(--c)) 100%, 0 100%);
+    }
   }
 
-  @media (max-width: 900px) {
-    .abt-presencia__grid {
-      grid-template-columns: 1fr;
-      align-items: stretch;
-      gap: 32px;
-    }
-    .abt-presencia__madrid {
-      font-size: 40px;
+  /* ── 04 Presencia ────────────────────────────────────────────────────── */
+  .abt-presence {
+    position: relative;
+    z-index: 1;
+    padding: clamp(80px, 11vw, 150px) var(--ph-section-px) 0;
+  }
+  .abt-presence__grid {
+    display: grid;
+    gap: clamp(40px, 6vw, 72px);
+    margin-top: clamp(30px, 4vw, 48px);
+  }
+  @media (min-width: 900px) {
+    .abt-presence__grid {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      align-items: end;
     }
   }
+  .abt-presence__hq {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .abt-presence__madrid {
+    margin: 0;
+    font-size: clamp(64px, 17vw, 144px);
+  }
+  .abt-presence__intl {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
 
+  /* La lista de señales: cada país en su fila, con su código en una celda de filo
+     dorado. */
+  .signals {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .signal {
+    --cut: 48px;
+    position: relative;
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 48px;
+    padding: 6px calc(var(--cut) * 0.96) 6px 16px;
+    transition: clip-path var(--ph-dur-wipe) var(--ph-ease-out) var(--cd, 0ms);
+    clip-path: inset(-4px -4px -4px -4px);
+  }
+  .signal::before,
+  .signal::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .signal::before {
+    inset: 0;
+    background: var(--ph-plate-edge);
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
+  }
+  .signal::after {
+    inset: 1px;
+    background: var(--ph-plate);
+    clip-path: polygon(0 0, calc(100% - 0.41px) 0, calc(100% - var(--cut) + 1.59px) 100%, 0 100%);
+  }
+  :global(html.ph-anim) .signal:not(.is-inview) { clip-path: inset(-4px 100% -4px -4px); }
+  :global(html.ph-anim:not(.ph-motion)) .signal { animation: ph-failsafe-unclip 0s linear 2.5s forwards; }
+  .signal__name {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--color-ph-white);
+  }
+  .signal__code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 46px;
+    height: 30px;
+    padding: 0 8px;
+    font-size: 13px;
+    color: var(--color-ph-gold);
+    box-shadow: inset 0 0 0 1px var(--color-ph-gold);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sheet__row,
+    .sheet__row::after,
+    .sheet__name,
+    .signal { transition: none; }
+  }
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion,
-    wrapWords,
-    splitWords,
-    trackingReveal,
-    scheduleScrollTriggerRefresh,
-    afterTransitionPaint,
-    revealReveals,
-    revealOnView,
-  } from '@/scripts/ph-text-animations';
+  import { mountSection, afterTransitionPaint } from '@/scripts/ph-text-animations';
 
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initAboutAnimations(): void {
+  function initAbout(): void {
     const section = document.querySelector<HTMLElement>('.about-section');
-    if (!section) return;
-
-    if (reducedMotion()) {
-      // Ensure all content is visible without animating.
-      section.querySelectorAll<HTMLElement>('.abt-team-row').forEach((r) => {
-        r.style.opacity = '1';
-        r.style.transform = 'none';
-      });
-      return;
-    }
-
-    // ── Hero ──
-    // El hero está above-the-fold: lo animamos de forma INMEDIATA (sin scrollTrigger).
-    // Con scrollTrigger `once` para contenido ya visible en la carga, el trigger
-    // fallaba intermitentemente al disparar y los títulos quedaban congelados
-    // (invisibles). Mismo patrón fiable que el hero de la home / Servicios.
-    const heroIndex = section.querySelector<HTMLElement>('.abt-hero__index');
-    if (heroIndex) gsap.from(heroIndex, { opacity: 0, y: 8, duration: 0.7, ease: 'power3.out' });
-
-    const heroTitle = section.querySelector<HTMLElement>('.abt-hero__title');
-    if (heroTitle) {
-      const words = wrapWords(heroTitle);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 0.85,
-        stagger: 0.07,
-        ease: 'power4.out',
-        delay: 0.1,
-      });
-    }
-
-    section.querySelectorAll<HTMLElement>('.abt-hero__lead, .abt-hero__body').forEach((body, i) => {
-      const spans = splitWords(body);
-      gsap.from(spans, {
-        opacity: 0,
-        filter: 'blur(6px)',
-        y: 6,
-        duration: 0.6,
-        stagger: 0.025,
-        ease: 'power2.out',
-        delay: 0.3 + i * 0.1,
-      });
-    });
-
-    const heroValues = section.querySelector<HTMLElement>('.abt-hero__values');
-    if (heroValues) trackingReveal(heroValues);
-
-    // ── Manifesto ──
-    const manifestoEyebrow = section.querySelector<HTMLElement>('.abt-manifesto .abt-eyebrow');
-    if (manifestoEyebrow) trackingReveal(manifestoEyebrow, { trigger: manifestoEyebrow, start: 'top 92%', once: true });
-
-    section.querySelectorAll<HTMLElement>('.abt-manifesto__row').forEach((row) => {
-      const idx = row.querySelector<HTMLElement>('.abt-manifesto__idx');
-      const title = row.querySelector<HTMLElement>('.abt-manifesto__title');
-      const body = row.querySelector<HTMLElement>('.abt-manifesto__body');
-
-      if (idx) {
-        gsap.from(idx, {
-          opacity: 0,
-          y: 8,
-          duration: 0.5,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: row, start: 'top 88%', once: true },
-        });
-      }
-      if (title) {
-        revealOnView(title, { y: 18, duration: 0.7 });
-      }
-      if (body) {
-        const spans = splitWords(body);
-        gsap.from(spans, {
-          opacity: 0,
-          filter: 'blur(6px)',
-          y: 5,
-          duration: 0.55,
-          stagger: 0.02,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: row, start: 'top 88%', once: true },
-        });
-      }
-    });
-
-    // ── Equipo ──
-    const teamEyebrow = section.querySelector<HTMLElement>('.abt-team .abt-eyebrow');
-    if (teamEyebrow) trackingReveal(teamEyebrow, { trigger: teamEyebrow, start: 'top 88%', once: true });
-
-    const teamTitle = section.querySelector<HTMLElement>('.abt-team__title');
-    if (teamTitle) {
-      revealOnView(teamTitle, { y: 22, duration: 0.8 });
-    }
-
-    const teamMeta = section.querySelector<HTMLElement>('.abt-team__meta');
-    if (teamMeta) trackingReveal(teamMeta, { trigger: teamMeta, start: 'top 92%', once: true });
-
-    const teamTable = section.querySelector<HTMLElement>('.abt-team-table');
-    const teamRows = section.querySelectorAll<HTMLElement>('.abt-team-row');
-    if (teamTable && teamRows.length) {
-      gsap.set(teamRows, { opacity: 0, y: 14 });
-      gsap.to(teamRows, {
-        opacity: 1,
-        y: 0,
-        duration: 0.45,
-        stagger: { each: 0.04, from: 'start' },
-        ease: 'power3.out',
-        scrollTrigger: { trigger: teamTable, start: 'top 88%', once: true },
-        onComplete: () => {
-          gsap.set(teamRows, { clearProps: 'opacity,transform' });
-        },
-      });
-      // Safety net — ensure rows are visible even if ScrollTrigger misfires.
-      window.setTimeout(() => {
-        teamRows.forEach((r) => {
-          r.style.opacity = '1';
-          r.style.transform = 'none';
-        });
-      }, 2200);
-    }
-
-    // ── Presencia ──
-    const presenciaEyebrow = section.querySelector<HTMLElement>('.abt-presencia .abt-eyebrow');
-    if (presenciaEyebrow) trackingReveal(presenciaEyebrow, { trigger: presenciaEyebrow, start: 'top 92%', once: true });
-
-    const presenciaLeft = section.querySelector<HTMLElement>('.abt-presencia__left');
-    const presenciaRight = section.querySelector<HTMLElement>('.abt-presencia__right');
-    if (presenciaLeft && presenciaRight) {
-      gsap.from([presenciaLeft, presenciaRight], {
-        opacity: 0,
-        y: 20,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: presenciaLeft, start: 'top 88%', once: true },
-      });
-    }
-
-    revealReveals(section);
-    scheduleScrollTriggerRefresh();
+    if (section) mountSection(section);
   }
 
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initAboutAnimations));
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initAbout));
 </script>
 
-<script>
-  // Fondo animado de la cabecera (se inicia solo en cada astro:page-load).
-  import '@/scripts/ph-ambient';
-</script>

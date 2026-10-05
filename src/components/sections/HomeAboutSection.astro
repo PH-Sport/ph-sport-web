@@ -1,5 +1,9 @@
 ---
 import { useTranslations, localizePath, type Lang } from '@/i18n/utils';
+import Bug from '@/components/ui/Bug.astro';
+import Plate from '@/components/ui/Plate.astro';
+import KeyPlate from '@/components/ui/KeyPlate.astro';
+import Ticker from '@/components/ui/Ticker.astro';
 
 interface Props {
   lang: Lang;
@@ -10,266 +14,208 @@ const t = useTranslations(lang);
 
 const aboutHref = localizePath('/sobre-nosotros/', lang);
 // Países donde opera PHSPORT: sale del texto traducido, la misma fuente que el
-// resto de menciones (ver la nota de `about.team.meta` en es.ts).
-const countriesValue = Number(t('home.about.stats.countries.value'));
+// resto de menciones (ver la nota de `about.team.meta` en es.ts). La barra lleva
+// un segmento por país.
+const countriesValue = t('home.about.stats.countries.value');
+const countrySegments = Math.max(1, Number.parseInt(countriesValue, 10) || 1);
 ---
 
+{/* «Rótulo de cita» y «estadísticas del partido»: la frase de la agencia a toda
+    pantalla en dos placas, el texto con su placa llave, la tabla de cifras como
+    la de un partido (cada fila con su barra) y los valores en la cinta de abajo,
+    que corre con el scroll. */}
 <section class="home-about" id="sobre-nosotros" aria-labelledby="home-about-title">
   <div class="home-about__inner">
-    <div class="home-about__head">
-      <span class="home-about__eyebrow">{t('home.about.eyebrow')}</span>
-      <h2 class="home-about__title" id="home-about-title">
-        <span>{t('home.about.title')}</span>
-        <em>{t('home.about.titleAccent')}</em>
+    <Bug text={t('home.about.eyebrow')} />
+    <div class="home-about__quote" data-inview>
+      <h2 class="home-about__title ph-lt" id="home-about-title">
+        <Plate tab lines>{t('home.about.title')}</Plate>{' '}
+        <Plate gold d={110} step={1} lines>{t('home.about.titleAccent')}</Plate>
       </h2>
-      <p class="home-about__body">{t('home.about.body')}</p>
-      <a class="home-about__cta" href={aboutHref}>
-        {t('home.about.cta')}
-        <span class="home-about__arrow" aria-hidden="true">→</span>
-      </a>
     </div>
 
-    <dl class="home-about__stats" aria-label={t('home.about.stats.aria')}>
-      <div class="home-about__stat">
-        <dt class="home-about__stat-value" data-counter={countriesValue}>{countriesValue}</dt>
-        <dd class="home-about__stat-label">{t('home.about.stats.countries.label')}</dd>
+    <div class="home-about__grid">
+      <div class="home-about__text" data-inview>
+        <p class="home-about__body ph-in-rise">{t('home.about.body')}</p>
+        <div class="home-about__cta ph-in-rise" style="--d: 100ms">
+          <KeyPlate href={aboutHref} label={t('home.about.cta')} />
+        </div>
       </div>
-      <div class="home-about__stat">
-        <dt class="home-about__stat-value--service">
-          <span class="home-about__stat-value" data-counter={360}>360</span><span class="home-about__stat-unit" aria-hidden="true">°</span>
-        </dt>
-        <dd class="home-about__stat-label">{t('home.about.stats.service.label')}</dd>
-      </div>
-    </dl>
 
-    <ul class="home-about__values" aria-label={t('home.about.values.aria')} role="list">
-      <li>{t('home.about.values.v1')}</li>
-      <li aria-hidden="true" class="home-about__values-sep">·</li>
-      <li>{t('home.about.values.v2')}</li>
-      <li aria-hidden="true" class="home-about__values-sep">·</li>
-      <li>{t('home.about.values.v3')}</li>
-    </ul>
+      {/* La tabla de estadísticas de un partido: etiqueta a la izquierda, cifra a
+          la derecha y su barra debajo, que se enciende al entrar. */}
+      <dl class="stats" aria-label={t('home.about.stats.aria')} data-inview>
+        <div class="stats__row">
+          <dt class="stats__label">{t('home.about.stats.countries.label')}</dt>
+          <dd class="stats__value">
+            <span class="stats__num">{countriesValue}</span>
+            <span class="stats__bar stats__bar--seg" aria-hidden="true">
+              {Array.from({ length: countrySegments }, (_, i) => <i style={`--i: ${i}`}></i>)}
+            </span>
+          </dd>
+        </div>
+        <div class="stats__row" style="--row: 1">
+          <dt class="stats__label">{t('home.about.stats.service.label')}</dt>
+          <dd class="stats__value">
+            <span class="stats__num">{t('home.about.stats.service.value')}</span>
+            <span class="stats__bar stats__bar--full" aria-hidden="true"><i></i></span>
+          </dd>
+        </div>
+      </dl>
+    </div>
   </div>
+
+  <Ticker
+    as="ul"
+    label={t('home.about.values.aria')}
+    items={[t('home.about.values.v1'), t('home.about.values.v2'), t('home.about.values.v3')]}
+    class="home-about__ticker"
+  />
 </section>
 
 <style>
   .home-about {
-    padding: clamp(80px, 12vw, 160px) var(--ph-section-px, clamp(20px, 4vw, 48px));
-    background: var(--color-ph-black, #0d0f12);
-    color: var(--color-ph-white, #ffffff);
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
+    position: relative;
+    padding: clamp(64px, 7vw, 104px) 0 0;
+    /* Transparente: el fondo es la luz animada de toda la página (`.ph-page-bg`). */
+    background: transparent;
   }
-
   .home-about__inner {
-    max-width: 880px;
-    margin: 0 auto;
-    text-align: center;
+    padding: 0 var(--ph-section-px) clamp(64px, 8vw, 112px);
   }
 
-  .home-about__head {
-    display: block;
-  }
-
-  .home-about__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-about__eyebrow::before,
-  .home-about__eyebrow::after {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-  }
-
+  .home-about__quote { margin-top: clamp(30px, 4vw, 52px); }
+  /* La cita a toda pantalla: cada mitad de la frase en su placa. La segunda se
+     parte en dos líneas en el móvil (el italiano es el más largo). */
   .home-about__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(32px, 5.5vw, 72px);
-    letter-spacing: -0.03em;
-    line-height: 1.02;
-    margin: 18px 0 0;
-    text-wrap: balance;
+    margin: 0;
+    font-size: clamp(30px, 8.6vw, 92px);
   }
-  .home-about__title span { display: block; }
-  .home-about__title em {
-    display: block;
-    color: var(--color-ph-gold, #d6b25e);
-    font-style: italic;
-    font-weight: 400;
+
+  .home-about__grid {
+    display: grid;
+    gap: clamp(40px, 5vw, 64px);
+    margin-top: clamp(36px, 5vw, 64px);
+  }
+  @media (min-width: 1024px) {
+    .home-about__grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      align-items: end;
+    }
   }
 
   .home-about__body {
-    margin: 24px auto 0;
-    max-width: 640px;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 16px;
+    margin: 0;
+    max-width: 50ch;
+    font-size: clamp(16px, calc(0.19vw + 15.3px), 18px);
     line-height: 1.65;
+    color: var(--ph-ink-body);
   }
+  .home-about__cta { margin-top: clamp(24px, 3vw, 36px); }
 
-  .home-about__cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: clamp(24px, 4vw, 40px);
-    padding: 9px 20px;
-    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 13px;
-    color: var(--color-ph-white, #ffffff);
-    text-decoration: none;
-    transition: border-color 0.2s, color 0.2s;
+  /* ── La tabla de estadísticas ─────────────────────────────────────────── */
+  .stats {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
   }
-  .home-about__cta:hover {
-    border-color: var(--color-ph-gold, #d6b25e);
-    color: var(--color-ph-gold, #d6b25e);
+  .stats__row {
+    --cut: 34px;
+    position: relative;
+    z-index: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px calc(var(--cut) + 6px) 42px 18px;
   }
-  .home-about__cta:hover .home-about__arrow { transform: translateX(4px); }
-  .home-about__arrow { transition: transform 0.2s; }
+  .stats__row::before,
+  .stats__row::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+  }
+  .stats__row::before {
+    inset: 0;
+    background: var(--ph-plate-edge);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+  }
+  .stats__row::after {
+    inset: 1px;
+    background: var(--ph-plate);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) + 0.59px), calc(100% - var(--cut) + 0.59px) 100%, 0 100%);
+  }
+  .stats__label {
+    font-family: var(--font-display);
+    font-size: clamp(17px, calc(0.6vw + 15px), 22px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--color-ph-white);
+  }
+  .stats__value { margin: 0; }
+  .stats__num {
+    font-family: var(--font-mono);
+    font-size: clamp(30px, calc(1.6vw + 24px), 46px);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--color-ph-white);
+    transition:
+      opacity 320ms var(--ph-ease-out) calc(var(--row, 0) * 120ms + 80ms),
+      transform 420ms var(--ph-ease-out) calc(var(--row, 0) * 120ms + 80ms);
+  }
+  /* La barra, debajo, de lado a lado. */
+  .stats__bar {
+    position: absolute;
+    left: 18px;
+    right: calc(var(--cut) + 6px);
+    bottom: 18px;
+    display: flex;
+    gap: 4px;
+    height: 8px;
+  }
+  .stats__bar i {
+    position: relative;
+    flex: 1 1 0;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+  }
+  .stats__bar i::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-ph-gold);
+    transform-origin: 0 50%;
+  }
+  /* Los países: un segmento por país, que se encienden en cascada de 60 ms. */
+  .stats__bar--seg i::after {
+    transition: transform 180ms var(--ph-ease-out) calc(var(--i, 0) * 60ms + 160ms);
+  }
+  /* El acompañamiento: una barra continua que se llena entera. */
+  .stats__bar--full i::after {
+    transition: transform 640ms var(--ph-ease-out) 300ms;
+  }
+  :global(html.ph-anim) .stats:not(.is-inview) .stats__bar i::after { transform: scaleX(0); }
+  :global(html.ph-anim) .stats:not(.is-inview) .stats__num { opacity: 0; transform: translateY(0.4em); }
+  :global(html.ph-anim:not(.ph-motion)) .stats__bar i::after,
+  :global(html.ph-anim:not(.ph-motion)) .stats__num { animation: ph-motion-failsafe 0s linear 2.5s forwards; }
+
+  .home-about__ticker { margin-top: 0; }
 
   @media (prefers-reduced-motion: reduce) {
-    .home-about__cta,
-    .home-about__arrow { transition: none; }
-  }
-
-  .home-about__stats {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0;
-    margin: clamp(56px, 8vw, 96px) 0 0;
-    padding: 0;
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-  }
-
-  .home-about__stat {
-    margin: 0;
-    padding: clamp(24px, 3vw, 40px) 8px;
-    border-right: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    text-align: center;
-  }
-  .home-about__stat:last-child { border-right: none; }
-
-  .home-about__stat-value {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(36px, 5vw, 64px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    color: var(--color-ph-gold, #d6b25e);
-    margin: 0;
-  }
-
-  .home-about__stat-value--service {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0;
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(36px, 5vw, 64px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    color: var(--color-ph-gold, #d6b25e);
-    margin: 0;
-  }
-  .home-about__stat-unit {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(22px, 3vw, 40px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    color: var(--color-ph-gold, #d6b25e);
-  }
-  .home-about__stat-label {
-    margin: 8px 0 0;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-  }
-
-  .home-about__values {
-    list-style: none;
-    padding: 0;
-    margin: clamp(32px, 5vw, 48px) 0 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 14px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-  }
-  .home-about__values li { margin: 0; }
-  .home-about__values-sep { color: var(--color-ph-gold, #d6b25e); }
-
-  @media (max-width: 560px) {
-    .home-about__stats { grid-template-columns: 1fr; }
-    .home-about__stat {
-      border-right: none;
-      border-bottom: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    }
-    .home-about__stat:last-child { border-bottom: none; }
+    .stats__num,
+    .stats__bar i::after { transition: none; }
   }
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, revealOnView, trackingReveal, counterReveal,
-    scheduleScrollTriggerRefresh, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
+  import { mountSection, afterTransitionPaint } from '@/scripts/ph-text-animations';
 
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initHomeAboutAnimations(): void {
+  function initHomeAbout(): void {
     const section = document.querySelector<HTMLElement>('.home-about');
-    if (!section) return;
-    if (reducedMotion()) return;
-
-    const eyebrow = section.querySelector<HTMLElement>('.home-about__eyebrow');
-    const title = section.querySelector<HTMLElement>('.home-about__title');
-    const body = section.querySelector<HTMLElement>('.home-about__body');
-    const head = section.querySelector<HTMLElement>('.home-about__head');
-    const stats = section.querySelector<HTMLElement>('.home-about__stats');
-    const statValues = section.querySelectorAll<HTMLElement>('.home-about__stat-value[data-counter]');
-
-    if (eyebrow && head) {
-      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
-    }
-    if (title) {
-      revealOnView(title, { y: 24, duration: 0.9 });
-    }
-    if (body && head) {
-      gsap.from(body, {
-        opacity: 0,
-        y: 18,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.2,
-        scrollTrigger: { trigger: head, start: 'top 80%', once: true },
-      });
-    }
-    if (statValues.length && stats) {
-      statValues.forEach((el) => {
-        const target = Number(el.dataset.counter ?? el.textContent ?? '0');
-        counterReveal(el, target, { trigger: stats, start: 'top 82%', once: true });
-      });
-    }
-
-    scheduleScrollTriggerRefresh();
+    if (section) mountSection(section);
   }
 
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeAboutAnimations));
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeAbout));
 </script>

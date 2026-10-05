@@ -13,6 +13,33 @@ leído el resto.
 
 ---
 
+## 2026-10-05 · La variante A pasa a `preview` como diseño provisional
+
+**Decisión**: la rama `feat/variante-a-retransmision` se fusiona en `preview`, que
+pasa a enseñar la variante A como página por defecto. Lo pidió Mario el
+2026-10-05: el equipo ya había elegido la A (entrada «El equipo se queda con la
+variante A») y quiere que deje de ser una opción a revisar.
+
+**Qué entra en `preview`**: todo lo de la A, es decir, la realización de partido
+en televisión, el bombo de fondos con Neón y Velo, el grid de talentos sin «Ver»
+ni «Orden» y el contacto sin la imagen del sobre. Entra también el lenguaje de
+movimiento «Marcador», del que salió la A. El orden de jugadores que se aplicó
+ese mismo día en `preview` se conserva: la A no tocaba los datos del roster.
+
+**Qué no cambia**: `main` sigue sirviendo el diseño anterior en phsport.es; pasar
+a producción es otro paso. Las variantes B y C se conservan en sus ramas, sin
+fusionar.
+
+**Cómo se hizo**: con un merge, no con un rebase, para no reescribir la historia
+ya publicada de `preview`. Solo chocaron `CLAUDE.md` y `DECISIONS.md`, porque las
+dos ramas añadían texto en el mismo sitio; se conservó todo. Los avisos de
+«sin fusionar» de las entradas de la A se actualizaron en el mismo cambio.
+
+**Ojo con el trabajo en curso**: la A se estaba retocando ese mismo día en su
+rama. Lo que se suba a `feat/variante-a-retransmision` a partir de ahora no
+llega solo a `preview`: hay que fusionarlo otra vez, o pasar a trabajar
+directamente sobre `preview`.
+
 ## 2026-10-05 · Ajustes de Diego al grid de `/talentos`: 61 jugadores, con las canteras de los escudos
 
 **Decisión**: se aplica tal cual un mensaje de Diego (PH) con cambios de orden,
@@ -58,6 +85,426 @@ genérico: Jesús Palacios, Víctor Santiago, David Fernández y José Mejías. 
 fotos las pone Mario en otro paso. José Rey sigue visible aunque la
 verificación del 2026-09-25 no pudo confirmar en qué equipo del Depor está: el
 mensaje de Diego no lo nombra.
+## 2026-10-05 · Velo, con el doble de luz
+
+> **Estado: en `preview` desde el 2026-10-05**, con la fusión de la variante A; sin
+> pasar a `main`.
+
+**Qué pidió Mario.** Al ver el bombo (entrada siguiente): de Velo le gustan el
+movimiento y la reacción al ratón, pero «la neblina como tal apenas se nota».
+
+**Qué cambia.** Toda la luz de Velo se multiplica por 2 (`GAIN` en su shader), por
+igual, así que el movimiento y la reacción al ratón no cambian. En Mochi, Mario
+la había pedido «aligerada» (2026-10-02); con la regla del tercio de las páginas
+interiores y sin los paneles esmerilados de Mochi, se quedaba corta.
+
+**Medido** con todo el contenido oculto, en una pantalla de 1440 × 900. Es el brillo
+del 1 % de píxeles más vivos, con el negro de la página en 14,6:
+
+| | Portada (luz entera) | Página interior (fuera del titular) |
+|---|---|---|
+| Antes | 23,9 | 18,9 |
+| Ahora | 34,9 | 22,0 |
+| Las otras escenas | 16,8–38,2 | 16,9–23,9 |
+
+Queda a la par que las demás, sin pasar a Calidez, la más viva.
+
+---
+
+## 2026-10-05 · La A estrena el bombo de fondos: cinco escenas al azar en todas las páginas, con Neón y Velo
+
+> **Estado: en `preview` desde el 2026-10-05**, con la fusión de la variante A; sin
+> pasar a `main`.
+
+**Qué pidió Mario.** Que Neón y Velo, dos fondos del rediseño «Mochi», pasen a la A.
+Para decidir dónde se le ofrecieron dos formas, y eligió **«bombo en todas»**, como en
+Mochi. La otra era «turnos en la portada»: las páginas interiores con su fondo fijo, y
+Neón y Velo alternándose solo en la portada.
+
+**Qué cambia.**
+
+- **Cinco escenas**: Velo (una red de luz tenue, como la del agua al sol), Neón (el
+  contorno del logo con ecos y una luz que recorre el tubo) y las tres que ya tenía la
+  A: Trayectorias, Estructura y Calidez. Los shaders vienen de Mochi tal cual; las
+  tres de siempre solo cambian en que reaccionan al ratón.
+- **El bombo**: en cada carga de página sale una escena al azar, nunca la de la
+  página anterior (memoria y `sessionStorage`). `?fondo=<escena>` fuerza una para
+  revisarla.
+- **Dónde**: lo monta `BaseLayout` en todas las páginas, también en la portada bajo
+  el vídeo. Las legales van planas (`ambient={false}`), como pidió Mario en Mochi.
+  Talentos, Servicios y Sobre nosotros dejan de montar su propio fondo, y los bloques
+  de la portada pierden su negro opaco para que se vea.
+- **Ratón**: en ordenador, la luz reacciona al cursor con un muelle, sin saltos.
+  Velo, al 10 % de la fuerza de las demás (decisión de Mario en Mochi).
+- **La luz**:
+  - En las páginas interiores se queda como estaba aprobada en la A: entera
+    detrás del titular y al 32 % en el resto.
+  - En la portada va entera en toda la página, como en Mochi. Su titular es el lema
+    del hero, que tapa el vídeo; con la regla del tercio, el fondo apenas se veía
+    bajo el vídeo (comprobado con capturas).
+- **Calidez está en el bombo** porque la opción que eligió Mario decía «uno de los
+  cinco». En Mochi la había sacado el 2026-10-02. Quitarla es borrarla de `POOL`.
+
+**De dónde viene.** Del rediseño «Mochi» (rama `feat/rediseno-mochi`, borrada el
+2026-10-05; último commit `39bc41e`). Allí, el 2026-10-02, Mario decidió el bombo,
+la reacción al ratón, Velo al 10 % y las legales planas. De Mochi no se traen sus
+paneles esmerilados ni la luz entera en las páginas interiores.
+
+**Alternativas descartadas.**
+
+- *Turnos solo en la portada*: Mario eligió el bombo.
+- *Luz entera también en las páginas interiores, como en Mochi*: se quedó la regla
+  aprobada para la A. Cambiarlo es poner `OUTSIDE_TITLE` a 1.
+
+**Consecuencias.**
+
+- Hay movimiento continuo en todas las páginas salvo las legales
+  (`docs/hallazgos-abiertos.md`, WCAG 2.2.2).
+- La GPU trabaja también en la portada.
+- `ph-ambient.ts` (5,6 KB con gzip) se carga en todas las páginas, también en las
+  legales, donde no hace nada.
+- Sin medir en un móvil real.
+
+---
+
+## 2026-10-05 · El equipo se queda con la variante A
+
+> **Estado: decidido y aplicado en `preview` el 2026-10-05** (entrada «La variante A
+> pasa a `preview` como diseño provisional»). Sin pasar a `main`.
+
+**Qué se decidió.** Mario, el 2026-10-05: el equipo se queda con la **variante A
+«Retransmisión»**.
+
+- Se conservan, sin borrar: las variantes B («Títulos») y C («Análisis»), el
+  «Marcador» (`feat/rediseno-motion`) y `preview`.
+- Se borra el rediseño «Mochi» (`feat/rediseno-mochi`, último commit `39bc41e`),
+  después de traer a la A sus dos fondos que se quedan (entrada de arriba).
+
+---
+
+## 2026-10-05 · Contacto sin la imagen del sobre dorado: el hueco espera la nueva
+
+> **Estado: en las tres variantes** (`feat/variante-a-retransmision`,
+> `feat/variante-b-titulos` y `feat/variante-c-analisis`), y en `preview` desde el
+> 2026-10-05 con la variante A. `main` sigue mostrándola en phsport.es.
+
+**Qué se decidió.** Fuera de la sección de contacto de la portada la imagen del sobre
+negro con filo y sello dorados (`public/contact-image.webp`), y fuera también el
+archivo. Su sitio se queda: el marco, el tamaño y la animación siguen, con el tono
+de espera de las fotos (`#15171b`) dentro, hasta que llegue la imagen nueva.
+
+**Quién y por qué.** Mario, el 2026-10-05: le han ordenado retirar esa imagen en
+concreto y pondrá otra. El motivo de la orden no consta.
+
+**Consecuencia.** No volver a usar esa imagen: sigue en el historial de git y en
+`preview` y `main`. La nueva va como fondo de `.replay__img` en `HomeContactSection.astro` (la ventana de
+repetición), encima del tono de espera. La anterior era decorativa (sin texto
+alternativo); si la nueva aporta información, necesita su texto en los tres idiomas.
+
+---
+
+## 2026-10-04 · Talentos sin «Ver» ni «Orden»: el grid sale siempre en el orden del archivo
+
+> **Estado: en las tres variantes** (`feat/variante-a-retransmision`,
+> `feat/variante-b-titulos` y `feat/variante-c-analisis`), y en `preview` desde el
+> 2026-10-05 con la variante A. `main` sigue con los dos controles.
+
+**Qué se decidió.** La página de Talentos pierde el filtro de rol («Ver»: Todos /
+Jugadores / Entrenadores) y el orden («Orden»: Predeterminado / A-Z / Z-A). El grid
+se ve siempre en el orden del archivo, que es el de la lista de Mario (entrada del
+2026-09-25). Se queda el buscador por nombre, con su aviso de «sin resultados» y el
+botón que lo vacía.
+
+**Quién y por qué.** Mario, el 2026-10-04, por dirección del equipo: «El orden es el
+que es, y se queda así». El orden del grid es editorial —quién sale antes lo decide
+PH— y un A-Z lo deshacía con un clic. El filtro de rol se retira en la misma
+decisión.
+
+**Alternativa descartada.** Mantenerlos, como pedía el encargo común de las variantes
+y como sigue teniéndolos la web publicada.
+
+**Qué cambia.**
+- Sin los dos controles y sin sus textos en los tres idiomas (`talents.role.*`,
+  `talents.sort.*`).
+- **El buscador ya no se pliega en el móvil.** Se plegaba en una lupa para compartir
+  fila con el orden; sin esa fila se ve entero y ocupa el mismo alto. Con ello sobra
+  el aspa que lo cerraba (`talents.search.close`).
+- El botón del aviso de vacío sigue diciendo «Limpiar filtros» (los textos no se
+  cambian) y ahora solo vacía la búsqueda.
+- El grid sigue animando con FLIP los cambios de la búsqueda.
+
+**Consecuencia.** No proponer volver a poner un orden o un filtro de rol sin hablarlo
+con el equipo: es una decisión editorial, no un olvido.
+
+---
+
+## 2026-10-03 · Variante A «Retransmisión»: la web como la realización de un partido en televisión
+
+> **Estado: elegida por el equipo y en `preview` desde el 2026-10-05**, sin pasar a
+> `main`. Sale de `feat/rediseno-motion` (commit `e0c6360`, el «Marcador») y fue una
+> de las tres variantes completas que Mario pidió para elegir; las otras dos siguen
+> en sus ramas.
+
+**Qué pidió Mario.** El rediseño «Marcador» (entrada siguiente) solo cambió el
+movimiento y dejó la maquetación casi igual. Mario lo aclaró el 2026-10-03:
+«secciones» significaba no tocar las cuatro rutas (con sus idiomas), pero **sí** la
+distribución del contenido dentro de ellas; los textos son los mismos y era en el
+diseño donde pedía innovar. Pidió tres variantes completas, con todas las
+secciones, funcionalidades y clics, en el lenguaje de los motion graphics, móvil
+primero, con sus cuatro principios de Motion UI (propósito, curvas naturales,
+100-350 ms, coreografía) y con las decisiones de diseño delegadas.
+
+**La idea.** Cada bloque es un grafismo de retransmisión deportiva —placas,
+rótulos inferiores, el marcador de la esquina, la tabla de estadísticas, la cinta
+inferior— que entra barriendo en la diagonal de 45° del logo PH, con la precisión
+de un paquete gráfico de Champions o Premier. Lo que se recuerda: «el marcador
+arriba diciéndome dónde estaba, los rótulos entrando en diagonal y una cortinilla
+dorada entre páginas». Cómo está hecho, en `ARCHITECTURE.md` («Sistema de
+animaciones», «Cabecera de sección», «Hero»).
+
+**El sistema** (global.css, «Retransmisión»; componentes en `src/components/ui/`):
+
+- **Placa** (`Plate.astro`): negro casi opaco, filo blanco al 12 % y el borde
+  derecho cortado a 45°; encima, la **pestaña dorada** que marca lo activo. Entra
+  creciendo desde su borde izquierdo con el corte delante (320 ms) y su texto sube
+  dentro (240 ms, +80 ms). Si un rótulo no cabe en una línea, **cada línea pasa a
+  ser su placa** (`data-plate-lines`, partido en `ph-motion.ts`).
+- **Rótulo inferior** (placas apiladas en escalera), **bug** (`Bug.astro`: celda
+  con el número en monoespaciada y filo dorado + etiqueta en placa), **placa llave**
+  (`KeyPlate.astro`: el botón, la única placa blanca, que barre en oro al
+  señalarla), **cinta** (`Ticker.astro`: texto ligado al scroll), **tabla de
+  estadísticas** (fila con barra segmentada), **revelado en diagonal** de fotos y
+  vídeo desde la esquina de abajo a la izquierda (520 ms + escala 1,06 → 1).
+- **Cortinilla** entre páginas: dos bandas a 45° (blanca fina y dorada) y una placa
+  negra que tapa la pantalla en el centro del barrido, se para un instante y sale;
+  380 ms, al revés al volver atrás. Reaprovecha `.ph-stinger` con su nombre de View
+  Transition (no se toca `page-main`).
+- **Cabecera = marcador de esquina** (logo + placa con el nombre de la página, que
+  rueda al navegar), **barra de canales** en escritorio y **menú móvil** con una
+  banda dorada que lo cruza. **Pie = tablero de cierre.** **Intro = cortinilla de
+  canal**: el logo se dibuja en el sitio del neón y una banda dorada barre el negro
+  y lo descubre (sigue siendo CSS en línea en el `<head>`, con las reglas de
+  `docs/trampas-conocidas.md`; la salida se sigue llamando `ph-intro-salir`).
+
+**Qué cambia en cada página** (mismas rutas, mismos textos, mismo orden de bloques):
+
+- **Portada.** El lema como rótulo inferior sobre la señal del neón; al bajar, las
+  placas salen hacia la izquierda y el bug «Scroll» llena su línea, todo ligado al
+  scroll. Talentos: «El roster.» en placa de hasta 144 px y la placa llave.
+  Servicios: «la alineación» —las cinco áreas como filas numeradas— y en
+  escritorio, al lado del titular; el Plan de Acción va aparte, a todo lo ancho, con
+  sus cinco sub-áreas en cinco columnas. Sobre: la frase en dos placas, la tabla de
+  cifras (7 con siete segmentos, 360° con barra continua) y los valores en la cinta.
+  Contacto (⚠️ *sin imagen desde el 2026-10-05: el hueco espera la nueva; entrada
+  «Contacto sin la imagen del sobre dorado», arriba*): «Hablemos.», el correo como
+  placa llave grande y la imagen en una ventana de repetición con marco de placa.
+- **Talentos.** ⚠️ *Rol y orden se retiraron el 2026-10-04 y el buscador ya no se
+  pliega en el móvil (entrada «Talentos sin «Ver» ni «Orden»», arriba).* Barra de
+  filtros de realización: buscador en placa (plegable en el móvil) y rol y orden
+  como **controles segmentados** (grupos de radios nativos; caben a 360 px en
+  italiano). Ficha = rótulo inferior sobre la foto (nombre y club
+  en placas, escudos en placas cuadradas). Filtrar y ordenar con FLIP; las que
+  salen se apagan en 150 ms, las que entran se descubren en diagonal.
+- **Servicios.** «Un equipo / fuera del campo.» en escalera; las áreas como
+  alineación con panel de dos columnas (descripción y viñetas numeradas); la cinta;
+  el modelo como **corte de segmento** (una banda cruza el bloque con el scroll); los
+  pilares como segmentos (imagen a sangre que se descubre y empuja despacio, rótulo
+  solapado que alterna de lado); el manifiesto en placas.
+- **Sobre nosotros.** Hero en placas con los valores y el pie como dos bugs; los
+  párrafos en paneles; Filosofía en tres **cartones de título**; el equipo como
+  **hoja de alineación**; la presencia como **lista de señales** con el código ISO en
+  su celda.
+
+**Alternativas descartadas** (al construirlo):
+
+- *Placas «inline» con `box-decoration-break: clone`* (cada línea de un texto
+  partido, con su fondo): el corte a 45° habría que pintarlo con degradados (sin
+  filo en la diagonal y dentado a 1×) y `transform` no se aplica a cajas en línea.
+  Se parten las líneas con JS y, sin JS, se ve la placa de varias líneas.
+- *Crecer la placa con `scaleX`*, como decía la dirección: deforma el corte y el
+  texto. Se recorta con `clip-path` y el frente avanza con la misma diagonal.
+- *Entradas con GSAP*: las legales no cargan GSAP y la red de seguridad sería
+  doble. Las entradas son CSS (`is-inview` + retardos); GSAP queda para lo ligado al
+  scroll, el FLIP y el acordeón.
+- *Acordeones animando `height`* (el Marcador lo hacía): recalcula el layout en cada
+  fotograma. El panel cambia de alto de una vez y lo de debajo se desliza con
+  `transform`, midiendo qué se mueve (`ph-disclosure.ts`).
+- *Desplegables (listbox) para rol y orden*: la dirección los dejaba como
+  alternativa si los segmentos no cabían. Caben a 360 px en italiano.
+- *Mantener las paletas del Marcador para las cifras*: dos mundos en una página.
+  Las cifras van en celdas de bug o en monoespaciada, sin animarse por su cuenta.
+
+**Qué deja obsoleto de la entrada «Marcador»** (que queda abajo como registro):
+las paletas (`Flap`, `FlapText`), la fila índice (`Slate`, `.ph-rowline`), la tecla
+(`Key`), las costuras (`.ph-seam`), el revelado por tonos (`.ph-develop`), el
+destello (`glint`), las letras de tablero (`cycleText`), los titulares que ruedan
+(`rollIn`, `riseIn`, `stage`, `wrapWords`) y la intro en paleta. Se borraron
+también `clipPathReveal` y `magneticHover`, exportados sin uso, y el guardián
+`data-reveal`. Se conservan `ph-ambient.ts`, `.ph-stinger`, la red de seguridad y la
+infraestructura de scroll de `ph-text-animations.ts`.
+
+**Preferencias anotadas de Mario (2026-10-01):**
+
+- **Se mantienen**: el contenido empieza en la primera pantalla (en Talentos asoma
+  la primera fila de fichas a 390×844 y a 1440×900); entradillas de 18-21 px casi
+  blancas; nada por debajo de 13 px; el **fondo vivo** (el shader de
+  `ph-ambient.ts` tal cual, que con las placas encima brilla alrededor de ellas); el
+  grid de 2/3/5 columnas; titulares de cabecera de 106 px como máximo y rótulos de
+  hasta 144 px.
+- **Cambia**: los bugs y las etiquetas de placa van en **mayúsculas** a 13-14 px con
+  0,05 em de espaciado (la dirección lo pide así; no son las mayúsculas diminutas de
+  10-11 px y 0,25 em que Mario rechazó). El margen lateral baja a
+  `clamp(16px, 5vw, 96px)` (antes 24 px de mínimo): sin eso, los rótulos en placa no
+  caben en una línea a 360 px en italiano. Afecta también a las legales.
+- **Movimiento reducido**: la dirección pedía que placas y fotos aparecieran con un
+  fundido de 150 ms. Se dejan **en su sitio desde el principio, sin fundido**: un
+  estado oculto a la espera de entrar en pantalla, también con movimiento reducido,
+  arriesga contenido que no aparece. Los cambios de estado (menú, paneles, la placa
+  llave) sí usan fundidos de 150 ms, y la cortinilla pasa a un fundido corto.
+
+**Costes y riesgos** (medido en el build):
+
+- JS comprimido: GSAP + infraestructura 49,2 KB (el Marcador, 49,8 KB), núcleo
+  `ph-motion` 1,7 KB (2,0 KB), `ph-disclosure` 1,0 KB (nuevo), Flip en `/talentos`
+  11,0 KB (9,7 KB). Por página: portada 71,9 KB, `/talentos` 83,3 KB, `/servicios`
+  74,6 KB, `/sobre-nosotros` 72,8 KB, legales 20,9 KB.
+- ScrollTrigger pasa a usarse de verdad (cintas, salida del rótulo del hero, banda
+  del modelo, empuje de los pilares): el punto 2 del backlog de rendimiento
+  (sustituirlo por un `IntersectionObserver`) deja de aplicar en esta rama.
+- `clip-path` animado no va por la tarjeta gráfica en todos los navegadores: en
+  `/talentos` entran hasta ~10 fichas a la vez (foto + dos placas cada una). En
+  Chromium y WebKit sin cabeza va fluido; **no se ha probado en un móvil real**
+  (`docs/hallazgos-abiertos.md`).
+- Partir las placas por líneas mide el texto al cargar y al cambiar el ancho
+  (~110 placas en `/talentos`, la mayoría de una línea, que no se tocan).
+
+---
+
+## 2026-10-02 · Lenguaje de movimiento «Marcador»: la web se mueve como el marcador de un estadio
+
+> ⚠️ **Sustituido por la «Variante A · Retransmisión»** (entrada de arriba), que
+> está en `preview` desde el 2026-10-05. Lo que se conserva y lo que no, ahí. El resto
+> de esta entrada describe el Marcador tal como se hizo.
+
+> **Estado: llegó a `preview` el 2026-10-05 dentro de la variante A**, que lo
+> sustituye (aviso de arriba). Se hizo en una rama paralela a `preview` a petición
+> de Mario, para verlo sin mezclarlo con el trabajo en curso.
+
+**Decisión** (pedido por Mario: rediseñar la web «como un showreel» en el lenguaje
+de los motion graphics, móvil primero, sin tocar textos, secciones, paleta,
+tipografías ni fotos de jugadores, y con las decisiones de diseño delegadas): todo
+el movimiento de la web pasa a un solo lenguaje, el de un **marcador de estadio de
+noche** bajo el rótulo de neón de la portada. Cómo funciona, en
+`ARCHITECTURE.md` («Sistema de animaciones»). En corto:
+
+- **Los datos caen en paletas** (split-flap): los números de sección, de las filas,
+  las cifras de la home (7, 360°), los romanos de los pilares (cuentan I → II →
+  III en una sola paleta) y los códigos de país. Las paletas caen con gravedad y
+  frenan contra el tope; las letras de los tableros (valores, sedes) pasan por el
+  abecedario hasta la suya.
+- **Los titulares entran rodando** palabra a palabra por su ranura; **las líneas
+  del tablero se dibujan** de izquierda a derecha, en cascada; **las fotos se
+  revelan** saliendo del negro, por filas.
+- **Una sola luz** dorada viaja en la diagonal del logo, hacia arriba a la
+  derecha: el destello de las palabras doradas, el de las tecla y el del logo al
+  señalarlos, y la banda que cruza la pantalla al cambiar de página (al revés al
+  volver atrás).
+- **La intro de la portada es una paleta a pantalla completa**: el logo se dibuja
+  con el tamaño y en el sitio exactos del rótulo de neón del vídeo, y las dos
+  mitades se pliegan hacia la bisagra y descubren el neón en el mismo sitio (un
+  corte a juego). Sigue siendo CSS puro, con las reglas de `docs/trampas-conocidas.md`.
+- **El grid de talentos se reordena con FLIP** (GSAP Flip) al filtrar, buscar u
+  ordenar: cada ficha se desliza a su sitio nuevo en vez de saltar.
+
+**Cómo se eligió.** Se investigaron los principios (Material 3, Apple HIG, los 12
+de *UX in Motion*, los de animación de Disney aplicados a motion design y los
+paquetes gráficos de televisión de Premier League, Champions y LaLiga). De ahí las
+curvas y tiempos: las de Material 3 más la de la marca, dos velocidades (interfaz
+120-320 ms; momentos de autor 600-800 ms) y salidas más rápidas que entradas. La
+dirección se eligió entre siete tradiciones gráficas del fútbol, ordenadas por lo
+que resuenan con este público: el túnel de vestuarios con su espectáculo de luces,
+el paquete gráfico de retransmisión, la pizarra de análisis táctico, el álbum de
+cromos, los gráficos del cierre de mercado, **el marcador de paletas** y las vallas
+LED del estadio. Se construyó la sexta por sorteo (el método de la skill de diseño
+`impeccable`, que obliga a no quedarse con la primera idea de la categoría), y se
+reforzó con lo mejor de las otras: pasos mecánicos en vez de transiciones suaves en
+las letras, fotos que se revelan en vez de fundirse, una sola escala para las
+etiquetas, un solo sentido para toda la luz, y las costuras del tablero dibujadas.
+
+**Por qué el marcador encaja con el contenido**: la web está llena de datos
+tabulares —números de sección y de área, cifras, un equipo de 21 con cargo y
+sede, siete sedes con su código— que en un marcador tienen su forma natural. El
+movimiento explica algo en cada sitio: qué ha cambiado (filtros, cifras), en qué
+orden se lee (cascadas) y hacia dónde se navega (la luz entre páginas).
+
+**Alternativas descartadas**:
+
+- *El paquete de retransmisión al uso* (barras, cortinillas en diagonal, rótulos
+  inferiores): la dirección que cualquiera esperaría para una web de fútbol;
+  quedó segunda.
+- *Cortinilla geométrica en el propio cambio de página* (recortar la página nueva
+  con `clip-path` en la View Transition). Descartada al leer el router de Astro:
+  la foto de la página nueva se toma **después** de restaurar el scroll, así que al
+  volver atrás o al ir a un ancla (`/#contacto`) la página está desplazada y el
+  recorte barre una zona que no se ve. La luz va en una pieza fija a la pantalla
+  con su propio nombre de View Transition, que no depende del scroll. Tampoco se
+  tocó el nombre `page-main` ni su fundido: es la zona que `hallazgos-abiertos.md`
+  pide no tocar sin Mario.
+- *Paletas 3D también en los titulares*: ilegible y pesado; los titulares ruedan.
+- *Animaciones guiadas por scroll en CSS* (`animation-timeline`): en octubre de 2026
+  Firefox aún no las trae por defecto, y el proyecto ya tiene GSAP y un
+  IntersectionObserver para lo mismo.
+- *Rebotes y elásticos*: la marca no rebota. Se cambió también la curva con rebote
+  que tenía la barrita dorada del menú.
+
+**Qué cambia además** (decidido al construirlo):
+
+- **Piezas nuevas**: `Flap`, `FlapText`, `Slate` (la fila índice de cada bloque,
+  que antes se escribía a mano en tres secciones) y `Key` (el botón-enlace), en
+  `src/components/ui/`; y `src/scripts/ph-motion.ts`, el núcleo sin GSAP.
+- **Las etiquetas pasan a una sola escala** (13-15 px, letra normal) y la
+  monoespaciada queda solo para las cifras y códigos de las paletas, como se
+  decidió el 2026-10-01. Los antetítulos de la home y de Sobre nosotros, que eran
+  monoespaciada en mayúsculas, pasan a la fila índice; los valores, los cargos y
+  las sedes, a letra normal.
+- **Rótulos hasta 9rem (144 px).** Los titulares de una o dos palabras que son el
+  bloque («El roster.» en la home, «Hablemos.», «Madrid.») van a escala de
+  rótulo: es el recurso de tipografía en movimiento del lenguaje. La revisión de
+  diseño propuso el tope habitual de 6rem; se dejó en 9rem, por debajo de los 200
+  px que llegó a tener el primer montaje. **Los titulares de cabecera de
+  Talentos, Servicios y Sobre nosotros no cambian**: siguen en el máximo de 106 px
+  de la entrada del 2026-10-01.
+- **La fila índice se queda en cada bloque.** La revisión de diseño la marca como
+  antetítulo (un patrón que su sistema veta), pero su texto es contenido que no
+  se toca y la fila es la cabecera que eligió Mario el 2026-10-01. Pendiente de
+  que Mario diga si la quiere en todos los bloques o solo en las cabeceras de
+  página.
+- **El menú móvil pierde los números 01-04** delante de cada página: repetían el
+  orden del menú sin decir nada más. Quedan las filas con su línea y la cascada.
+  Tampoco se repite ya «05 · Contacto» sobre la foto de contacto, al lado de su
+  propia fila índice.
+- **Sobre nosotros**: los párrafos ya no entran palabra a palabra con desenfoque
+  (era el tirón medido en `rendimiento.md`); la tabla del equipo pasa a cuatro
+  columnas (la sede caía en una línea aparte debajo del número desde antes de
+  este cambio).
+- **Portada**: la imagen de contacto se ve también en el móvil, en franja; el
+  marcador de cifras va a dos columnas solo desde 1200 px.
+- **Se arregla la fuga de listeners de scroll de la home** (`hallazgos-abiertos.md`).
+- **Se retiran** `revealOnView`, `trackingReveal`, `counterReveal`, `splitWords` y
+  `scrambleReveal` de `ph-text-animations.ts`: este cambio dejó de usarlas.
+
+**Consecuencias**:
+
+- Red de seguridad en CSS para todo lo que espera a entrar en pantalla: si el JS
+  no llega, a los 2,5 s se ve todo. Ahora cubre también `data-reveal`, que antes
+  solo tenía red en JS.
+- Peso: +3 KB comprimidos de JS en las páginas animadas (las curvas a medida de
+  GSAP) y +10 KB en `/talentos` (Flip). El núcleo de movimiento (2 KB) se carga
+  ahora también en las páginas legales, por la cabecera y el pie. Cifras en
+  `docs/rendimiento.md`.
+- **No se ha probado en un móvil real** (`docs/hallazgos-abiertos.md`).
+
+---
 
 ## 2026-10-02 · El entrenador vuelve al grid de `/talentos`, al final
 
@@ -294,6 +741,10 @@ la home del idioma elegido, porque quien elige idioma pide leer en él.
 ---
 
 ## 2026-10-01 · Fondos animados en directo para Talentos, Servicios y Sobre nosotros
+
+> ⚠️ **En la variante A, superado el 2026-10-05**: las escenas ya no van fijas por
+> página; sale una al azar en cada página, de un bombo de cinco (entrada «La A
+> estrena el bombo de fondos»).
 
 > ⚠️ **Composición SUPERADA el mismo día** por la entrada «Cabecera «Escenario»…»
 > (arriba): el fondo ya no va en el contenedor de las fotos, sino en toda la

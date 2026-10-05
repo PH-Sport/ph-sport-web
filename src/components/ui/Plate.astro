@@ -1,0 +1,40 @@
+---
+/**
+ * Placa: la pieza base de la retransmisión. Rectángulo negro con un filo blanco
+ * al 12 % y el borde derecho cortado a 45°; encima, si se pide, la pestaña dorada
+ * que marca lo activo o lo importante. Estilos `.ph-plate` en global.css.
+ *
+ * Entra al llegar su bloque (`[data-inview]`): crece desde su borde izquierdo y
+ * luego su texto sube dentro de ella. Sin JS o con movimiento reducido se ve tal
+ * cual. El texto va en el slot (puede llevar un `<em>` para la palabra en oro).
+ */
+interface Props {
+  /** Etiqueta: `span` dentro de un titular, `p` o `div` sueltas. */
+  as?: 'span' | 'p' | 'div' | 'h1' | 'h2' | 'h3' | 'dt' | 'dd' | 'li';
+  variant?: 'display' | 'label' | 'text';
+  gold?: boolean;
+  tab?: boolean;
+  /** Retardo de entrada en ms (la cascada de un rótulo). */
+  d?: number;
+  /** La placa vigila su propia entrada en pantalla, en vez de la de su bloque. */
+  inview?: boolean;
+  /** Peldaño de la escalera en un rótulo inferior (`.ph-lt`): 0, 1, 2… */
+  step?: number;
+  /** Si el texto no cabe en una línea, cada línea pasa a ser su placa
+   *  (ph-motion.ts). */
+  lines?: boolean;
+  id?: string;
+  class?: string;
+}
+
+const { as: Tag = 'span', variant = 'display', gold = false, tab = false, d, inview = false, step, lines = false, id, class: className } = Astro.props as Props;
+const style = [d !== undefined && `--d: ${d}ms`, step !== undefined && `--step-n: ${step}`].filter(Boolean).join('; ');
+---
+
+<Tag
+  class:list={['ph-plate', `ph-plate--${variant}`, gold && 'ph-plate--gold', tab && 'ph-plate--tab', className]}
+  style={style || undefined}
+  data-inview={inview ? '' : undefined}
+  data-plate-lines={lines ? '' : undefined}
+  id={id}
+>{tab && <span class="ph-plate__tab" aria-hidden="true"></span>}<span class="ph-plate__t"><span class="ph-plate__in"><slot /></span></span></Tag>

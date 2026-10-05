@@ -2,6 +2,8 @@
 import type { PlayerDetailPayload } from '@/lib/playerDetail';
 import { useTranslations, type Lang } from '@/i18n/utils';
 import { nationalTeamBadgeSrc } from '@/lib/nationalTeamBadge';
+import Bug from '@/components/ui/Bug.astro';
+import Plate from '@/components/ui/Plate.astro';
 
 interface Props {
   lang: Lang;
@@ -10,10 +12,6 @@ interface Props {
 
 const { lang, players } = Astro.props;
 const t = useTranslations(lang);
-
-/** «02 · Talentos»: el número y la etiqueta van en estilos distintos en la fila índice. */
-const [eyebrowNum, ...eyebrowRest] = t('talents.eyebrow').split(' · ');
-const eyebrowLabel = eyebrowRest.join(' · ');
 
 /** Ancho real de la tarjeta en cada grid (2/3/5 columnas); lo comparten AVIF y WebP. */
 const photoSizes = '(max-width: 720px) 50vw, (max-width: 1200px) 33vw, 240px';
@@ -30,1157 +28,468 @@ const cards = players.map((player) => {
 ---
 
 <section class="talents" aria-labelledby="talents-title">
-  <div class="ph-page-bg" aria-hidden="true">
-    <canvas class="ph-ambient" data-ambient="trayectorias"></canvas>
-  </div>
-
-  <header class="talents__head">
-    <p class="ph-rowline talents__index" data-reveal>
-      <span class="ph-rowline__group">
-        <span class="ph-rowline__num">{eyebrowNum}</span>
-        <span class="ph-rowline__sep" aria-hidden="true">·</span>
-        <span class="ph-rowline__label">{eyebrowLabel}</span>
-      </span>
-    </p>
-    <h1 class="talents__title ph-head-title" id="talents-title" data-reveal>
-      {t('talents.title')}<em>{t('talents.titleAccent')}</em>.
+  {/* Cabecera: bug, «El roster.» en su placa y la entradilla. El buscador y la
+      primera fila de fichas asoman ya en la primera pantalla. */}
+  <header class="ph-head talents__head" data-inview>
+    <Bug text={t('talents.eyebrow')} inview={false} />
+    <h1 class="ph-head__title talents__title" id="talents-title">
+      <Plate tab d={60}>{t('talents.title')}<em>{t('talents.titleAccent')}</em>.</Plate>
     </h1>
-    <p class="talents__lead ph-head-lead" data-reveal>{t('talents.lead')}</p>
+    <p class="ph-head-lead ph-in-rise" style="--d: 300ms">{t('talents.lead')}</p>
   </header>
 
-  <div class="talents__controls" data-talents-controls data-reveal>
-    <label class="talents__search" data-talents-search-wrap>
-      <span class="visually-hidden">{t('talents.search.label')}</span>
-      <svg class="talents__search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="11" cy="11" r="7"></circle>
-        <path d="m20 20-3.5-3.5"></path>
-      </svg>
+  {/* El buscador, en una placa de entrada, siempre a la vista. El grid sale en el
+      orden del archivo y no hay controles para reordenarlo ni para filtrarlo por
+      rol: lo decidió el equipo (DECISIONS.md, 2026-10-04). */}
+  <div class="talents__controls" data-talents-controls data-inview>
+    <div class="talents__search ph-in-rise" style="--d: 360ms" data-talents-search-wrap>
+      <svg class="talents__search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>
       <input
         type="search"
+        id="talents-search-input"
         class="talents__search-input"
         placeholder={t('talents.search.placeholder')}
         aria-label={t('talents.search.label')}
         autocomplete="off"
         data-talents-search
       />
-      <button
-        type="button"
-        class="talents__search-clear"
-        aria-label={t('talents.search.clear')}
-        data-talents-clear
-        hidden
-      >
-        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="m6 6 12 12M18 6 6 18"></path>
-        </svg>
+      <button type="button" class="talents__search-btn" aria-label={t('talents.search.clear')} data-talents-clear hidden>
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="m6 6 12 12M18 6 6 18"></path></svg>
       </button>
-      <button
-        type="button"
-        class="talents__search-close"
-        aria-label={t('talents.search.close')}
-        data-talents-search-close
-      >
-        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="m6 6 12 12M18 6 6 18"></path>
-        </svg>
-      </button>
-    </label>
-
-    <div class="talents__combo" data-talents-combo="role">
-      <button
-        type="button"
-        class="talents__combo-button"
-        aria-haspopup="listbox"
-        aria-expanded="false"
-        aria-label={t('talents.role.label')}
-        data-talents-combo-trigger
-      >
-        <span class="talents__combo-trigger-label">{t('talents.role.trigger')}</span>
-        <svg class="talents__select-arrow" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="m6 9 6 6 6-6"></path>
-        </svg>
-      </button>
-      <ul
-        class="talents__combo-panel"
-        role="listbox"
-        aria-label={t('talents.role.label')}
-        data-talents-combo-panel
-        hidden
-      >
-        <li class="talents__combo-option" role="option" aria-selected="true"  data-value="all"    style="--i: 0">{t('talents.role.all')}</li>
-        <li class="talents__combo-option" role="option" aria-selected="false" data-value="player" style="--i: 1">{t('talents.role.players')}</li>
-        <li class="talents__combo-option" role="option" aria-selected="false" data-value="coach"  style="--i: 2">{t('talents.role.coaches')}</li>
-      </ul>
-    </div>
-
-    <div class="talents__combo" data-talents-combo="sort">
-      <button
-        type="button"
-        class="talents__combo-button"
-        aria-haspopup="listbox"
-        aria-expanded="false"
-        aria-label={t('talents.sort.label')}
-        data-talents-combo-trigger
-      >
-        <span class="talents__combo-trigger-label">{t('talents.sort.trigger')}</span>
-        <svg class="talents__select-arrow" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="m6 9 6 6 6-6"></path>
-        </svg>
-      </button>
-      <ul
-        class="talents__combo-panel"
-        role="listbox"
-        aria-label={t('talents.sort.label')}
-        data-talents-combo-panel
-        hidden
-      >
-        <li class="talents__combo-option" role="option" aria-selected="true"  data-value="default" style="--i: 0">{t('talents.sort.default')}</li>
-        <li class="talents__combo-option" role="option" aria-selected="false" data-value="az"      style="--i: 1">{t('talents.sort.az')}</li>
-        <li class="talents__combo-option" role="option" aria-selected="false" data-value="za"      style="--i: 2">{t('talents.sort.za')}</li>
-      </ul>
     </div>
   </div>
 
+  {/* Las fichas de la alineación: la foto a sangre en su celda y, pegado abajo,
+      el rótulo inferior con el nombre y el club; los escudos de selección arriba
+      a la derecha, en placas cuadradas. No son clicables (DECISIONS.md,
+      2026-04-24). */}
   <ul class="talents__grid" role="list" data-talents-grid>
-    {cards.map(({ player, badges }, idx) => (
-      <li
-        class="talents__item"
-        data-talent-card
-        data-name={player.name}
-        data-role={player.role}
-        data-index={idx}
-      >
-        <div class="talents__card" data-badges={badges.length} data-reveal>
-          <div class="talents__photo">
-            <picture>
-              {player.photoSrcsetAvif && (
-                <source type="image/avif" srcset={player.photoSrcsetAvif} sizes={photoSizes} />
-              )}
-              <img
-                src={player.photoSrc}
-                srcset={player.photoSrcset || undefined}
-                sizes={photoSizes}
-                alt={player.name}
-                loading="lazy"
-                decoding="async"
-                width="480"
-                height="640"
-              />
-            </picture>
+    {cards.map(({ player, badges }) => (
+      <li class="talents__item" data-talent-card data-name={player.name}>
+        <div class="talents__card" data-inview data-cascade="60">
+          <div class="talents__photo ph-reveal">
+            <div class="talents__push">
+              <picture>
+                {player.photoSrcsetAvif && (
+                  <source type="image/avif" srcset={player.photoSrcsetAvif} sizes={photoSizes} />
+                )}
+                <img
+                  class="ph-reveal__img"
+                  src={player.photoSrc}
+                  srcset={player.photoSrcset || undefined}
+                  sizes={photoSizes}
+                  alt={player.name}
+                  loading="lazy"
+                  decoding="async"
+                  width="480"
+                  height="640"
+                />
+              </picture>
+            </div>
           </div>
           {badges.length > 0 && (
             <div class="talents__badges" aria-hidden="true">
               {badges.map(({ code, src }) => (
-                <img
-                  src={src}
-                  alt=""
-                  class="talents__badge"
-                  width="22"
-                  height="22"
-                  loading="lazy"
-                  decoding="async"
-                  data-national-code={code}
-                />
+                <span class="talents__badge-cell">
+                  <img src={src} alt="" class="talents__badge" width="20" height="20" loading="lazy" decoding="async" data-national-code={code} />
+                </span>
               ))}
             </div>
           )}
-          <span class="talents__corner" aria-hidden="true"></span>
-          <div class="talents__meta">
-            <span class="talents__name">{player.name}</span>
-            {player.subtitle && <span class="talents__club">{player.subtitle}</span>}
+          <div class="talents__lt">
+            <span class="ph-plate talents__name" data-plate-lines>
+              <span class="ph-plate__tab" aria-hidden="true"></span>
+              <span class="ph-plate__t"><span class="ph-plate__in">{player.name}</span></span>
+            </span>
+            {player.subtitle && (
+              <span class="ph-plate talents__club" data-plate-lines>
+                <span class="ph-plate__t"><span class="ph-plate__in">{player.subtitle}</span></span>
+              </span>
+            )}
           </div>
-          <span class="talents__underline" aria-hidden="true"></span>
         </div>
       </li>
     ))}
   </ul>
 
-  <p class="talents__empty" data-talents-empty role="status" hidden>
-    {t('talents.empty.filter')}
-    <button type="button" class="talents__reset" data-talents-reset>
-      {t('talents.reset')}
+  <div class="talents__empty" data-talents-empty role="status" hidden>
+    <Plate as="p" variant="text" class="talents__empty-text">{t('talents.empty.filter')}</Plate>
+    <button type="button" class="ph-key talents__reset" data-talents-reset>
+      <span class="ph-key__label">
+        <span class="ph-key__text">{t('talents.reset')}</span>
+        <span class="ph-key__text" aria-hidden="true">{t('talents.reset')}</span>
+      </span>
+      <svg class="ph-key__arrow" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.6 0.6 9.2 5 1.6 9.4Z" fill="currentColor" /></svg>
     </button>
-  </p>
+  </div>
 </section>
 
 <style>
   .talents {
     position: relative;
-    padding: var(--ph-head-top) var(--ph-section-px, clamp(20px, 4vw, 48px)) clamp(80px, 12vw, 140px);
+    padding-bottom: clamp(80px, 11vw, 140px);
     /* Transparente: el fondo es la luz animada de toda la página (`.ph-page-bg`). */
     background: transparent;
-    color: var(--color-ph-white, #ffffff);
   }
 
-  .talents__head,
-  .talents__controls,
-  .talents__grid,
-  .talents__empty { position: relative; z-index: 1; }
+  /* «The roster.» (la más larga) cabe en una placa a 360 px. */
+  .talents__title { font-size: clamp(48px, 14vw, 106px); }
 
-  /* Cabecera igual en Talentos, Servicios y Sobre nosotros (estilos y cifras en
-     global.css: `.ph-rowline`, `.ph-head-*`): fila índice, titular y entradilla
-     debajo. Los controles y las primeras tarjetas caben ya en la primera pantalla. */
-  .talents__title em {
-    color: var(--color-ph-gold, #d6b25e);
-    font-style: italic;
-    font-weight: 400;
-  }
-
-  /* Sticky controls bar */
+  /* ── El buscador: una placa de entrada ───────────────────────────────── */
   .talents__controls {
+    /* Alto de la placa de entrada del buscador. */
+    --ctl-h: 48px;
     position: relative;
     z-index: 2;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 16px 0;
-    margin-top: var(--ph-head-after);
-    margin-bottom: clamp(8px, calc(0.76vw + 5px), 16px);
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    background: transparent;
+    margin: var(--ph-head-after) var(--ph-section-px) 18px;
   }
-
+  /* A todo el ancho de la columna en el móvil; desde ahí, con tope, a la
+     izquierda. */
   .talents__search {
     position: relative;
-    flex: 1 1 280px;
+    z-index: 0;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    background: rgba(13, 15, 18, 0.72);
-    backdrop-filter: var(--ph-glass-backdrop-ui);
-    -webkit-backdrop-filter: var(--ph-glass-backdrop-ui);
-    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: var(--radius-sm);
-    box-shadow: var(--ph-glass-highlight);
-    transition: border-color 0.2s, background 0.2s;
+    width: 100%;
+    max-width: 420px;
+    height: var(--ctl-h);
   }
-  /* Escritorio: el buscador con un ancho razonable para 51 nombres y los filtros a
-     la derecha. En móvil el buscador se pliega a un icono (más abajo). */
-  @media (min-width: 721px) {
-    .talents__search { max-width: 520px; }
-    .talents__controls > .talents__combo:first-of-type { margin-left: auto; }
+  .talents__search::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    /* Opaca: la placa se lee igual encima del fondo animado. */
+    background: var(--color-ph-black);
+    box-shadow: inset 0 0 0 1px var(--ph-plate-edge);
+    transition: box-shadow var(--ph-dur-state) var(--ph-ease-std);
   }
-  .talents__search:focus-within {
-    border-color: var(--color-ph-gold, #d6b25e);
-  }
+  .talents__search:focus-within::before { box-shadow: inset 0 0 0 1px var(--color-ph-gold); }
   .talents__search-icon {
+    display: block;
     flex: 0 0 auto;
-    color: var(--color-ph-ink-soft, #b5b7bb);
+    margin-left: 14px;
+    color: var(--color-ph-gold);
   }
   .talents__search-input {
+    display: block;
     flex: 1 1 auto;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--color-ph-white, #ffffff);
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 14px;
     min-width: 0;
+    height: 100%;
+    padding: 0 10px;
+    border: 0;
+    outline: none;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: var(--color-ph-white);
   }
-  .talents__search-input::placeholder {
-    color: var(--color-ph-ink-soft, #b5b7bb);
-  }
-  /* Hide native clear/search decorations (we render our own) */
+  .talents__search-input::placeholder { color: rgba(255, 255, 255, 0.6); }
   .talents__search-input::-webkit-search-decoration,
   .talents__search-input::-webkit-search-cancel-button,
   .talents__search-input::-webkit-search-results-button,
-  .talents__search-input::-webkit-search-results-decoration {
-    appearance: none;
-  }
-  .talents__search-clear {
-    flex: 0 0 auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    background: transparent;
-    border: none;
-    border-radius: 50%;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    cursor: pointer;
-    transition: color 0.2s, background 0.2s;
-  }
-  .talents__search-clear:hover {
-    color: var(--color-ph-white, #ffffff);
-    background: rgba(255, 255, 255, 0.06);
-  }
-  /* Close button: only shown in the mobile expanded-overlay state */
-  .talents__search-close {
-    display: none;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    background: transparent;
-    border: none;
-    border-radius: 50%;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    cursor: pointer;
-    transition: color 0.2s, background 0.2s;
-  }
-  .talents__search-close:hover {
-    color: var(--color-ph-white, #ffffff);
-    background: rgba(255, 255, 255, 0.06);
-  }
-
-  /* ── Custom combo (role + sort) ──
-     Reemplaza a los <select> nativos para poder animar el popover y sus opciones. */
-  .talents__combo {
-    position: relative;
-    display: inline-flex;
-    flex: 0 0 auto;
-  }
-
-  .talents__combo-button {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 40px 12px 16px;
-    background: rgba(13, 15, 18, 0.72);
-    backdrop-filter: var(--ph-glass-backdrop-ui);
-    -webkit-backdrop-filter: var(--ph-glass-backdrop-ui);
-    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: var(--radius-sm);
-    box-shadow: var(--ph-glass-highlight);
-    color: var(--color-ph-white, #ffffff);
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 14px;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .talents__combo-button:focus-visible {
-    outline: none;
-    border-color: var(--color-ph-gold, #d6b25e);
-  }
-  .talents__combo[data-open="true"] .talents__combo-button {
-    border-color: var(--color-ph-gold, #d6b25e);
-  }
-
-  .talents__combo-trigger-label {
-    color: var(--color-ph-white, #ffffff);
-  }
-
-  .talents__select-arrow {
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    transition: transform 240ms cubic-bezier(.7, 0, .2, 1);
-  }
-  .talents__combo[data-open="true"] .talents__select-arrow {
-    transform: translateY(-50%) rotate(180deg);
-  }
-
-  .talents__combo-panel {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    min-width: 100%;
-    margin: 0;
-    padding: 6px;
-    list-style: none;
-    background: var(--color-ph-bg-2, #15171b);
-    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: var(--radius-sm);
-    box-shadow: var(--shadow-ph, 0 4px 24px rgba(13, 15, 18, 0.6));
-    z-index: 6;
-    white-space: nowrap;
-    transform-origin: top center;
-  }
-
-  /* Open: el panel "cae" desde el trigger — clip-path revela de arriba abajo. */
-  .talents__combo[data-open="true"] .talents__combo-panel {
-    animation: talentsPanelOpen 300ms cubic-bezier(.7, 0, .2, 1) both;
-  }
-  @keyframes talentsPanelOpen {
-    from {
-      opacity: 0;
-      transform: translateY(-6px);
-      clip-path: inset(0 0 100% 0);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-      clip-path: inset(0);
-    }
-  }
-
-  /* Close: el panel "se recoge" — clip-path retrae de abajo hacia arriba. */
-  .talents__combo[data-closing="true"] .talents__combo-panel {
-    animation: talentsPanelClose 220ms cubic-bezier(.7, 0, .2, 1) both;
-    pointer-events: none;
-  }
-  @keyframes talentsPanelClose {
-    from {
-      opacity: 1;
-      transform: translateY(0);
-      clip-path: inset(0);
-    }
-    to {
-      opacity: 0;
-      transform: translateY(-4px);
-      clip-path: inset(0 0 100% 0);
-    }
-  }
-
-  .talents__combo-option {
-    position: relative;
-    padding: 10px 14px 10px 26px;
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 14px;
-    color: var(--color-ph-white-80, rgba(255, 255, 255, 0.8));
-    cursor: pointer;
-    border-radius: 2px;
-    user-select: none;
-    transition: background 0.15s, color 0.15s;
-  }
-  /* Chivato: punto dorado a la izquierda sólo en la opción activa.
-     Reservamos el slot en todas para que el texto no se desplace. */
-  .talents__combo-option::before {
-    content: "";
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    width: 6px;
-    height: 6px;
-    margin-top: -3px;
-    border-radius: 50%;
-    background: var(--color-ph-gold, #d6b25e);
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-  .talents__combo-option[aria-selected="true"]::before {
-    opacity: 1;
-  }
-  .talents__combo-option[data-highlighted="true"] {
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--color-ph-white, #ffffff);
-  }
-  .talents__combo-option[aria-selected="true"] {
-    color: var(--color-ph-gold, #d6b25e);
-  }
-
-  /* Stagger: cada opción aparece con pequeño retraso, empezando cuando
-     el panel ya ha iniciado su caída. Complementa el clip-path del panel. */
-  .talents__combo[data-open="true"] .talents__combo-option {
-    animation: talentsOptionEnter 240ms cubic-bezier(.7, 0, .2, 1) both;
-    animation-delay: calc(var(--i, 0) * 40ms + 70ms);
-  }
-  @keyframes talentsOptionEnter {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .talents__combo[data-open="true"] .talents__combo-panel,
-    .talents__combo[data-closing="true"] .talents__combo-panel,
-    .talents__combo[data-open="true"] .talents__combo-option {
-      animation: none;
-    }
-    .talents__select-arrow { transition: none; }
-  }
-
-
-  /* ── Mobile: collapse search to icon, reveal overlay on tap ── */
-  @media (max-width: 720px) {
-    .talents__controls {
-      flex-wrap: nowrap;
-      gap: 8px;
-    }
-
-    /* Placeholder del slot del search mientras está en overlay (expand/collapse).
-       Evita que los combos se reajusten al salir el search del flujo flex. */
-    .talents__controls:has(.talents__search.is-expanded)::before,
-    .talents__controls:has(.talents__search.is-collapsing)::before {
-      content: '';
-      flex: 0 0 44px;
-      height: 44px;
-    }
-
-    /* Collapsed search = 44×44 icon-only tap target */
-    .talents__search {
-      flex: 0 0 44px;
-      width: 44px;
-      height: 44px;
-      padding: 0;
-      gap: 0;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .talents__search .talents__search-input,
-    .talents__search .talents__search-clear,
-    .talents__search .talents__search-close {
-      display: none;
-    }
-
-    /* Expanded/Collapsing: overlay absoluto que cubre toda la barra.
-       El reveal usa clip-path (de izquierda a derecha), no distorsiona el contenido. */
-    .talents__search.is-expanded,
-    .talents__search.is-collapsing {
-      position: absolute;
-      top: 16px;
-      bottom: 16px;
-      left: var(--ph-section-px, 24px);
-      right: var(--ph-section-px, 24px);
-      width: auto;
-      height: auto;
-      flex: 0 0 auto;
-      padding: 8px 8px 8px 16px;
-      gap: 10px;
-      justify-content: flex-start;
-      background: var(--color-ph-black, #0d0f12);
-      border-color: var(--color-ph-gold, #d6b25e);
-      z-index: 4;
-    }
-    .talents__search.is-expanded {
-      animation: talentsSearchOpen 340ms cubic-bezier(.7, 0, .2, 1) both;
-    }
-    .talents__search.is-collapsing {
-      animation: talentsSearchClose 260ms cubic-bezier(.7, 0, .2, 1) both;
-      pointer-events: none;
-    }
-    .talents__search.is-expanded .talents__search-input,
-    .talents__search.is-collapsing .talents__search-input {
-      display: block;
-      flex: 1 1 auto;
-    }
-    .talents__search.is-expanded .talents__search-clear:not([hidden]),
-    .talents__search.is-collapsing .talents__search-clear:not([hidden]) {
-      display: inline-flex;
-    }
-    .talents__search.is-expanded .talents__search-close,
-    .talents__search.is-collapsing .talents__search-close {
-      display: inline-flex;
-    }
-    /* Contenido interno: pequeño fade tras el reveal del contenedor. */
-    .talents__search.is-expanded .talents__search-input,
-    .talents__search.is-expanded .talents__search-close {
-      animation: talentsSearchContentIn 280ms cubic-bezier(.7, 0, .2, 1) 90ms both;
-    }
-
-    @keyframes talentsSearchOpen {
-      from { clip-path: inset(0 calc(100% - 44px) 0 0); }
-      to   { clip-path: inset(0); }
-    }
-    @keyframes talentsSearchClose {
-      from { clip-path: inset(0); }
-      to   { clip-path: inset(0 calc(100% - 44px) 0 0); }
-    }
-    @keyframes talentsSearchContentIn {
-      from { opacity: 0; transform: translateX(-4px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-
-    /* Combos: comparten el ancho restante; ocultamos el label inline. */
-    .talents__combo {
-      flex: 1 1 0;
-      min-width: 0;
-    }
-    .talents__combo-button {
-      width: 100%;
-      height: 44px;
-      padding: 0 12px;
-      justify-content: center;
-      gap: 8px;
-    }
-    .talents__combo-trigger-label {
-      font-size: 13px;
-    }
-    /* En móvil el arrow forma parte del flex flow (junto al label), no absoluto.
-       Así el grupo label+arrow se centra como una unidad y queda simétrico. */
-    .talents__select-arrow {
-      position: static;
-      transform: none;
-      right: auto;
-      top: auto;
-    }
-    .talents__combo[data-open="true"] .talents__select-arrow {
-      transform: rotate(180deg);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .talents__search.is-expanded,
-    .talents__search.is-collapsing,
-    .talents__search.is-expanded .talents__search-input,
-    .talents__search.is-expanded .talents__search-close {
-      animation: none;
-    }
-  }
-
-  /* Grid: 2 → 3 → 5 columns */
-  .talents__grid {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .talents__search-input::-webkit-search-results-decoration { appearance: none; }
+  /* El aspa que vacía la búsqueda: solo con texto escrito. */
+  .talents__search-btn {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: clamp(10px, 1.5vw, 16px);
+    flex: 0 0 auto;
+    place-items: center;
+    width: var(--ctl-h);
+    height: var(--ctl-h);
+    padding: 0;
+    border: 0;
+    color: rgba(255, 255, 255, 0.72);
+    background: transparent;
+    cursor: pointer;
+    transition: color var(--ph-dur-state) var(--ph-ease-std);
+  }
+  .talents__search-btn[hidden] { display: none; }
+  .talents__search-btn:hover { color: var(--color-ph-gold); }
+  .talents__search-btn:focus-visible { outline: 2px solid var(--color-ph-gold); outline-offset: -3px; }
+
+  /* ── El grid: 2 → 3 → 5 columnas ────────────────────────────────────── */
+  .talents__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(8px, 1.4vw, 16px);
+    margin: 0;
+    padding: 0 var(--ph-section-px);
+    list-style: none;
   }
   @media (min-width: 720px) {
-    .talents__grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .talents__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
   }
   @media (min-width: 1200px) {
-    .talents__grid { grid-template-columns: repeat(5, 1fr); gap: 18px; }
+    .talents__grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
   }
 
   .talents__item { margin: 0; }
   .talents__item[hidden] { display: none; }
 
-  .talents__card {
-    position: relative;
-    display: block;
-    overflow: hidden;
-    background: var(--color-ph-bg-2, #15171b);
-    border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    border-radius: var(--radius-md);
-    transition: transform 0.35s cubic-bezier(.7, 0, .2, 1);
-    transform-origin: center bottom;
+  /* La ficha: la foto a sangre en su celda, con un filo de placa encima. El
+     filo y el fondo van dentro de la foto: hasta que se revela no hay casilla
+     vacía a la vista. */
+  .talents__card { position: relative; }
+  .talents__photo {
+    --arh: 133.333%;
+    aspect-ratio: 3 / 4;
+    background: #15171b;
   }
-  .talents__photo { position: relative; aspect-ratio: 3 / 4; }
-  /* Sin caja propia: la foto sigue midiéndose contra .talents__photo, como sin <picture>. */
+  .talents__photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+  .talents__push {
+    position: absolute;
+    inset: 0;
+    transition: transform 420ms var(--ph-ease-out);
+  }
   .talents__photo picture { display: contents; }
   .talents__photo img {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
   }
 
-  /* Escudos de selección: siempre visibles, arriba-derecha de la foto. */
+  /* Escudos de selección: arriba a la derecha, cada uno en su placa cuadrada. */
   .talents__badges {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 8px;
+    right: 8px;
     z-index: 2;
     display: flex;
-    gap: 4px;
+    gap: 3px;
     pointer-events: none;
+    transition: clip-path 200ms var(--ph-ease-out) calc(var(--cd, 0ms) + 380ms);
+    clip-path: inset(0 0 0 0);
   }
-  .talents__badge {
-    display: block;
-    width: 22px;
-    height: 22px;
-    object-fit: contain;
-    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55));
-    transition: transform 0.35s cubic-bezier(.7, 0, .2, 1);
+  .talents__badge-cell {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    background: var(--ph-plate);
+    box-shadow: inset 0 0 0 1px var(--ph-plate-edge);
   }
+  .talents__badge { display: block; width: 20px; height: 20px; object-fit: contain; }
+  :global(html.ph-anim) .talents__card:not(.is-inview) .talents__badges { clip-path: inset(0 0 0 100%); }
+  :global(html.ph-anim:not(.ph-motion)) .talents__badges { animation: ph-failsafe-unclip 0s linear 2.5s forwards; }
 
-  /* Escuadra: decorativa sola (cuando no hay escudo) y enmarca los escudos al hacer hover. */
-  .talents__corner {
+  /* El rótulo inferior de la ficha: placa con el nombre y, debajo, la del club,
+     un paso a la derecha. */
+  .talents__lt {
     position: absolute;
-    top: 7px;
-    right: 7px;
-    width: 32px;
-    height: 32px;
-    border-top: 1px solid var(--color-ph-gold, #d6b25e);
-    border-right: 1px solid var(--color-ph-gold, #d6b25e);
-    opacity: 0;
-    transition: opacity 0.35s;
-    pointer-events: none;
-  }
-  /* Sin escudo: volvemos al tamaño original (22×22 en 12/12). */
-  .talents__card[data-badges="0"] .talents__corner {
-    top: 12px;
-    right: 12px;
-    width: 22px;
-    height: 22px;
-  }
-  /* Dos escudos: la escuadra se ensancha para abrazarlos (22 + 4 + 22 + 10 padding = 58). */
-  .talents__card[data-badges="2"] .talents__corner {
-    width: 58px;
-  }
-
-  .talents__meta {
-    position: absolute;
-    inset: 0;
-    padding: 16px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    z-index: 2;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    gap: 3px;
-    background: linear-gradient(
-      to top,
-      rgba(13, 15, 18, 0.96) 0%,
-      rgba(13, 15, 18, 0.5) 38%,
-      rgba(13, 15, 18, 0) 64%
-    );
-    pointer-events: none;
+    align-items: flex-start;
+    gap: 2px;
   }
   .talents__name {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(15px, 1.3vw, 18px);
+    --lh: 1.18;
+    --pt: 0.48em;
+    --pb: 0.44em;
+    --pl: 0.62em;
+    --pr: 1.8em;
+    --d: 240ms;
+    font-family: var(--font-display);
+    font-size: clamp(14px, calc(0.35vw + 12.6px), 17px);
+    font-weight: 600;
     letter-spacing: -0.005em;
-    line-height: 1.2;
-    color: var(--color-ph-white, #ffffff);
-    transition: color 0.3s;
+    color: var(--color-ph-white);
   }
-  /* El club en letra normal y a tamaño de lectura: antes iba en mayúsculas de
-     máquina de escribir a 10 px, por debajo de lo legible. */
   .talents__club {
-    font-size: clamp(12px, calc(0.1vw + 11.6px), 13px);
-    line-height: 1.4;
-    color: var(--color-ph-gold, #d6b25e);
-    transition: color 0.3s;
+    --lh: 1.25;
+    --pt: 0.5em;
+    --pb: 0.46em;
+    --pl: 0.7em;
+    --pr: 1.9em;
+    --d: 300ms;
+    max-width: calc(100% - 6px);
+    margin-left: 6px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.72);
   }
-
-  .talents__underline {
-    position: absolute;
-    left: 16px;
-    right: 16px;
-    bottom: 14px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
+  /* La pestaña dorada asoma al señalar la ficha. */
+  .talents__name .ph-plate__tab {
+    width: 40px;
+    height: 4px;
     transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.5s cubic-bezier(.7, 0, .2, 1);
-    pointer-events: none;
+    transition: transform 140ms var(--ph-ease-in);
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .talents__card:hover { transform: translateY(-3px); }
-    .talents__card:hover .talents__name { color: var(--color-ph-gold, #d6b25e); }
-    .talents__card:hover .talents__club { color: var(--color-ph-ink-soft, #b5b7bb); }
-    .talents__card:hover .talents__corner { opacity: 1; }
-    .talents__card:hover .talents__underline { transform: scaleX(1); }
-    .talents__card:hover .talents__badge { transform: scale(1.08); }
+    .talents__card:hover .talents__push { transform: scale(1.04); }
+    .talents__card:hover .talents__name .ph-plate__tab {
+      transform: scaleX(1);
+      transition: transform var(--ph-dur-tab) var(--ph-ease-out);
+    }
   }
+
+  /* ── Vacío: el aviso en una placa y la placa llave que limpia ─────────── */
+  .talents__empty {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin: clamp(24px, 4vw, 40px) var(--ph-section-px) 0;
+  }
+  .talents__empty[hidden] { display: none; }
+  .talents__empty-text { color: var(--ph-ink-lead); }
 
   @media (prefers-reduced-motion: reduce) {
-    .talents__card,
-    .talents__name,
-    .talents__corner,
-    .talents__underline,
-    .talents__badge { transition: none; }
-    .talents__card:hover { transform: none; }
-    .talents__card:hover .talents__badge { transform: none; }
-  }
-
-  /* Empty filter state */
-  .talents__empty {
-    margin: clamp(40px, 6vw, 64px) 0 0;
-    padding: 32px 24px;
-    text-align: center;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-    font-size: 15px;
-    line-height: 1.6;
-    border: 1px dashed var(--color-ph-line, rgba(255, 255, 255, 0.12));
-  }
-  .talents__reset {
-    margin-left: 12px;
-    padding: 8px 16px;
-    background: transparent;
-    border: 1px solid var(--color-ph-line-strong, rgba(255, 255, 255, 0.24));
-    border-radius: var(--radius-sm);
-    color: var(--color-ph-white, #ffffff);
-    font-family: var(--font-sans, 'Helvetica Neue', sans-serif);
-    font-size: 12px;
-    cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
-  }
-  .talents__reset:hover {
-    border-color: var(--color-ph-gold, #d6b25e);
-    color: var(--color-ph-gold, #d6b25e);
-  }
-
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+    .talents__push,
+    .talents__badges,
+    .talents__name .ph-plate__tab { transition: none; }
+    .talents__card:hover .talents__push { transform: none; }
   }
 </style>
 
 <script>
-  type SortMode = 'default' | 'az' | 'za';
-  type RoleFilter = 'all' | 'player' | 'coach';
+  import { gsap } from 'gsap';
+  // Desde `gsap/all` y no `gsap/Flip`: con `gsap/Flip` el comprobador de tipos
+  // falla en macOS por mayúsculas (los tipos de GSAP se citan como `flip.d.ts` y
+  // `Flip.d.ts`). El paquete se declara sin efectos secundarios, así que solo
+  // viaja Flip: el bundle pesa lo mismo (medido).
+  import { Flip } from 'gsap/all';
+  import { EASE, mountSection, afterTransitionPaint, scheduleScrollTriggerRefresh } from '@/scripts/ph-text-animations';
+
+  gsap.registerPlugin(Flip);
+
+  const reduceMotion = (): boolean => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /** Vuelve a lanzar la entrada de una pieza (las fichas que entran, el aviso de
+   *  vacío): sin la clase y con ella otra vez, en dos fotogramas de estilo. */
+  function replay(el: Element): void {
+    el.classList.remove('is-inview');
+    (el as HTMLElement).style.setProperty('--cd', '0ms');
+    void (el as HTMLElement).offsetWidth;
+    el.classList.add('is-inview');
+  }
+
+  /**
+   * Cambia el grid al buscar y anima el cambio en vez de saltar: las fichas que
+   * se quedan se deslizan a su sitio nuevo (FLIP), las que salen se apagan en
+   * 150 ms y las que entran se descubren en diagonal. Con movimiento reducido, el
+   * cambio es directo.
+   */
+  function flipGrid(cards: HTMLElement[], mutate: () => void): void {
+    if (reduceMotion()) {
+      mutate();
+      scheduleScrollTriggerRefresh();
+      return;
+    }
+    // Las fichas que aún no habían entrado en pantalla (y siguen sin revelar)
+    // llegarían vacías: al recolocarse se dan todas por reveladas.
+    cards.forEach((card) => card.querySelector('.talents__card')?.classList.add('is-inview'));
+    const state = Flip.getState(cards);
+    mutate();
+    Flip.from(state, {
+      duration: 0.42,
+      ease: EASE.out,
+      stagger: 0.01,
+      absolute: true,
+      absoluteOnLeave: true,
+      prune: true,
+      onEnter: (els) => {
+        els.forEach((el) => {
+          const card = el.querySelector('.talents__card');
+          if (card) replay(card);
+        });
+      },
+      onLeave: (els) => gsap.to(els, { opacity: 0, duration: 0.15, ease: EASE.in }),
+      onComplete: scheduleScrollTriggerRefresh,
+    });
+  }
 
   function normalize(s: string): string {
     return s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
-  }
-
-  function isMobile(): boolean {
-    return window.matchMedia('(max-width: 720px)').matches;
-  }
-
-  interface ComboController {
-    setValue(value: string): void;
-    close(): void;
-  }
-
-  function initCombo(
-    combo: HTMLElement,
-    onChange: (value: string) => void,
-  ): ComboController | null {
-    const trigger = combo.querySelector<HTMLButtonElement>('[data-talents-combo-trigger]');
-    const panel = combo.querySelector<HTMLUListElement>('[data-talents-combo-panel]');
-    if (!trigger || !panel) return null;
-
-    const options = Array.from(panel.querySelectorAll<HTMLLIElement>('.talents__combo-option'));
-    if (options.length === 0) return null;
-
-    let highlightIdx = options.findIndex((o) => o.getAttribute('aria-selected') === 'true');
-    if (highlightIdx < 0) highlightIdx = 0;
-
-    function setHighlight(next: number): void {
-      highlightIdx = (next + options.length) % options.length;
-      for (let i = 0; i < options.length; i++) {
-        if (i === highlightIdx) options[i].setAttribute('data-highlighted', 'true');
-        else options[i].removeAttribute('data-highlighted');
-      }
-    }
-
-    let closeAnimEnd: ((e: AnimationEvent) => void) | null = null;
-
-    function open(): void {
-      if (combo.dataset.open === 'true') return;
-      /* Si estaba cerrándose, interrumpimos la animación y volvemos a abrir. */
-      if (combo.dataset.closing === 'true') {
-        delete combo.dataset.closing;
-        if (closeAnimEnd) {
-          panel!.removeEventListener('animationend', closeAnimEnd);
-          closeAnimEnd = null;
-        }
-      }
-      combo.dataset.open = 'true';
-      trigger!.setAttribute('aria-expanded', 'true');
-      panel!.hidden = false;
-      const selected = options.findIndex((o) => o.getAttribute('aria-selected') === 'true');
-      setHighlight(selected >= 0 ? selected : 0);
-      document.addEventListener('pointerdown', onDocPointerDown, true);
-    }
-
-    function close(): void {
-      if (combo.dataset.open !== 'true') return;
-      delete combo.dataset.open;
-      combo.dataset.closing = 'true';
-      trigger!.setAttribute('aria-expanded', 'false');
-      document.removeEventListener('pointerdown', onDocPointerDown, true);
-      closeAnimEnd = (e: AnimationEvent): void => {
-        if (e.target !== panel) return;
-        delete combo.dataset.closing;
-        panel!.hidden = true;
-        panel!.removeEventListener('animationend', closeAnimEnd!);
-        closeAnimEnd = null;
-      };
-      panel!.addEventListener('animationend', closeAnimEnd);
-    }
-
-    function onDocPointerDown(e: PointerEvent): void {
-      if (!(e.target instanceof Node)) return;
-      if (!combo.contains(e.target)) close();
-    }
-
-    function selectByIndex(i: number): void {
-      const opt = options[i];
-      if (!opt) return;
-      const value = opt.dataset.value ?? '';
-      for (const o of options) o.setAttribute('aria-selected', o === opt ? 'true' : 'false');
-      close();
-      trigger!.focus();
-      onChange(value);
-    }
-
-    trigger.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (combo.dataset.open === 'true') close();
-      else open();
-    });
-
-    trigger.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        if (combo.dataset.open !== 'true') {
-          open();
-        } else if (e.key === 'ArrowDown') {
-          setHighlight(highlightIdx + 1);
-        } else if (e.key === 'ArrowUp') {
-          setHighlight(highlightIdx - 1);
-        } else {
-          selectByIndex(highlightIdx);
-        }
-      } else if (e.key === 'Escape' && combo.dataset.open === 'true') {
-        e.preventDefault();
-        close();
-      }
-    });
-
-    panel.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowDown') { e.preventDefault(); setHighlight(highlightIdx + 1); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); setHighlight(highlightIdx - 1); }
-      else if (e.key === 'Home') { e.preventDefault(); setHighlight(0); }
-      else if (e.key === 'End') { e.preventDefault(); setHighlight(options.length - 1); }
-      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectByIndex(highlightIdx); }
-      else if (e.key === 'Escape') { e.preventDefault(); close(); trigger!.focus(); }
-    });
-
-    options.forEach((opt, i) => {
-      opt.addEventListener('pointerenter', () => setHighlight(i));
-      opt.addEventListener('click', (e) => {
-        e.preventDefault();
-        selectByIndex(i);
-      });
-    });
-
-    return {
-      setValue(value: string): void {
-        const idx = options.findIndex((o) => o.dataset.value === value);
-        if (idx < 0) return;
-        const opt = options[idx];
-        for (const o of options) o.setAttribute('aria-selected', o === opt ? 'true' : 'false');
-        setHighlight(idx);
-      },
-      close,
-    };
   }
 
   function initTalents(): void {
     const controls = document.querySelector<HTMLElement>('[data-talents-controls]');
     const grid = document.querySelector<HTMLUListElement>('[data-talents-grid]');
     const empty = document.querySelector<HTMLElement>('[data-talents-empty]');
-    if (!controls || !grid || !empty) return;
+    if (!controls || !grid || !empty || controls.dataset.talentsOn) return;
+    controls.dataset.talentsOn = '1';
 
-    const searchWrap = controls.querySelector<HTMLLabelElement>('[data-talents-search-wrap]');
     const search = controls.querySelector<HTMLInputElement>('[data-talents-search]');
     const clearBtn = controls.querySelector<HTMLButtonElement>('[data-talents-clear]');
-    const closeBtn = controls.querySelector<HTMLButtonElement>('[data-talents-search-close]');
-    const roleCombo = controls.querySelector<HTMLElement>('[data-talents-combo="role"]');
-    const sortCombo = controls.querySelector<HTMLElement>('[data-talents-combo="sort"]');
     const reset = empty.querySelector<HTMLButtonElement>('[data-talents-reset]');
-    if (!searchWrap || !search || !clearBtn || !closeBtn || !roleCombo || !sortCombo || !reset) return;
+    if (!search || !clearBtn || !reset) return;
+
+    // El aviso de vacío entra con su placa cada vez que aparece; lo destapa este
+    // script, no el observador de pantalla.
+    empty.setAttribute('data-inview', '');
+    empty.setAttribute('data-inview-manual', '');
 
     const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-talent-card]'));
-    let currentRole: RoleFilter = 'all';
 
-    function applySort(mode: SortMode): void {
-      const sorted = [...cards].sort((a, b) => {
-        if (mode === 'default') {
-          return Number(a.dataset.index) - Number(b.dataset.index);
-        }
-        const cmp = (a.dataset.name ?? '').localeCompare(b.dataset.name ?? '', undefined, { sensitivity: 'base' });
-        return mode === 'az' ? cmp : -cmp;
-      });
-      for (const card of sorted) grid!.appendChild(card);
-    }
-
-    function applyFilter(query: string): void {
+    function filterCards(query: string): void {
       const norm = normalize(query.trim());
       let visible = 0;
       for (const card of cards) {
-        const name = card.dataset.name ?? '';
-        const r = card.dataset.role ?? 'player';
-        const nameMatch = !norm || normalize(name).includes(norm);
-        const roleMatch = currentRole === 'all' || currentRole === r;
-        const match = nameMatch && roleMatch;
+        const match = !norm || normalize(card.dataset.name ?? '').includes(norm);
         card.hidden = !match;
         if (match) visible++;
       }
+      const wasHidden = empty!.hidden;
       empty!.hidden = visible > 0;
+      if (wasHidden && !empty!.hidden && !reduceMotion()) replay(empty!);
     }
 
-    function syncClearBtn(): void {
-      clearBtn!.hidden = search!.value.length === 0;
-    }
-
-    function openSearch(): void {
-      searchWrap!.classList.remove('is-collapsing');
-      searchWrap!.classList.add('is-expanded');
-      requestAnimationFrame(() => search!.focus());
-    }
-
-    function closeSearch(): void {
-      if (!searchWrap!.classList.contains('is-expanded')) return;
-      search!.blur();
-      searchWrap!.classList.remove('is-expanded');
-      searchWrap!.classList.add('is-collapsing');
-      const onEnd = (e: AnimationEvent): void => {
-        if (e.target !== searchWrap) return;
-        searchWrap!.classList.remove('is-collapsing');
-        searchWrap!.removeEventListener('animationend', onEnd);
-      };
-      searchWrap!.addEventListener('animationend', onEnd);
-    }
+    const applyFilter = () => flipGrid(cards, () => filterCards(search!.value));
+    const syncClearBtn = () => { clearBtn!.hidden = search!.value.length === 0; };
 
     search.addEventListener('input', () => {
       syncClearBtn();
-      applyFilter(search.value);
+      applyFilter();
     });
 
-    clearBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
+    clearBtn.addEventListener('click', () => {
       search.value = '';
       syncClearBtn();
-      applyFilter('');
+      applyFilter();
       search.focus();
-    });
-
-    /* Mobile: tapping the collapsed search wrapper expands it */
-    searchWrap.addEventListener('click', (e) => {
-      if (!isMobile()) return;
-      if (searchWrap.classList.contains('is-expanded')) return;
-      e.preventDefault();
-      openSearch();
-    });
-
-    closeBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      search.value = '';
-      syncClearBtn();
-      applyFilter('');
-      closeSearch();
-    });
-
-    search.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && searchWrap.classList.contains('is-expanded')) {
-        e.preventDefault();
-        closeSearch();
-      }
-    });
-
-    const roleCtl = initCombo(roleCombo, (value) => {
-      currentRole = value === 'player' || value === 'coach' ? value : 'all';
-      applyFilter(search.value);
-    });
-
-    const sortCtl = initCombo(sortCombo, (value) => {
-      applySort(value === 'az' || value === 'za' ? value : 'default');
     });
 
     reset.addEventListener('click', () => {
       search.value = '';
-      currentRole = 'all';
-      roleCtl?.setValue('all');
-      sortCtl?.setValue('default');
       syncClearBtn();
-      applyFilter('');
-      applySort('default');
-      closeSearch();
+      applyFilter();
       search.focus();
     });
 
-    syncClearBtn();
+    // Si el navegador restaura el formulario al volver atrás, el grid lo sigue.
+    if (search.value) {
+      syncClearBtn();
+      filterCards(search.value);
+    }
   }
 
-  document.addEventListener('astro:page-load', initTalents);
-</script>
-
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, wrapWords, scheduleScrollTriggerRefresh, afterTransitionPaint, revealReveals,
-  } from '@/scripts/ph-text-animations';
-
-  gsap.registerPlugin(ScrollTrigger);
-
+  /** La entrada de las fichas va por columnas: cada una espera a su vecina de la
+   *  izquierda dentro de la fila que entra a la vez (`data-cascade`, ph-motion). */
   function initTalentsAnimations(): void {
     const section = document.querySelector<HTMLElement>('.talents');
-    if (!section) return;
-    if (reducedMotion()) return;
-
-    const index = section.querySelector<HTMLElement>('.talents__index');
-    const title = section.querySelector<HTMLElement>('.talents__title');
-    const lead = section.querySelector<HTMLElement>('.talents__lead');
-    const controls = section.querySelector<HTMLElement>('.talents__controls');
-    const grid = section.querySelector<HTMLElement>('.talents__grid');
-    const cards = section.querySelectorAll<HTMLElement>('.talents__card');
-
-    // La cabecera está SIEMPRE above-the-fold (es el hero de la página). Animarla
-    // con scrollTrigger era frágil: el trigger `once` para un elemento ya visible
-    // en la carga fallaba intermitentemente al disparar (~80% de las recargas) y
-    // el título quedaba congelado en yPercent:115 → invisible. Igual que el hero y
-    // el hero de Servicios, la animamos de forma INMEDIATA (sin scrollTrigger), en
-    // cascada con delays. Las cards siguen con IntersectionObserver (fiable).
-    if (index) {
-      gsap.from(index, { opacity: 0, y: 8, duration: 0.7, ease: 'power3.out' });
-    }
-    if (title) {
-      const words = wrapWords(title);
-      gsap.from(words, {
-        yPercent: 115,
-        duration: 0.9,
-        ease: 'power4.out',
-        stagger: 0.08,
-        delay: 0.1,
-      });
-    }
-    if (lead) {
-      gsap.from(lead, {
-        opacity: 0,
-        y: 18,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.3,
-      });
-    }
-    if (controls) {
-      gsap.from(controls, {
-        opacity: 0,
-        y: 14,
-        duration: 0.7,
-        ease: 'power3.out',
-        delay: 0.4,
-      });
-    }
-    if (cards.length && grid) {
-      // IntersectionObserver per-card en lugar de gsap.from(cards, { stagger }).
-      // Antes: las 116 cards animaban a la vez al entrar el grid (1.4-1.9 s de
-      // scriptEvaluation aunque solo 6-9 fueran visibles). Ahora cada card
-      // anima al entrar al viewport, y el stagger se reinicia entre batches.
-      gsap.set(cards, { opacity: 0, scale: 0.96, y: 20 });
-
-      const STAGGER_S = 0.05;
-      const STAGGER_RESET_GAP_MS = 250;
-      let staggerOffset = 0;
-      let lastFiredAt = 0;
-
-      const cardObserver = new IntersectionObserver(
-        (entries) => {
-          const now = performance.now();
-          if (now - lastFiredAt > STAGGER_RESET_GAP_MS) staggerOffset = 0;
-          for (const entry of entries) {
-            if (!entry.isIntersecting) continue;
-            gsap.to(entry.target, {
-              opacity: 1,
-              scale: 1,
-              y: 0,
-              duration: 0.8,
-              delay: staggerOffset,
-              ease: 'power3.out',
-              clearProps: 'transform,opacity',
-            });
-            staggerOffset += STAGGER_S;
-            lastFiredAt = now;
-            cardObserver.unobserve(entry.target);
-          }
-        },
-        { rootMargin: '0px 0px -8% 0px' },
-      );
-
-      for (const card of cards) cardObserver.observe(card);
-    }
-
-    revealReveals(section);
-    scheduleScrollTriggerRefresh();
+    if (section) mountSection(section);
   }
 
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initTalentsAnimations));
+  document.addEventListener('astro:page-load', () => {
+    initTalents();
+    afterTransitionPaint(initTalentsAnimations);
+  });
 </script>
 
-<script>
-  // Fondo animado de la página (se inicia solo en cada astro:page-load).
-  import '@/scripts/ph-ambient';
-</script>

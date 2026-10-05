@@ -61,6 +61,15 @@ Home en carga fría 224 → 118 ms (−47 %).
 - Vídeo: `autoplay` fuera y `preload="none"`. **Quitar `autoplay` a secas no sirve de nada** — medido, Chrome se salta el `preload="metadata"` y descarga el vídeo igual desde el ms 217.
 - Red de seguridad en CSS para el titular del hero, que estaba atado a `window.load` a través de GSAP.
 
+**Octubre · la variante A «Retransmisión»** (rama `feat/variante-a-retransmision`, `DECISIONS.md` 2026-10-03). JS comprimido con gzip, medido en el build: GSAP + infraestructura 49,2 KB, núcleo `ph-motion` 1,7 KB, `ph-disclosure` 1,0 KB, Flip 11,0 KB en `/talentos`. Por página: portada 71,9 KB, `/talentos` 83,3 KB, `/servicios` 74,6 KB, `/sobre-nosotros` 72,8 KB, legales 20,9 KB. Sin medir aún con CPU ×4 ni en un móvil real.
+
+**Octubre · el bombo de fondos en la A** (`DECISIONS.md` 2026-10-05). `ph-ambient.ts` pasa de las tres páginas interiores a `BaseLayout`: 5,6 KB con gzip en todas las páginas, también en la portada y en las legales (donde no monta canvas y no hace nada). La GPU dibuja también en la portada, bajo el vídeo. Sin medir en un móvil real.
+
+**Octubre · el lenguaje de movimiento «Marcador»** (rama `feat/rediseno-motion`, `DECISIONS.md` 2026-10-02). Medido con Playwright sobre el build, Chromium sin cabeza en esta máquina, con el mismo método antes (el build de `preview`) y después:
+- **Entrar en `/sobre-nosotros` desde `/servicios`** por navegación SPA, CPU ×4, 3 pasadas: tarea larga más larga **80-85 ms → 0-54 ms**. Los párrafos ya no entran palabra a palabra con `filter: blur()`. La cifra de 217-359 ms del 2026-08-18 se midió con otro método y no es comparable.
+- **Listeners de `scroll` en el documento** tras tres vueltas home → talentos → home: **4 → 5 → 6 → 7** antes, **4 → 4 → 4 → 4** después (la fuga de `initHeroScrollCue`, arreglada).
+- **JS, comprimido con gzip**: GSAP + infraestructura 46,9 → 49,8 KB en las páginas animadas (las curvas a medida, CustomEase); `/talentos` +9,7 KB por GSAP Flip; el núcleo `ph-motion` (2,0 KB) va ahora también en las páginas legales.
+
 ## Abierto
 
 - **Coste del snapshot del `ClientRouter`** en páginas pesadas, sobre todo `/talentos` con sus 116 tarjetas. Habría que aligerar o acotar la View Transition. **Alto riesgo y sin hacer a propósito**: no tocar sin supervisión de Mario.
@@ -72,12 +81,12 @@ Home en carga fría 224 → 118 ms (−47 %).
 que sigue está verificado, no estimado):
 
 - **`Header.astro` importa los diccionarios `i18n` enteros** (`es` + `en`) para usar **ocho cadenas** de navegación. El 66 % de ese chunk son literales de texto que viajan en **todas** las páginas. Extraer solo las etiquetas: 36,8 → 21,2 KB. El tree-shaking no puede hacerlo porque el acceso es dinámico.
-- **ScrollTrigger (45 KB) se carga en las cuatro páginas y `ScrollTrigger.create()` se usa UNA vez en todo el sitio** (el parallax del claim del hero). El resto son fades y `revealOnView`, que hace `{ start: 'top 85%', once: true }` — exactamente lo que hace un `IntersectionObserver`. Cambiarlo lo saca de Talentos, Servicios y About.
-- **Tirón de 217-359 ms al entrar en `/sobre-nosotros`.** Perfilado: 292 ms de self-time en GSAP. Causa: `splitWords` parte tres párrafos del hero y tres del manifiesto en **135 spans** y los anima con `filter: blur(6px)`. Animar un desenfoque obliga a rasterizar cada span en cada fotograma. Quitar el blur y dejar `opacity` + `y`.
-- **Fuga de listeners en la home**: los de `scroll` sobre `document` van de 3 → 4 → 6 tras tres visitas. `initHeroScrollCue` registra una función nueva en cada `astro:page-load` sin quitar la anterior, y las viejas apuntan a nodos desconectados.
-- **Tres imágenes con margen, recomprimidas de verdad**: `contact-image.webp` 76 → 16 KB a 800w (no tiene variante móvil y se sirve la de 1600), `logo-ph-3d.webp` 427 → 199 KB en AVIF, `talents-hero.webp` 142 → 94 KB a q72 sin cambiar dimensiones. (El póster del hero también estaba en esta lista, 142 → 53 KB; quedó sin objeto el 2026-09-25, cuando el hero pasó a una foto fija servida por `astro:assets` en cuatro anchos.)
+- **ScrollTrigger (45 KB) se carga en las cuatro páginas y `ScrollTrigger.create()` se usa UNA vez en todo el sitio** (el parallax del claim del hero; dos desde el 2026-10-02, con el acercamiento al neón). El resto son entradas con `{ start: 'top 85%', once: true }` (entonces `revealOnView`; hoy `rollIn` y `riseIn`) — exactamente lo que hace un `IntersectionObserver`. Cambiarlo lo saca de Talentos, Servicios y About.
+- **Tirón de 217-359 ms al entrar en `/sobre-nosotros`** — *resuelto el 2026-10-02* (arriba, «Octubre»). Perfilado: 292 ms de self-time en GSAP. Causa: `splitWords` partía tres párrafos del hero y tres del manifiesto en **135 spans** y los animaba con `filter: blur(6px)`. Animar un desenfoque obliga a rasterizar cada span en cada fotograma. Los párrafos entran ahora enteros con `opacity` + `y`, y `splitWords` ya no existe.
+- **Fuga de listeners en la home** — *arreglada el 2026-10-02*: los de `scroll` sobre `document` iban de 3 → 4 → 6 tras tres visitas. `initHeroScrollCue` registraba una función nueva en cada `astro:page-load` sin quitar la anterior, y las viejas apuntaban a nodos desconectados. Ahora es un solo listener para toda la sesión.
+- **Tres imágenes con margen, recomprimidas de verdad**: ~~`contact-image.webp` 76 → 16 KB a 800w~~ (ya no está: se retiró el 2026-10-05), `logo-ph-3d.webp` 427 → 199 KB en AVIF, `talents-hero.webp` 142 → 94 KB a q72 sin cambiar dimensiones. (El póster del hero también estaba en esta lista, 142 → 53 KB; quedó sin objeto el 2026-09-25, cuando el hero pasó a una foto fija servida por `astro:assets` en cuatro anchos.)
 - ~~**Vídeo del hero a CRF 30**~~ — superado el 2026-09-22 por un vídeo nuevo; del 2026-09-25 al 2026-10-01 el hero fue una foto fija, y hoy es un vídeo renderizado con sus propios ajustes. Cifras de cada cosa en `DECISIONS.md`.
-- **Código muerto**: `src/scripts/dropdown.ts` (4,3 KB, no lo importa nadie), y `clipPathReveal` + `magneticHover` en `ph-text-animations.ts` (cero usos).
+- **Código muerto**: `src/scripts/dropdown.ts` (4,3 KB, no lo importa nadie). `clipPathReveal` + `magneticHover` (cero usos) se borraron en la variante A (2026-10-03).
 
 ## Método (esto es lo reutilizable)
 

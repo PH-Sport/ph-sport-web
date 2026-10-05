@@ -1,5 +1,8 @@
 ---
 import { useTranslations, type Lang } from '@/i18n/utils';
+import Bug from '@/components/ui/Bug.astro';
+import Plate from '@/components/ui/Plate.astro';
+import KeyPlate from '@/components/ui/KeyPlate.astro';
 
 interface Props {
   lang: Lang;
@@ -9,179 +12,125 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 ---
 
+{/* «Final del partido»: «Hablemos.» a escala de rótulo, el correo como la placa
+    llave grande y una ventana de repetición con marco de placa, que se descubre
+    en diagonal al entrar. Hoy la ventana está vacía: la imagen del sobre se
+    retiró y el hueco espera la nueva (DECISIONS.md, 2026-10-05). */}
 <section class="home-contact" id="contacto" aria-labelledby="home-contact-title">
+  <Bug text={t('home.contact.eyebrow')} />
   <div class="home-contact__grid">
-    <header class="home-contact__head">
-      <span class="home-contact__eyebrow">{t('home.contact.eyebrow')}</span>
-      <h2 class="home-contact__title" id="home-contact-title">{t('home.contact.title')}</h2>
-      <div class="home-contact__email">
-        <span class="home-contact__email-label">{t('home.contact.emailLabel')}</span>
-        <a href={`mailto:${t('home.contact.email')}`}>{t('home.contact.email')}</a>
+    <div class="home-contact__head" data-inview>
+      <h2 class="home-contact__title" id="home-contact-title">
+        <Plate tab>{t('home.contact.title')}</Plate>
+      </h2>
+      <div class="home-contact__mail">
+        <Bug text={t('home.contact.emailLabel')} inview={false} d={200} />
+        <div class="home-contact__key ph-in-rise" style="--d: 280ms">
+          <KeyPlate href={`mailto:${t('home.contact.email')}`} label={t('home.contact.email')} size="xl" />
+        </div>
       </div>
-    </header>
+    </div>
 
-    <div class="home-contact__image" aria-hidden="true">
-      <span class="home-contact__image-tag">{t('home.contact.eyebrow')}</span>
+    {/* La ventana de repetición: el marco es una placa con el corte a 45° y la
+        imagen se descubre desde la esquina de abajo a la izquierda. */}
+    <div class="home-contact__window" aria-hidden="true" data-inview>
+      <div class="replay ph-reveal" style="--d: 120ms">
+        <div class="replay__img ph-reveal__img"></div>
+      </div>
+      <span class="replay__tab"></span>
     </div>
   </div>
 </section>
 
 <style>
   .home-contact {
-    --home-contact-edge: var(--ph-section-px, clamp(20px, 4vw, 48px));
-    background: var(--color-ph-bg-2, #15171b);
-    color: var(--color-ph-white, #ffffff);
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    overflow: clip;
+    position: relative;
+    padding: clamp(64px, 7vw, 104px) var(--ph-section-px) clamp(72px, 8vw, 120px);
+    /* Transparente: el fondo es la luz animada de toda la página (`.ph-page-bg`). */
+    background: transparent;
   }
 
   .home-contact__grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: stretch;
-    min-height: clamp(420px, 58vw, 640px);
+    gap: clamp(44px, 6vw, 72px);
+    margin-top: clamp(30px, 4vw, 52px);
   }
 
-  .home-contact__head {
+  /* «Parliamone.» (la palabra más larga de los tres idiomas) cabe en una placa a
+     360 px. */
+  .home-contact__title {
+    margin: 0;
+    font-size: clamp(50px, 14.2vw, 144px);
+  }
+
+  .home-contact__mail {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: center;
-    padding: clamp(48px, 7vw, 96px) var(--home-contact-edge);
+    gap: 12px;
+    margin-top: clamp(32px, 4.5vw, 56px);
   }
+  .home-contact__key { max-width: 100%; }
 
-  .home-contact__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-gold, #d6b25e);
+  .home-contact__window { position: relative; }
+  /* El marco de la ventana: filo blanco al 12 % con el corte en la esquina. */
+  .replay {
+    --arh: 62.5%;
+    --c: clamp(28px, 4vw, 52px);
+    aspect-ratio: 16 / 10;
   }
-  .home-contact__eyebrow::before {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--color-ph-gold, #d6b25e);
-  }
-
-  .home-contact__title {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-weight: 500;
-    font-size: clamp(36px, 6vw, 72px);
-    letter-spacing: -0.03em;
-    line-height: 1.02;
-    margin: 14px 0 0;
-  }
-
-  .home-contact__email {
-    margin-top: clamp(24px, 4vw, 40px);
-    padding-top: 24px;
-    border-top: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-self: stretch;
-  }
-  .home-contact__email-label {
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-ph-ink-soft, #b5b7bb);
-  }
-  .home-contact__email a {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-size: clamp(20px, 2.4vw, 28px);
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    color: var(--color-ph-white, #ffffff);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-  @media (hover: hover) {
-    .home-contact__email a:hover { color: var(--color-ph-gold, #d6b25e); }
-  }
-
-  .home-contact__image {
-    position: relative;
-    background:
-      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-      url('/contact-image.webp') center / cover no-repeat,
-      var(--color-ph-bg-3, #1c1f24);
-    border-left: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-  }
-
-  .home-contact__image-tag {
+  .replay::after {
+    content: '';
     position: absolute;
-    top: 16px;
-    left: 16px;
-    padding: 6px 10px;
-    background: rgba(14, 14, 14, 0.6);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid var(--color-ph-line, rgba(255, 255, 255, 0.12));
-    border-radius: var(--radius-sm);
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-ph-white, #ffffff);
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: var(--ph-plate-edge);
+    clip-path: polygon(evenodd,
+      0 0, 100% 0, 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, 0 100%, 0 0,
+      1px 1px, 1px calc(100% - 1px), calc(100% - var(--c) - 0.41px) calc(100% - 1px), calc(100% - 1px) calc(100% - var(--c) - 0.41px), calc(100% - 1px) 1px, 1px 1px);
+  }
+  /* El hueco de la imagen: el tono de espera de las fotos. La nueva irá aquí,
+     como fondo (`url(...) center / cover`) encima de ese tono. */
+  .replay__img {
+    position: absolute;
+    inset: 0;
+    background: #15171b;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, 0 100%);
+  }
+  .replay__tab {
+    position: absolute;
+    left: 0;
+    bottom: 100%;
+    width: var(--ph-tab-w);
+    height: var(--ph-tab-h);
+    background: var(--color-ph-gold);
+    transform-origin: 0 50%;
+    transition: transform var(--ph-dur-tab) var(--ph-ease-out) 80ms;
+  }
+  :global(html.ph-anim) .home-contact__window:not(.is-inview) .replay__tab { transform: scaleX(0); }
+  :global(html.ph-anim:not(.ph-motion)) .replay__tab { animation: ph-motion-failsafe 0s linear 2.5s forwards; }
+
+  @media (min-width: 1024px) {
+    .home-contact__grid {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: end;
+    }
+    .home-contact__title { font-size: clamp(64px, 7.6vw, 132px); }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .home-contact__email a { transition: none; }
-  }
-
-  @media (max-width: 900px) {
-    .home-contact__grid { grid-template-columns: 1fr; }
-    .home-contact__image { display: none; }
+    .replay__tab { transition: none; }
   }
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import {
-    reducedMotion, revealOnView, trackingReveal, scheduleScrollTriggerRefresh, afterTransitionPaint,
-  } from '@/scripts/ph-text-animations';
+  import { mountSection, afterTransitionPaint } from '@/scripts/ph-text-animations';
 
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initHomeContactAnimations(): void {
+  function initHomeContact(): void {
     const section = document.querySelector<HTMLElement>('.home-contact');
-    if (!section) return;
-    if (reducedMotion()) return;
-
-    const eyebrow = section.querySelector<HTMLElement>('.home-contact__eyebrow');
-    const title = section.querySelector<HTMLElement>('.home-contact__title');
-    const head = section.querySelector<HTMLElement>('.home-contact__head');
-    const image = section.querySelector<HTMLElement>('.home-contact__image');
-
-    if (eyebrow && head) {
-      trackingReveal(eyebrow, { trigger: head, start: 'top 80%', once: true });
-    }
-    if (title) {
-      revealOnView(title, { y: 24, duration: 0.9 });
-    }
-    if (image && window.matchMedia('(min-width: 901px)').matches) {
-      gsap.fromTo(
-        image,
-        { autoAlpha: 0, scale: 1.06 },
-        {
-          autoAlpha: 1,
-          scale: 1,
-          duration: 1.0,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: image, start: 'top 80%', once: true },
-        },
-      );
-    }
-
-    scheduleScrollTriggerRefresh();
+    if (section) mountSection(section);
   }
 
-  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeContactAnimations));
+  document.addEventListener('astro:page-load', () => afterTransitionPaint(initHomeContact));
 </script>

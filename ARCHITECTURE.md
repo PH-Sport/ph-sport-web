@@ -179,8 +179,9 @@ El slug se genera con `slugify(name)` y es la clave común con la foto en `src/a
 
 ### Fotos de jugadores
 
-**Desde el 2026-10-01 las tarjetas visibles llevan foto de la serie de estudio**
-que prepara Mario: fondo oscuro con resplandor dorado suave, brazos cruzados y la
+**Las tarjetas visibles llevan foto de la serie de estudio** (desde el 2026-10-01;
+los que entraron el 2026-10-05 la van recibiendo, ver «Estado del proyecto») que
+prepara Mario: fondo oscuro con resplandor dorado suave, brazos cruzados y la
 camiseta del club de la ficha (el entrenador, con traje). Los jugadores ocultos conservan su foto antigua; si
 alguno vuelve al grid, hay que pedirle la de estudio. El build las sirve en AVIF 90
 con WebP 85 de reserva (`DECISIONS.md`, 2026-10-01).
@@ -772,7 +773,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
-| Fotos jugadores | ⏳ 58 de las 62 tarjetas visibles | Sin ninguna: Jesús Palacios, Víctor Santiago, David Fernández y José Mejías, que entraron el 2026-10-05 con la tanda de Diego; las nueve fotos que sí tienen los demás que entraron ese día no se han revisado contra la serie de estudio. Los 51 jugadores anteriores y el entrenador son de la serie de estudio de Mario y con la camiseta del club de la ficha (2026-10-02). Ver «Fotos de jugadores» arriba |
+| Fotos jugadores | ⏳ 59 de las 62 tarjetas visibles | 53 son de la serie de estudio de Mario y con la camiseta del club de la ficha: los 48 jugadores que ya estaban, el entrenador y cuatro de la cantera del Real Madrid que entraron el 2026-10-05 (Pablo Ibáñez, Jesús Palacios, Unai Ordóñez y Hugo Fernández). Con foto antigua, a la espera de la de estudio: Andrés Corcoba, Byron Mendoza, Carlos Núñez, Miguel Serrano, Sosu Kwame y Mario Guilabert. Sin ninguna: Víctor Santiago, David Fernández y José Mejías (2026-10-05). Ver «Fotos de jugadores» arriba |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
 | OG image (1200×630px) | ❌ Pendiente | |

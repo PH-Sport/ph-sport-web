@@ -13,6 +13,43 @@ leído el resto.
 
 ---
 
+## 2026-10-06 · Muestrario de fondos en su rama, sin fusionar
+
+> **Estado: solo en la rama `feat/muestrario-fondos`.** Es una herramienta para
+> elegir fondos, no una parte de la web; no está pensada para fusionarse.
+
+**Qué pidió Mario.** Ver todos los fondos animados en una rama aparte, cada uno en una
+página limpia en la que solo se vea el efecto, con un selector para pasar de uno a
+otro.
+
+**Qué hay.**
+
+- **`/fondos`**: cada fondo a pantalla completa, sin menú ni contenido, y una barra
+  abajo para cambiar.
+  - La barra se maneja con clic, con las flechas ← → y con los números del 1 al 7.
+  - Se esconde sola si no se mueve el ratón, y del todo con la tecla `H`.
+  - En el móvil, un toque la saca o la quita.
+  - `?fondo=<nombre>` abre uno concreto.
+- **Siete fondos**:
+  - Los cinco de la web (Velo, Neón, Trayectorias, Estructura y Calidez), con los
+    mismos shaders de `ph-ambient.ts`.
+  - «Proyección», de la variante B.
+  - La «Estructura» de la variante C, sobre su cuadrícula. Las dos últimas están
+    copiadas tal cual en `ph-fondos-extra.ts`.
+  - Cada botón dice en qué versión sale cada uno: A (la de `preview`), B o C.
+- **La luz va entera en toda la pantalla.** En la web, en cambio, se apaga bajo el
+  menú y, en las páginas interiores, baja a un tercio fuera del titular. Aquí no hay
+  menú ni textos que proteger.
+- **Fuera de la web**: sin idiomas, sin menú, `noindex` y sin enlaces desde ninguna
+  página. Las pruebas automáticas la saltan (`FUERA_DEL_SMOKE` en
+  `tests/e2e/rutas.ts`), porque exigen idiomas, menú y datos estructurados en cada
+  página.
+
+**Alternativa descartada.** Una página dentro del diseño de la web, con cabecera y pie,
+como las demás. Se pidió una página limpia, en la que solo se viera el efecto.
+
+---
+
 ## 2026-10-05 · La variante A pasa a `preview` como diseño provisional
 
 **Decisión**: la rama `feat/variante-a-retransmision` se fusiona en `preview`, que

@@ -110,6 +110,8 @@ ph-sport-web/
 │   ├── scripts/                     # Scripts vanilla para interacciones y animaciones
 │   │   ├── dropdown.ts              # SIN USO: nadie lo importa. Talentos monta su combo aparte
 │   │   ├── ph-ambient.ts            # Luz animada de fondo de toda la web: bombo de cinco escenas (WebGL2 en directo)
+│   │   ├── ph-fondos-muestrario.ts  # Solo en esta rama: el motor del muestrario /fondos
+│   │   ├── ph-fondos-extra.ts       # Solo en esta rama: Proyección (B) y la Estructura de la C, para /fondos
 │   │   ├── ph-disclosure.ts         # Acordeones sin animar alturas (FLIP medido), con GSAP
 │   │   ├── ph-motion.ts             # Núcleo «Retransmisión», sin GSAP: entradas, cascadas, placas por líneas, cortinilla
 │   │   └── ph-text-animations.ts   # Infraestructura GSAP (refresh, scroll al navegar, curvas) y cintas
@@ -533,6 +535,8 @@ Cómo convive con la página, todo dentro del módulo:
 
 Para tocar una escena: su shader está en el mismo archivo. Para quitar o añadir una
 del bombo, la lista `POOL`. Para ver una concreta: `?fondo=<escena>` en la URL.
+
+**Muestrario (solo en la rama `feat/muestrario-fondos`)**: `/fondos` enseña cada fondo a pantalla completa, sin contenido, con una barra para cambiar; suma Proyección (variante B) y la Estructura de la C. Detalle en `DECISIONS.md` (2026-10-06).
 
 **El marcador de esquina cae en la vertical de los textos**: la cabecera tiene el
 mismo margen lateral que las secciones (`--ph-section-px`), así la placa del logo

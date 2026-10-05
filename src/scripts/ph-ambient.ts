@@ -31,9 +31,9 @@
  * - Para revisar una escena concreta: `?fondo=<escena>` en la URL.
  */
 
-type SceneName = 'velo' | 'neon' | 'trayectorias' | 'estructura' | 'calidez';
+export type SceneName = 'velo' | 'neon' | 'trayectorias' | 'estructura' | 'calidez';
 
-interface SceneDef {
+export interface SceneDef {
   fs: string;
   /** Resolución interna respecto a los px CSS (las escenas suaves aguantan menos). */
   scale: number;
@@ -41,7 +41,7 @@ interface SceneDef {
   still: number;
 }
 
-const VS = `#version 300 es
+export const VS = `#version 300 es
 void main() {
   vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
   gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
@@ -277,7 +277,7 @@ void main() {
   emit(c * stageMask(p, W, H));
 }`;
 
-const SCENES: Record<SceneName, SceneDef> = {
+export const SCENES: Record<SceneName, SceneDef> = {
   velo: { fs: VELO, scale: 0.7, still: 30 },
   neon: { fs: NEON, scale: 0.8, still: 7 },
   trayectorias: { fs: TRAYECTORIAS, scale: 1, still: 6 },

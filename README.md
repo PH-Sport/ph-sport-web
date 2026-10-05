@@ -29,6 +29,7 @@ salida se versiona en `public/`.
 |---|---|
 | `/` | Home — Hero, talentos, servicios, about, contacto |
 | `/talentos/` | Selección del roster en el orden que fija Mario, con buscador por nombre (cards no clicables) |
+| `/fondos/` | Muestrario de los fondos animados, solo en la rama `feat/muestrario-fondos`: sin idiomas, sin enlazar y sin indexar |
 | `/servicios` | 6 pilares del servicio |
 | `/sobre-nosotros` | Historia, equipo (21 integrantes) y cierre |
 | `/en/*` | Mirror completo en inglés (`/en/talents/`, `/en/services`, `/en/about`) |

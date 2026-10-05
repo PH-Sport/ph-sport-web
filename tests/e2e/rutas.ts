@@ -23,6 +23,13 @@ function buscarHtml(dir: string): string[] {
   });
 }
 
+/**
+ * Páginas construidas que no son de la web y no se prueban como tales: el
+ * muestrario de fondos de la rama `feat/muestrario-fondos` (sin idiomas, sin menú
+ * y sin indexar; `DECISIONS.md`, 2026-10-06).
+ */
+const FUERA_DEL_SMOKE = ['/fondos/'];
+
 export function rutasConstruidas(): string[] {
   if (!existsSync(DIST)) {
     throw new Error(
@@ -35,7 +42,7 @@ export function rutasConstruidas(): string[] {
     const dirRelativo = relative(DIST, archivo).split(sep).slice(0, -1);
     return dirRelativo.length === 0 ? '/' : `/${dirRelativo.join('/')}/`;
   });
-  return rutas.sort();
+  return rutas.filter((r) => !FUERA_DEL_SMOKE.includes(r)).sort();
 }
 
 /** `/servicios/` y `/servicios` son la misma página; el canonical elige una. */

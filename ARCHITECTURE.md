@@ -773,7 +773,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
-| Fotos jugadores | ⏳ 61 de las 62 tarjetas visibles | 60 son de la serie de estudio de Mario y con la camiseta del club de la ficha. Con foto antigua, a la espera de la de estudio: Sosu Kwame. Sin ninguna: José Mejías (2026-10-06). Ver «Fotos de jugadores» arriba |
+| Fotos jugadores | ⏳ 61 de las 62 tarjetas visibles | Las 61 son de la serie de estudio de Mario y con la camiseta del club de la ficha. Sin ninguna: José Mejías, a la espera de que haya material suyo para hacerla (2026-10-06). Ver «Fotos de jugadores» arriba |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
 | OG image (1200×630px) | ❌ Pendiente | |

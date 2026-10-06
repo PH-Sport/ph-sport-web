@@ -179,9 +179,8 @@ El slug se genera con `slugify(name)` y es la clave común con la foto en `src/a
 
 ### Fotos de jugadores
 
-**Las tarjetas visibles llevan foto de la serie de estudio** (desde el 2026-10-01;
-los que entraron el 2026-10-05 la van recibiendo, ver «Estado del proyecto») que
-prepara Mario: fondo oscuro con resplandor dorado suave, brazos cruzados y la
+**Las tarjetas visibles llevan foto de la serie de estudio** que prepara Mario
+(todas desde el 2026-10-06): fondo oscuro con resplandor dorado suave, brazos cruzados y la
 camiseta del club de la ficha (el entrenador, con traje). Los jugadores ocultos conservan su foto antigua; si
 alguno vuelve al grid, hay que pedirle la de estudio. El build las sirve en AVIF 90
 con WebP 85 de reserva (`DECISIONS.md`, 2026-10-01).
@@ -773,7 +772,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
-| Fotos jugadores | ⏳ 61 de las 62 tarjetas visibles | Las 61 son de la serie de estudio de Mario y con la camiseta del club de la ficha. Sin ninguna: José Mejías, a la espera de que haya material suyo para hacerla (2026-10-06). Ver «Fotos de jugadores» arriba |
+| Fotos jugadores | ✅ 62 de las 62 tarjetas visibles | Todas de la serie de estudio de Mario y con la camiseta del club de la ficha (2026-10-06). Ver «Fotos de jugadores» arriba |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
 | OG image (1200×630px) | ❌ Pendiente | |

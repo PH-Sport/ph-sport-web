@@ -211,12 +211,15 @@ no la web anterior. **El orden del grid es el orden del archivo**: las visibles
 van al principio de `jugadores.json`; para meter a alguien hay que saber su
 posición en la lista de Mario (`DECISIONS.md`, 2026-09-25). En la página no hay
 controles para cambiarlo: el filtro de rol y el orden A-Z/Z-A se retiraron el
-2026-10-04 por decisión del equipo (`DECISIONS.md`); queda solo el buscador. El
-grid es de
-2/3/5 columnas y Mario prefiere que cierre en móvil y escritorio: con 62
-tarjetas cierra en móvil y deja dos sueltas en escritorio, y lo sabe.
+2026-10-04 por decisión del equipo (`DECISIONS.md`); queda solo el buscador.
+Desde el 2026-10-11 el grid va en **dos pestañas con selector, «Profesionales»
+y «Cantera»**: va en Cantera quien lleva `"academy": true`, y en cada pestaña
+manda el orden del archivo. Cantera es la cantera sub-19 de los clubes que esta
+temporada están en Primera, con excepciones que decide el equipo; la regla
+está a medio cerrar (`DECISIONS.md`, 2026-10-11). Cada pestaña es de 2/3/5
+columnas y Mario prefiere que cierre en móvil y escritorio.
 
-**No hay páginas individuales por jugador.** `/talentos/` es un grid único y las
+**No hay páginas individuales por jugador.** `/talentos/` es un grid y las
 tarjetas no son clicables. No proponer rutas `/talentos/[slug]`, modales de
 detalle ni JSON-LD `Person` — se retiró a propósito (`DECISIONS.md`, 2026-04-24).
 

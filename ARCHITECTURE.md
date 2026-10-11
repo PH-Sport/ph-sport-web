@@ -153,10 +153,10 @@ ph-sport-web/
 
 El roster vive en **JSON plano** dentro de `data/`, no en Content Collections:
 
-- `data/jugadores.json` — jugadores. Campo opcional `"hidden": true` los oculta sin borrar. **El orden del archivo es el orden del grid.** Desde el 2026-09-25 solo está visible una selección en el orden de la lista de Mario (al principio del archivo); el resto lleva `hidden` + `hiddenReason` (`DECISIONS.md`, 2026-09-10 y 2026-09-25).
-- `data/entrenadores.json` — cuerpo técnico. Sus visibles van detrás de los jugadores en el grid; hoy solo Thomas Christiansen (`DECISIONS.md`, 2026-10-02).
+- `data/jugadores.json` — jugadores. Campo opcional `"hidden": true` los oculta sin borrar. **El orden del archivo es el orden del grid.** Desde el 2026-09-25 solo está visible una selección en el orden de la lista de Mario (al principio del archivo); el resto lleva `hidden` + `hiddenReason` (`DECISIONS.md`, 2026-09-10 y 2026-09-25). Con `"academy": true` la ficha va a la pestaña «Cantera»; sin él, a «Profesionales» (`DECISIONS.md`, 2026-10-11).
+- `data/entrenadores.json` — cuerpo técnico. Sus visibles van detrás de los jugadores, al final de la pestaña «Profesionales»; hoy solo Thomas Christiansen (`DECISIONS.md`, 2026-10-02).
 
-Ambos comparten esquema: `{ name, club: { name } | null, nationalTeamCodes?: string[] }`, más los opcionales `hidden`, `hiddenReason` y `note` (ver `RosterJsonRow` en `playerDetail.ts`).
+Ambos comparten esquema: `{ name, club: { name } | null, nationalTeamCodes?: string[] }`, más los opcionales `hidden`, `hiddenReason`, `academy` y `note` (ver `RosterJsonRow` en `playerDetail.ts`).
 
 ### Payloads para el grid
 
@@ -758,7 +758,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | `/` | ✅ Funcional | V3: Hero → Talentos → Servicios → About → Contact |
 | `/sobre-nosotros` | ✅ Funcional | V3 — absorbe /equipo (sección #equipo) |
-| `/talentos/` | ✅ Funcional | Grid 3:4 no clicable, búsqueda + filtro rol + orden |
+| `/talentos/` | ✅ Funcional | Grid 3:4 no clicable con selector Profesionales / Cantera y buscador |
 | `/servicios` | ✅ Funcional | 6 pilares + hero |
 | `/en/` | ✅ Funcional | Mirror de ES |
 | `/en/about` | ✅ Funcional | Mirror de ES |
@@ -772,7 +772,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
-| Fotos jugadores | ✅ 62 de las 62 tarjetas visibles | Todas de la serie de estudio de Mario y con la camiseta del club de la ficha (2026-10-06). Ver «Fotos de jugadores» arriba |
+| Fotos jugadores | ⚠️ 66 de las 66 tarjetas visibles | De la serie de estudio de Mario y con la camiseta del club de la ficha (2026-10-06; Óscar López, 2026-10-11), salvo tres que volvieron el 2026-10-11 con la foto antigua de cuando estaban ocultos: Mateo Sciancalepore, Alejandro Santiago y Marcos López. Ver «Fotos de jugadores» arriba |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
 | OG image (1200×630px) | ❌ Pendiente | |

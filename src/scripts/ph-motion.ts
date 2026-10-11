@@ -210,7 +210,13 @@ function splitPlate(plate: HTMLElement): void {
 }
 
 function splitPlates(): void {
-  document.querySelectorAll<HTMLElement>('[data-plate-lines]').forEach(splitPlate);
+  splitPlatesIn(document);
+}
+
+/** Vuelve a partir las placas de `root`. Para lo que estaba oculto al partirse
+ *  (una pestaña de Talentos): sin medidas, no se partió y se vería en un bloque. */
+export function splitPlatesIn(root: ParentNode): void {
+  root.querySelectorAll<HTMLElement>('[data-plate-lines]').forEach(splitPlate);
 }
 
 let splitWidth = window.innerWidth;

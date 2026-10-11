@@ -23,6 +23,11 @@ export type RosterJsonRow = {
    * Nadie lo lee: documenta el dato para quien edite el roster.
    */
   hiddenReason?: 'left-agency' | 'on-hold';
+  /**
+   * Va en el bloque «Cantera» de `/talentos` y no en «Profesionales». Ausente =
+   * profesional. Quién entra lo decide el equipo de PH (DECISIONS.md, 2026-10-11).
+   */
+  academy?: boolean;
 };
 
 export type PlayerRole = 'player' | 'coach';
@@ -33,6 +38,8 @@ export type PlayerDetailPayload = {
   /** Club name o cadena vacía si no hay club. */
   subtitle: string;
   role: PlayerRole;
+  /** Bloque «Cantera» del grid; si no, «Profesionales». */
+  academy: boolean;
   nationalTeamCodes: string[];
   /** URL final para `<img>` en la tarjeta (WebP 480w / placeholder). */
   photoSrc: string;
@@ -112,6 +119,7 @@ export async function buildPlayerDetailPayloadsForLang(
         name: row.name,
         subtitle,
         role,
+        academy: row.academy === true,
         nationalTeamCodes: row.nationalTeamCodes ?? [],
         photoSrc: photo.src,
         photoSrcset: photo.srcset,

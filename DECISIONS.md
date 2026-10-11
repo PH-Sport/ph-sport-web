@@ -13,6 +13,74 @@ leído el resto.
 
 ---
 
+## 2026-10-11 · `/talentos` con selector «Profesionales» / «Cantera»
+
+**Decisión**: el grid único se parte en dos pestañas, **«Profesionales»**
+(abierta al entrar) y **«Cantera»**, con un selector junto al buscador (en
+inglés *Professionals* / *Academy*; en italiano *Professionisti* / *Settore
+giovanile*). Lo pidió el equipo de PH, a través de Mario. Va en Cantera quien
+lleva `"academy": true` en `data/jugadores.json`; el resto, y el seleccionador
+al final, en Profesionales. Dentro de cada pestaña manda el orden del archivo.
+Cada pestaña lleva al lado el número de fichas que se ven. El buscador busca en
+las dos: el número cuenta lo que encuentra y, si la pestaña abierta se queda
+sin nadie y la otra no, se pasa a la otra.
+
+**No contradice el 2026-10-04**: aquel día se quitaron «Ver» y «Orden» porque
+un A-Z deshacía el orden que decide PH. El selector no reordena nada; solo
+elige qué bloque se ve, y lo pidió el propio equipo.
+
+**La regla de Cantera**, provisional hasta que el equipo la cierre: la cantera
+(sub-19 hacia abajo) de los clubes que **esta temporada** están en Primera
+(2026-27: entran Racing, Depor y Málaga; bajan Mallorca, Girona y Oviedo),
+más las excepciones que decide el equipo. Un filial en 1ª RFEF cuenta como
+profesional: esta temporada son Castilla, Atlético Madrileño, Villarreal B,
+Depor Fabril y Athletic B.
+
+**Cómo queda** (solo se tocaron los ya visibles, salvo las altas que se citan):
+- *Profesionales*, 47 jugadores + seleccionador. **Dani Requena pasa al
+  primer puesto.** Thiago Helguera, Rayan Zinebi, Hugo Ríos e Iker Vidal se
+  quedan en su sitio: juegan en filiales de 1ª RFEF. **Aimar García y Jorge
+  Rajado** (Real Madrid C) se quedan también, como excepción, en su puesto de
+  la lista de Mario. **Óscar López** (Getafe B) es alta nueva en la web: va el
+  último de los jugadores, detrás de los de 1ª RFEF, porque el Getafe B juega
+  por debajo. Lleva su foto de estudio, con la camiseta del Getafe.
+- *Cantera*, 18: Andrés Corcoba, Pablo Ibáñez, Jesús Palacios, Unai Ordóñez,
+  Hugo Fernández, Byron Mendoza, Víctor Santiago, David Fernández, Carlos
+  Núñez, Miguel Serrano, Sosu Kwame, José Mejías, Mateo Sciancalepore,
+  Alejandro Santiago, Mario Guilabert, Marcos López, José Rey y Mauro Valeiro.
+  Mateo, Alejandro y Marcos estaban ocultos y vuelven como «canteras
+  importantes» (filiales de Elche, Espanyol y Málaga), en el orden de la nota
+  del equipo y junto a Guilabert, que es de esa misma lista.
+- **Gonzalo Rodríguez** sigue oculto hasta que Eva confirme su club, pero su
+  sitio ya está fijado: delante de Axel Montaña.
+
+**Pendiente de confirmar con el equipo**: si Sosu Kwame (Betis B), David
+Fernández (Atlético C) y José Rey se quedan en Cantera, porque superan la edad
+sub-19; de momento siguen ahí. Y quiénes son «Papote» y «Luciano», que la
+nota cita y no están ni en el campograma ni en la web.
+
+**Qué cambia respecto al 2026-09-21**: aquel día se descartó un campo tipo
+`category` porque solo serviría para elegir quién sale, y para eso ya está
+`hidden`. Ahora el campo no elige quién sale, sino **en qué pestaña**, y eso
+no se puede deducir del orden ni del club.
+
+**Alternativas descartadas**:
+- *Dos bloques uno debajo del otro, cada uno con su rótulo.* Fue la primera
+  versión, del mismo día; el equipo pidió un selector.
+- *Sacar la pestaña del club o de la división.* El archivo solo tiene el club
+  propietario, no el equipo (juvenil, B, C) ni la división, y la regla tiene
+  excepciones que decide el equipo. Un dato marcado a mano es más fiable.
+- *Meter en Cantera a todos los candidatos ocultos* (Getafe, Rayo, Sevilla,
+  Celta…). Mario prefirió no hacerlo: quién entra en la selección lo siguen
+  decidiendo Diego y él.
+
+**Consecuencias**: con 48 tarjetas, Profesionales cierra en móvil y deja
+tres sueltas en escritorio; Cantera, con 18, cierra en móvil y deja tres
+sueltas en escritorio. La pestaña que se abre oculta no se pudo medir al
+cargar: sus nombres de dos líneas se parten al abrirla (`splitPlatesIn`, en
+`ph-motion.ts`). El texto *Settore giovanile* no lo ha revisado ningún
+nativo, como el resto del italiano.
+
 ## 2026-10-05 · La variante A pasa a `preview` como diseño provisional
 
 **Decisión**: la rama `feat/variante-a-retransmision` se fusiona en `preview`, que
@@ -204,6 +272,9 @@ alternativo); si la nueva aporta información, necesita su texto en los tres idi
 ---
 
 ## 2026-10-04 · Talentos sin «Ver» ni «Orden»: el grid sale siempre en el orden del archivo
+
+> **El 2026-10-11 llega un selector «Profesionales» / «Cantera»**, pedido por
+> el equipo. No reordena: sigue vigente lo de aquí. Ver esa entrada.
 
 > **Estado: en las tres variantes** (`feat/variante-a-retransmision`,
 > `feat/variante-b-titulos` y `feat/variante-c-analisis`), y en `preview` desde el
@@ -1345,6 +1416,8 @@ pero son cambios de comportamiento que no se han pedido.
 > Siguen vigentes el campograma como referencia, el entrenador fuera del grid y
 > las altas y cambios de club de este día. Ver la entrada del 2026-09-25.
 > **El entrenador vuelve al grid el 2026-10-02**: ver esa entrada.
+> **El campo de categoría descartado aquí se añade el 2026-10-11** (`academy`),
+> pero para repartir en pestañas, no para elegir quién sale. Ver esa entrada.
 
 **Decisión**: la web deja de enseñar el roster entero (114 jugadores visibles,
 sin orden declarado) y muestra **una selección** ordenada por los bloques que

@@ -214,9 +214,9 @@ controles para cambiarlo: el filtro de rol y el orden A-Z/Z-A se retiraron el
 2026-10-04 por decisión del equipo (`DECISIONS.md`); queda solo el buscador.
 Desde el 2026-10-11 el grid va en **dos pestañas con selector, «Profesionales»
 y «Cantera»**: va en Cantera quien lleva `"academy": true`, y en cada pestaña
-manda el orden del archivo. Cantera es la cantera sub-19 de los clubes que esta
-temporada están en Primera, con excepciones que decide el equipo; la regla
-está a medio cerrar (`DECISIONS.md`, 2026-10-11). Cada pestaña es de 2/3/5
+manda el orden del archivo. Desde el 2026-10-14, Cantera es **la lista de
+Diego (PH), en su orden**: canteras de clubes que juegan en primera división,
+también extranjeros (`DECISIONS.md`, 2026-10-14 y 2026-10-11). Cada pestaña es de 2/3/5
 columnas y Mario prefiere que cierre en móvil y escritorio.
 
 **No hay páginas individuales por jugador.** `/talentos/` es un grid y las

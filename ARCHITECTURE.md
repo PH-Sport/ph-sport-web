@@ -772,7 +772,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
-| Fotos jugadores | ⚠️ 66 de las 66 tarjetas visibles | De la serie de estudio de Mario y con la camiseta del club de la ficha (2026-10-06; Óscar López, 2026-10-11), salvo tres que volvieron el 2026-10-11 con la foto antigua de cuando estaban ocultos: Mateo Sciancalepore, Alejandro Santiago y Marcos López. Ver «Fotos de jugadores» arriba |
+| Fotos jugadores | ⚠️ 66 de las 68 tarjetas visibles | De la serie de estudio de Mario y con la camiseta del club de la ficha (2026-10-06; Óscar López, 2026-10-11), salvo los que entraron en Cantera el 2026-10-14: Pelayo Margollés y João Vogt no tienen foto, y Tomás Méndez, Isaías Abuabara, Frank Iglesias, Babacar Welle, Álvaro Gutiérrez, Miguel Díaz de Burgos, Alberto de Frutos y Wilson Santos llevan la antigua. Ver «Fotos de jugadores» arriba |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
 | OG image (1200×630px) | ❌ Pendiente | |

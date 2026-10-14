@@ -13,7 +13,57 @@ leído el resto.
 
 ---
 
+## 2026-10-14 · Cantera: la lista de Diego, 20 jugadores en su orden
+
+**Decisión**: la pestaña «Cantera» de `/talentos` pasa a ser exactamente la
+lista que mandó Diego (PH) el 2026-10-14, **en su orden**: Andrés Corcoba,
+Pablo Ibáñez, Jesús Palacios, Unai Ordóñez, Hugo Fernández, Byron Mendoza,
+Víctor Santiago, Carlos Núñez, Miguel Serrano, Pelayo Margollés, Tomás Méndez,
+José Mejías, Isaías Abuabara, Frank Iglesias, João Vogt, Babacar Welle, Álvaro
+Gutiérrez, Miguel Díaz de Burgos, Alberto de Frutos y Wilson Santos. Con 20,
+cierra en móvil y en escritorio. Profesionales no cambia.
+
+**La regla, según el encabezado del mensaje**: «solo de los equipos que
+pertenecen a clubes que juegan en 1ª división». Incluye primeras extranjeras:
+João Vogt (FC Zürich) y Babacar Welle (Vitória Guimarães). Sustituye a la
+regla provisional del 2026-10-11 (cantera sub-19 de clubes de la Primera
+española).
+
+**Altas y bajas**:
+- **Entran** ocho que estaban ocultos (Tomás Méndez, Isaías Abuabara, Frank
+  Iglesias, Babacar Welle y los cuatro del juvenil del Getafe) y dos fichas
+  nuevas: **Pelayo Margollés** (Real Sociedad) y **João Vogt** (FC Zürich),
+  que estaban en el campograma pero no en la web.
+- **Salen** ocho que estaban en Cantera y Diego no nombra: Sosu Kwame, David
+  Fernández, Mateo Sciancalepore, Alejandro Santiago, Mario Guilabert, Marcos
+  López, José Rey y Mauro Valeiro. Quedan ocultos (`on-hold`), con nota, y
+  sin la marca de Cantera.
+- En el archivo, las 20 de Cantera van juntas detrás de las de Profesionales,
+  y los ocho que salen encabezan las ocultas.
+
+**Los nombres se quedan como estaban en la web**, aunque Diego escriba otros:
+«Andrés Corcova» es Andrés Corcoba, «Babacar Whele» es Babacar Welle,
+«José Luis Mejías» es José Mejías, «Álvaro Guti» es Álvaro Gutiérrez,
+«Miguel Díaz» es Miguel Díaz de Burgos y «Wilson» es Wilson Santos. Cambiar
+el nombre le quitaría la foto a la tarjeta (el archivo se busca por el
+nombre).
+
+**Alternativas descartadas**:
+- *Pasar a Profesionales a los ocho que salen*, o *dejarlos en Cantera hasta
+  que Diego lo aclare*. Mario eligió ocultarlos, como con los dudosos del
+  2026-10-05: ocultar es reversible.
+
+**Lo que queda sin aclarar**:
+- **Tomás Méndez**: la web lo tiene en el Torreense y su foto es con esa
+  camiseta; el campograma dice juvenil del Sevilla. No se ha cambiado el club.
+- **Sin foto** (avatar genérico): Pelayo Margollés y João Vogt. Los otros ocho
+  que vuelven llevan la foto antigua, no la de estudio.
+
 ## 2026-10-11 · `/talentos` con selector «Profesionales» / «Cantera»
+
+> **Superada en parte el 2026-10-14**: el selector y Profesionales siguen tal
+> cual, pero la composición de Cantera y su regla ya no son las de aquí: manda
+> la lista de Diego. Ver la entrada del 2026-10-14.
 
 **Decisión**: el grid único se parte en dos pestañas, **«Profesionales»**
 (abierta al entrar) y **«Cantera»**, con un selector junto al buscador (en

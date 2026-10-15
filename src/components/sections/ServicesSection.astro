@@ -4,6 +4,8 @@ import { useTranslations, type Lang } from '@/i18n/utils';
 import Bug from '@/components/ui/Bug.astro';
 import Plate from '@/components/ui/Plate.astro';
 import Ticker from '@/components/ui/Ticker.astro';
+import LivePhoto from '@/components/ui/LivePhoto.astro';
+import { PILLAR_PHOTOS } from '@/lib/officePhotos';
 
 interface Props {
   lang: Lang;
@@ -28,7 +30,7 @@ const areas = areaKeys.map((key) => ({
 }));
 
 const romans = ['I', 'II', 'III', 'IV', 'V'];
-const pillarKeys = ['press', 'performance', 'media', 'familyOffice', 'psychology'];
+const pillarKeys = ['press', 'performance', 'media', 'familyOffice', 'psychology'] as const;
 const foot = t('services.areas.foot').split(' · ');
 const manifestTicker = t('services.manifest.eyebrow').split(' · ');
 ---
@@ -112,16 +114,19 @@ const manifestTicker = t('services.manifest.eyebrow').split(' · ');
     </div>
   </div>
 
-  {/* 04 — Los pilares, como segmentos: la imagen a sangre se descubre en diagonal
-      y empuja despacio con el scroll; encima, solapado, su rótulo inferior (el
-      romano, la placa con el título, el texto en placa y las etiquetas). En
-      escritorio el rótulo alterna de lado. */}
+  {/* 04 — Los pilares, como segmentos: la foto de la oficina, a sangre, se descubre
+      en diagonal, respira en reposo y se aviva con el scroll (fotos vivas,
+      `ph-live-photos.ts`); encima, solapado, su rótulo inferior (el romano, la
+      placa con el título, el texto en placa y las etiquetas). En escritorio el
+      rótulo alterna de lado. */}
   <div class="srv-pillars">
     {items.map((item, idx) => (
       <article class:list={['pillar', `pillar--${pillarKeys[idx]}`, idx % 2 === 1 && 'pillar--right']} data-inview>
         <div class="pillar__frame ph-reveal" aria-hidden="true">
-          <div class="pillar__push" data-pillar-push>
-            <div class="pillar__img ph-reveal__img"></div>
+          <div class="pillar__push" data-live-cam data-live-push>
+            <div class="pillar__img ph-reveal__img">
+              <LivePhoto spec={PILLAR_PHOTOS[pillarKeys[idx]]} sizes="(min-width: 1024px) 60vw, 100vw" />
+            </div>
           </div>
         </div>
         <div class="pillar__lt">
@@ -453,6 +458,8 @@ const manifestTicker = t('services.manifest.eyebrow').split(' · ');
     aspect-ratio: 16 / 10;
     background: #15171b;
   }
+  /* La cámara: la mueve `ph-live-photos.ts` (deriva en reposo, empuje y retraso
+     con el scroll). */
   .pillar__push {
     position: absolute;
     inset: 0;
@@ -461,21 +468,16 @@ const manifestTicker = t('services.manifest.eyebrow').split(' · ');
   .pillar__img {
     position: absolute;
     inset: 0;
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
   }
-  .pillar--press .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-press-sm.webp'); }
-  .pillar--performance .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-performance-sm.webp'); }
-  .pillar--media .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-media-sm.webp'); }
-  .pillar--familyOffice .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-family-office-sm.webp'); }
-  .pillar--psychology .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-psychology-sm.webp'); }
-  @media (min-width: 901px) {
-    .pillar--press .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-press.webp'); }
-    .pillar--performance .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-performance.webp'); }
-    .pillar--media .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-media.webp'); }
-    .pillar--familyOffice .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-family-office.webp'); }
-    .pillar--psychology .pillar__img { background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/pillar-psychology.webp'); }
+  /* Fijo al marco, encima de la foto: el velo del 20 % de siempre y la viñeta del
+     ajuste de color. */
+  .pillar__frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: var(--ph-photo-vignette), rgba(0, 0, 0, 0.2);
   }
 
   /* El rótulo inferior, solapado sobre el borde de abajo de la imagen. */
@@ -613,6 +615,7 @@ const manifestTicker = t('services.manifest.eyebrow').split(' · ');
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import { reducedMotion, mountSection, afterTransitionPaint } from '@/scripts/ph-text-animations';
+  import { mountLivePhotos } from '@/scripts/ph-live-photos';
 
   gsap.registerPlugin(ScrollTrigger);
 
@@ -640,19 +643,9 @@ const manifestTicker = t('services.manifest.eyebrow').split(' · ');
           },
         );
       }
-      // Cada pilar empuja despacio mientras cruza la pantalla.
-      section.querySelectorAll<HTMLElement>('[data-pillar-push]').forEach((push) => {
-        gsap.fromTo(
-          push,
-          { scale: 1 },
-          {
-            scale: 1.08,
-            ease: 'none',
-            scrollTrigger: { trigger: push.parentElement, start: 'top bottom', end: 'bottom top', scrub: 0.6 },
-          },
-        );
-      });
     }
+    // Las fotos de los pilares: el empuje con el scroll, el reposo y la luz.
+    mountLivePhotos(section);
     mountSection(section);
   }
 

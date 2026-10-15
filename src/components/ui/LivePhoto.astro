@@ -1,0 +1,56 @@
+---
+/**
+ * Foto viva: una foto real de la oficina con su capa de luz encima. La foto no se
+ * retoca; lo que se mueve es la cámara (el contenedor `[data-live-cam]` que la
+ * envuelve) y la luz, y lo mueve `src/scripts/ph-live-photos.ts`. Sin JavaScript
+ * o con movimiento reducido se ve la foto quieta. Estilos `.ph-live` en
+ * global.css; qué foto va en cada hueco, en `src/lib/officePhotos.ts`.
+ *
+ * La foto y su capa de luz llevan el mismo `srcset` y el mismo `sizes`: el
+ * navegador elige el mismo archivo para las dos y lo descarga una sola vez.
+ */
+import { getImage } from 'astro:assets';
+import type { LivePhotoSpec } from '@/lib/officePhotos';
+
+interface Props {
+  spec: LivePhotoSpec;
+  /** `sizes` de la foto: lo que ocupa en cada pantalla. */
+  sizes: string;
+}
+
+const { spec, sizes } = Astro.props;
+const { photo, light, kind, tone, x, warm, sweep } = spec;
+
+/** WebP 82: sin escalones en los degradados del desenfoque ni en las sombras. */
+const QUALITY = 82;
+const widths = [...new Set([640, 960, 1280, photo.width])].filter((w) => w <= photo.width);
+const variants = await Promise.all(widths.map((width) => getImage({ src: photo, width, format: 'webp', quality: QUALITY })));
+const src = (variants[1] ?? variants[0]).src;
+const img = {
+  srcset: variants.map((v, i) => `${v.src} ${widths[i]}w`).join(', '),
+  sizes,
+  width: photo.width,
+  height: photo.height,
+  alt: '',
+  loading: 'lazy' as const,
+  decoding: 'async' as const,
+};
+// La máscara es suave a propósito: a 960 px basta para cualquier pantalla.
+const mask = light ? (await getImage({ src: light, width: 960, format: 'webp', quality: 80 })).src : null;
+const maskStyle = mask ? `-webkit-mask-image: url(${mask}); mask-image: url(${mask});` : undefined;
+---
+
+<div
+  class:list={['ph-live', `ph-live--${kind}`, tone && `ph-live--${tone}`]}
+  data-live={kind}
+  data-live-x={x}
+  data-live-warm={warm}
+  data-live-sweep={sweep ? '' : undefined}
+>
+  <img class="ph-live__img" src={src} {...img} />
+  <div class="ph-live__zone" style={maskStyle}>
+    {kind === 'sheen' && <img class="ph-live__img ph-live__sheen" src={src} {...img} />}
+    {kind === 'sunlit' && <img class="ph-live__img ph-live__warm" src={src} {...img} />}
+    {kind === 'sunlit' && <div class="ph-live__sun"></div>}
+  </div>
+</div>

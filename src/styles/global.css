@@ -133,6 +133,11 @@
   --ph-tab-w: 56px;
   /* La escalera del rótulo inferior: cada placa de abajo, un paso a la derecha. */
   --ph-step: clamp(14px, 2.6vw, 44px);
+
+  /* La viñeta de las fotos de la oficina (el resto de su ajuste de color ya va en
+     el archivo, `npm run assets:oficina`). Va en el marco de cada sección, fija,
+     para que no se mueva con la cámara (`.ph-live`, abajo). */
+  --ph-photo-vignette: radial-gradient(ellipse 75% 70% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.42) 100%);
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -852,6 +857,73 @@ input, textarea { caret-color: var(--color-ph-gold); }
 }
 .ph-reveal__img {
   transition: transform 760ms var(--ph-ease-out) calc(var(--cd, 0ms) + var(--d, 0ms));
+}
+
+/* ── Fotos vivas (las fotos de la oficina en Servicios y Contacto) ────────────
+   La pinta LivePhoto.astro: la foto real y, encima, su luz. Lo que se mueve lo
+   decide src/scripts/ph-live-photos.ts: la cámara (el contenedor
+   `[data-live-cam]`) respira y sigue al scroll, y la luz recorre una pieza
+   (`sheen`) o calienta una zona (`sunlit`). La luz empieza apagada: sin JS o con
+   movimiento reducido se ve la foto quieta. La viñeta del ajuste de color
+   (`--ph-photo-vignette`) va en el marco de cada sección, para que no se mueva con
+   la cámara. */
+.ph-live,
+.ph-live__img,
+.ph-live__zone {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.ph-live__img {
+  display: block;
+  max-width: none;
+  object-fit: cover;
+}
+/* La zona donde actúa la luz: la máscara de cada foto (style en LivePhoto.astro). */
+.ph-live__zone {
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+/* Brillo: la misma foto, más luminosa, que se ve solo por una banda a 45° (la
+   diagonal del logo). El script mueve la banda (`mask-position`) y su opacidad. */
+.ph-live__sheen {
+  opacity: 0;
+  -webkit-mask-image: linear-gradient(135deg, transparent 0 46%, rgba(0, 0, 0, 0.45) 48.4%, #000 50%, rgba(0, 0, 0, 0.45) 51.6%, transparent 54% 100%);
+  mask-image: linear-gradient(135deg, transparent 0 46%, rgba(0, 0, 0, 0.45) 48.4%, #000 50%, rgba(0, 0, 0, 0.45) 51.6%, transparent 54% 100%);
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 50% 0;
+  mask-position: 50% 0;
+}
+.ph-live--copper .ph-live__sheen { filter: brightness(2) saturate(1.15) contrast(1.05); }
+.ph-live--silver .ph-live__sheen { filter: brightness(2.3) contrast(1.1); }
+.ph-live--gold .ph-live__sheen { filter: brightness(1.85) saturate(1.25) contrast(1.05); }
+/* La pared: luz rasante por toda la foto, con una banda más ancha que hace brillar
+   los cantos del relieve. */
+.ph-live--wall .ph-live__sheen {
+  filter: brightness(2.1) contrast(1.2);
+  -webkit-mask-image: linear-gradient(135deg, transparent 0 38%, rgba(0, 0, 0, 0.4) 44%, #000 50%, rgba(0, 0, 0, 0.4) 56%, transparent 62% 100%);
+  mask-image: linear-gradient(135deg, transparent 0 38%, rgba(0, 0, 0, 0.4) 44%, #000 50%, rgba(0, 0, 0, 0.4) 56%, transparent 62% 100%);
+}
+/* Sol: la zona se calienta (la misma foto con un filtro cálido, que el script va
+   destapando) y una mancha de luz la cruza. */
+.ph-live__warm {
+  opacity: 0;
+  filter: sepia(0.5) saturate(1.45) hue-rotate(-14deg) brightness(1.03) contrast(1.04);
+}
+.ph-live__sun {
+  position: absolute;
+  inset: 40% -20% -10% -20%;
+  background: radial-gradient(closest-side, rgba(255, 206, 140, 0.42), rgba(255, 206, 140, 0));
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ph-live__zone { display: none; }
 }
 
 /* ── Entradas de apoyo ───────────────────────────────────────────────────────

@@ -38,10 +38,12 @@ ph-sport-web/
 │
 ├── assets/
 │   └── source-media/                  # Fuentes originales para scripts de build (NO se sirven)
-│       └── badges/                    # PNG 600×600 → WebP 128×128 (npm run assets:badges)
+│       ├── badges/                    # PNG 600×600 → WebP 128×128 (npm run assets:badges)
+│       └── oficina/                   # 3 fotos de la sesión y 3 fotogramas del vídeo de la oficina (npm run assets:oficina)
 │
 ├── src/
 │   ├── assets/images/players/       # Fotos de jugadores (procesadas por astro:assets)
+│   ├── assets/images/oficina/       # Fotos de Servicios y Contacto: 16:10, color ya ajustado y máscaras de luz (las genera assets:oficina)
 │   │
 │   ├── components/
 │   │   ├── LogoReveal.astro         # Intro de la home — cortinilla de canal, en CSS, sin GSAP
@@ -54,7 +56,7 @@ ph-sport-web/
 │   │   │   ├── HomePlayersSection.astro    # «A continuación»: «El roster.» en placa y placa llave
 │   │   │   ├── HomeServicesSection.astro   # «La alineación»: acordeón <details> + Plan de Acción aparte
 │   │   │   ├── HomeAboutSection.astro      # Cita en placas, tabla de estadísticas y cinta de valores
-│   │   │   ├── HomeContactSection.astro    # «Hablemos.», correo en placa llave y ventana de repetición
+│   │   │   ├── HomeContactSection.astro    # «Hablemos.», correo en placa llave y ventana de repetición con la tarjeta
 │   │   │   ├── AboutSection.astro          # Cartones de filosofía, hoja de alineación, lista de señales
 │   │   │   ├── ServicesSection.astro       # Áreas (acordeón), modelo, pilares como segmentos, manifiesto
 │   │   │   └── TalentsSection.astro        # Buscador en placa y fichas de alineación (FLIP al buscar)
@@ -64,6 +66,7 @@ ph-sport-web/
 │   │       ├── FooterSocialIcon.astro
 │   │       ├── KeyPlate.astro           # Placa llave: el botón-enlace (blanca, barrido dorado al señalarla)
 │   │       ├── LanguageSwitcher.astro   # VACÍO, sin uso: el selector de idioma vive en Header.astro
+│   │       ├── LivePhoto.astro          # Foto viva: la foto de la oficina y su capa de luz (la mueve ph-live-photos.ts)
 │   │       ├── Plate.astro              # Placa: la pieza base (filo, corte a 45°, pestaña dorada)
 │   │       ├── SectionHeader.astro
 │   │       └── Ticker.astro             # Cinta inferior: texto que corre con el scroll
@@ -80,6 +83,7 @@ ph-sport-web/
 │   │   ├── heroMedia.ts             # Fuente de verdad del vídeo del hero (versión, fuentes por pantalla, pósters)
 │   │   ├── nationalTeamBadge.ts     # Resuelve escudo PNG por código ISO 3166-1 alpha-2
 │   │   ├── navigation.ts            # Items de navegación
+│   │   ├── officePhotos.ts          # Qué foto de la oficina va en cada pilar y en Contacto, y cómo se mueve su luz
 │   │   ├── playerDetail.ts          # Payloads de talentos para el grid (nombre, club, foto, códigos)
 │   │   ├── playerPhotos.ts          # Mapeo de fotos por slug (import.meta.glob)
 │   │   ├── servicesItems.ts         # Datos de los 6 pilares de servicios
@@ -111,6 +115,7 @@ ph-sport-web/
 │   │   ├── dropdown.ts              # SIN USO: nadie lo importa. Talentos monta su combo aparte
 │   │   ├── ph-ambient.ts            # Luz animada de fondo de toda la web: bombo de cinco escenas (WebGL2 en directo)
 │   │   ├── ph-disclosure.ts         # Acordeones sin animar alturas (FLIP medido), con GSAP
+│   │   ├── ph-live-photos.ts        # Fotos vivas de Servicios y Contacto: reposo y reacción al scroll, sin GSAP
 │   │   ├── ph-motion.ts             # Núcleo «Retransmisión», sin GSAP: entradas, cascadas, placas por líneas, cortinilla
 │   │   └── ph-text-animations.ts   # Infraestructura GSAP (refresh, scroll al navegar, curvas) y cintas
 │   │
@@ -124,7 +129,8 @@ ph-sport-web/
 │
 ├── scripts/
 │   ├── hero-neon/neon.html          # Render del vídeo del hero (WebGL). No lo sirve la web
-│   └── build-hero-neon.mjs          # Lo graba fotograma a fotograma y lo codifica (npm run assets:hero)
+│   ├── build-hero-neon.mjs          # Lo graba fotograma a fotograma y lo codifica (npm run assets:hero)
+│   └── build-office-photos.mjs      # Fotos de la oficina: recorte, ajuste de color y máscaras (npm run assets:oficina)
 │
 ├── tests/e2e/                       # Smoke sobre el build (Playwright)
 │   ├── comprobar-servidor.ts        # Aborta si el puerto lo ocupa OTRO proyecto
@@ -401,6 +407,7 @@ Servicios; los cartones de Sobre nosotros) y el resto, apoyo.
 | **Placa llave** | El botón: la única placa blanca del bloque. Al señalarla, el oro la barre de izquierda a derecha y la palabra rueda | `KeyPlate.astro`; `.ph-key` |
 | **Cinta** | Barra negra con bloque dorado; el texto corre con el scroll y solo con él (WCAG 2.2.2) | `Ticker.astro`; `mountTickers` en `ph-text-animations.ts` |
 | **Revelado en diagonal** | Fotos y ventanas se descubren desde la esquina de abajo a la izquierda con un frente a 45° (520 ms) y se asientan de 1,06 a 1. `--arh` = alto en % del ancho | `.ph-reveal` + `.ph-reveal__img` |
+| **Fotos vivas** | Las fotos de la oficina de los pilares de Servicios y de Contacto. En reposo, la cámara respira (décimas de % de deriva y de zoom, una décima de grado de giro) y la luz pasea; con el scroll, la luz se aviva y se calma al parar, y la cámara se queda un poco atrás y vuelve, como el fondo con el ratón (muelle crítico). La luz es un brillo que recorre una pieza (clips, logo de la carpeta y de la tarjeta, la pared) o el sol que calienta una zona (la mesa, el patio). Contacto: un reflejo cruza la tarjeta al entrar. Solo corre con una foto en pantalla; con movimiento reducido, foto quieta | `LivePhoto.astro`, `ph-live-photos.ts`, `.ph-live` (global.css); qué foto va en cada hueco, en `officePhotos.ts` |
 | **Entradas de apoyo** | Titulares largos que no van en placa: barrido de izquierda a derecha. Texto corrido: sube y aparece | `.ph-in-wipe`, `.ph-in-rise` |
 | **Cortinilla** | Al navegar, bandas blanca y dorada y una placa negra barren la pantalla, la tapan un instante en el centro y salen (380 ms); al revés al volver atrás | `.ph-stinger` en `BaseLayout`; `ph-motion.ts` |
 | **Marcador de esquina** | La etiqueta de la página rueda en vertical al navegar (200 ms) y la barra dorada de la barra de canales se desliza (View Transition propia) | `Header.astro` |
@@ -426,8 +433,14 @@ grupo. Lo que se va, más rápido que lo que llega. **Sin rebotes.**
   coalescido de ScrollTrigger, la posición de llegada, el scroll suave apagado al
   navegar, el arranque diferido) más las cintas (`mountTickers`) y `mountSection`.
 - `src/scripts/ph-disclosure.ts`: los acordeones de la portada y de Servicios.
+- `src/scripts/ph-live-photos.ts`: las fotos vivas (sin GSAP). Lo montan los
+  scripts de Servicios y de Contacto con `mountLivePhotos(sección)`; un solo bucle
+  para todas las fotos de la página, que se para fuera de la vista y al navegar.
+  Vigila el bloque `[data-inview]` y no el marco, por la trampa del `clip-path`
+  (`docs/trampas-conocidas.md`).
 - Lo ligado al scroll vive en el `<script>` de su sección (salida del rótulo del
-  hero, banda del modelo y empuje de los pilares en Servicios).
+  hero y banda del modelo en Servicios). El empuje de los pilares, que antes era un
+  ScrollTrigger, lo hace ahora `ph-live-photos.ts` junto con el reposo.
 
 **Cómo se anima un bloque nuevo.** Marca el bloque con `data-inview` y monta su
 contenido con las piezas (`Bug`, `Plate`, `KeyPlate`, `.ph-in-rise`…), con `d` o
@@ -545,7 +558,7 @@ empieza donde empiezan los titulares.
 
 | Regla | Motivo |
 |---|---|
-| Todas las imágenes con `<Image>` de `astro:assets` | WebP automático + width/height → cero CLS. Excepción: las fotos del grid de talentos van en `<picture>` AVIF 90 con WebP 85 de reserva (`DECISIONS.md`, 2026-10-01) |
+| Todas las imágenes con `<Image>` de `astro:assets` | WebP automático + width/height → cero CLS. Excepciones: las fotos del grid de talentos van en `<picture>` AVIF 90 con WebP 85 de reserva (`DECISIONS.md`, 2026-10-01), y las fotos de la oficina, en un `<img>` con su `srcset` hecho con `getImage` (WebP 82): la foto y su capa de luz tienen que pedir el mismo archivo (`LivePhoto.astro`; `DECISIONS.md`, 2026-10-15) |
 | GSAP en `<script>` de `.astro`, nunca en una island | React fuera del bundle (~182 KB menos en la home) |
 | Named imports: `import { X } from 'lib'` | Tree-shaking efectivo |
 | Fuentes self-hosted desde `/public/fonts/` | Elimina round-trips externos |
@@ -742,15 +755,16 @@ que ejecutar nada a mano.
 | `HomePlayersSection.astro` | ✅ Completo | Bug, «El roster.» en placa y placa llave a /talentos. Sin fotos a propósito (commit `453e928`) |
 | `HomeServicesSection.astro` | ✅ Completo | La alineación (acordeón `<details>` sin animar alturas) y el Plan de Acción aparte, a todo lo ancho, con sus cinco sub-áreas en placas |
 | `HomeAboutSection.astro` | ✅ Completo | La frase en dos placas, tabla de estadísticas (7 con segmentos, 360° con barra) y cinta de valores ligada al scroll |
-| `HomeContactSection.astro` | ✅ Completo | «Hablemos.» en placa, el correo como placa llave grande y una ventana de repetición que se descubre en diagonal, vacía hasta que llegue la imagen nueva (`DECISIONS.md`, 2026-10-05) |
+| `HomeContactSection.astro` | ✅ Completo | «Hablemos.» en placa, el correo como placa llave grande y una ventana de repetición que se descubre en diagonal, con la tarjeta de visita de la oficina como foto viva: un reflejo cruza su logo dorado al entrar (`DECISIONS.md`, 2026-10-15) |
 | `AboutSection.astro` | ✅ Completo | V3 — absorbe /equipo. Hero en placas, cartones de filosofía, hoja de alineación (21 integrantes), lista de señales con códigos ISO |
-| `ServicesSection.astro` | ✅ Completo | Hero en escalera, áreas (acordeón con panel), cintas, corte de segmento del modelo, pilares como segmentos, manifiesto en placas |
+| `ServicesSection.astro` | ✅ Completo | Hero en escalera, áreas (acordeón con panel), cintas, corte de segmento del modelo, pilares como segmentos con las fotos vivas de la oficina, manifiesto en placas |
 | `TalentsSection.astro` | ✅ Completo | Grid 3:4 no clicable, siempre en el orden del archivo: sin filtro de rol ni orden (`DECISIONS.md`, 2026-10-04). Buscador en placa, a la vista también en el móvil; fichas con rótulo inferior y escudos en placas; reveladas en diagonal; la búsqueda recoloca con FLIP |
 | `Button.astro` | ✅ Completo | Primary / secondary, `<a>` o `<button>` |
 | `SectionHeader.astro` | ✅ Completo | |
 | `LanguageSwitcher.astro` | ✅ Completo | Integrado en Header |
 | `FooterSocialIcon.astro` | ✅ Completo | |
 | `Plate.astro`, `Bug.astro`, `KeyPlate.astro`, `Ticker.astro` | ✅ Completo | Piezas del lenguaje «Retransmisión» (variante A, 2026-10-03). Ver Motion |
+| `LivePhoto.astro` | ✅ Completo | Foto viva de la oficina con su capa de luz (2026-10-15). Ver Motion |
 
 ### Páginas
 
@@ -774,6 +788,7 @@ que ejecutar nada a mano.
 | Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
 | Fotos jugadores | ⚠️ 66 de las 68 tarjetas visibles | De la serie de estudio de Mario y con la camiseta del club de la ficha (2026-10-06; Óscar López, 2026-10-11), salvo los que entraron en Cantera el 2026-10-14: Pelayo Margollés y João Vogt no tienen foto, y Tomás Méndez, Isaías Abuabara, Frank Iglesias, Babacar Welle, Álvaro Gutiérrez, Miguel Díaz de Burgos, Alberto de Frutos y Wilson Santos llevan la antigua. Ver «Fotos de jugadores» arriba |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
+| Fotos de la oficina | ⚠️ Con lo que había | Pilares de Servicios y Contacto (2026-10-15): bolígrafos, pared de chevrones y mesa de reuniones sacados del vídeo de la oficina (1920×1080); carpeta, sillones y tarjeta de la sesión de fotos (1600×1066). Originales en `assets/source-media/oficina/`. Faltan los originales del fotógrafo (`docs/hallazgos-abiertos.md`) |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
 | OG image (1200×630px) | ❌ Pendiente | |
 

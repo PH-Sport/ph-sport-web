@@ -15,7 +15,8 @@
     "examen:clon": "sh scripts/examen-clon.sh",
     "assets:badges": "node scripts/build-badge-variants.mjs",
     "assets:favicons": "node scripts/build-favicons.mjs",
-    "assets:hero": "node scripts/build-hero-neon.mjs"
+    "assets:hero": "node scripts/build-hero-neon.mjs",
+    "assets:oficina": "node scripts/build-office-photos.mjs"
   },
   "repository": {
     "type": "git",

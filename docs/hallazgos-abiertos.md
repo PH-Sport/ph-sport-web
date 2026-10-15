@@ -50,14 +50,6 @@ auditorías. **No abordarlo sin que Mario lo supervise.**
 
 Detalle en [`rendimiento.md`](rendimiento.md).
 
-### Contacto sin imagen: el hueco espera la nueva (2026-10-05)
-
-La imagen del sobre dorado se retiró por orden (`DECISIONS.md`, 2026-10-05) y su
-sitio en la sección de contacto de la portada se ve vacío **a propósito**: el marco
-con el tono de espera de las fotos. No es un fallo de carga. Se cierra cuando Mario
-pase la imagen nueva, que va como fondo de `.replay__img` en `HomeContactSection.astro` (la ventana de
-repetición), encima del tono de espera.
-
 ## Diagnosticados, con la causa equivocada ya descartada
 
 ### Sitelinks de Google mezclando ES y EN
@@ -148,8 +140,9 @@ Por rentabilidad, de mayor a menor:
 2. ~~ScrollTrigger se carga en las cuatro páginas para dos usos en el hero~~ — en la
    rama de la variante A ya no aplica: las entradas son CSS con un
    `IntersectionObserver` y ScrollTrigger se usa para lo ligado al scroll de
-   verdad (las cintas, la salida del rótulo del hero, la banda del modelo y el
-   empuje de los pilares de Servicios).
+   verdad (las cintas, la salida del rótulo del hero y la banda del modelo). El
+   empuje de los pilares de Servicios salió de ScrollTrigger el 2026-10-15: ahora
+   lo mueve `ph-live-photos.ts`, sin GSAP.
 3. Cuatro imágenes con margen de compresión real.
 
 El tirón al entrar en `/sobre-nosotros` (135 spans con `filter: blur()`) se
@@ -192,11 +185,16 @@ animación: no sale en capturas). **Falta un iPhone y un Android de verdad**:
 Visto al investigar el rediseño, el 2026-10-02; **ya pasaba antes**. El vídeo del
 hero va en bucle y el fondo animado (en la variante A, en todas las páginas salvo
 las legales desde el 2026-10-05) se mueve mientras la página está abierta, más de 5 s y junto a otro contenido, sin un botón
-para pararlos. (En la variante A ya no hay más bucles que esos dos: la línea del
+para pararlos. Desde el 2026-10-15 se suman **las fotos de la oficina** de los
+pilares de Servicios y de Contacto, que respiran en reposo mientras están en
+pantalla (`DECISIONS.md`, 2026-10-15): lo pidió Mario sabiendo que esto seguía
+abierto. (Aparte de esos tres, en la variante A no hay bucles: la línea del
 bug «Scroll» se llena con el scroll en vez de correr sola, y las cintas solo se
 mueven con el scroll.) Con `prefers-reduced-motion` se paran todos, pero WCAG 2.2.2 (nivel
 A) pide además un control en la página. Arreglarlo es añadir un botón, y su texto
-no existe en las traducciones: es decisión de Mario.
+no existe en las traducciones: es decisión de Mario. Un mismo botón pararía los
+tres: el fondo (`ph-ambient.ts`), las fotos (`ph-live-photos.ts`, que ya se paran
+solas fuera de la vista) y el bucle del hero.
 
 ### Fondos animados de sección: sin medir en un móvil real (2026-10-01)
 
@@ -218,6 +216,27 @@ Si hiciera falta aligerar, la primera palanca es la resolución interna (`scale`
 cada escena y `MAX_DPR` en `src/scripts/ph-ambient.ts`); la segunda, volver a
 pausarlo cuando el titular queda lejos, aunque entonces la luz dejaría de estar
 siempre, que es lo que se pidió.
+
+### Fotos de la oficina: originales pequeños y sin probar en un móvil real (2026-10-15)
+
+Las fotos de los pilares de Servicios y de Contacto (`DECISIONS.md`, 2026-10-15)
+salen de lo que había: tres fotos de la sesión a 1600×1066 —sin datos de cámara,
+con pinta de haber pasado por WhatsApp— y tres fotogramas de 1920×1080 del vídeo
+de la oficina. Enteras se ven bien, pero en un portátil retina un pilar se pinta
+a 1,2-1,3× y se nota algo blando. **Lo que lo arregla son los originales del
+fotógrafo** (fotos y vídeo). Al cambiarlos no basta con volver a pasar
+`npm run assets:oficina`: las máscaras de la luz están medidas sobre estas fotos
+(cajas, umbrales y la silueta de la mesa en `scripts/build-office-photos.mjs`) y
+hay que revisar sus cifras.
+
+Comprobado con Playwright sobre el build en Chromium, WebKit y a 390 px de ancho:
+las cinco fotos y la de Contacto cargan, la cámara respira en reposo, la luz se
+aviva con el scroll y se calma al parar, el reflejo de la tarjeta cruza al
+entrar, con movimiento reducido todo queda quieto y no hay errores, también al
+navegar con el ClientRouter. **No se ha visto en un móvil real**: cada fotograma
+mueve la máscara de la luz de la foto que está en pantalla, que obliga a repintar
+esa capa. Si en un móvil modesto tirara, la primera palanca es quitar la luz y
+dejar solo la cámara (la luz empieza apagada en CSS).
 
 ### Textos en italiano sin revisión nativa (2026-10-01)
 

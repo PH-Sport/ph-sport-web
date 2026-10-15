@@ -13,6 +13,95 @@ leído el resto.
 
 ---
 
+## 2026-10-15 · Fotos de la oficina en los pilares de Servicios y en Contacto, vivas en reposo y con el scroll
+
+**Decisión** (de Mario: al equipo le pidieron cambiar las imágenes hechas con IA
+por fotos reales de la oficina; la del sobre dorado de Contacto ya se había
+retirado el 2026-10-05): los cinco pilares de `/servicios` y la ventana de
+repetición de Contacto llevan fotos reales de la oficina de PH, y ninguna está
+quieta.
+
+| Hueco | Foto | La luz |
+|---|---|---|
+| I · Prensa | Los bolígrafos de la sala de reuniones (fotograma del vídeo) | Un brillo recorre los clips de cobre |
+| II · Rendimiento | La pared negra de chevrones (fotograma del vídeo) | Una luz rasante cruza el relieve |
+| III · Media | La mesa de reuniones con los portátiles (fotograma del vídeo) | El sol de la cristalera calienta el tablero |
+| IV · Family Office | La carpeta con el logo plateado (foto) | Un brillo recorre el logo |
+| V · Psicólogo | Los sillones y los relojes de arena (foto) | El patio se calienta y el sol cruza la grava |
+| Contacto | La tarjeta de visita en su soporte (foto) | Al entrar, un reflejo cruza el logo dorado |
+
+Se eligió sobre una maqueta en tres vueltas (un artifact privado de Claude, del
+2026-10-06) y Mario mandó llevarla a la web el 2026-10-15. Cómo está hecho, en
+`ARCHITECTURE.md` («Sistema de animaciones», fila «Fotos vivas»).
+
+**Cómo se mueven.** La foto es real y no se retoca: se mueven la cámara y la luz.
+En reposo, la cámara respira (unas décimas de % de deriva y de zoom, una décima de
+grado de giro) y la luz pasea despacio. Con el scroll, la luz se aviva y se calma
+sola al parar, y la cámara se queda un poco atrás y vuelve. Es lo que pidió Mario:
+«similar a cómo funcionan los fondos animados, solo que en vez de reaccionar al
+cursor del mouse, reaccionan al scroll». Por eso la posición llega por un muelle
+crítico, como el ratón en los fondos: sin saltos aunque la rueda vaya a golpes.
+Los pilares conservan el empuje de antes (se acercan al cruzar la pantalla), que
+deja de ser un ScrollTrigger y pasa a `ph-live-photos.ts`.
+
+**El ajuste de color va en el archivo.** Menos saturación, un punto de contraste,
+algo más oscuro y un poco cálido, más una viñeta. Mario lo quiso «por defecto» al
+ver la maqueta, donde era un interruptor. El script hace la misma cuenta que el
+filtro CSS de la maqueta (`saturate(0.8) contrast(1.06) brightness(0.94)
+sepia(0.1)`) y la viñeta va en CSS, fija al marco. **Por qué no un filtro CSS**: se
+aplicaría en cada fotograma sobre una capa que se mueve.
+
+**De dónde salen.** De las ocho fotos de la sesión, solo la de los sillones no
+lleva el logo de PH. Bolígrafos, pared y mesa son fotogramas del vídeo de la
+oficina que estuvo en la portada en septiembre (`Vídeo Web.mov`): el más nítido de
+cada plano. Los originales usados están en `assets/source-media/oficina/`;
+`npm run assets:oficina` los recorta a 16:10, aplica el ajuste y genera las
+máscaras de la luz en `src/assets/images/oficina/`. Van por `astro:assets`, con
+hash, así que no sufren la caché de 7 días de `public/`.
+
+**Alternativas descartadas** (todas se vieron en la maqueta):
+- *Animarlas con IA (de foto a vídeo).* El encargo era quitar el aspecto de IA, y
+  esas herramientas deforman lo rígido y las letras: aquí casi todo es el logo.
+- *Un vídeo renderizado por foto, como el hero.* Entre medio mega y mega y medio
+  por hueco, en bucle y nunca más nítido que la foto. En directo pesa la foto más
+  unos KB de código.
+- *La escultura del logo en Prensa (dos tomas, con un corte de cámara y un flash)
+  y en Rendimiento, y el neón inclinado en Media.* Primera vuelta. Mario: «el logo
+  de PH se repite demasiado»; salía en cinco de las seis fotos.
+- *Detalles recortados sin logo* (la punta de una pluma, el bambú del patio, un
+  trozo del neón), con un selector «sin logo / con logo». Segunda vuelta. Mario:
+  «para nada». Además, recortados de fotos de 1600 px, se veían blandos.
+- *Una sesión de fotos nueva, el archivo de PH o gráficos de retransmisión en vez
+  de foto.* Se propusieron como alternativa; Mario se quedó con los fotogramas
+  del vídeo, que estaban ya disponibles.
+- *El neón de frente (`Neón 2`).* Es la portada.
+
+**Lo que se acepta**:
+- Los bolígrafos llevan «PHSPORT» impreso en pequeño (el nombre, no el símbolo),
+  y la carpeta que hay sobre la mesa de Media, el logo diminuto.
+- Rendimiento es abstracta: habla de progresión, no enseña a nadie entrenando.
+- Fotos de 1600 px y fotogramas de 1920: en un portátil retina, algo blandos.
+  Faltan los originales del fotógrafo (`docs/hallazgos-abiertos.md`).
+- El reposo es movimiento continuo y se suma al hallazgo abierto de WCAG 2.2.2,
+  sin botón para pararlo. Se le avisó a Mario en la maqueta.
+- Sin probar en un móvil real; comprobado con Playwright en Chromium, WebKit y a
+  390 px, también navegando con el ClientRouter y con movimiento reducido.
+
+**Trampa encontrada por el camino**: en Chromium, lo recortado del todo con
+`clip-path` no avisa al `IntersectionObserver`, y la maqueta se quedó en negro en
+Chrome y en la app de Claude. Se vigila el bloque, no el marco
+(`docs/trampas-conocidas.md`).
+
+**Pesos** (WebP 82): por pilar, 13-48 KB a 960 px y 30-113 KB al ancho completo,
+más la máscara de la luz (5-33 KB). Las de IA eran 71-137 KB en escritorio.
+
+**Lo que se retira**: las cinco imágenes de IA de los pilares
+(`public/pillar-*.webp`, con sus `-sm`) y el ScrollTrigger del empuje en
+`ServicesSection.astro`. Para recuperarlas: el commit anterior a este, sobre esas
+rutas.
+
+---
+
 ## 2026-10-15 · `preview` pasa a producción, con el italiano sin revisión nativa
 
 **Decisión**: `preview` se fusiona en `main` y se publica en phsport.es entero:
@@ -333,6 +422,9 @@ paneles esmerilados ni la luz entera en las páginas interiores.
 
 ## 2026-10-05 · Contacto sin la imagen del sobre dorado: el hueco espera la nueva
 
+> ⚠️ **Hueco cubierto el 2026-10-15**: la ventana lleva la tarjeta de visita de la
+> oficina (entrada «Fotos de la oficina en los pilares de Servicios y en Contacto»).
+
 > **Estado: en las tres variantes** (`feat/variante-a-retransmision`,
 > `feat/variante-b-titulos` y `feat/variante-c-analisis`), y en `preview` desde el
 > 2026-10-05 con la variante A. `main` sigue mostrándola en phsport.es.
@@ -391,6 +483,11 @@ con el equipo: es una decisión editorial, no un olvido.
 ---
 
 ## 2026-10-03 · Variante A «Retransmisión»: la web como la realización de un partido en televisión
+
+> ⚠️ **Las fotos de los pilares de Servicios y su empuje, superados el 2026-10-15**:
+> son fotos reales de la oficina que respiran y reaccionan al scroll, y el empuje ya
+> no es un ScrollTrigger (entrada «Fotos de la oficina en los pilares de Servicios
+> y en Contacto»).
 
 > **Estado: elegida por el equipo y en `preview` desde el 2026-10-05**, sin pasar a
 > `main`. Sale de `feat/rediseno-motion` (commit `e0c6360`, el «Marcador») y fue una

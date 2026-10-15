@@ -84,6 +84,26 @@ puede funcionar.**
   vídeo (`recordVideo`) y sacando fotogramas con `ffmpeg`. Las grabaciones
   tampoco incluyen la capa de las View Transitions.
 
+## Lo recortado del todo con `clip-path` no avisa al `IntersectionObserver` (Chromium)
+
+En Chromium, un `IntersectionObserver` que vigila un elemento escondido por su
+**propio** `clip-path` (una foto `.ph-reveal` que espera a descubrirse, recortada a
+nada) no avisa nunca de que entra en pantalla, aunque esté en el centro. WebKit sí
+avisa. El resultado es un círculo: la foto no se descubre porque no está «en
+pantalla», y no está «en pantalla» porque no se ha descubierto. **Se queda en negro
+para siempre**, en Chrome y en la app de Claude, que usa el mismo motor.
+
+Pasó el 2026-10-06 en la maqueta de las fotos de la oficina, que vigilaba el marco
+de cada foto. Se vio al reproducir la página tal como se sirve (modo estándar,
+ventana normal y bajando con la rueda) con Playwright: en Chromium el marco no
+recibía `is-inview`, en WebKit sí. Una primera comprobación con una ventana de
+9000 px de alto no lo pilló, porque con todo dentro de la pantalla no se escondía
+nada: probar siempre con una ventana de tamaño normal y bajando.
+
+**Regla: se vigila el bloque que contiene lo recortado, nunca la pieza recortada.**
+`ph-motion.ts` ya lo hace así (el `[data-inview]` va en el artículo y la foto
+`.ph-reveal` es su hija) y `ph-live-photos.ts` también.
+
 ## El scroll suave se apaga durante la navegación, y hay que dejarlo apagado
 
 `global.css` pone `scroll-behavior: smooth` en `html` para el indicador del hero y

@@ -152,10 +152,12 @@ npm run test:e2e
 
 # Regeneración de assets — a mano, solo al cambiar un original de assets/source-media/
 # (o, para el hero, su render: scripts/hero-neon/neon.html).
-# La salida se versiona en public/, así que NO forman parte del build.
+# La salida se versiona (en public/, o en src/assets/ las fotos de la oficina),
+# así que NO forman parte del build.
 npm run assets:badges    # escudos PNG -> WebP 128x128
 npm run assets:favicons  # favicons, apple-touch-icon y og-image.jpg
 npm run assets:hero      # vídeo del hero (renderizado; ~10 min, necesita los navegadores de Playwright)
+npm run assets:oficina   # fotos de la oficina de Servicios y Contacto: recorte, color y máscaras de luz
 ```
 
 Despliegue: **Vercel** (proyecto `ph-sport-web`, equipo `rodz-dev`), push a `main`
@@ -269,6 +271,10 @@ leerlo antes de tocar el fichero que se nombra.
   archivo nuevo con el mismo nombre sigue siendo el viejo para quien ya visitó la
   web. Para sustituir algo, cambiarle el nombre (el vídeo del hero lleva la versión
   en la carpeta por eso). Lo que pasa por `astro:assets` lleva hash y no lo sufre.
+- **En Chromium, lo recortado del todo con `clip-path` no avisa al
+  `IntersectionObserver`** → si se vigila la foto que espera a descubrirse en vez de
+  su bloque, no aparece nunca y se queda en negro (en Chrome y en la app de Claude;
+  en Safari sí). Vigilar siempre el bloque `[data-inview]`.
 
 ## Hallazgos abiertos
 
@@ -298,10 +304,10 @@ Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: backlog de
 rendimiento del 2026-08-18, SEO P1/P2, el vídeo del hero y los fondos animados
 (en todas las páginas desde el 2026-10-05) sin probar en un móvil real, la
 variante A «Retransmisión» tampoco (2026-10-03, en producción desde el
-2026-10-15), la imagen nueva de
-Contacto, que hoy es un hueco (2026-10-05), sin control para
-pausar el movimiento continuo (WCAG 2.2.2), y las fotos de talentos en AVIF, que
-con 4G lento tardan bastante más en aparecer (2026-10-01).
+2026-10-15), las fotos de la oficina de Servicios y Contacto, que esperan los
+originales del fotógrafo y no se han probado en un móvil real (2026-10-15), sin
+control para pausar el movimiento continuo (WCAG 2.2.2), y las fotos de talentos
+en AVIF, que con 4G lento tardan bastante más en aparecer (2026-10-01).
 
 ## Convenciones
 

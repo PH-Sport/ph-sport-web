@@ -13,6 +13,33 @@ leído el resto.
 
 ---
 
+## 2026-10-15 · `preview` pasa a producción, con el italiano sin revisión nativa
+
+**Decisión**: `preview` se fusiona en `main` y se publica en phsport.es entero:
+la variante A «Retransmisión», el bombo de fondos, el vídeo nuevo del hero, las
+pestañas Profesionales / Cantera, las fotos de estudio y **la versión en
+italiano**. Lo pidió Mario el 2026-10-15, porque el equipo de PH quería ver los
+últimos cambios en la web principal.
+
+**Qué cambia respecto al 2026-10-01**: aquel día se decidió que el italiano no
+iba a producción sin que lo revisara un nativo. Se le recordó a Mario antes de
+subir y decidió publicarlo igualmente: «no es crítico y podemos revisarlo sobre
+la marcha». La revisión nativa sigue pendiente, pero ya **no bloquea** la
+publicación: se corrige en producción cuando llegue
+(`docs/hallazgos-abiertos.md`).
+
+**Se publica sabiendo que**:
+- En Cantera, 8 de los 20 llevan la foto antigua, sin la estética de estudio, y
+  Pelayo Margollés y João Vogt no tienen foto (avatar genérico).
+- El hueco de la imagen de Contacto se ve vacío a propósito, a la espera de la
+  imagen nueva (2026-10-05).
+- Ni la variante A, ni los fondos animados, ni el vídeo del hero se han probado
+  en un móvil real; solo en Chromium y WebKit con Playwright.
+
+**Alternativa descartada**:
+- *Esconder el italiano y publicar el resto.* Se ofreció; Mario prefirió
+  publicarlo ya.
+
 ## 2026-10-14 · Cantera: la lista de Diego, 20 jugadores en su orden
 
 **Decisión**: la pestaña «Cantera» de `/talentos` pasa a ser exactamente la
@@ -132,6 +159,9 @@ cargar: sus nombres de dos líneas se parten al abrirla (`splitPlatesIn`, en
 nativo, como el resto del italiano.
 
 ## 2026-10-05 · La variante A pasa a `preview` como diseño provisional
+
+> **Superada en parte el 2026-10-15**: `preview` pasó a `main` y la A es ya lo
+> que sirve phsport.es. Ver la entrada del 2026-10-15.
 
 **Decisión**: la rama `feat/variante-a-retransmision` se fusiona en `preview`, que
 pasa a enseñar la variante A como página por defecto. Lo pidió Mario el
@@ -288,7 +318,8 @@ paneles esmerilados ni la luz entera en las páginas interiores.
 ## 2026-10-05 · El equipo se queda con la variante A
 
 > **Estado: decidido y aplicado en `preview` el 2026-10-05** (entrada «La variante A
-> pasa a `preview` como diseño provisional»). Sin pasar a `main`.
+> pasa a `preview` como diseño provisional»). En `main` y en producción desde el
+> 2026-10-15.
 
 **Qué se decidió.** Mario, el 2026-10-05: el equipo se queda con la **variante A
 «Retransmisión»**.
@@ -804,6 +835,10 @@ Mario.
 ---
 
 ## 2026-10-01 · Italiano como tercer idioma, sin textos legales y con selector desplegable
+
+> **Superada en parte el 2026-10-15**: el italiano se publicó en producción sin
+> la revisión nativa, por decisión de Mario. La revisión sigue pendiente, pero ya
+> no bloquea. Ver la entrada del 2026-10-15.
 
 **Decisión** (pedida por Mario): la web se publica también en italiano, bajo
 `/it/` y con las rutas traducidas como en inglés: `/it/`, `/it/talenti/`,

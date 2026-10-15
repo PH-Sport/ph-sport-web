@@ -283,8 +283,9 @@ Lo que hay que saber **antes de tocar nada**:
 - **El coste del snapshot del `ClientRouter` en `/talentos` está sin hacer a
   propósito**, por riesgo alto. No abordarlo sin que Mario lo supervise.
 - **El italiano no lo ha revisado ningún nativo** (traducido por IA el 2026-10-01).
-  No llevarlo a producción sin esa revisión, y los textos legales no se traducen:
-  es decisión de Mario (`DECISIONS.md`, 2026-10-01).
+  Está en producción desde el 2026-10-15 igualmente, por decisión de Mario: la
+  revisión se aplica sobre la marcha cuando llegue. Los textos legales no se
+  traducen: también es decisión suya (`DECISIONS.md`, 2026-10-01 y 2026-10-15).
 - **Los sitelinks ES/EN los elige Google.** El marcado está verificado correcto; no hay
   control directo. No perseguirlo.
 
@@ -296,8 +297,8 @@ Lo que hay que saber **antes de tocar nada**:
 Pendientes sin trampa asociada, en `docs/hallazgos-abiertos.md`: backlog de
 rendimiento del 2026-08-18, SEO P1/P2, el vídeo del hero y los fondos animados
 (en todas las páginas desde el 2026-10-05) sin probar en un móvil real, la
-variante A «Retransmisión» tampoco (2026-10-03, en `preview` desde el
-2026-10-05), la imagen nueva de
+variante A «Retransmisión» tampoco (2026-10-03, en producción desde el
+2026-10-15), la imagen nueva de
 Contacto, que hoy es un hueco (2026-10-05), sin control para
 pausar el movimiento continuo (WCAG 2.2.2), y las fotos de talentos en AVIF, que
 con 4G lento tardan bastante más en aparecer (2026-10-01).

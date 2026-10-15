@@ -165,7 +165,8 @@ resolvió el 2026-10-02: los párrafos ya no entran palabra a palabra. Cifras en
 
 ### Variante A «Retransmisión»: sin probar en un móvil real (2026-10-03)
 
-En `preview` desde el 2026-10-05 (`DECISIONS.md`, 2026-10-03 y 2026-10-05; sustituye
+En `preview` desde el 2026-10-05 y en producción desde el 2026-10-15 (`DECISIONS.md`,
+2026-10-03, 2026-10-05 y 2026-10-15; sustituye
 al «Marcador» del 2026-10-02, que tampoco se llegó a probar en un
 móvil). Comprobado con Playwright sobre el build, en Chromium y WebKit, a 360, 390,
 768, 1024 y 1440 px en los tres idiomas: desbordes, la diagonal de las placas
@@ -222,8 +223,10 @@ siempre, que es lo que se pidió.
 
 La versión italiana (`src/i18n/it.ts`, `DECISIONS.md` 2026-10-01) la tradujo
 un agente de IA desde el español, y no la ha leído nadie que hable italiano.
-**Antes de llevarla a producción tiene que revisarla un nativo**: una traducción
-automática puede ser correcta y aun así sonar rara en el sector del fútbol.
+**Está en producción desde el 2026-10-15 sin esa revisión**, por decisión de Mario
+(`DECISIONS.md`, 2026-10-15): sigue haciendo falta que la lea un nativo, porque
+una traducción automática puede ser correcta y aun así sonar rara en el sector
+del fútbol. Lo que corrija se aplica directamente sobre producción.
 
 Puntos que conviene que mire con atención:
 

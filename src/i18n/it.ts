@@ -2,8 +2,8 @@
 // Traducciones al italiano. Debe tener las mismas claves que es.ts.
 // Si una clave falta, useTranslations() hace fallback al español automáticamente.
 //
-// Traducción hecha desde el español sin revisión nativa: pendiente de que la lea
-// alguien que hable italiano antes de publicarla (docs/hallazgos-abiertos.md).
+// Traducción hecha desde el español sin revisión nativa: publicada así el 2026-10-15
+// y pendiente de que la lea alguien que hable italiano (docs/hallazgos-abiertos.md).
 
 import type { TranslationKey } from './es';
 

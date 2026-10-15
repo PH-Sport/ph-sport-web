@@ -1,7 +1,7 @@
 # PHSPORT — Architecture Document
 
 > Documento de referencia para el proyecto. Leer antes de cualquier tarea estructural.
-> Última revisión: 2026-10-03 (variante A «Retransmisión»). Desde el 2026-10-05 la variante A está en `preview` como diseño provisional; `main` sigue con el anterior
+> Última revisión: 2026-10-03 (variante A «Retransmisión»). Desde el 2026-10-15 la variante A está en `main` y es lo que sirve phsport.es
 > Secciones: Stack · Estructura · i18n · Hero · Motion · Performance · SEO · Sistema de diseño · Tests · Estado del proyecto
 
 ---
@@ -247,9 +247,9 @@ C)» solo tenía fotos del Granada): hay que verlas.
 2026-10-01). No es un hueco que rellenar: traducir texto legal es una decisión
 de Mario, no técnica.
 
-Los textos en italiano están **traducidos sin revisión nativa**: antes de
-publicarlos en producción tiene que leerlos alguien que hable italiano
-(`docs/hallazgos-abiertos.md`).
+Los textos en italiano están **traducidos sin revisión nativa** y se publicaron
+así el 2026-10-15, por decisión de Mario (`DECISIONS.md`): sigue pendiente que
+los lea alguien que hable italiano (`docs/hallazgos-abiertos.md`).
 
 Las rutas `/equipo` y `/en/team` redirigen a `/sobre-nosotros#equipo` y `/en/about#equipo` respectivamente (la sección de equipo fue absorbida por About en V3).
 

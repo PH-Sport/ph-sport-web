@@ -200,18 +200,15 @@ Junto a `hidden` va **`hiddenReason`**: `left-agency` (ya no es de PH) u
 no se rellena a posteriori inventándolo. El porqué, en `DECISIONS.md`
 (2026-09-10).
 
-Desde el 2026-09-25 la web muestra **una selección en el orden de la lista de
-notas de Mario** (no está en el repo): todos los de 1ª España, 2ª España, 1ª
-Fuera, 2ª Fuera y 1ª RFEF, más escudos importantes. Desde el 2026-10-05 los
-escudos son los que la lista pone por delante de una categoría superior y las
-canteras de Real Madrid, Barça, Atlético, Betis y Valencia, en el sitio que
-pidió Diego (PH); los dudosos quedan fuera hasta que se aclaren (`DECISIONS.md`,
-2026-10-05). Detrás de los jugadores va el seleccionador
-Thomas Christiansen, que volvió al grid el 2026-10-02 (`DECISIONS.md`). **Quién
-entra lo decide el campograma interno** (`campograma-ph`),
-no la web anterior. **El orden del grid es el orden del archivo**: las visibles
-van al principio de `jugadores.json`; para meter a alguien hay que saber su
-posición en la lista de Mario (`DECISIONS.md`, 2026-09-25). En la página no hay
+Desde el 2026-10-15, **Profesionales es la lista «Senior» de PH, en su
+orden** (no está en el repo; la reenvió Eva Alcázar): 1ª división, 2ª,
+filiales de 1ª y 2ª RFEF de clubes de primera, fútbol internacional, 1ª RFEF
+y, al final, el seleccionador Thomas Christiansen. Entraron todos los de la
+lista aunque a algunos les falten foto o club (`DECISIONS.md`, 2026-10-15;
+lo que falta, en `docs/hallazgos-abiertos.md`). **Quién entra lo decide el
+campograma interno** (`campograma-ph`), no la web anterior. **El orden del grid es el
+orden del archivo**: las visibles van al principio de `jugadores.json`; para
+meter a alguien hay que saber su posición en la lista. En la página no hay
 controles para cambiarlo: el filtro de rol y el orden A-Z/Z-A se retiraron el
 2026-10-04 por decisión del equipo (`DECISIONS.md`); queda solo el buscador.
 Desde el 2026-10-11 el grid va en **dos pestañas con selector, «Profesionales»
@@ -307,7 +304,8 @@ variante A «Retransmisión» tampoco (2026-10-03, en producción desde el
 2026-10-15), las fotos de la oficina de Servicios y Contacto, que esperan los
 originales del fotógrafo y no se han probado en un móvil real (2026-10-15), sin
 control para pausar el movimiento continuo (WCAG 2.2.2), y las fotos de talentos
-en AVIF, que con 4G lento tardan bastante más en aparecer (2026-10-01).
+en AVIF, que con 4G lento tardan bastante más en aparecer (2026-10-01), y las
+fichas de Profesionales que entraron sin foto o sin club (2026-10-15).
 
 ## Convenciones
 

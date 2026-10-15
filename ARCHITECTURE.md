@@ -159,7 +159,7 @@ ph-sport-web/
 
 El roster vive en **JSON plano** dentro de `data/`, no en Content Collections:
 
-- `data/jugadores.json` — jugadores. Campo opcional `"hidden": true` los oculta sin borrar. **El orden del archivo es el orden del grid.** Desde el 2026-09-25 solo está visible una selección en el orden de la lista de Mario (al principio del archivo); el resto lleva `hidden` + `hiddenReason` (`DECISIONS.md`, 2026-09-10 y 2026-09-25). Con `"academy": true` la ficha va a la pestaña «Cantera»; sin él, a «Profesionales» (`DECISIONS.md`, 2026-10-11).
+- `data/jugadores.json` — jugadores. Campo opcional `"hidden": true` los oculta sin borrar. **El orden del archivo es el orden del grid.** Solo está visible una selección, al principio del archivo: desde el 2026-10-15, Profesionales en el orden de la lista «Senior» de PH (`DECISIONS.md`, 2026-10-15); el resto lleva `hidden` + `hiddenReason` (`DECISIONS.md`, 2026-09-10). Con `"academy": true` la ficha va a la pestaña «Cantera»; sin él, a «Profesionales» (`DECISIONS.md`, 2026-10-11).
 - `data/entrenadores.json` — cuerpo técnico. Sus visibles van detrás de los jugadores, al final de la pestaña «Profesionales»; hoy solo Thomas Christiansen (`DECISIONS.md`, 2026-10-02).
 
 Ambos comparten esquema: `{ name, club: { name } | null, nationalTeamCodes?: string[] }`, más los opcionales `hidden`, `hiddenReason`, `academy` y `note` (ver `RosterJsonRow` en `playerDetail.ts`).
@@ -186,7 +186,8 @@ El slug se genera con `slugify(name)` y es la clave común con la foto en `src/a
 ### Fotos de jugadores
 
 **Las tarjetas visibles llevan foto de la serie de estudio** que prepara Mario
-(todas desde el 2026-10-06): fondo oscuro con resplandor dorado suave, brazos cruzados y la
+(todas desde el 2026-10-06, salvo las que han vuelto al grid después: la lista está
+en `docs/hallazgos-abiertos.md`): fondo oscuro con resplandor dorado suave, brazos cruzados y la
 camiseta del club de la ficha (el entrenador, con traje). Los jugadores ocultos conservan su foto antigua; si
 alguno vuelve al grid, hay que pedirle la de estudio. El build las sirve en AVIF 90
 con WebP 85 de reserva (`DECISIONS.md`, 2026-10-01).

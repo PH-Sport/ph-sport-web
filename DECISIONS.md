@@ -13,6 +13,74 @@ leído el resto.
 
 ---
 
+## 2026-10-15 · Profesionales: la lista «Senior» de PH, 63 jugadores y el seleccionador en su orden
+
+**Decisión**: la pestaña «Profesionales» de `/talentos` pasa a ser exactamente
+la lista «SENIOR (64)» que reenvió Eva Alcázar (PH) el 2026-10-15, **en su
+orden**: 63 jugadores y, al final, Thomas Christiansen. Mario pidió meter a
+todos los de la lista, también a los que les faltan datos o foto. Llegó junto
+con la de Cantera, que es idéntica a la del 2026-10-14: Cantera no cambia.
+
+**El criterio de orden, según el encabezado del mensaje**:
+1. Primera división, los cuatro por orden alfabético (Dani Requena, Iker
+   Luque, Juan Cruz, Mati Barzic), y detrás Javi Hernández y Alberto Del Moral
+   «por valor de transferencia y jugar competición europea de primer nivel».
+2. Segunda división.
+3. Filiales de 1ª y 2ª RFEF de clubes de primera división.
+4. Fútbol internacional.
+5. 1ª RFEF.
+6. Entrenador.
+
+El archivo sigue el orden de la lista tal cual, aunque algún nombre no parezca
+encajar en el bloque donde aparece: manda la lista, como con Diego el
+2026-10-05.
+
+**Altas** (16):
+- **Vuelven 14 que estaban ocultos**: los siete del bloque de filiales que
+  salieron de Cantera el 2026-10-14 (David Fernández, Alejandro Santiago,
+  José Rey, Mauro Valeiro, Mateo Sciancalepore, Sosu Kwame y Mario Guilabert),
+  que ahora van en Profesionales y sin la marca de Cantera; los cuatro del
+  Getafe ocultos el 2026-09-21 (Hugo García, Agus Moreno, Adrián Martín e
+  Israel Motos), y Kaua do Vale, Janick Buyla y Gonzalo Rodríguez.
+- **Dos fichas nuevas**: Luciano Rodríguez y Billy Gee, que no estaban en el
+  archivo.
+- Marcos López (Málaga), que salió de Cantera con los siete, no está en
+  ninguna de las dos listas: sigue oculto.
+
+**Datos puestos sin confirmar** («mételos como puedas», Mario):
+- **Gonzalo Rodríguez pasa al Danubio FC**: la lista lo escribe «Gonzalo
+  Rodríguez (Danubio)». Se toma como la confirmación de club que se le pidió a
+  Eva el 2026-10-05, cuando se ocultó por no constar en el Atlético La Paz. Su
+  foto de estudio es con la camiseta del Atlético La Paz: se deja hasta que
+  llegue la del Danubio, porque nunca se cambia el club para que encaje con la
+  foto.
+- **Luciano Rodríguez, en el «Club Nacional de Football»**: la lista dice
+  «Nacional». Se supone el de Montevideo porque va en el bloque internacional
+  junto a Gonzalo (Danubio, también uruguayo). Sin confirmar.
+- **Billy Gee y Janick Buyla, sin club**: la lista no lo da y la ficha de
+  Janick ya estaba vacía. La tarjeta sale sin la línea del club.
+
+**Los nombres se quedan como estaban en la web**, como el 2026-10-14:
+«Guilavert» es Mario Guilabert, «Sciancalenpore» es Mateo Sciancalepore,
+«Fco Días» es Francisco Dias y «Lluis Quintero» es Luis Quintero. Cambiar el
+nombre le quitaría la foto a la tarjeta (el archivo se busca por el nombre).
+Lo de Quintero se ha preguntado: si «Lluis» es una corrección, hay que
+renombrar también su foto.
+
+**Alternativas descartadas**:
+- *Dejar fuera hasta que se aclaren a los que les faltan datos o foto*, como
+  se hizo con los dudosos el 2026-10-05 y el 2026-10-14. Esta vez Mario pidió
+  meterlos a todos y completar los datos después.
+
+**Lo que queda pendiente**, con el detalle en `docs/hallazgos-abiertos.md`
+(«Fichas de Profesionales incompletas»): cuatro tarjetas sin foto, seis con la
+foto antigua, el club de Billy Gee y Janick Buyla y la confirmación de
+Luciano Rodríguez.
+
+**Consecuencias**: 64 tarjetas en Profesionales. Cierra en móvil (2
+columnas); en tablet (3) la última fila lleva una suelta y en escritorio (5),
+cuatro.
+
 ## 2026-10-15 · Fotos de la oficina en los pilares de Servicios y en Contacto, vivas en reposo y con el scroll
 
 **Decisión** (de Mario: al equipo le pidieron cambiar las imágenes hechas con IA
@@ -130,6 +198,10 @@ publicación: se corrige en producción cuando llegue
   publicarlo ya.
 
 ## 2026-10-14 · Cantera: la lista de Diego, 20 jugadores en su orden
+
+> **Superada en parte el 2026-10-15**: Cantera sigue tal cual, pero siete de
+> los ocho que salieron (todos menos Marcos López) vuelven a la web, en
+> Profesionales. Ver la entrada del 2026-10-15.
 
 **Decisión**: la pestaña «Cantera» de `/talentos` pasa a ser exactamente la
 lista que mandó Diego (PH) el 2026-10-14, **en su orden**: Andrés Corcoba,
@@ -278,6 +350,10 @@ llega solo a `preview`: hay que fusionarlo otra vez, o pasar a trabajar
 directamente sobre `preview`.
 
 ## 2026-10-05 · Ajustes de Diego al grid de `/talentos`: 61 jugadores, con las canteras de los escudos
+
+> **Superada el 2026-10-15**: el orden y la composición de Profesionales son ya
+> los de la lista «Senior» de PH, y Gonzalo Rodríguez ha vuelto, en el Danubio.
+> Ver la entrada del 2026-10-15 (y la del 2026-10-14 para Cantera).
 
 **Decisión**: se aplica tal cual un mensaje de Diego (PH) con cambios de orden,
 bajas y altas en el grid. Mario pidió seguir **el orden exacto del mensaje** y
@@ -1412,6 +1488,9 @@ Dos cosas de este archivo que no se ven a simple vista:
 > los escudos que la lista pone delante. Las canteras de Real Madrid, Barça,
 > Atlético, Betis y Valencia entran donde dijo Diego, y Gonzalo Rodríguez,
 > Lawson Sunderland y Zéno Stassin salen. Ver la entrada del 2026-10-05.
+>
+> **Superada del todo el 2026-10-15**: la lista de Mario ya no ordena el grid;
+> Profesionales sigue la lista «Senior» de PH. Ver la entrada del 2026-10-15.
 
 **Decisión**: el grid enseña **51 jugadores en el orden exacto de la lista de
 notas de Mario** (su listado de 126 posiciones, que no está en el repo). Entran

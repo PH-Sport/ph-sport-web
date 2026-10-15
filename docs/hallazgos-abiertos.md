@@ -106,6 +106,23 @@ aplicar cambios a ciegas: si se hubiera hecho, se habría borrado el club de tre
 jugadores que sí lo tienen.
 
 
+### Fichas de Profesionales incompletas (2026-10-15)
+
+Entraron en la web con la lista «Senior» de PH aunque les faltaran datos, por
+decisión de Mario (`DECISIONS.md`, 2026-10-15). Lo que hace falta de cada uno:
+
+| Jugador | Falta |
+|---|---|
+| Luciano Rodríguez | Foto de estudio. Confirmar que «Nacional» es el Club Nacional de Football (Montevideo) |
+| Billy Gee | Foto de estudio y club. Comprobar también el nombre completo |
+| Janick Buyla | Foto de estudio y club (Transfermarkt dice Lusitano GC, sin verificar) |
+| Adrián Martín | Foto de estudio (no tiene ninguna; club: Getafe CF, en el Getafe B) |
+| Gonzalo Rodríguez | Foto de estudio con la camiseta del Danubio: la actual es del Atlético La Paz |
+| Mateo Sciancalepore, Alejandro Santiago, Agus Moreno, Hugo García, Kaua do Vale, Israel Motos | Foto de estudio: llevan la antigua |
+
+Los cuatro primeros de la tabla salen hoy con el avatar genérico. Pendiente además: si «Lluis Quintero» es la
+forma correcta del nombre de Luis Quintero, renombrar ficha y foto juntas.
+
 ### Fotos de talentos en AVIF: más lentas con 4G lento (2026-10-01)
 
 Consecuencia medida del paso a AVIF 90 (`DECISIONS.md`, 2026-10-01), pendiente de que

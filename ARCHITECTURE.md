@@ -216,6 +216,10 @@ sin perfil de color, con el nombre `<Nombre> Web.png`:
    `dani-requena.jpg` y `dani-requena.jpeg` juntos se pisan y gana uno según el orden
    del glob. Si el existente es `.png` (Rayan Zinebi), se copia el PNG tal cual. Si el
    jugador no tenía foto, se crea `<slug>.jpg`. Queda en unos 300-400 KB.
+5. **Si llega con otra proporción, recortarla a 3:4 antes** (a todo el ancho y
+   dejando sobre la cabeza el mismo aire que el resto de la serie), y avisar a Mario.
+   La tarjeta recorta centrado: la de Isaías Abuabara llegó a 949×1658 y así le
+   habría cortado el pelo; se recortó a 949×1265 desde y=45 (2026-10-16).
 
 **Renombrar a un jugador le quita la foto.** El archivo se busca por
 `slugify(row.name)`: pasar de `"Eneko"` a `"Eneko Ortiz"` busca `eneko-ortiz.jpeg` en
@@ -787,7 +791,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
-| Fotos jugadores | ⚠️ 66 de las 68 tarjetas visibles | De la serie de estudio de Mario y con la camiseta del club de la ficha (2026-10-06; Óscar López, 2026-10-11), salvo los que entraron en Cantera el 2026-10-14: Pelayo Margollés y João Vogt no tienen foto, y Tomás Méndez, Isaías Abuabara, Frank Iglesias, Babacar Welle, Álvaro Gutiérrez, Miguel Díaz de Burgos, Alberto de Frutos y Wilson Santos llevan la antigua. Ver «Fotos de jugadores» arriba |
+| Fotos jugadores | ⚠️ 78 de las 84 tarjetas visibles | Profesionales (64 con el seleccionador): 54 de la serie de estudio; con la antigua, Alejandro Santiago, Mateo Sciancalepore, Hugo García, Agus Moreno, Israel Motos y Kaua do Vale; sin ninguna, Adrián Martín, Luciano Rodríguez, Billy Gee y Janick Buyla. Lo que falta de cada uno, incluida la de Gonzalo Rodríguez (de estudio, pero con la camiseta del Atlético La Paz), en `docs/hallazgos-abiertos.md`. Cantera (20): 11 de la serie de estudio; con la antigua, Tomás Méndez, Frank Iglesias, Babacar Welle, Álvaro Gutiérrez, Miguel Díaz de Burgos, Alberto de Frutos y Wilson Santos; sin ninguna, Pelayo Margollés y João Vogt (2026-10-16). Ver «Fotos de jugadores» arriba |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fotos de la oficina | ⚠️ Con lo que había | Pilares de Servicios y Contacto (2026-10-15): bolígrafos, pared de chevrones y mesa de reuniones sacados del vídeo de la oficina (1920×1080); carpeta, sillones y tarjeta de la sesión de fotos (1600×1066). Originales en `assets/source-media/oficina/`. Faltan los originales del fotógrafo (`docs/hallazgos-abiertos.md`) |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |

@@ -219,7 +219,9 @@ sin perfil de color, con el nombre `<Nombre> Web.png`:
 5. **Si llega con otra proporción, recortarla a 3:4 antes** (a todo el ancho y
    dejando sobre la cabeza el mismo aire que el resto de la serie), y avisar a Mario.
    La tarjeta recorta centrado: la de Isaías Abuabara llegó a 949×1658 y así le
-   habría cortado el pelo; se recortó a 949×1265 desde y=45 (2026-10-16).
+   habría cortado el pelo. Se recortó a 3:4 de forma provisional, pero salía más
+   grande que el resto porque la toma era más cerrada; lo bueno es pedir a Mario que
+   la exporte con la medida de la serie, como hizo ese mismo día (2026-10-16).
 
 **Renombrar a un jugador le quita la foto.** El archivo se busca por
 `slugify(row.name)`: pasar de `"Eneko"` a `"Eneko Ortiz"` busca `eneko-ortiz.jpeg` en

@@ -211,6 +211,9 @@ sin perfil de color, con el nombre `<Nombre> Web.png`:
    (en la serie llegaron seis así y las rehízo todas), y **nunca se cambia el club de
    la ficha para que encaje con la foto**. Mientras tanto no se aplica una foto que
    deje la tarjeta peor de lo que estaba.
+   Para poner o corregir un club, buscar al jugador con el club, no deducirlo del
+   escudo: el de Billy Gee dice «Železničar 1927» y se dio por el de Lajkovac
+   (fundado en 1927), cuando juega en el de Pančevo (2026-10-20).
 4. **Convertir a JPEG calidad 92 y guardar encima del archivo existente, con su misma
    extensión**: `playerPhotos.ts` indexa por el nombre sin extensión, así que
    `dani-requena.jpg` y `dani-requena.jpeg` juntos se pisan y gana uno según el orden

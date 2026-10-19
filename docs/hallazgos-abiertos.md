@@ -114,7 +114,7 @@ decisión de Mario (`DECISIONS.md`, 2026-10-15). Lo que hace falta de cada uno:
 
 | Jugador | Falta |
 |---|---|
-| Billy Gee | Comprobar el nombre completo (club desde el 2026-10-20: FK Železničar Lajkovac, por el escudo de su foto: «Železničar 1927») |
+| Billy Gee | Nada urgente: su nombre completo es William Peter Gee (FBref); en la ficha va «Billy», que es como se le conoce. Club desde el 2026-10-20: FK Železničar Pančevo (SuperLiga serbia), donde firmó por tres temporadas al salir del Norwich. Se puso antes el de Lajkovac deduciéndolo por el «1927» del escudo, y era un error |
 
 Resuelto el 2026-10-20: foto de estudio y club de Billy Gee y Janick Buyla (la foto
 de Buyla llegó como «Jannick»; la ficha sigue con «Janick» hasta que se confirme).

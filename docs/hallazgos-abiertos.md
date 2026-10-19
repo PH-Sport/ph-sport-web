@@ -115,11 +115,10 @@ decisión de Mario (`DECISIONS.md`, 2026-10-15). Lo que hace falta de cada uno:
 |---|---|
 | Billy Gee | Foto de estudio y club. Comprobar también el nombre completo |
 | Janick Buyla | Foto de estudio y club (Transfermarkt dice Lusitano GC, sin verificar) |
-| Gonzalo Rodríguez | Foto de estudio con la camiseta del Danubio: la actual es del Atlético La Paz |
 
 Billy Gee y Janick Buyla salen con el avatar genérico. Resuelto el 2026-10-19: las
 fotos de estudio de Luciano Rodríguez, Adrián Martín, Mateo Sciancalepore, Alejandro
-Santiago, Agus Moreno, Hugo García e Israel Motos (y la de Kaua do Vale esa misma noche), y el club de Luciano, que es el
+Santiago, Agus Moreno, Hugo García e Israel Motos (y las de Kaua do Vale y Gonzalo Rodríguez, esta ya con la del Danubio, esa misma noche), y el club de Luciano, que es el
 Club Nacional de Football (su foto lleva el escudo «C.N. de F.»). Pendiente además: si «Lluis Quintero» es la
 forma correcta del nombre de Luis Quintero, renombrar ficha y foto juntas.
 

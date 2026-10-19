@@ -72,7 +72,7 @@ por prensa portuguesa; Adrián Martín al Getafe B, confirmado por Mario). El
 2026-09-25 se cerró Santi Pallarés (CE Europa, lo que dice el campograma). El
 2026-10-05 se cerró Lawson Sunderland: aquí acertaba Transfermarkt, porque
 rescindió con el Dordrecht el 26-08-2026 y sigue sin equipo; se ocultó. El
-2026-10-20 se cerró Janick Buyla: Lusitano GC, confirmado por Mario y por su foto de
+2026-10-20 se cerró Jannick Buyla: Lusitano GC, confirmado por Mario y por su foto de
 estudio. Quedan 10.
 
 **Transfermarkt dice otra cosa y no hay fuente que lo decida** (8). Primera columna,
@@ -116,8 +116,8 @@ decisión de Mario (`DECISIONS.md`, 2026-10-15). Lo que hace falta de cada uno:
 |---|---|
 | Billy Gee | Nada urgente: su nombre completo es William Peter Gee (FBref); en la ficha va «Billy», que es como se le conoce. Club desde el 2026-10-20: FK Železničar Pančevo (SuperLiga serbia), donde firmó por tres temporadas al salir del Norwich. Se puso antes el de Lajkovac deduciéndolo por el «1927» del escudo, y era un error |
 
-Resuelto el 2026-10-20: foto de estudio y club de Billy Gee y Janick Buyla (la foto
-de Buyla llegó como «Jannick»; la ficha sigue con «Janick» hasta que se confirme).
+Resuelto el 2026-10-20: foto de estudio y club de Billy Gee y Jannick Buyla (la ficha decía «Janick»;
+Mario confirmó «Jannick» y se renombraron ficha y foto juntas).
 Resuelto el 2026-10-19: las
 fotos de estudio de Luciano Rodríguez, Adrián Martín, Mateo Sciancalepore, Alejandro
 Santiago, Agus Moreno, Hugo García e Israel Motos (y las de Kaua do Vale y Gonzalo Rodríguez, esta ya con la del Danubio, esa misma noche), y el club de Luciano, que es el

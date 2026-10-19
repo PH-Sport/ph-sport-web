@@ -13,6 +13,36 @@ leído el resto.
 
 ---
 
+## 2026-10-18 · Calidez sale del bombo: la web se queda con cuatro fondos
+
+> **Estado: en `preview` desde el 2026-10-18**; sin pasar a `main`.
+
+**Qué decidió Mario.** Tras repasar el muestrario de fondos (rama
+`feat/muestrario-fondos`, página `/fondos`), se queda con Velo, Neón, Trayectorias,
+Estructura y Calidez, y después decide quitar también Calidez. El bombo pasa a
+cuatro escenas; la regla no cambia (al azar, nunca la de la página anterior).
+
+**Por qué.** Calidez se hizo para Sobre nosotros, a juego con la foto que había
+entonces. Al pasar al bombo de todas las páginas dejó de encajar: es un único haz de
+luz desde la esquina de arriba a la derecha. En ordenador se sostiene porque el haz
+sigue al ratón, pero en el móvil se queda casi quieto en su esquina y deja el resto
+de la pantalla vacío, mientras que las otras cuatro reparten la luz por toda la
+pantalla. En Mochi ya la había sacado el 2026-10-02; volvió a la A solo porque la
+opción que eligió el 2026-10-05 decía «uno de los cinco».
+
+**Alternativas descartadas.**
+
+- *Repasarla para que llene la pantalla como las demás*: fue lo primero que se
+  planteó; Mario prefirió quitarla.
+- *Dejarla solo en Sobre nosotros*: la foto con la que casaba ya no está.
+
+**Qué cambia.** Se borra la escena entera de `ph-ambient.ts`, no solo de `POOL`,
+para no cargar código que no se usa en todas las páginas. El shader sigue en el
+historial (último commit con él: `f25818a`) y en la rama del muestrario.
+`?fondo=calidez` ya no fuerza nada: sale una escena al azar.
+
+---
+
 ## 2026-10-15 · Profesionales: la lista «Senior» de PH, 63 jugadores y el seleccionador en su orden
 
 **Decisión**: la pestaña «Profesionales» de `/talentos` pasa a ser exactamente
@@ -426,6 +456,9 @@ Queda a la par que las demás, sin pasar a Calidez, la más viva.
 
 ## 2026-10-05 · La A estrena el bombo de fondos: cinco escenas al azar en todas las páginas, con Neón y Velo
 
+> **Calidez salió del bombo el 2026-10-18** (entrada de ese día): desde entonces
+> son cuatro escenas. El resto de esta entrada sigue vigente.
+>
 > **Estado: en `preview` desde el 2026-10-05**, con la fusión de la variante A; sin
 > pasar a `main`.
 

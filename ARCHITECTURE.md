@@ -113,7 +113,7 @@ ph-sport-web/
 │   │
 │   ├── scripts/                     # Scripts vanilla para interacciones y animaciones
 │   │   ├── dropdown.ts              # SIN USO: nadie lo importa. Talentos monta su combo aparte
-│   │   ├── ph-ambient.ts            # Luz animada de fondo de toda la web: bombo de cinco escenas (WebGL2 en directo)
+│   │   ├── ph-ambient.ts            # Luz animada de fondo de toda la web: bombo de cuatro escenas (WebGL2 en directo)
 │   │   ├── ph-disclosure.ts         # Acordeones sin animar alturas (FLIP medido), con GSAP
 │   │   ├── ph-live-photos.ts        # Fotos vivas de Servicios y Contacto: reposo y reacción al scroll, sin GSAP
 │   │   ├── ph-motion.ts             # Núcleo «Retransmisión», sin GSAP: entradas, cascadas, placas por líneas, cortinilla
@@ -505,7 +505,8 @@ El fondo es un único `<canvas class="ph-ambient" data-ambient>` dentro de
 legales (`ambient={false}`). Lo dibuja en directo `src/scripts/ph-ambient.ts` con un
 shader de WebGL2. **La escena sale de un bombo** (`POOL`): en cada carga de página,
 una al azar y nunca la de la página anterior (memoria y `sessionStorage`); el
-`data-ambient` del canvas dice cuál salió (`DECISIONS.md`, 2026-10-05).
+`data-ambient` del canvas dice cuál salió (`DECISIONS.md`, 2026-10-05). Son
+cuatro desde el 2026-10-18, cuando salió Calidez (`DECISIONS.md`).
 
 | Escena | Qué se ve | Con el ratón |
 |---|---|---|
@@ -513,7 +514,6 @@ una al azar y nunca la de la página anterior (memoria y `sessionStorage`); el
 | `neon` | El contorno del logo en grande, con ecos, y una luz que recorre el tubo | Se encienden los trazos cercanos |
 | `trayectorias` | Líneas finas a 45° (la diagonal del logo) por las que suben destellos dorados | Líneas y destellos se avivan |
 | `estructura` | La retícula a 45° del logo, casi invisible, que barre una luz lenta encendiendo sus cruces | Una linterna |
-| `calidez` | Un haz de luz cálida que se mece, con motas de polvo dentro | El haz se inclina hacia el cursor |
 
 Cómo convive con la página, todo dentro del módulo:
 
@@ -547,7 +547,7 @@ Cómo convive con la página, todo dentro del módulo:
   (`.ph-ambient:not(.is-live)`); con la animación en marcha lleva `is-live` y el
   halo desaparece.
 - **Densidad**: resolución interna con tope de 1,5 px por px CSS (al 70-80 % en
-  `velo`, `neon` y `calidez`, que son suaves). Más no se nota en algo tan tenue y
+  `velo` y `neon`, que son suaves). Más no se nota en algo tan tenue y
   cuesta GPU.
 
 Para tocar una escena: su shader está en el mismo archivo. Para quitar o añadir una

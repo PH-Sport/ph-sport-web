@@ -31,7 +31,7 @@
  * - Para revisar una escena concreta: `?fondo=<escena>` en la URL.
  */
 
-type SceneName = 'velo' | 'neon' | 'trayectorias' | 'estructura' | 'calidez';
+type SceneName = 'velo' | 'neon' | 'trayectorias' | 'estructura';
 
 interface SceneDef {
   fs: string;
@@ -242,53 +242,17 @@ void main() {
   emit(c * stageMask(p, W, H));
 }`;
 
-// Calidez: un haz de luz cálida que se mece despacio, con motas de polvo flotando
-// dentro, en la línea del neón de la portada. El haz se inclina hacia el ratón.
-const CALIDEZ = `${HEADER}
-void main() {
-  vec2 p = gl_FragCoord.xy / uPx;
-  float W = uRes.x / uPx, H = uRes.y / uPx;
-  float portrait = step(W, H * 1.1);
-  vec2 origin = vec2(W * mix(0.72, 0.62, portrait), H + 40.0);
-  float sway = sin(uTime * 0.21) * 0.05 + sin(uTime * 0.13 + 1.7) * 0.03;
-  float toMouse = clamp((uMouse.x - origin.x) / max(origin.y - uMouse.y, 120.0), -0.6, 0.6);
-  sway = mix(sway, toMouse, uMouse.z * 0.85);
-  vec2 d = p - origin;
-  float depth = max(-d.y, 1.0);
-  float beam = exp(-pow((d.x / depth - sway) / 0.33, 2.0)) * exp(-depth / (H * 1.1));
-  float dust = 0.0;
-  for (int k = 0; k < 3; k++) {
-    float fk = float(k);
-    float S = mix(38.0, 90.0, fk * 0.5);
-    vec2 q = p / S;
-    q.y -= uTime * mix(9.0, 22.0, fk * 0.5) / S;             // suben despacio
-    q.x += sin(uTime * 0.3 + fk) * 0.3;
-    vec2 cell = floor(q);
-    vec2 f = fract(q) - 0.5;
-    float h = hash12(cell + fk * 17.0);
-    vec2 off = vec2(hash12(cell + 3.1 + fk), hash12(cell + 7.7 + fk)) - 0.5;
-    off += 0.25 * vec2(sin(uTime * 0.7 + h * 6.2832), cos(uTime * 0.5 + h * 4.0));
-    float r = mix(0.9, 2.6, fk * 0.5) / S;
-    float m = smoothstep(r * 1.8, r * 0.2, length(f - off * 0.7)) * step(0.55, h);
-    dust += m * (0.6 + 0.4 * sin(uTime * (0.8 + h) + h * 20.0)) * mix(0.9, 0.5, fk * 0.5);
-  }
-  float m = nearMouse(p, 200.0);
-  vec3 c = GOLD * beam * 0.22 + mix(GOLD, WHITE, 0.4) * dust * (0.08 + beam * 0.9 + m * 0.8);
-  emit(c * stageMask(p, W, H));
-}`;
-
 const SCENES: Record<SceneName, SceneDef> = {
   velo: { fs: VELO, scale: 0.7, still: 30 },
   neon: { fs: NEON, scale: 0.8, still: 7 },
   trayectorias: { fs: TRAYECTORIAS, scale: 1, still: 6 },
   estructura: { fs: ESTRUCTURA, scale: 1, still: 9 },
-  calidez: { fs: CALIDEZ, scale: 0.75, still: 4 },
 };
 
 /** El bombo: de aquí sale el fondo de cada página. Para quitar o añadir una
- *  escena, basta con esta lista. Van las cinco (Mario, 2026-10-05); en la rama
- *  Mochi había sacado Calidez el 2026-10-02. */
-const POOL: SceneName[] = ['velo', 'neon', 'trayectorias', 'estructura', 'calidez'];
+ *  escena, basta con esta lista. Van las cuatro; Calidez salió el 2026-10-18
+ *  (Mario; DECISIONS.md). */
+const POOL: SceneName[] = ['velo', 'neon', 'trayectorias', 'estructura'];
 
 /** Tope de densidad de píxeles: más allá no se nota en algo tan tenue y cuesta GPU. */
 const MAX_DPR = 1.5;

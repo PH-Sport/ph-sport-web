@@ -91,6 +91,9 @@ lo que dice hoy la web:
 
 En **Tomás Méndez** se sospecha que Transfermarkt mezcla a dos jugadores distintos:
 un Tomás Méndez del juvenil del Sevilla y un Tomás Mendes portugués del Torreense.
+Apunta a lo segundo: el 2026-10-20 llegó su foto de estudio con la camiseta del
+Torreense y con el nombre «Tomás Mendes». Pendiente de que Mario confirme el nombre;
+si es «Mendes», renombrar ficha y foto juntas.
 
 **Aquí el que falla es Transfermarkt, no la web** (2). No tocar estas dos fichas:
 

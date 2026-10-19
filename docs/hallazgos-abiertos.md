@@ -59,7 +59,7 @@ sitelinks los elige Google y no hay control directo. No perseguirlo.
 
 ## Pendientes acotados
 
-### 10 jugadores con el club sin confirmar (2026-09-03)
+### 9 jugadores con el club sin confirmar (2026-09-03)
 
 El 2026-09-03 se cotejó `data/jugadores.json` con la ficha de la agencia PHSPORT en
 Transfermarkt (<https://www.transfermarkt.es/phsport/beraterfirma/berater/8087>).
@@ -73,9 +73,11 @@ por prensa portuguesa; Adrián Martín al Getafe B, confirmado por Mario). El
 2026-10-05 se cerró Lawson Sunderland: aquí acertaba Transfermarkt, porque
 rescindió con el Dordrecht el 26-08-2026 y sigue sin equipo; se ocultó. El
 2026-10-20 se cerró Jannick Buyla: Lusitano GC, confirmado por Mario y por su foto de
-estudio. Quedan 10.
+estudio. Ese mismo día se cerró Tomás Mendes (antes «Méndez» en la ficha): es el
+portugués del Torreense, como confirmó Mario y enseña su foto de estudio;
+Transfermarkt lo mezclaba con un Tomás Méndez del juvenil del Sevilla. Quedan 9.
 
-**Transfermarkt dice otra cosa y no hay fuente que lo decida** (8). Primera columna,
+**Transfermarkt dice otra cosa y no hay fuente que lo decida** (7). Primera columna,
 lo que dice hoy la web:
 
 | Jugador | En la web | En Transfermarkt |
@@ -85,15 +87,8 @@ lo que dice hoy la web:
 | Unai Ordóñez | Real Madrid CF | CD Basconia B |
 | Miguel Serrano | Atlético de Madrid | Sin equipo |
 | Jordi Ortega | CE Sabadell FC | Atlètic Lleida / UE Olot |
-| Tomás Méndez | SC União Torreense | Sevilla FC Juvenil A |
 | Hugo Buyla | *(vacío)* | CF América U21 |
 | Txus Alba *(oculto)* | CD Lugo | Sin equipo |
-
-En **Tomás Méndez** se sospecha que Transfermarkt mezcla a dos jugadores distintos:
-un Tomás Méndez del juvenil del Sevilla y un Tomás Mendes portugués del Torreense.
-Apunta a lo segundo: el 2026-10-20 llegó su foto de estudio con la camiseta del
-Torreense y con el nombre «Tomás Mendes». Pendiente de que Mario confirme el nombre;
-si es «Mendes», renombrar ficha y foto juntas.
 
 **Aquí el que falla es Transfermarkt, no la web** (2). No tocar estas dos fichas:
 

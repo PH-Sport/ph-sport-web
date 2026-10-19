@@ -59,7 +59,7 @@ sitelinks los elige Google y no hay control directo. No perseguirlo.
 
 ## Pendientes acotados
 
-### 11 jugadores con el club sin confirmar (2026-09-03)
+### 10 jugadores con el club sin confirmar (2026-09-03)
 
 El 2026-09-03 se cotejó `data/jugadores.json` con la ficha de la agencia PHSPORT en
 Transfermarkt (<https://www.transfermarkt.es/phsport/beraterfirma/berater/8087>).
@@ -71,9 +71,11 @@ El 2026-09-21 se cerraron tres (Abdoulaye Keita y Dani Rebollo al AVS, confirmad
 por prensa portuguesa; Adrián Martín al Getafe B, confirmado por Mario). El
 2026-09-25 se cerró Santi Pallarés (CE Europa, lo que dice el campograma). El
 2026-10-05 se cerró Lawson Sunderland: aquí acertaba Transfermarkt, porque
-rescindió con el Dordrecht el 26-08-2026 y sigue sin equipo; se ocultó. Quedan 11.
+rescindió con el Dordrecht el 26-08-2026 y sigue sin equipo; se ocultó. El
+2026-10-20 se cerró Janick Buyla: Lusitano GC, confirmado por Mario y por su foto de
+estudio. Quedan 10.
 
-**Transfermarkt dice otra cosa y no hay fuente que lo decida** (9). Primera columna,
+**Transfermarkt dice otra cosa y no hay fuente que lo decida** (8). Primera columna,
 lo que dice hoy la web:
 
 | Jugador | En la web | En Transfermarkt |
@@ -84,7 +86,6 @@ lo que dice hoy la web:
 | Miguel Serrano | Atlético de Madrid | Sin equipo |
 | Jordi Ortega | CE Sabadell FC | Atlètic Lleida / UE Olot |
 | Tomás Méndez | SC União Torreense | Sevilla FC Juvenil A |
-| Janick Buyla | *(vacío)* | Lusitano GC |
 | Hugo Buyla | *(vacío)* | CF América U21 |
 | Txus Alba *(oculto)* | CD Lugo | Sin equipo |
 
@@ -113,10 +114,11 @@ decisión de Mario (`DECISIONS.md`, 2026-10-15). Lo que hace falta de cada uno:
 
 | Jugador | Falta |
 |---|---|
-| Billy Gee | Foto de estudio y club. Comprobar también el nombre completo |
-| Janick Buyla | Foto de estudio y club (Transfermarkt dice Lusitano GC, sin verificar) |
+| Billy Gee | Comprobar el nombre completo (club desde el 2026-10-20: FK Železničar Lajkovac, por el escudo de su foto: «Železničar 1927») |
 
-Billy Gee y Janick Buyla salen con el avatar genérico. Resuelto el 2026-10-19: las
+Resuelto el 2026-10-20: foto de estudio y club de Billy Gee y Janick Buyla (la foto
+de Buyla llegó como «Jannick»; la ficha sigue con «Janick» hasta que se confirme).
+Resuelto el 2026-10-19: las
 fotos de estudio de Luciano Rodríguez, Adrián Martín, Mateo Sciancalepore, Alejandro
 Santiago, Agus Moreno, Hugo García e Israel Motos (y las de Kaua do Vale y Gonzalo Rodríguez, esta ya con la del Danubio, esa misma noche), y el club de Luciano, que es el
 Club Nacional de Football (su foto lleva el escudo «C.N. de F.»). Pendiente además: si «Lluis Quintero» es la

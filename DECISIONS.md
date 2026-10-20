@@ -15,7 +15,7 @@ leído el resto.
 
 ## 2026-10-20 · La imagen al compartir un enlace pasa a ser el neón de la portada
 
-> **Estado: en `preview` desde el 2026-10-20**; sin pasar a `main`.
+> **Estado: en producción (`main`) desde el 2026-10-20.**
 
 **Decisión** (de Mario, a petición del equipo): la imagen que sale al compartir
 cualquier página de la web (WhatsApp, redes, Slack…; `og:image` y
@@ -44,7 +44,7 @@ este, sobre esas rutas y `scripts/build-favicons.mjs`.
 
 ## 2026-10-18 · Calidez sale del bombo: la web se queda con cuatro fondos
 
-> **Estado: en `preview` desde el 2026-10-18**; sin pasar a `main`.
+> **Estado: en `preview` desde el 2026-10-18 y en producción (`main`) antes del 2026-10-20.**
 
 **Qué decidió Mario.** Tras repasar el muestrario de fondos (rama
 `feat/muestrario-fondos`, página `/fondos`), se queda con Velo, Neón, Trayectorias,

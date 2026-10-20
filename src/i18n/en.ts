@@ -154,7 +154,7 @@ const en: Record<TranslationKey, string> = {
   'about.team.titlePost': '.',
   // Ver la nota en es.ts: los países son donde opera PHSPORT, no las
   // nacionalidades de la plantilla, y qué más cambiar con ellos.
-  'about.team.meta': '21 MEMBERS · 7 COUNTRIES',
+  'about.team.meta': '23 MEMBERS · 7 COUNTRIES',
   // Presencia
   'about.presencia.eyebrow': '05 · Presence',
   'about.presencia.madridLabel': 'HEADQUARTERS · ES',
@@ -189,6 +189,8 @@ const en: Record<TranslationKey, string> = {
   'team.members.alvarez.role': 'Football Dept.',
   'team.members.garcia.role': 'Football Dept.',
   'team.members.sancho.role': 'Football Dept.',
+  'team.members.quintana.role': 'Football Dept.',
+  'team.members.dgarcia.role': 'Football Dept.',
   'team.members.granados.role': 'Football Dept.',
   'team.members.gomez.role': 'Football Dept.',
   'team.members.toledo.role': 'Football Dept.',

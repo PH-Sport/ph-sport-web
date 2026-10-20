@@ -157,7 +157,7 @@ const es = {
   // home (`home.about.stats.countries.value`), los «siete mercados» y la lista de
   // oficinas de Servicios, y la lista de Presencia de AboutSection. El de
   // integrantes sí sigue a la tabla: al cambiarla, actualizarlo aquí.
-  'about.team.meta': '21 INTEGRANTES · 7 PAÍSES',
+  'about.team.meta': '23 INTEGRANTES · 7 PAÍSES',
   // Presencia
   'about.presencia.eyebrow': '05 · Presencia',
   'about.presencia.madridLabel': 'SEDE CENTRAL · ES',
@@ -192,6 +192,8 @@ const es = {
   'team.members.alvarez.role': 'Dto. Fútbol',
   'team.members.garcia.role': 'Dto. Fútbol',
   'team.members.sancho.role': 'Dto. Fútbol',
+  'team.members.quintana.role': 'Dto. Fútbol',
+  'team.members.dgarcia.role': 'Dto. Fútbol',
   'team.members.granados.role': 'Dto. Fútbol',
   'team.members.gomez.role': 'Dto. Fútbol',
   'team.members.toledo.role': 'Dto. Fútbol',

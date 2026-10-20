@@ -5,7 +5,7 @@
  *   - favicon-32.png        (fallback PNG para navegadores que ignoran SVG)
  *   - favicon-16.png        (fallback PNG pequeño)
  *   - mask-icon.svg         (Safari pinned tab: SVG monocromo sin atributo fill)
- *   - og-image.jpg          (1200×630, derivada de about-equipo.webp)
+ *   - og-image-neon.jpg     (1200×630, el neón encendido de la portada)
  *
  * El SVG `favicon.svg` original se mantiene tal cual como icono primario.
  *
@@ -16,7 +16,13 @@ import { readFile, writeFile, stat } from 'node:fs/promises';
 
 const PUBLIC = 'public';
 const SRC_SVG = `${PUBLIC}/favicon.svg`;
-const SRC_OG = `${PUBLIC}/about-equipo.webp`;
+// La imagen al compartir un enlace es el rótulo de neón encendido de la portada:
+// el primer fotograma del bucle del hero (npm run assets:hero), de frente y
+// centrado. La versión de la carpeta es la de HERO_VERSION en src/lib/heroMedia.ts.
+// El nombre lleva «neon» porque las redes y la caché de 7 días de `public/`
+// guardan la imagen por su URL: con el mismo nombre seguirían enseñando la vieja.
+const SRC_OG = `${PUBLIC}/hero/2026-10b/on-landscape.webp`;
+const OUT_OG = 'og-image-neon.jpg';
 
 const PH_BLACK = '#0d0f12';
 
@@ -62,12 +68,14 @@ for (const size of [32, 16]) {
 const maskSvg = svgRaw.replace(/\sfill="[^"]*"/, '');
 await writeFile(`${PUBLIC}/mask-icon.svg`, maskSvg);
 
-// 4) og-image.jpg (1200×630): cover desde about-equipo.webp.
+// 4) Imagen al compartir (1200×630): cover desde el póster encendido del hero
+//    (1920×1080). Recorta 36 px arriba y abajo; el logo queda entero y centrado,
+//    también en los recortes cuadrados de WhatsApp.
 //    JPG q85: ~máxima compatibilidad con parsers de redes sociales.
 await sharp(SRC_OG)
   .resize({ width: 1200, height: 630, fit: 'cover', position: 'center' })
   .jpeg({ quality: 85, mozjpeg: true })
-  .toFile(`${PUBLIC}/og-image.jpg`);
+  .toFile(`${PUBLIC}/${OUT_OG}`);
 
 // Reporte
 const outputs = [
@@ -75,7 +83,7 @@ const outputs = [
   'favicon-32.png',
   'favicon-16.png',
   'mask-icon.svg',
-  'og-image.jpg',
+  OUT_OG,
 ];
 console.log('Generados:');
 for (const f of outputs) {

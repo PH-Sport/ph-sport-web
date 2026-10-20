@@ -30,7 +30,7 @@ ph-sport-web/
 │   ├── fonts/                       # Söhne (3 pesos: Buch 400, Halbfett 600, Dreiviertelfett 700) — self-hosted
 │   ├── icons/
 │   ├── national-team-badges/        # Escudos de selecciones nacionales
-│   ├── about-equipo.webp            # Ya no se muestra: es el origen de og-image.jpg (npm run assets:favicons)
+│   ├── og-image-neon.jpg            # Imagen al compartir un enlace (1200×630): el neón encendido del póster del hero (npm run assets:favicons)
 │   ├── favicon.svg
 │   ├── hero/2026-10b/               # Vídeos y pósters del hero (npm run assets:hero). La versión va en la ruta por la caché de 7 días
 │   ├── logo-ph-3d.webp / *-sm.webp
@@ -357,7 +357,9 @@ pensados para que el logo no se salga nunca del encuadre: si se cambian, hay que
 mirar los planos más cercanos en los dos formatos.
 
 **Lo que se ve antes y en lugar del vídeo** son pósters: fotogramas exactos con el
-mismo encuadre.
+mismo encuadre. El póster encendido apaisado es también el origen de la imagen al
+compartir un enlace (`public/og-image-neon.jpg`): al regenerar el hero, pasar
+después `npm run assets:favicons`.
 
 | Caso | Se ve |
 |---|---|
@@ -800,14 +802,13 @@ que ejecutar nada a mano.
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fotos de la oficina | ⚠️ Con lo que había | Pilares de Servicios y Contacto (2026-10-15): bolígrafos, pared de chevrones y mesa de reuniones sacados del vídeo de la oficina (1920×1080); carpeta, sillones y tarjeta de la sesión de fotos (1600×1066). Originales en `assets/source-media/oficina/`. Faltan los originales del fotógrafo (`docs/hallazgos-abiertos.md`) |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
-| OG image (1200×630px) | ❌ Pendiente | |
+| Imagen al compartir (OG, 1200×630) | ✅ `public/og-image-neon.jpg` | El neón encendido de la portada: sale de `public/hero/<versión>/on-landscape.webp` con `npm run assets:favicons`. Si cambia el vídeo del hero, regenerarla, y con nombre nuevo si cambia la imagen (las redes la guardan por su URL) (`DECISIONS.md`, 2026-10-20) |
 
 ### Pendientes
 
 | Pendiente | Bloqueado por |
 |---|---|
 | Revisión nativa de los textos en italiano (2026-10-01) | Alguien que hable italiano |
-| OG image 1200×630px | Diseño |
 | GA4 — Measurement ID | Decisión de si se integra |
 | ⚠️ Söhne `.woff2` con licencia de producción — **sigue sin comprar a 2026-08-11**, y la web está publicada desde abril con los archivos de prueba | Compra de licencia (Mario) |
 

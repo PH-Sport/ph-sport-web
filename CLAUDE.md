@@ -155,7 +155,7 @@ npm run test:e2e
 # La salida se versiona (en public/, o en src/assets/ las fotos de la oficina),
 # así que NO forman parte del build.
 npm run assets:badges    # escudos PNG -> WebP 128x128
-npm run assets:favicons  # favicons, apple-touch-icon y og-image.jpg
+npm run assets:favicons  # favicons, apple-touch-icon y og-image-neon.jpg (sale del póster del hero)
 npm run assets:hero      # vídeo del hero (renderizado; ~10 min, necesita los navegadores de Playwright)
 npm run assets:oficina   # fotos de la oficina de Servicios y Contacto: recorte, color y máscaras de luz
 ```

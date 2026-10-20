@@ -13,6 +13,35 @@ leído el resto.
 
 ---
 
+## 2026-10-20 · La imagen al compartir un enlace pasa a ser el neón de la portada
+
+> **Estado: en `preview` desde el 2026-10-20**; sin pasar a `main`.
+
+**Decisión** (de Mario, a petición del equipo): la imagen que sale al compartir
+cualquier página de la web (WhatsApp, redes, Slack…; `og:image` y
+`twitter:image`) deja de ser la del grupo de personas mirando el logo de cristal,
+hecha con IA, y pasa a ser **el rótulo de neón encendido de la portada**. Es el
+primer fotograma del bucle del hero (`public/hero/2026-10b/on-landscape.webp`,
+1920×1080), recortado a 1200×630 por `npm run assets:favicons`: pierde 36 px
+arriba y abajo y el logo queda entero y centrado, también en los recortes
+cuadrados de WhatsApp. Pesa 28 KB.
+
+**Por qué un nombre nuevo** (`og-image-neon.jpg`, no `og-image.jpg`): las redes
+guardan la imagen por su URL y `vercel.json` sirve `public/` con 7 días de caché
+(`docs/trampas-conocidas.md`). Con el mismo nombre, quien ya lo tuviera seguiría
+viendo la vieja.
+
+**Por qué del póster y no de una foto del neón real** (`Neón 2` de la sesión): el
+póster es exactamente lo que se ve en la portada, que es lo que se pidió, y se
+regenera solo si cambia el vídeo. Consecuencia: al regenerar el hero hay que pasar
+después `npm run assets:favicons` (anotado en `ARCHITECTURE.md`, «Hero»).
+
+**Lo que se retira**: `public/og-image.jpg` y su origen, `public/about-equipo.webp`,
+que ya no se mostraba en ninguna página. Para recuperarlos: el commit anterior a
+este, sobre esas rutas y `scripts/build-favicons.mjs`.
+
+---
+
 ## 2026-10-18 · Calidez sale del bombo: la web se queda con cuatro fondos
 
 > **Estado: en `preview` desde el 2026-10-18**; sin pasar a `main`.
@@ -1103,6 +1132,10 @@ la home del idioma elegido, porque quien elige idioma pide leer en él.
 ---
 
 ## 2026-10-01 · Fondos animados en directo para Talentos, Servicios y Sobre nosotros
+
+> ⚠️ **`about-equipo.webp` se retiró el 2026-10-20**: la imagen al compartir ya
+> no sale de ella, sino del neón de la portada (entrada «La imagen al compartir un
+> enlace pasa a ser el neón de la portada»).
 
 > ⚠️ **En la variante A, superado el 2026-10-05**: las escenas ya no van fijas por
 > página; sale una al azar en cada página, de un bombo de cinco (entrada «La A

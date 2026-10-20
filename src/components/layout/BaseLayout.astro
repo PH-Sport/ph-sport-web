@@ -51,7 +51,7 @@ const OG_LOCALES: Record<Lang, string> = { es: 'es_ES', en: 'en_US', it: 'it_IT'
 
 // OG image: el override (`ogImage`) puede llegar relativo o absoluto.
 // Sin override, fallback al asset por defecto. La spec OG exige URL absoluta.
-const ogImageRaw = ogImage ?? '/og-image.jpg';
+const ogImageRaw = ogImage ?? '/og-image-neon.jpg';
 const ogImageUrl = ogImageRaw.startsWith('http') ? ogImageRaw : `${SITE_URL}${ogImageRaw}`;
 
 // WebSite: esquema que Google usa específicamente para el "site name" en SERP

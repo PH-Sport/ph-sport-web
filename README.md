@@ -20,7 +20,7 @@ Solo se ejecutan a mano al cambiar un original de `assets/source-media/`; su
 salida se versiona en `public/` (las fotos de la oficina, en `src/assets/images/oficina/`).
 
 - `npm run assets:badges` — escudos PNG → WebP 128×128
-- `npm run assets:favicons` — favicons, apple-touch-icon y `og-image.jpg`
+- `npm run assets:favicons` — favicons, apple-touch-icon y la imagen al compartir un enlace (`og-image-neon.jpg`, sacada del póster encendido del hero)
 - `npm run assets:hero` — vídeos y pósters del hero, renderizados desde `scripts/hero-neon/neon.html`
 - `npm run assets:oficina` — fotos de la oficina de Servicios y Contacto: recorte 16:10, ajuste de color y máscaras de luz
 

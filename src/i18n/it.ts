@@ -194,7 +194,7 @@ const it: Record<TranslationKey, string> = {
   'team.members.garcia.role': 'Area Calcio',
   'team.members.sancho.role': 'Area Calcio',
   'team.members.quintana.role': 'Area Calcio',
-  'team.members.dgarcia.role': 'Area Calcio',
+  'team.members.garrido.role': 'Area Calcio',
   'team.members.granados.role': 'Area Calcio',
   'team.members.gomez.role': 'Area Calcio',
   'team.members.toledo.role': 'Area Calcio',

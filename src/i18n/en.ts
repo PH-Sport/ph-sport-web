@@ -190,7 +190,7 @@ const en: Record<TranslationKey, string> = {
   'team.members.garcia.role': 'Football Dept.',
   'team.members.sancho.role': 'Football Dept.',
   'team.members.quintana.role': 'Football Dept.',
-  'team.members.dgarcia.role': 'Football Dept.',
+  'team.members.garrido.role': 'Football Dept.',
   'team.members.granados.role': 'Football Dept.',
   'team.members.gomez.role': 'Football Dept.',
   'team.members.toledo.role': 'Football Dept.',

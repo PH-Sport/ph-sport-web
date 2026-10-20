@@ -193,7 +193,7 @@ const es = {
   'team.members.garcia.role': 'Dto. Fútbol',
   'team.members.sancho.role': 'Dto. Fútbol',
   'team.members.quintana.role': 'Dto. Fútbol',
-  'team.members.dgarcia.role': 'Dto. Fútbol',
+  'team.members.garrido.role': 'Dto. Fútbol',
   'team.members.granados.role': 'Dto. Fútbol',
   'team.members.gomez.role': 'Dto. Fútbol',
   'team.members.toledo.role': 'Dto. Fútbol',

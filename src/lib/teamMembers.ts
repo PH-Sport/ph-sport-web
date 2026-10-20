@@ -28,7 +28,7 @@ export const TEAM_MEMBERS: readonly TeamMember[] = [
   { id: 'garcia',     name: 'Moisés García' },
   { id: 'sancho',     name: 'Esteban Sancho' },
   { id: 'quintana',   name: 'Caye Quintana' },
-  { id: 'dgarcia',    name: 'David García' },
+  { id: 'garrido',    name: 'David Garrido' },
   { id: 'granados',   name: 'Alberto Granados' },
   { id: 'gomez',      name: 'Juan Luis Gómez' },
   { id: 'toledo',     name: 'Diego Toledo' },

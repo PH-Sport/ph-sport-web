@@ -73,9 +73,9 @@ por prensa portuguesa; Adrián Martín al Getafe B, confirmado por Mario). El
 2026-10-05 se cerró Lawson Sunderland: aquí acertaba Transfermarkt, porque
 rescindió con el Dordrecht el 26-08-2026 y sigue sin equipo; se ocultó. El
 2026-10-20 se cerró Jannick Buyla: Lusitano GC, confirmado por Mario y por su foto de
-estudio. Ese mismo día se cerró Tomás Mendes (antes «Méndez» en la ficha): es el
-portugués del Torreense, como confirmó Mario y enseña su foto de estudio;
-Transfermarkt lo mezclaba con un Tomás Méndez del juvenil del Sevilla. Quedan 9.
+estudio. Ese mismo día se cerró Tomás Méndez, y aquí acertaba Transfermarkt: es el de la
+cantera del Sevilla FC. Se llegó a cambiar a «Tomás Mendes» del Torreense por la foto
+que llegó, que era de otra persona; PH lo corrigió el 2026-10-22 y la foto se retiró. Quedan 9.
 
 **Transfermarkt dice otra cosa y no hay fuente que lo decida** (7). Primera columna,
 lo que dice hoy la web:

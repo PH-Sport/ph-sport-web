@@ -72,7 +72,7 @@
   { "name": "Carlos Núñez", "club": { "name": "Atlético de Madrid" }, "nationalTeamCodes": [], "academy": true },
   { "name": "Miguel Serrano", "club": { "name": "Atlético de Madrid" }, "nationalTeamCodes": [], "academy": true },
   { "name": "Pelayo Margollés", "club": { "name": "Real Sociedad" }, "nationalTeamCodes": [], "academy": true },
-  { "name": "Tomás Mendes", "club": { "name": "SC União Torreense" }, "nationalTeamCodes": [], "academy": true },
+  { "name": "Tomás Méndez", "club": { "name": "Sevilla FC" }, "nationalTeamCodes": [], "academy": true },
   { "name": "José Mejía", "club": { "name": "Real Betis Balompié" }, "nationalTeamCodes": [], "academy": true },
   { "name": "Isaías Abuabara", "club": { "name": "RC Celta de Vigo" }, "nationalTeamCodes": ["PA"], "academy": true },
   { "name": "Frank Iglesias", "club": { "name": "RC Deportivo de La Coruña" }, "nationalTeamCodes": [], "academy": true },

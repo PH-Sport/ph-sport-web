@@ -798,7 +798,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
-| Fotos jugadores | ✅ 84 de las 84 tarjetas visibles | Profesionales (64 con el seleccionador) y Cantera (20): todas de la serie de estudio de Mario y con la camiseta del club de la ficha (2026-10-20). Ver «Fotos de jugadores» arriba |
+| Fotos jugadores | ⏳ 83 de las 84 tarjetas visibles | Todas de la serie de estudio de Mario y con la camiseta del club de la ficha, salvo Tomás Méndez (Cantera, Sevilla FC), sin foto a la espera de la suya (2026-10-22). Ver «Fotos de jugadores» arriba |
 | Escudos de selección | ✅ 9 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR. Master PNG en `/assets/source-media/badges/` |
 | Fotos de la oficina | ⚠️ Con lo que había | Pilares de Servicios y Contacto (2026-10-15): bolígrafos, pared de chevrones y mesa de reuniones sacados del vídeo de la oficina (1920×1080); carpeta, sillones y tarjeta de la sesión de fotos (1600×1066). Originales en `assets/source-media/oficina/`. Faltan los originales del fotógrafo (`docs/hallazgos-abiertos.md`) |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |

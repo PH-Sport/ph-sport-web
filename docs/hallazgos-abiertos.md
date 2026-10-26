@@ -235,6 +235,12 @@ siempre, que es lo que se pidió.
 
 ### Fotos de la oficina: originales pequeños y sin probar en un móvil real (2026-10-15)
 
+**Pedido sin hacer (2026-10-26): cambiar la foto de Rendimiento.** Diego (PH) pidió
+quitar la pared negra de chevrones del pilar II · Rendimiento y poner otra. No
+dijo cuál, y Mario lo dejó para más adelante. La foto se elige en `PILLAR_PHOTOS`
+(`src/lib/officePhotos.ts`); la nueva pasa por `npm run assets:oficina` y, si su
+luz va con máscara, hay que medírsela en `scripts/build-office-photos.mjs`.
+
 Las fotos de los pilares de Servicios y de Contacto (`DECISIONS.md`, 2026-10-15)
 salen de lo que había: tres fotos de la sesión a 1600×1066 —sin datos de cámara,
 con pinta de haber pasado por WhatsApp— y tres fotogramas de 1920×1080 del vídeo

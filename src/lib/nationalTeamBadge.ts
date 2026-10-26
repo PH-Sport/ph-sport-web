@@ -16,6 +16,7 @@ const BADGE_CODES = new Set([
   'RO',
   'PA',
   'BR',
+  'CH',
 ]);
 
 export function nationalTeamBadgeSrc(isoCode: string): string | null {

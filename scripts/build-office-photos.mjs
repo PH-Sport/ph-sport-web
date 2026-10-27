@@ -7,23 +7,23 @@
  *   npm run assets:oficina
  *
  * Entrada   assets/source-media/oficina/   (originales, no se sirven)
- *           carpeta.jpg, sillones.jpg, tarjeta.jpg     fotos de la sesión, 1600×1066
- *           boligrafos.jpg, pared.jpg, sala.jpg        fotogramas de 1920×1080 del vídeo
+ *           carpeta.jpg, sillones.jpg, tarjeta.jpg,    fotos de la sesión, 1600×1066
+ *           escultura.jpg                              («Logo 2.jpeg» de la sesión)
+ *           boligrafos.jpg, sala.jpg                   fotogramas de 1920×1080 del vídeo
  *                                                      de la oficina (el que estuvo en la
  *                                                      portada en septiembre)
  * Salida    src/assets/images/oficina/     (las procesa astro:assets: anchos y hash)
  *           <foto>.jpg                     16:10, con el ajuste de color
  *           <foto>-luz.png                 dónde cae la luz (blanco con alfa)
  *
- * Los fotogramas son el más nítido de cada plano de «Vídeo Web.mov» (13,95 s,
- * 6,75 s y 5,55 s). Se sacaron con ffmpeg-static así, y el elegido es el de
- * mayor varianza del laplaciano:
+ * Los fotogramas son el más nítido de cada plano de «Vídeo Web.mov» (13,95 s y
+ * 5,55 s). Se sacaron con ffmpeg-static así, y el elegido es el de mayor varianza
+ * del laplaciano:
  *   ffmpeg -ss 12.65 -t 1.3 -i "Vídeo Web.mov" -vf fps=10 -q:v 1 boli-%02d.jpg   → nº 14
- *   ffmpeg -ss 6.15  -t 0.9 -i "Vídeo Web.mov" -vf fps=10 -q:v 1 pared-%02d.jpg  → nº 07
  *   ffmpeg -ss 4.05  -t 1.7 -i "Vídeo Web.mov" -vf fps=10 -q:v 1 sala-%02d.jpg   → nº 16
  *
- * Las máscaras están medidas sobre ESTAS fotos (cajas, umbrales y la silueta de la
- * mesa). Si llega otro original —más grande o con otro encuadre—, hay que revisar
+ * Las máscaras están medidas sobre ESTAS fotos (cajas, umbrales y las siluetas de la
+ * mesa y de la escultura). Si llega otro original —más grande o con otro encuadre—, hay que revisar
  * sus cifras, no solo volver a pasar el script. Por qué así: DECISIONS.md
  * (2026-10-15, «Fotos de la oficina…»).
  */
@@ -162,8 +162,37 @@ await mask('tarjeta-luz.png', tarjeta, foil(tarjeta, { x0: 655, x1: 972, y0: 368
   await mask('boligrafos-luz.png', s, m, 1);
 }
 
-// II · Rendimiento: la pared de chevrones. Sin máscara: la luz pasa por toda la pared.
-await photo('pared.jpg', FRAME);
+// II · Rendimiento: la escultura del logo en el jardín, donde cae el sol. Es su
+// silueta medida sobre la foto recortada (con la peana), menos los árboles que se
+// ven por los huecos, que son más oscuros. La pieza es casi blanca: un brillo no se
+// notaría, el sol la tiñe.
+{
+  const s = await photo('escultura.jpg', PHOTO);
+  const { px, W, H } = s;
+  const SCULPTURE = [
+    [513, 150], [615, 100], [925, 185], [1015, 350], [945, 395], [1035, 375], [1225, 655],
+    [1020, 658], [1105, 830], [1293, 833], [1293, 846], [227, 846], [227, 833], [480, 830],
+    [495, 555], [700, 352], [508, 318],
+  ];
+  const inside = (x, y) => {
+    let c = false;
+    for (let i = 0, j = SCULPTURE.length - 1; i < SCULPTURE.length; j = i++) {
+      const [xi, yi] = SCULPTURE[i];
+      const [xj, yj] = SCULPTURE[j];
+      if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c;
+    }
+    return c;
+  };
+  const m = new Float32Array(W * H);
+  for (let y = 90; y < 860; y++) {
+    for (let x = 220; x < 1300; x++) {
+      if (!inside(x, y)) continue;
+      const i = y * W + x;
+      m[i] = smooth(130, 175, luma(px[i * 3], px[i * 3 + 1], px[i * 3 + 2]));
+    }
+  }
+  await mask('escultura-luz.png', s, m, 3);
+}
 
 // III · Media: el tablero de la mesa de reuniones, donde cae el sol de la cristalera.
 // Es la silueta del tablero medida sobre el fotograma (px del fotograma entero),

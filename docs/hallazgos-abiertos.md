@@ -235,21 +235,16 @@ siempre, que es lo que se pidió.
 
 ### Fotos de la oficina: originales pequeños y sin probar en un móvil real (2026-10-15)
 
-**Pedido sin hacer (2026-10-26): cambiar la foto de Rendimiento.** Diego (PH) pidió
-quitar la pared negra de chevrones del pilar II · Rendimiento y poner otra. No
-dijo cuál, y Mario lo dejó para más adelante. La foto se elige en `PILLAR_PHOTOS`
-(`src/lib/officePhotos.ts`); la nueva pasa por `npm run assets:oficina` y, si su
-luz va con máscara, hay que medírsela en `scripts/build-office-photos.mjs`.
-
 Las fotos de los pilares de Servicios y de Contacto (`DECISIONS.md`, 2026-10-15)
-salen de lo que había: tres fotos de la sesión a 1600×1066 —sin datos de cámara,
-con pinta de haber pasado por WhatsApp— y tres fotogramas de 1920×1080 del vídeo
-de la oficina. Enteras se ven bien, pero en un portátil retina un pilar se pinta
+salen de lo que había: cuatro fotos de la sesión a 1600×1066 —sin datos de cámara,
+con pinta de haber pasado por WhatsApp— y dos fotogramas de 1920×1080 del vídeo
+de la oficina (la escultura de Rendimiento sustituyó a un tercero, la pared, el
+2026-10-27). Enteras se ven bien, pero en un portátil retina un pilar se pinta
 a 1,2-1,3× y se nota algo blando. **Lo que lo arregla son los originales del
 fotógrafo** (fotos y vídeo). Al cambiarlos no basta con volver a pasar
 `npm run assets:oficina`: las máscaras de la luz están medidas sobre estas fotos
-(cajas, umbrales y la silueta de la mesa en `scripts/build-office-photos.mjs`) y
-hay que revisar sus cifras.
+(cajas, umbrales y las siluetas de la mesa y de la escultura en
+`scripts/build-office-photos.mjs`) y hay que revisar sus cifras.
 
 Comprobado con Playwright sobre el build en Chromium, WebKit y a 390 px de ancho:
 las cinco fotos y la de Contacto cargan, la cámara respira en reposo, la luz se
@@ -259,6 +254,9 @@ navegar con el ClientRouter. **No se ha visto en un móvil real**: cada fotogram
 mueve la máscara de la luz de la foto que está en pantalla, que obliga a repintar
 esa capa. Si en un móvil modesto tirara, la primera palanca es quitar la luz y
 dejar solo la cámara (la luz empieza apagada en CSS).
+La escultura (2026-10-27) se comprobó solo en Chromium, a 1280 y a 390 px: carga,
+la luz cae sobre la pieza y se calienta con el scroll, sin errores. **No se ha
+visto en Safari.**
 
 ### Textos en italiano sin revisión nativa (2026-10-01)
 

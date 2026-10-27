@@ -903,18 +903,16 @@ input, textarea { caret-color: var(--color-ph-gold); }
 .ph-live--copper .ph-live__sheen { filter: brightness(2) saturate(1.15) contrast(1.05); }
 .ph-live--silver .ph-live__sheen { filter: brightness(2.3) contrast(1.1); }
 .ph-live--gold .ph-live__sheen { filter: brightness(1.85) saturate(1.25) contrast(1.05); }
-/* La pared: luz rasante por toda la foto, con una banda más ancha que hace brillar
-   los cantos del relieve. */
-.ph-live--wall .ph-live__sheen {
-  filter: brightness(2.1) contrast(1.2);
-  -webkit-mask-image: linear-gradient(135deg, transparent 0 38%, rgba(0, 0, 0, 0.4) 44%, #000 50%, rgba(0, 0, 0, 0.4) 56%, transparent 62% 100%);
-  mask-image: linear-gradient(135deg, transparent 0 38%, rgba(0, 0, 0, 0.4) 44%, #000 50%, rgba(0, 0, 0, 0.4) 56%, transparent 62% 100%);
-}
 /* Sol: la zona se calienta (la misma foto con un filtro cálido, que el script va
    destapando) y una mancha de luz la cruza. */
 .ph-live__warm {
   opacity: 0;
   filter: sepia(0.5) saturate(1.45) hue-rotate(-14deg) brightness(1.03) contrast(1.04);
+}
+/* Una pieza blanca (la escultura): el filtro de arriba casi no la cambia, porque el
+   blanco ya está al tope. Aquí el sol la tiñe de crema, como la luz de la tarde. */
+.ph-live--white .ph-live__warm {
+  filter: sepia(1) saturate(1.3) hue-rotate(-18deg) brightness(0.97);
 }
 .ph-live__sun {
   position: absolute;

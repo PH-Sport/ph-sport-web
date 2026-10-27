@@ -13,6 +13,53 @@ leído el resto.
 
 ---
 
+## 2026-10-27 · Rendimiento cambia la pared de chevrones por la escultura del logo en el jardín
+
+> **Estado: en producción (`main`) desde el 2026-10-27.**
+
+**Decisión** (de Mario, a petición de Diego, de PH, que pidió «quitar la pared y
+poner otra»): el pilar II · Rendimiento de `/servicios` deja la pared negra de
+chevrones (fotograma del vídeo de la oficina) y pasa a la escultura blanca del
+logo en el jardín, en contrapicado, con los pinos y el cielo detrás (`Logo 2` de
+la sesión de fotos, 1600×1066, como las demás fotos de la sesión).
+
+**Es un cambio sobre un descarte.** La escultura en Rendimiento ya se probó en la
+primera vuelta de la maqueta y se descartó el 2026-10-15 (entrada de ese día):
+iba también en Prensa, con el neón en Media, y Mario dijo que «el logo de PH se
+repite demasiado» porque salía en cinco de las seis fotos. Se le recordó antes de
+hacerlo y lo mantuvo. Lo que ha cambiado: con el resto de pilares como están, el
+logo grande sale en dos de las cinco fotos de Servicios (la carpeta de Family
+Office y la escultura), no en cinco de seis. El motivo del descarte era la
+repetición, no la escultura.
+
+**La luz es sol, no brillo.** La pared llevaba una luz rasante que la cruzaba
+entera; la escultura lleva la del patio del Psicólogo y la mesa de Media: el sol
+la calienta mientras la foto cruza la pantalla y una mancha de luz la recorre.
+Actúa solo sobre la pieza y su peana, con una máscara hecha de su silueta medida
+sobre la foto (en `scripts/build-office-photos.mjs`), menos los árboles que se
+ven por los huecos. **Por qué no un brillo como el de la carpeta**: la pieza es
+casi blanca y un brillo no tiene adónde subir. Por lo mismo, el filtro cálido de
+siempre apenas la cambiaba (se midió en el navegador: el blanco se queda en
+blanco), así que lleva un tono propio, `white`, que la tiñe de crema como la luz
+de la tarde.
+
+**Alternativas descartadas** (se repasaron las ocho fotos de la sesión y los
+planos del vídeo):
+- *La toma `Logo 1`* (de frente, con el edificio y el césped). Más clara y sin
+  cielo que se queme; Mario prefirió el contrapicado.
+- *La escultura en blanco y negro (`Logo B&N`).* El resto de fotos van en color.
+- *El neón (`Neón 1`, `Neón 2` y su plano del vídeo).* Se parece demasiado a la
+  portada, que es el neón.
+- *La sala de reuniones en plano general (vídeo).* Es la misma mesa de Media y
+  lleva «PHSPORT» en la pantalla.
+- *El primer plano de los relojes de arena (vídeo).* Es la escena del Psicólogo.
+
+**Lo que se acepta**: el cielo del contrapicado es casi blanco y, con el ajuste
+de color, queda gris claro. La pared y su tono de luz (`wall`) salen del código y
+del repo; si hiciera falta volver, están en la historia de Git.
+
+---
+
 ## 2026-10-20 · La imagen al compartir un enlace pasa a ser el neón de la portada
 
 > **Estado: en producción (`main`) desde el 2026-10-20.**
@@ -141,6 +188,10 @@ columnas); en tablet (3) la última fila lleva una suelta y en escritorio (5),
 cuatro.
 
 ## 2026-10-15 · Fotos de la oficina en los pilares de Servicios y en Contacto, vivas en reposo y con el scroll
+
+> **Superada en parte el 2026-10-27**: el pilar II · Rendimiento ya no lleva la
+> pared de chevrones sino la escultura del logo en el jardín (entrada de ese día).
+> El resto sigue vigente.
 
 **Decisión** (de Mario: al equipo le pidieron cambiar las imágenes hechas con IA
 por fotos reales de la oficina; la del sobre dorado de Contacto ya se había

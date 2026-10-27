@@ -243,8 +243,8 @@ de la oficina (la escultura de Rendimiento sustituyó a un tercero, la pared, el
 a 1,2-1,3× y se nota algo blando. **Lo que lo arregla son los originales del
 fotógrafo** (fotos y vídeo). Al cambiarlos no basta con volver a pasar
 `npm run assets:oficina`: las máscaras de la luz están medidas sobre estas fotos
-(cajas, umbrales y las siluetas de la mesa y de la escultura en
-`scripts/build-office-photos.mjs`) y hay que revisar sus cifras.
+(cajas, umbrales y la silueta de la mesa en `scripts/build-office-photos.mjs`) y
+hay que revisar sus cifras.
 
 Comprobado con Playwright sobre el build en Chromium, WebKit y a 390 px de ancho:
 las cinco fotos y la de Contacto cargan, la cámara respira en reposo, la luz se
@@ -254,9 +254,8 @@ navegar con el ClientRouter. **No se ha visto en un móvil real**: cada fotogram
 mueve la máscara de la luz de la foto que está en pantalla, que obliga a repintar
 esa capa. Si en un móvil modesto tirara, la primera palanca es quitar la luz y
 dejar solo la cámara (la luz empieza apagada en CSS).
-La escultura (2026-10-27) se comprobó solo en Chromium, a 1280 y a 390 px: carga,
-la luz cae sobre la pieza y se calienta con el scroll, sin errores. **No se ha
-visto en Safari.**
+La escultura (2026-10-27, solo con cámara, sin luz) se comprobó con Playwright en
+Chromium y WebKit, a 1280 y a 390 px: carga, la cámara se mueve y no hay errores.
 
 ### Textos en italiano sin revisión nativa (2026-10-01)
 

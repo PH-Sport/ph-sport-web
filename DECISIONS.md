@@ -13,9 +13,41 @@ leído el resto.
 
 ---
 
+## 2026-10-27 · La escultura de Rendimiento se queda sin luz: solo el movimiento de cámara
+
+> **Estado: en producción (`main`) desde el 2026-10-27.**
+
+**Decisión** (de Mario, el mismo día que entró la escultura, al verla en
+producción): «un amarillo muy exagerado; al menos el logo debería verse
+prácticamente blanco». La escultura deja de llevar luz y se queda solo con el
+movimiento de cámara que tienen todas las fotos vivas (respira en reposo y sigue
+al scroll). Es el primer hueco sin luz: `kind: 'camera'` en `officePhotos.ts`.
+
+**De dónde salía el amarillo** (medido sobre una cara de la pieza): en la foto es
+un gris claro neutro (194, 199, 202); con el calor al máximo pasaba a beige
+(218, 211, 189), y con la mancha de sol naranja en pleno scroll, a amarillo
+anaranjado (234, 209, 169). Los dos culpables eran el filtro cálido del tono
+`white` y, sobre todo, la mancha de sol.
+
+**Alternativa descartada**: *un sol que la aclarara en vez de teñirla* (una capa
+más luminosa con una pizca de calidez y la mancha de luz neutra, de modo que el
+gris de la sombra pasara a blanco limpio). Se le propuso a Mario como primera
+opción y prefirió quitar la luz: es lo más neutro y la pieza se ve siempre como
+sale en la foto. Lo que se acepta: es el único pilar sin luz que reaccione al
+scroll.
+
+La máscara de la silueta y el tono `white` salen del código; si hiciera falta
+volver a darle luz, están en la historia de Git.
+
+---
+
 ## 2026-10-27 · Rendimiento cambia la pared de chevrones por la escultura del logo en el jardín
 
 > **Estado: en producción (`main`) desde el 2026-10-27.**
+>
+> **Superada en parte ese mismo día**: la escultura se queda, pero sin luz, solo
+> con el movimiento de cámara (entrada «La escultura de Rendimiento se queda sin
+> luz»). Lo de «La luz es sol, no brillo» de abajo ya no está vigente.
 
 **Decisión** (de Mario, a petición de Diego, de PH, que pidió «quitar la pared y
 poner otra»): el pilar II · Rendimiento de `/servicios` deja la pared negra de

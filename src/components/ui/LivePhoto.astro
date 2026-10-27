@@ -48,9 +48,11 @@ const maskStyle = mask ? `-webkit-mask-image: url(${mask}); mask-image: url(${ma
   data-live-sweep={sweep ? '' : undefined}
 >
   <img class="ph-live__img" src={src} {...img} />
-  <div class="ph-live__zone" style={maskStyle}>
-    {kind === 'sheen' && <img class="ph-live__img ph-live__sheen" src={src} {...img} />}
-    {kind === 'sunlit' && <img class="ph-live__img ph-live__warm" src={src} {...img} />}
-    {kind === 'sunlit' && <div class="ph-live__sun"></div>}
-  </div>
+  {kind !== 'camera' && (
+    <div class="ph-live__zone" style={maskStyle}>
+      {kind === 'sheen' && <img class="ph-live__img ph-live__sheen" src={src} {...img} />}
+      {kind === 'sunlit' && <img class="ph-live__img ph-live__warm" src={src} {...img} />}
+      {kind === 'sunlit' && <div class="ph-live__sun"></div>}
+    </div>
+  )}
 </div>

@@ -22,8 +22,8 @@
  *   ffmpeg -ss 12.65 -t 1.3 -i "Vídeo Web.mov" -vf fps=10 -q:v 1 boli-%02d.jpg   → nº 14
  *   ffmpeg -ss 4.05  -t 1.7 -i "Vídeo Web.mov" -vf fps=10 -q:v 1 sala-%02d.jpg   → nº 16
  *
- * Las máscaras están medidas sobre ESTAS fotos (cajas, umbrales y las siluetas de la
- * mesa y de la escultura). Si llega otro original —más grande o con otro encuadre—, hay que revisar
+ * Las máscaras están medidas sobre ESTAS fotos (cajas, umbrales y la silueta de la
+ * mesa). Si llega otro original —más grande o con otro encuadre—, hay que revisar
  * sus cifras, no solo volver a pasar el script. Por qué así: DECISIONS.md
  * (2026-10-15, «Fotos de la oficina…»).
  */
@@ -162,37 +162,9 @@ await mask('tarjeta-luz.png', tarjeta, foil(tarjeta, { x0: 655, x1: 972, y0: 368
   await mask('boligrafos-luz.png', s, m, 1);
 }
 
-// II · Rendimiento: la escultura del logo en el jardín, donde cae el sol. Es su
-// silueta medida sobre la foto recortada (con la peana), menos los árboles que se
-// ven por los huecos, que son más oscuros. La pieza es casi blanca: un brillo no se
-// notaría, el sol la tiñe.
-{
-  const s = await photo('escultura.jpg', PHOTO);
-  const { px, W, H } = s;
-  const SCULPTURE = [
-    [513, 150], [615, 100], [925, 185], [1015, 350], [945, 395], [1035, 375], [1225, 655],
-    [1020, 658], [1105, 830], [1293, 833], [1293, 846], [227, 846], [227, 833], [480, 830],
-    [495, 555], [700, 352], [508, 318],
-  ];
-  const inside = (x, y) => {
-    let c = false;
-    for (let i = 0, j = SCULPTURE.length - 1; i < SCULPTURE.length; j = i++) {
-      const [xi, yi] = SCULPTURE[i];
-      const [xj, yj] = SCULPTURE[j];
-      if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c;
-    }
-    return c;
-  };
-  const m = new Float32Array(W * H);
-  for (let y = 90; y < 860; y++) {
-    for (let x = 220; x < 1300; x++) {
-      if (!inside(x, y)) continue;
-      const i = y * W + x;
-      m[i] = smooth(130, 175, luma(px[i * 3], px[i * 3 + 1], px[i * 3 + 2]));
-    }
-  }
-  await mask('escultura-luz.png', s, m, 3);
-}
+// II · Rendimiento: la escultura del logo en el jardín. Sin máscara: no lleva luz,
+// solo el movimiento de cámara (cualquier luz cálida amarilleaba la pieza blanca).
+await photo('escultura.jpg', PHOTO);
 
 // III · Media: el tablero de la mesa de reuniones, donde cae el sol de la cristalera.
 // Es la silueta del tablero medida sobre el fotograma (px del fotograma entero),

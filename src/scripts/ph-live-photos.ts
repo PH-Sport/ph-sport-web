@@ -6,7 +6,8 @@
  * `LivePhoto.astro`. Por qué así y qué se descartó: DECISIONS.md (2026-10-15).
  *
  * - Reposo: la cámara deriva despacio (unas décimas de % en x e y, una décima de
- *   grado de giro y un zoom que respira) y la luz pasea sola.
+ *   grado de giro y un zoom que respira) y la luz pasea sola. Una foto sin luz
+ *   (`camera`) solo tiene la cámara.
  * - Scroll: la posición de la foto en pantalla llega por un muelle crítico, como el
  *   ratón en los fondos, así que no hay saltos aunque la rueda vaya a golpes. La
  *   velocidad del scroll sube una «energía» que aviva la luz y se calma sola al
@@ -115,6 +116,9 @@ function sunlit(live: HTMLElement): LightControl {
   };
 }
 
+/** Sin luz: la foto solo tiene el movimiento de cámara. */
+const NO_LIGHT: LightControl = { frame() {}, enter() {} };
+
 let shots: Shot[] = [];
 let observer: IntersectionObserver | null = null;
 let raf = 0;
@@ -199,7 +203,7 @@ export function mountLivePhotos(root: ParentNode): void {
       pv: 0,
       visible: false,
       entered: false,
-      light: live.dataset.live === 'sunlit' ? sunlit(live) : sheen(live),
+      light: live.dataset.live === 'sunlit' ? sunlit(live) : live.dataset.live === 'sheen' ? sheen(live) : NO_LIGHT,
     };
     shots.push(shot);
     observer!.observe(shot.block);

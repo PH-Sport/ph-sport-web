@@ -909,11 +909,6 @@ input, textarea { caret-color: var(--color-ph-gold); }
   opacity: 0;
   filter: sepia(0.5) saturate(1.45) hue-rotate(-14deg) brightness(1.03) contrast(1.04);
 }
-/* Una pieza blanca (la escultura): el filtro de arriba casi no la cambia, porque el
-   blanco ya está al tope. Aquí el sol la tiñe de crema, como la luz de la tarde. */
-.ph-live--white .ph-live__warm {
-  filter: sepia(1) saturate(1.3) hue-rotate(-18deg) brightness(0.97);
-}
 .ph-live__sun {
   position: absolute;
   inset: 40% -20% -10% -20%;

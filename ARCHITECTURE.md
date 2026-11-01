@@ -798,7 +798,7 @@ que ejecutar nada a mano.
 |---|---|---|
 | Logo SVG | ✅ En `/public/logo.svg` | |
 | Vídeo hero | ✅ `public/hero/2026-10b/` | Logo en neón renderizado desde `scripts/hero-neon/neon.html`: apaisado 1920×1080 y vertical 886×1920 |
-| Fotos jugadores | ✅ 84 de las 84 tarjetas visibles | Profesionales (64 con el seleccionador) y Cantera (20): todas de la serie de estudio de Mario y con la camiseta del club de la ficha (2026-10-22). Ver «Fotos de jugadores» arriba |
+| Fotos jugadores | ✅ 83 de las 83 tarjetas visibles | Profesionales (63 con el seleccionador) y Cantera (20): todas de la serie de estudio de Mario y con la camiseta del club de la ficha (2026-10-22; Axel Montaña salió el 2026-10-28). Ver «Fotos de jugadores» arriba |
 | Escudos de selección | ✅ 10 WebP en `/public/national-team-badges/` | ES, PE, HR, MK, MA, BO, RO, PA, BR, CH. Master PNG en `/assets/source-media/badges/`. El de Suiza es la bandera, porque es lo que lleva su camiseta (Wikimedia Commons, dominio público) |
 | Fotos de la oficina | ⚠️ Con lo que había | Pilares de Servicios y Contacto (2026-10-15): bolígrafos y mesa de reuniones sacados del vídeo de la oficina (1920×1080); carpeta, sillones, tarjeta y la escultura del jardín (Rendimiento desde el 2026-10-27) de la sesión de fotos (1600×1066). Originales en `assets/source-media/oficina/`. Faltan los originales del fotógrafo (`docs/hallazgos-abiertos.md`) |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |

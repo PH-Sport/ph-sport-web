@@ -42,7 +42,6 @@
   { "name": "Kaua do Vale", "club": { "name": "Santos FC" }, "nationalTeamCodes": [] },
   { "name": "Roberto Olabe", "club": { "name": "Turan-Tovuz IK" }, "nationalTeamCodes": [] },
   { "name": "Alessandro Burlamaqui", "club": { "name": "Alianza Lima" }, "nationalTeamCodes": ["PE"] },
-  { "name": "Axel Montaña", "club": { "name": "Danubio FC" }, "nationalTeamCodes": [] },
   { "name": "Jordi Ferrer", "club": { "name": "Atlético La Paz" }, "nationalTeamCodes": [] },
   { "name": "Billy Gee", "club": { "name": "Železničar Pančevo" }, "nationalTeamCodes": [] },
   { "name": "Jannick Buyla", "club": { "name": "Lusitano GC" }, "nationalTeamCodes": [] },
@@ -138,5 +137,6 @@
   { "name": "David Rosado", "club": { "name": "Getafe CF" }, "nationalTeamCodes": [], "hidden": true, "hiddenReason": "on-hold", "note": "Ocultado 2026-09-21: fuera de la selección para la web que pidió Mario. No consta que haya dejado PH." },
   { "name": "Jesús Jaime", "club": { "name": "UD Almería" }, "nationalTeamCodes": [], "hidden": true, "hiddenReason": "on-hold", "note": "Ocultado 2026-09-21: fuera de la selección para la web que pidió Mario. No consta que haya dejado PH." },
   { "name": "Hugo Buyla", "club": null, "nationalTeamCodes": [], "hidden": true, "hiddenReason": "on-hold", "note": "Ocultado 2026-09-21: fuera de la selección para la web que pidió Mario. No consta que haya dejado PH." },
-  { "name": "Iker Bachiller", "club": null, "nationalTeamCodes": [], "hidden": true, "hiddenReason": "on-hold", "note": "Ocultado 2026-09-21: fuera de la selección para la web que pidió Mario. No consta que haya dejado PH." }
+  { "name": "Iker Bachiller", "club": null, "nationalTeamCodes": [], "hidden": true, "hiddenReason": "on-hold", "note": "Ocultado 2026-09-21: fuera de la selección para la web que pidió Mario. No consta que haya dejado PH." },
+  { "name": "Axel Montaña", "club": { "name": "Danubio FC" }, "nationalTeamCodes": [], "hidden": true, "note": "Ocultado 2026-10-28 a petición de Mario. Motivo sin registrar: no se sabe si ha dejado PH." }
 ]

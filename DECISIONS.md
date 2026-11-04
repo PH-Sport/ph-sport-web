@@ -13,6 +13,50 @@ leído el resto.
 
 ---
 
+## 2026-11-04 · El icono de Google se coloca para el círculo donde se ve, no por la caja del logo
+
+> **Estado: en la rama `preview`; aún sin desplegar a producción.** Al desplegar,
+> pedir en Search Console que se vuelva a rastrear la portada y comprobar el
+> resultado en una búsqueda real: Google avisa de que puede tardar de varios días
+> a varias semanas.
+
+**Decisión** (de Mario, a raíz de una captura de un miembro del equipo que pedía
+más calidad y terminar de centrar el logo): el logo pasa del 66 % al 74 % del ancho
+del icono y se coloca poniendo en el centro el del círculo más pequeño que lo
+contiene. Es un cambio del apple-touch-icon, que Google usa en sus resultados y
+también es el icono de la pantalla de inicio del iPhone. Las pestañas del navegador
+(`favicon.svg` y sus PNG) no cambian.
+
+**De dónde sale el icono de Google** (medido el 2026-11-04): el fondo negro no está
+en `favicon.svg`, que es transparente. Las copias de 48, 64 y 128 píxeles que guarda
+Google tienen el negro y los márgenes de nuestro apple-touch-icon.
+
+**Por qué parecía descentrado**: lo estaba por su caja (30 píxeles a cada lado sobre
+180), pero el centro de masa del logo queda al 42,6 % del ancho, porque a la derecha
+solo hay una punta. En el círculo donde lo recorta Google se notaba más.
+
+**Lo que no se arregla desde aquí**: la nitidez. La captura estaba ampliada unas 3
+veces y se parece sobre todo a una copia de unos 32 píxeles reducida por Google
+(estimación por comparación visual; Google no publica ese dato). Un logo más grande
+aprovecha mejor esos píxeles, pero ampliado seguirá viéndose algo borroso.
+
+**Alternativas descartadas**:
+- *Un archivo de más resolución*: el actual ya mide 180 píxeles y Google recomienda
+  más de 48. Si Google lo reduce igual, apenas cambiaría el resultado.
+- *Colocar por el centro de masa*: exigiría desplazar el logo aún más a la derecha
+  (x = 100,9 del viewBox, frente a 113,1) y dejaría la punta más cerca del borde del
+  círculo.
+- *Un icono solo para Google, separado del del iPhone*: la documentación de Google no
+  dice cómo elige entre varios iconos, así que no había garantía de que usara ese.
+  Lo que se acepta: en el iPhone, sobre un cuadrado redondeado, el logo queda un poco
+  a la derecha (32 píxeles a la izquierda y 16 a la derecha sobre 180).
+
+**El nombre lleva la versión** (`apple-touch-icon-2026-11.png`) por la caché de 7
+días de `public/`: con el mismo nombre, quien ya visitó la web seguiría viendo el
+icono anterior (`docs/trampas-conocidas.md`). El archivo anterior se retira.
+
+---
+
 ## 2026-10-27 · La escultura de Rendimiento se queda sin luz: solo el movimiento de cámara
 
 > **Estado: en producción (`main`) desde el 2026-10-27.**

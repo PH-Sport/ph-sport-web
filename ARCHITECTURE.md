@@ -32,6 +32,7 @@ ph-sport-web/
 │   ├── national-team-badges/        # Escudos de selecciones nacionales
 │   ├── og-image-neon.jpg            # Imagen al compartir un enlace (1200×630): el neón encendido del póster del hero (npm run assets:favicons)
 │   ├── favicon.svg
+│   ├── apple-touch-icon-2026-11.png # Icono de la pantalla de inicio del iPhone y el que enseña Google (npm run assets:favicons). La versión va en el nombre por la caché de 7 días
 │   ├── hero/2026-10b/               # Vídeos y pósters del hero (npm run assets:hero). La versión va en la ruta por la caché de 7 días
 │   ├── logo-ph-3d.webp / *-sm.webp
 │   └── logo.svg
@@ -803,6 +804,7 @@ que ejecutar nada a mano.
 | Fotos de la oficina | ⚠️ Con lo que había | Pilares de Servicios y Contacto (2026-10-15): bolígrafos y mesa de reuniones sacados del vídeo de la oficina (1920×1080); carpeta, sillones, tarjeta y la escultura del jardín (Rendimiento desde el 2026-10-27) de la sesión de fotos (1600×1066). Originales en `assets/source-media/oficina/`. Faltan los originales del fotógrafo (`docs/hallazgos-abiertos.md`) |
 | Fuente Söhne | ✅ Integrada | Archivos test de Klim — pendiente licencia. Sin letras acentuadas: se pintan con la fuente de reserva |
 | Imagen al compartir (OG, 1200×630) | ✅ `public/og-image-neon.jpg` | El neón encendido de la portada: sale de `public/hero/<versión>/on-landscape.webp` con `npm run assets:favicons`. Si cambia el vídeo del hero, regenerarla, y con nombre nuevo si cambia la imagen (las redes la guardan por su URL) (`DECISIONS.md`, 2026-10-20) |
+| Icono en los resultados de Google | ✅ `public/apple-touch-icon-2026-11.png` | Google usa el apple-touch-icon y lo recorta en círculo, así que el logo va colocado para ese círculo, no centrado por su caja. Sale de `public/favicon.svg` con `npm run assets:favicons`. Si cambia la imagen, cambiarle el nombre en el script y en `BaseLayout.astro` (`DECISIONS.md`, 2026-11-04) |
 
 ### Pendientes
 

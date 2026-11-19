@@ -29,6 +29,7 @@ export const TEAM_MEMBERS: readonly TeamMember[] = [
   { id: 'sancho',     name: 'Esteban Sancho' },
   { id: 'quintana',   name: 'Caye Quintana' },
   { id: 'garrido',    name: 'David Garrido' },
+  { id: 'lozano',     name: 'Tomás Lozano' },
   { id: 'granados',   name: 'Alberto Granados' },
   { id: 'gomez',      name: 'Juan Luis Gómez' },
   { id: 'toledo',     name: 'Diego Toledo' },
@@ -40,7 +41,7 @@ export const TEAM_MEMBERS: readonly TeamMember[] = [
 
 export interface RenderableMember {
   id: string;
-  index: string;          // '01', '02', ..., '23'
+  index: string;          // '01', '02', ..., '24'
   name: string;
   role: string;
   nationality?: Nationality;
